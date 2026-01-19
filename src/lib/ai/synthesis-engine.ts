@@ -1,0 +1,660 @@
+// Synthesis Engine - Core Module
+// Implements Hong-inspired architecture for generating novel ideas from multiple sources
+// Tier 1: Added self-correction loop and calibrated confidence
+
+import { getClaudeModel } from "@/lib/ai/anthropic";
+import { HypothesisGenerator } from "@/lib/ai/hypothesis-generator";
+import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
+import {
+  NovelIdea,
+  StructuredApproach,
+  ExtractedConcepts,
+  Contradiction,
+  Entity,
+  ConfidenceFactors,
+  PriorArt,
+  CriticalAnalysis,
+} from "@/types";
+import { evaluateCriticalThinking } from "./novelty-evaluator";
+
+// ===== CONCEPT EXTRACTION =====
+
+const CONCEPT_EXTRACTION_PROMPT = `You are an advanced concept extraction system. Analyze the following document excerpt and extract:
+
+1. **Main Thesis**: The central argument or claim of this source
+2. **Key Arguments**: 3-5 supporting arguments or key points
+3. **Entities**: Important people, concepts, organizations, technologies, or methods mentioned
+4. **Methodology**: How was the research conducted? (e.g., experimental, theoretical, case study)
+5. **Evidence Quality**: Assess if the evidence is "strong" (data-backed), "moderate" (logical but sparse data), "weak" (speculative), or "anecdotal".
+6. **Research Gaps**: What future work or missing pieces does the author identify?
+
+Format your response as JSON:
+{
+  "mainThesis": "string",
+  "keyArguments": ["string", "string", ...],
+  "entities": [
+    {"name": "string", "type": "person|concept|organization|technology|method", "description": "string"}
+  ],
+  "methodology": "string",
+  "evidenceQuality": "strong|moderate|weak|anecdotal",
+  "researchGaps": ["string", "string", ...]
+}
+
+Document to analyze:
+---
+{DOCUMENT}
+---`;
+
+export async function extractConcepts(
+  text: string,
+  sourceId: string
+): Promise<ExtractedConcepts> {
+  const model = getClaudeModel();
+  const prompt = CONCEPT_EXTRACTION_PROMPT.replace("{DOCUMENT}", text);
+
+  const result = await model.generateContent(prompt);
+  const responseText = result.response.text();
+
+  // Parse JSON from response (handle markdown code blocks)
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to extract concepts: Invalid response format");
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]);
+
+  // Add sourceId to each entity
+  const entities: Entity[] = parsed.entities.map((e: Omit<Entity, 'sourceId'>) => ({
+    ...e,
+    sourceId,
+  }));
+
+  return {
+    mainThesis: parsed.mainThesis,
+    keyArguments: parsed.keyArguments,
+    entities,
+    methodology: parsed.methodology,
+    evidenceQuality: parsed.evidenceQuality,
+    researchGaps: parsed.researchGaps,
+  };
+}
+
+// ===== CONTRADICTION DETECTION =====
+
+const CONTRADICTION_DETECTION_PROMPT = `You are a critical analysis system. Compare the following sources and identify any contradictions or tensions between their claims.
+
+Sources:
+{SOURCES}
+
+For each contradiction found, explain:
+1. The concept being contradicted
+2. What Source A claims
+3. What Source B claims
+4. A potential resolution or synthesis of these views
+
+Format as JSON:
+{
+  "contradictions": [
+    {
+      "concept": "string",
+      "sourceA": "source name",
+      "claimA": "string",
+      "sourceB": "source name",
+      "claimB": "string",
+      "resolution": "string or null if no obvious resolution"
+    }
+  ]
+}
+
+If no contradictions are found, return {"contradictions": []}`;
+
+export async function detectContradictions(
+  sources: { name: string; thesis: string; arguments: string[] }[]
+): Promise<Contradiction[]> {
+  const model = getClaudeModel();
+
+  const sourcesText = sources
+    .map(
+      (s) =>
+        `**${s.name}**:\n- Thesis: ${s.thesis}\n- Arguments: ${s.arguments.join("; ")}`
+    )
+    .join("\n\n");
+
+  const prompt = CONTRADICTION_DETECTION_PROMPT.replace("{SOURCES}", sourcesText);
+  const result = await model.generateContent(prompt);
+  const responseText = result.response.text();
+
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    return [];
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]);
+  return parsed.contradictions || [];
+}
+
+// ===== NOVEL IDEA GENERATION (Hong-Inspired) =====
+
+// ===== NOVEL IDEA GENERATION (Hong-Inspired) =====
+
+const HYPOTHESIS_GENERATION_PROMPT = `You are the Sovereign Synthesis Engine, using the Scientific Method to generate novel inventions.
+
+Your task: Formulate 3-5 distinct scientific hypotheses (inventions) based on the provided evidence.
+
+**Evidence (Observations):**
+{SOURCES}
+
+**Identified Tensions (Contradictions):**
+{CONTRADICTIONS}
+
+**Methodology:**
+1. **Observation**: Synthesize the key facts and "Research Gaps" from the sources.
+2. **Hypothesis**: Propose a NOVEL entity or mechanism that bridges these gaps.
+3. **Mechanism**: Explain the causal chain—HOW does this bridge the gap?
+4. **Prediction**: Deduce a testable prediction—what would we observe if this were true?
+
+Format as JSON:
+{
+  "novelIdeas": [
+    {
+      "thesis": "One-sentence hypothesis statement",
+      "description": "Detailed explanation of the invention/idea",
+      "mechanism": "Step-by-step verified mechanism (How it works)",
+      "prediction": "Specific, falsifiable prediction (If X, then Y)",
+      "bridgedConcepts": ["concept from Source A", "concept from Source B", ...],
+      "confidence": number, // 0-100 based on evidence strength
+      "noveltyAssessment": "Why is this new? Does it exist in prior art?"
+    }
+  ]
+}`;
+
+export async function generateNovelIdeas(
+  sources: { name: string; concepts: ExtractedConcepts }[],
+  contradictions: Contradiction[]
+): Promise<NovelIdea[]> {
+  const model = getClaudeModel();
+
+  const sourcesText = sources
+    .map(
+      (s) =>
+        `**${s.name}**:\n- Thesis: ${s.concepts.mainThesis}\n- Arguments: ${s.concepts.keyArguments.join("; ")}\n- Entities: ${s.concepts.entities.map((e) => e.name).join(", ")}\n- Methodology: ${s.concepts.methodology || "N/A"}\n- Gaps: ${s.concepts.researchGaps?.join("; ") || "None identified"}`
+    )
+    .join("\n\n");
+
+  const contradictionsText =
+    contradictions.length > 0
+      ? contradictions
+          .map((c) => `- ${c.concept}: "${c.claimA}" vs "${c.claimB}"`)
+          .join("\n")
+      : "No significant contradictions detected.";
+
+  const prompt = HYPOTHESIS_GENERATION_PROMPT
+    .replace("{SOURCES}", sourcesText)
+    .replace("{CONTRADICTIONS}", contradictionsText);
+
+  const result = await model.generateContent(prompt);
+  const responseText = result.response.text();
+
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to generate novel ideas: Invalid response format");
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]);
+
+  // Add unique IDs to each idea
+  return parsed.novelIdeas.map((idea: Omit<NovelIdea, 'id'>, index: number) => ({
+    ...idea,
+    id: `idea-${Date.now()}-${index}`,
+    // Ensure new fields are present (defaulting if LLM misses them)
+    mechanism: (idea as any).mechanism || "Mechanism inferred from description",
+    prediction: (idea as any).prediction || "No specific prediction generated",
+  }));
+}
+
+// ===== TIER 1: CALIBRATED CONFIDENCE =====
+
+/**
+ * Calculate confidence based on measurable factors, not LLM intuition
+ */
+export function calculateCalibratedConfidence(
+  factors: ConfidenceFactors
+): { score: number; explanation: string } {
+  // Weighted average of factors
+  const weights = {
+    sourceAgreement: 0.20,
+    priorArtDistance: 0.30, // Higher weight on novelty
+    contradictionResolved: 0.15,
+    evidenceDepth: 0.15,
+    conceptBridgeStrength: 0.20,
+  };
+
+  const score = Math.round(
+    (factors.sourceAgreement * weights.sourceAgreement +
+      factors.priorArtDistance * weights.priorArtDistance +
+      factors.contradictionResolved * weights.contradictionResolved +
+      factors.evidenceDepth * weights.evidenceDepth +
+      factors.conceptBridgeStrength * weights.conceptBridgeStrength) *
+      100
+  );
+
+  // Generate explanation based on factors
+  const explanationParts: string[] = [];
+  
+  if (factors.priorArtDistance < 0.3) {
+    explanationParts.push("Similar prior art detected (high similarity)");
+  } else if (factors.priorArtDistance > 0.7) {
+    explanationParts.push("Novel approach with limited prior art");
+  }
+  
+  if (factors.sourceAgreement > 0.7) {
+    explanationParts.push("Strong agreement across sources");
+  } else if (factors.sourceAgreement < 0.4) {
+    explanationParts.push("Limited source support");
+  }
+  
+  if (factors.contradictionResolved > 0.7) {
+    explanationParts.push("Successfully bridges conflicting concepts");
+  }
+  
+  if (factors.conceptBridgeStrength < 0.4) {
+    explanationParts.push("⚠️ Weak conceptual connection—may be forced synthesis");
+  }
+
+  const explanation = explanationParts.length > 0 
+    ? explanationParts.join(". ") + "."
+    : "Moderate confidence based on available evidence.";
+
+  return { score, explanation };
+}
+
+/**
+ * Estimate confidence factors from synthesis context
+ */
+export function estimateConfidenceFactors(
+  sources: { name: string; concepts: ExtractedConcepts }[],
+  contradictions: Contradiction[],
+  idea: NovelIdea,
+  priorArt: PriorArt[]
+): ConfidenceFactors {
+  // Source agreement: How many sources contribute concepts to this idea?
+  const bridgedSources = idea.bridgedConcepts.length;
+  const totalSources = sources.length;
+  const sourceAgreement = Math.min(bridgedSources / totalSources, 1);
+
+  // Prior art distance: 1 - max similarity (higher = more novel)
+  const maxSimilarity = priorArt.length > 0 
+    ? Math.max(...priorArt.map(p => p.similarity)) 
+    : 0;
+  const priorArtDistance = 1 - maxSimilarity;
+
+  // Contradiction resolution: Were contradictions addressed?
+  const hasContradictions = contradictions.length > 0;
+  const contradictionResolved = hasContradictions ? 0.5 : 0.8; // Conservative if contradictions existed
+
+  // Evidence depth: Inferred from thesis complexity (proxy metric)
+  const evidenceDepth = Math.min(idea.description.length / 1000, 1);
+
+  // Concept bridge strength: Number of concepts bridged divided by ideal (3-5)
+  const conceptBridgeStrength = Math.min(idea.bridgedConcepts.length / 4, 1);
+
+  return {
+    sourceAgreement,
+    priorArtDistance,
+    contradictionResolved,
+    evidenceDepth,
+    conceptBridgeStrength,
+  };
+}
+
+// ===== TIER 1: IDEA REFINEMENT =====
+
+const REFINEMENT_PROMPT = `You are refining a novel idea that has too much similarity to existing work.
+
+**Original Idea:**
+{ORIGINAL_IDEA}
+
+**Prior Art to AVOID (these existing works are too similar):**
+{PRIOR_ART}
+
+**Your task:** Generate a refined version of this idea that:
+1. Maintains the core insight and bridged concepts
+2. Takes a DIFFERENT angle that avoids overlap with the prior art
+3. Finds a unique value proposition not covered by existing work
+
+Format as JSON:
+{
+  "thesis": "refined thesis (one sentence)",
+  "description": "refined description (2-3 paragraphs)",
+  "bridgedConcepts": ["concept1", "concept2", ...],
+  "differentiator": "What makes this version unique?"
+}`;
+
+export async function refineNovelIdea(
+  originalIdea: NovelIdea,
+  priorArtToAvoid: PriorArt[],
+  iteration: number,
+  critique?: CriticalAnalysis
+): Promise<NovelIdea> {
+  const model = getClaudeModel();
+
+  const originalText = `Thesis: ${originalIdea.thesis}\n\nDescription: ${originalIdea.description}\n\nBridged Concepts: ${originalIdea.bridgedConcepts.join(", ")}`;
+  
+  const priorArtText = priorArtToAvoid
+    .map(p => `- ${p.title} (${Math.round(p.similarity * 100)}% similar): ${p.differentiator}`)
+    .join("\n");
+
+  let prompt = REFINEMENT_PROMPT
+    .replace("{ORIGINAL_IDEA}", originalText)
+    .replace("{PRIOR_ART}", priorArtText);
+
+  if (critique) {
+    const critiqueText = `CRITIQUE TO ADDRESS:\n- Validity Score: ${critique.validityScore}/100\n- Flaws: ${critique.critique}\n- Biases: ${critique.biasDetected.join(", ")}`;
+    prompt += `\n\n${critiqueText}\n\nIMPORTANT: Address the critique points in your refinement.`;
+  }
+
+  const result = await model.generateContent(prompt);
+  const responseText = result.response.text();
+
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to refine idea: Invalid response format");
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]);
+
+  return {
+    id: `idea-${Date.now()}-refined-${iteration}`,
+    thesis: parsed.thesis,
+    description: parsed.description,
+    bridgedConcepts: parsed.bridgedConcepts,
+    confidence: originalIdea.confidence, // Will be recalculated with calibration
+    noveltyAssessment: `Refined (iteration ${iteration}): ${parsed.differentiator}`,
+    refinementIteration: iteration,
+    refinedFrom: originalIdea.id,
+  };
+}
+
+// ===== STRUCTURED APPROACH GENERATION =====
+
+const STRUCTURED_APPROACH_PROMPT = `Based on the following novel idea, generate a detailed, actionable implementation plan.
+
+**Novel Idea:**
+{IDEA}
+
+Create a structured approach with:
+1. Title: A compelling name for this approach
+2. Problem Statement: What problem does this solve?
+3. Proposed Solution: High-level solution description
+4. Key Steps: 5-10 actionable steps to implement this
+5. Risks: What could go wrong? How to mitigate?
+6. Success Metrics: How do we know this worked?
+
+Format as JSON:
+{
+  "title": "string",
+  "problemStatement": "string",
+  "proposedSolution": "string",
+  "keySteps": [
+    {"order": 1, "title": "string", "description": "string", "dependencies": ["step title" or empty array]}
+  ],
+  "risks": [
+    {"description": "string", "severity": "low|medium|high", "mitigation": "string"}
+  ],
+  "successMetrics": ["string", ...]
+}`;
+
+export async function generateStructuredApproach(
+  idea: NovelIdea
+): Promise<StructuredApproach> {
+  const model = getClaudeModel();
+
+  const ideaText = `**Thesis:** ${idea.thesis}\n\n**Description:** ${idea.description}\n\n**Bridged Concepts:** ${idea.bridgedConcepts.join(", ")}`;
+
+  const prompt = STRUCTURED_APPROACH_PROMPT.replace("{IDEA}", ideaText);
+  const result = await model.generateContent(prompt);
+  const responseText = result.response.text();
+
+  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to generate structured approach: Invalid response format");
+  }
+
+  return JSON.parse(jsonMatch[0]);
+}
+
+// ===== FULL SYNTHESIS PIPELINE =====
+
+export interface SynthesisResult {
+  sources: { name: string; concepts: ExtractedConcepts }[];
+  contradictions: Contradiction[];
+  novelIdeas: NovelIdea[];
+  selectedIdea?: NovelIdea;
+  structuredApproach?: StructuredApproach;
+  // Tier 1: Pipeline metadata
+  metadata?: {
+    refinementIterations: number;
+    calibrationApplied: boolean;
+  };
+}
+
+/**
+ * Enhanced synthesis pipeline with Tier 1 improvements:
+ * - Self-correction loop (evaluate-and-refine)
+ * - Calibrated confidence
+ */
+export async function runSynthesisPipeline(
+  pdfResults: PDFExtractionResult[]
+): Promise<SynthesisResult> {
+  // Step 1: Extract concepts from each source
+  const sourcesWithConcepts = await Promise.all(
+    pdfResults.map(async (pdf) => ({
+      name: pdf.fileName,
+      concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName), // Limit for API
+    }))
+  );
+
+  // Step 2: Detect contradictions
+  const contradictions = await detectContradictions(
+    sourcesWithConcepts.map((s) => ({
+      name: s.name,
+      thesis: s.concepts.mainThesis,
+      arguments: s.concepts.keyArguments,
+    }))
+  );
+
+  // Step 3: Generate novel ideas
+  const novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+
+  // Step 4: Generate structured approach for top idea (if any)
+  let structuredApproach: StructuredApproach | undefined;
+  if (novelIdeas.length > 0) {
+    // Select the idea with highest confidence
+    const topIdea = novelIdeas.reduce((prev, curr) =>
+      curr.confidence > prev.confidence ? curr : prev
+    );
+    structuredApproach = await generateStructuredApproach(topIdea);
+  }
+
+  return {
+    sources: sourcesWithConcepts,
+    contradictions,
+    novelIdeas,
+    selectedIdea: novelIdeas[0],
+    structuredApproach,
+    metadata: {
+      refinementIterations: 0,
+      calibrationApplied: false,
+    },
+  };
+}
+
+/**
+ * Enhanced pipeline with full Tier 1 capabilities
+ * Includes evaluate-and-refine loop with prior art checking
+ */
+export interface EnhancedSynthesisConfig {
+  maxRefinementIterations?: number;
+  noveltyThreshold?: number; // 0-1, below this triggers refinement
+  priorArtSearchFn?: (thesis: string, description: string) => Promise<PriorArt[]>;
+}
+
+export async function runEnhancedSynthesisPipeline(
+  pdfResults: PDFExtractionResult[],
+  config: EnhancedSynthesisConfig = {}
+): Promise<SynthesisResult> {
+  const {
+    maxRefinementIterations = 3,
+    noveltyThreshold = 0.30,
+  } = config;
+
+  // Step 1: Extract concepts from each source
+  const sourcesWithConcepts = await Promise.all(
+    pdfResults.map(async (pdf) => ({
+      name: pdf.fileName,
+      concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName),
+    }))
+  );
+
+  // Step 2: Detect contradictions
+  const contradictions = await detectContradictions(
+    sourcesWithConcepts.map((s) => ({
+      name: s.name,
+      thesis: s.concepts.mainThesis,
+      arguments: s.concepts.keyArguments,
+    }))
+  );
+
+  // Step 3: Generate novel ideas
+  let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+  let totalRefinements = 0;
+
+  // Step 4: TIER 1 - Evaluate and refine loop (requires priorArtSearchFn to be passed)
+  if (config.priorArtSearchFn) {
+    for (let i = 0; i < novelIdeas.length; i++) {
+      let idea = novelIdeas[i];
+      let iteration = 0;
+
+      while (iteration < maxRefinementIterations) {
+        // Search prior art for this idea
+        const priorArt = await config.priorArtSearchFn(idea.thesis, idea.description);
+        
+        // Estimate confidence factors with prior art data
+        const factors = estimateConfidenceFactors(
+          sourcesWithConcepts,
+          contradictions,
+          idea,
+          priorArt
+        );
+
+        // Calculate calibrated confidence
+        const { score, explanation } = calculateCalibratedConfidence(factors);
+        
+        // Update idea with calibrated confidence
+        idea = {
+          ...idea,
+          confidence: score,
+          confidenceFactors: factors,
+          confidenceExplanation: explanation,
+        };
+
+        // Check if refinement needed (prior art too similar)
+        const maxSimilarity = priorArt.length > 0 
+          ? Math.max(...priorArt.map(p => p.similarity)) 
+          : 0;
+
+        if (maxSimilarity > (1 - noveltyThreshold)) {
+          // Too similar to prior art - refine
+          const similarArt = priorArt.filter(p => p.similarity > 0.5);
+          
+          try {
+            idea = await refineNovelIdea(idea, similarArt, iteration + 1);
+            totalRefinements++;
+            iteration++;
+          } catch {
+            // Refinement failed, keep current idea
+            break;
+          }
+        } else {
+          // Novel enough, exit loop
+          break;
+        }
+      }
+
+      novelIdeas[i] = idea;
+    }
+  } else {
+    // No prior art search provided - just apply calibration with empty prior art
+    novelIdeas = novelIdeas.map((idea) => {
+      const factors = estimateConfidenceFactors(
+        sourcesWithConcepts,
+        contradictions,
+        idea,
+        [] // No prior art data
+      );
+      const { score, explanation } = calculateCalibratedConfidence(factors);
+      
+      return {
+        ...idea,
+        confidence: score,
+        confidenceFactors: factors,
+        confidenceExplanation: explanation,
+      };
+    });
+  }
+
+
+  // Step 5: TIER 2 - Rigorous Hypothesis Generation (Scientific Method)
+  const hypothesisGenerator = new HypothesisGenerator();
+  
+  // Enhance all ideas with formal hypotheses
+  novelIdeas = await Promise.all(
+    novelIdeas.map(async (idea) => {
+      // Logic: Only apply deep hypothesis generation to high-potential ideas to save latency
+      // For now, we apply to all for maximum rigor as per "K-Dense" principles
+      let deepHypothesis = await hypothesisGenerator.generate(idea);
+      let refinedIdea = { ...idea, structuredHypothesis: deepHypothesis };
+
+      // ADVERSARIAL CRITIQUE LOOP (Target 90+ Score)
+      let critique = await evaluateCriticalThinking(refinedIdea);
+      let attempts = 0;
+      
+      while (critique.validityScore < 90 && attempts < 2) {
+        // Self-Correction: Refine based on critique
+        refinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
+        // Re-generate hypothesis for the refined idea
+        deepHypothesis = await hypothesisGenerator.generate(refinedIdea);
+        refinedIdea.structuredHypothesis = deepHypothesis;
+        // Re-evaluate
+        critique = await evaluateCriticalThinking(refinedIdea);
+        attempts++;
+      }
+      
+      // Attach final critique
+      refinedIdea.criticalAnalysis = critique;
+      
+      return refinedIdea;
+    })
+  );
+
+  // Step 6: Generate structured approach for top idea
+  let structuredApproach: StructuredApproach | undefined;
+  if (novelIdeas.length > 0) {
+    const topIdea = novelIdeas.reduce((prev, curr) =>
+      curr.confidence > prev.confidence ? curr : prev
+    );
+    structuredApproach = await generateStructuredApproach(topIdea);
+  }
+
+  return {
+    sources: sourcesWithConcepts,
+    contradictions,
+    novelIdeas,
+    selectedIdea: novelIdeas[0],
+    structuredApproach,
+    metadata: {
+      refinementIterations: totalRefinements,
+      calibrationApplied: true,
+    },
+  };
+}
