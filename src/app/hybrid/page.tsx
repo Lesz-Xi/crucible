@@ -37,6 +37,7 @@ import {
   Crown
 } from "lucide-react";
 import { downloadMarkdown, SynthesisExportData } from "@/lib/services/markdown-export-service";
+import { StreamEvent } from "@/lib/streaming-event-emitter";
 import { AccessKeyGate } from "@/components/access-key-gate";
 
 interface SynthesisSource {
