@@ -39,13 +39,22 @@ export default function Home() {
               A <strong className="font-semibold text-orange-500">Sovereign Synthesis Engine</strong> orchestrating a multi-stage pipeline of Concept Extraction, Contradiction Detection, and Calibrated Novelty Loops. We bridge disconnected epistemic domains to generate genuinely novel insights.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-              <div className="w-full sm:w-auto">
-                <TacticalButton href="/hybrid" className="px-10">
-                  Epistemic Synthesis
-                </TacticalButton>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+                <div className="w-full sm:w-auto">
+                  <TacticalButton href="/hybrid" className="px-10">
+                    Epistemic Synthesis
+                  </TacticalButton>
+                </div>
+                <div className="w-full sm:w-auto">
+                  <a 
+                    href="/whitepaper.html" 
+                    target="_blank"
+                    className="inline-flex items-center justify-center w-full px-10 py-4 text-sm font-bold text-neutral-400 border border-neutral-800 rounded-xl hover:text-white hover:border-neutral-600 transition-colors uppercase tracking-widest bg-black/50 backdrop-blur-sm"
+                  >
+                    Read Whitepaper
+                  </a>
+                </div>
               </div>
-            </div>
           </div>
         </div>
       </header>
