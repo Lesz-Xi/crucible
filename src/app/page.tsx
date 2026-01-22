@@ -47,7 +47,7 @@ export default function Home() {
                 </div>
                 <div className="w-full sm:w-auto">
                   <a 
-                    href="/whitepaper.html" 
+                    href="/wp.html" 
                     target="_blank"
                     className="inline-flex items-center justify-center w-full px-10 py-4 text-sm font-bold text-neutral-400 border border-neutral-800 rounded-xl hover:text-white hover:border-neutral-600 transition-colors uppercase tracking-widest bg-black/50 backdrop-blur-sm"
                   >
