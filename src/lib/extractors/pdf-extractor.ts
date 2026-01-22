@@ -1,11 +1,14 @@
 
 // PDF Extraction Pipeline
 // Handles PDF upload, text extraction, chunking, and embedding generation
+// Using unpdf (serverless-optimized PDF.js) for Next.js API routes
 
-import "./polyfill"; // MUST be first to polyfill DOMMatrix for pdf-parse
+import "./polyfill"; // MUST be first to polyfill DOMMatrix
 import { generateEmbedding } from "@/lib/ai/gemini";
 import { ExtractedConcepts, Source } from "@/types";
-// Removed unused PDFParse import
+
+// Import unpdf for serverless PDF text extraction (Replaces pdf2json for better Edge compatibility)
+import { extractText, getDocumentProxy } from "unpdf";
 
 // Semantic chunking configuration
 const CHUNK_SIZE = 1500; // characters
@@ -24,61 +27,55 @@ export interface PDFExtractionResult {
   fullText: string;
   chunks: PDFChunk[];
   extractedConcepts?: ExtractedConcepts;
+  sourceType?: 'pdf' | 'company';
 }
 
 /**
- * Extract text from PDF buffer using pdf-parse
+ * Extract text from PDF buffer using unpdf (serverless-optimized)
+ * Works correctly in Next.js API routes without native dependencies
  */
-/**
- * Extract text from PDF buffer using pdf2json (Pure Node.js)
- */
-import fs from "fs";
-import path from "path";
-import PDFParser from "pdf2json";
+
+// PDF processing timeout (90 seconds for large PDFs)
+const PDF_PARSE_TIMEOUT_MS = 90000;
 
 export async function extractTextFromPDF(
   buffer: ArrayBuffer,
   fileName: string
 ): Promise<Pick<PDFExtractionResult, "fileName" | "totalPages" | "fullText">> {
-  return new Promise((resolve, reject) => {
-    const pdfParser = new PDFParser(null, 1); // 1 = text only
+  return new Promise(async (resolve, reject) => {
+    // Timeout protection
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`PDF parsing timeout after ${PDF_PARSE_TIMEOUT_MS / 1000}s for ${fileName}`));
+    }, PDF_PARSE_TIMEOUT_MS);
 
-    pdfParser.on("pdfParser_dataError", (errData: any) => {
-      reject(new Error(errData.parserError));
-    });
-
-    pdfParser.on("pdfParser_dataReady", (pdfData: any) => {
-      // Extract raw text from the parsed JSON data
-      // pdf2json returns URL-encoded text, needs decoding
-      let fullText = "";
+    try {
+      // Copy the buffer data once to avoid detachment issues
+      // ArrayBuffer gets detached after first use in some contexts
+      const bufferCopy = new Uint8Array(buffer).slice();
       
-      try {
-        // According to pdf2json docs, the raw text content is in pdfData.formImage.Pages
-        // BUT when using mode 1 (text only), it gives a txt format in .getRawTextContent()
-        // However, the event gives us the JSON structure.
-        // Let's rely on the built-in text content extraction
-        fullText = pdfParser.getRawTextContent();
-      } catch (e) {
-        // Fallback or if getRawTextContent isn't available on the instance in this context
-        // Try accessing the page texts manually
-        if (pdfData && pdfData.formImage && pdfData.formImage.Pages) {
-          fullText = pdfData.formImage.Pages.map((page: any) => {
-            return page.Texts.map((txt: any) => decodeURIComponent(txt.R[0].T)).join(" ");
-          }).join("\n\n");
-        }
-      }
-
+      // Get document proxy to access page count
+      const pdf = await getDocumentProxy(bufferCopy);
+      const totalPages = pdf.numPages;
+      
+      // Extract text from the PDF (create fresh copy for this call)
+      const bufferCopy2 = new Uint8Array(buffer).slice();
+      const { text } = await extractText(bufferCopy2, { mergePages: true });
+      
+      clearTimeout(timeoutId);
+      
       resolve({
         fileName,
-        totalPages: pdfData?.formImage?.Pages?.length || 0,
-        fullText: fullText.trim(),
+        totalPages,
+        fullText: (text || "").trim(),
       });
-    });
-
-    // Parse the buffer
-    pdfParser.parseBuffer(Buffer.from(buffer));
+      
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(error);
+    }
   });
 }
+
 
 
 
