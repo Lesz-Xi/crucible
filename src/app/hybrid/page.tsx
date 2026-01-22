@@ -840,5 +840,6 @@ export default function HybridSynthesisPage() {
         )}
       </main>
     </div>
-  );
+  </AccessKeyGate>
+);
 }
