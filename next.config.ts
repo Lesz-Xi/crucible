@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Using --no-turbo flag in dev script instead
 };
 
 export default nextConfig;

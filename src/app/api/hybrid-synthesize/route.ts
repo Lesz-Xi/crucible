@@ -1,31 +1,23 @@
-// Hybrid Synthesis API Route - Combines PDFs + Companies
-// Tier 1: Integrated calibrated confidence
+
 import { NextRequest, NextResponse } from "next/server";
 import { processMultiplePDFs } from "@/lib/extractors/pdf-extractor";
 import { processMultipleCompanies } from "@/lib/extractors/company-extractor";
-import {
-  extractConcepts,
-  detectContradictions,
-  generateNovelIdeas,
-  generateStructuredApproach,
-  estimateConfidenceFactors,
-  calculateCalibratedConfidence,
-  refineNovelIdea,
+import { 
+  runEnhancedSynthesisPipeline 
 } from "@/lib/ai/synthesis-engine";
-import {
-  searchPriorArt,
-  calculateNoveltyScore,
-  generateNoveltyAssessment,
-} from "@/lib/ai/novelty-evaluator";
-import { ExtractedConcepts, NovelIdea } from "@/types";
+import { SynthesisResult } from "@/types";
+import { searchPriorArt } from "@/lib/ai/novelty-evaluator";
+import { PersistenceService } from "@/lib/db/persistence-service";
+import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
+import { StreamingEventEmitter } from "@/lib/streaming-event-emitter";
+import { validateProtocol } from "@/lib/services/protocol-validator";
 
-export const maxDuration = 120; // Extended time for hybrid processing
+// Synthesis limits configuration
+const MAX_PDF_FILES = 6;
+const MAX_COMPANIES = 5;
+const MAX_IDEAS_FOR_COMPANY_ANALYSIS = 2;
 
-interface UnifiedSource {
-  name: string;
-  type: "pdf" | "company";
-  concepts: ExtractedConcepts;
-}
+export const maxDuration = 300; // Extended time to 5 minutes
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,6 +29,10 @@ export async function POST(request: NextRequest) {
     // Get company names (JSON array)
     const companiesJson = formData.get("companies") as string | null;
     const companies: string[] = companiesJson ? JSON.parse(companiesJson) : [];
+    const researchFocus = formData.get("researchFocus") as string || "";
+    // Default to Parallel Enabled (3 concurrent) for speed unless explicitly disabled
+    const enableParallel = formData.get("enableParallelRefinement") !== "false"; 
+    const concurrency = parseInt(formData.get("parallelConcurrency") as string) || 3;
 
     const totalSources = files.length + companies.length;
 
@@ -47,202 +43,97 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (totalSources > 12) {
-      return NextResponse.json(
-        { error: "Maximum 12 sources allowed (combined PDFs + companies)" },
-        { status: 400 }
-      );
-    }
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        const emitter = new StreamingEventEmitter(controller);
+        
+        try {
+          emitter.emit({ event: 'ingestion_start', files: files.length });
 
-    const unifiedSources: UnifiedSource[] = [];
-
-    // Process PDFs
-    const pdfErrors: { name: string; error: string }[] = [];
-    if (files.length > 0) {
-      const pdfBuffers = await Promise.all(
-        files.map(async (file) => ({
-          buffer: await file.arrayBuffer(),
-          name: file.name,
-        }))
-      );
-
-      const { successful, failed } = await processMultiplePDFs(pdfBuffers);
-      pdfErrors.push(...failed);
-
-      // Extract concepts from each PDF
-      for (const pdf of successful) {
-        const concepts = await extractConcepts(
-          pdf.fullText.slice(0, 50000),
-          pdf.fileName
-        );
-        unifiedSources.push({
-          name: pdf.fileName,
-          type: "pdf",
-          concepts,
-        });
-      }
-    }
-
-    // Process Companies
-    const companyErrors: { name: string; error: string }[] = [];
-    if (companies.length > 0) {
-      const { successful, failed } = await processMultipleCompanies(companies);
-      companyErrors.push(...failed);
-
-      for (const company of successful) {
-        if (company.extractedConcepts) {
-          unifiedSources.push({
-            name: company.companyName,
-            type: "company",
-            concepts: company.extractedConcepts,
-          });
-        }
-      }
-    }
-
-    if (unifiedSources.length === 0) {
-      return NextResponse.json(
-        { 
-          error: "Processing failed for all sources.",
-          details: {
-            pdfErrors,
-            companyErrors
+          // Step 1: Process PDFs to text
+          const pdfResults: PDFExtractionResult[] = [];
+          
+          for (const file of files) {
+            const buffer = await file.arrayBuffer();
+            // We'll process one by one to stream updates if needed, 
+            // but for now keeping batch process for efficiency unless we split it
+            // Actually, let's process them to emit events
+            const { successful } = await processMultiplePDFs([{ buffer, name: file.name }]);
+            if (successful.length > 0) {
+              pdfResults.push(successful[0]);
+              emitter.emit({ event: 'pdf_processed', filename: file.name });
+            } else {
+              emitter.emit({ event: 'pdf_error', filename: file.name, error: "Extraction failed" });
+            }
           }
-        },
-        { status: 422 }
-      );
-    }
 
-    // Detect contradictions across all sources
-    const contradictions = await detectContradictions(
-      unifiedSources.map((s) => ({
-        name: s.name,
-        thesis: s.concepts.mainThesis,
-        arguments: s.concepts.keyArguments,
-      }))
-    );
+          // Step 2: Process Companies
+          const companyResults: PDFExtractionResult[] = [];
+          if (companies.length > 0) {
+            const { successful } = await processMultipleCompanies(companies);
+            for (const company of successful) {
+              companyResults.push({
+                fileName: company.companyName,
+                fullText: JSON.stringify(company.extractedConcepts),
+                totalPages: 0,
+                chunks: [],
+                sourceType: 'company'
+              } as PDFExtractionResult);
+              emitter.emit({ event: 'pdf_processed', filename: `Company: ${company.companyName}` });
+            }
+          }
 
-    // Generate novel ideas from unified sources
-    let novelIdeas = await generateNovelIdeas(
-      unifiedSources.map((s) => ({
-        name: s.name,
-        concepts: s.concepts,
-      })),
-      contradictions
-    );
+          // Step 3: Run Pipeline with Emitter
+          const combinedSources = [...pdfResults, ...companyResults];
+          const persistence = new PersistenceService();
 
-    // TIER 1: Evaluate and refine loop with calibration
-    const MAX_REFINEMENT_ITERATIONS = 3;
-    const NOVELTY_THRESHOLD = 0.30;
-    let totalRefinements = 0;
+          const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, {
+            maxRefinementIterations: 2,
+            maxNovelIdeas: companies.length > 0 ? MAX_IDEAS_FOR_COMPANY_ANALYSIS : undefined,
+            priorArtSearchFn: searchPriorArt,
+            priorRejectionCheckFn: (t, m) => persistence.checkRejection(t, m),
+            validateProtocolFn: validateProtocol,
+            eventEmitter: emitter,
+            researchFocus: researchFocus || undefined,
+            enableParallelRefinement: enableParallel,
+            parallelConcurrency: concurrency
+          });
 
-    const ideasWithNovelty = await Promise.all(
-      novelIdeas.map(async (idea) => {
-        let currentIdea = idea;
-        let iteration = 0;
-
-        while (iteration < MAX_REFINEMENT_ITERATIONS) {
-          // Search prior art
-          const priorArt = await searchPriorArt(currentIdea.thesis, currentIdea.description);
-          const noveltyScore = calculateNoveltyScore(priorArt);
-          const noveltyAssessment = generateNoveltyAssessment(priorArt, noveltyScore);
-
-          // Calculate calibrated confidence with Tier 1 factors
-          const factors = estimateConfidenceFactors(
-            unifiedSources.map((s) => ({ name: s.name, concepts: s.concepts })),
-            contradictions,
-            currentIdea,
-            priorArt
-          );
-          const { score: calibratedConfidence, explanation: confidenceExplanation } = calculateCalibratedConfidence(factors);
-
-          // Update idea with calibration
-          currentIdea = {
-            ...currentIdea,
-            confidence: calibratedConfidence,
-            confidenceFactors: factors,
-            confidenceExplanation,
-            noveltyAssessment,
+          // Step 4: Persist
+          const saveStatus = await persistence.saveSynthesis(result);
+          
+          const finalResult = {
+            ...result,
+            runId: saveStatus?.runId
           };
 
-          // Check if refinement needed
-          const maxSimilarity = priorArt.length > 0 
-            ? Math.max(...priorArt.map(p => p.similarity)) 
-            : 0;
+          emitter.emit({ 
+            event: 'complete', 
+            synthesis: finalResult 
+          });
 
-          if (maxSimilarity > (1 - NOVELTY_THRESHOLD) && iteration < MAX_REFINEMENT_ITERATIONS - 1) {
-            // Too similar - attempt refinement
-            const similarArt = priorArt.filter(p => p.similarity > 0.5);
-            try {
-              currentIdea = await refineNovelIdea(currentIdea, similarArt, iteration + 1);
-              totalRefinements++;
-              iteration++;
-            } catch {
-              // Refinement failed, return current with prior art
-              return {
-                ...currentIdea,
-                priorArt,
-                noveltyScore,
-              };
-            }
-          } else {
-            // Novel enough or max iterations reached
-            return {
-              ...currentIdea,
-              priorArt,
-              noveltyScore,
-            };
-          }
+        } catch (error) {
+          console.error("Streaming synthesis error:", error);
+          emitter.emit({ event: 'error', message: error instanceof Error ? error.message : "Synthesis failed" });
+        } finally {
+          emitter.close();
         }
+      }
+    });
 
-        // Return after max iterations
-        const finalPriorArt = await searchPriorArt(currentIdea.thesis, currentIdea.description);
-        return {
-          ...currentIdea,
-          priorArt: finalPriorArt,
-          noveltyScore: calculateNoveltyScore(finalPriorArt),
-        };
-      })
-    );
-
-    // Generate structured approach for top idea (use calibrated confidence)
-    let structuredApproach;
-    if (ideasWithNovelty.length > 0) {
-      const topIdea = ideasWithNovelty.reduce((prev, curr) =>
-        curr.confidence > prev.confidence ? curr : prev
-      );
-      structuredApproach = await generateStructuredApproach(topIdea);
-    }
-
-    return NextResponse.json({
-      success: true,
-      synthesis: {
-        sources: unifiedSources.map((s) => ({
-          name: s.name,
-          type: s.type,
-          mainThesis: s.concepts.mainThesis,
-          keyArguments: s.concepts.keyArguments,
-          entities: s.concepts.entities,
-        })),
-        contradictions,
-        novelIdeas: ideasWithNovelty,
-        structuredApproach,
-        metadata: {
-          pdfCount: files.length,
-          companyCount: companies.length,
-          totalSources,
-          // Tier 1 metadata
-          refinementIterations: totalRefinements,
-          calibrationApplied: true,
-        },
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     });
+
   } catch (error) {
-    console.error("Hybrid synthesis error:", error);
+    console.error("Route handler error:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Hybrid synthesis failed",
-      },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }

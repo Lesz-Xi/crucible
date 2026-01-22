@@ -1,10 +1,15 @@
 // Synthesis Engine - Core Module
 // Implements Hong-inspired architecture for generating novel ideas from multiple sources
 // Tier 1: Added self-correction loop and calibrated confidence
+// Stage 2: Claude-centric Sovereign Mastermind Integration
 
 import { getClaudeModel } from "@/lib/ai/anthropic";
 import { HypothesisGenerator } from "@/lib/ai/hypothesis-generator";
-import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
+import { MasaAuditor } from "./masa-auditor";
+import { ExperimentGenerator } from "./experiment-generator";
+import { cleanJson, safeParseJson } from "./ai-utils";
+import {
+PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
 import {
   NovelIdea,
   StructuredApproach,
@@ -14,8 +19,18 @@ import {
   ConfidenceFactors,
   PriorArt,
   CriticalAnalysis,
+  SynthesisResult,
+  HypothesisNode
 } from "@/types";
 import { evaluateCriticalThinking } from "./novelty-evaluator";
+import { StreamingEventEmitter, AgentPersona } from "@/lib/streaming-event-emitter";
+import { checkEquivalenceClasses, PatternEquivalenceClass } from "@/lib/services/embedding-service";
+import { runHongRecombination } from "./hong-recombination";
+import { Semaphore } from "./concurrency-semaphore";
+import { ThermodynamicBasisExpansion } from "./thermodynamic-basis";
+
+
+
 
 // ===== CONCEPT EXTRACTION =====
 
@@ -55,27 +70,21 @@ export async function extractConcepts(
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
-  // Parse JSON from response (handle markdown code blocks)
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error("Failed to extract concepts: Invalid response format");
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]);
+  const parsed = safeParseJson<any>(responseText, {});
 
   // Add sourceId to each entity
-  const entities: Entity[] = parsed.entities.map((e: Omit<Entity, 'sourceId'>) => ({
+  const entities: Entity[] = (parsed.entities || []).map((e: any) => ({
     ...e,
     sourceId,
   }));
 
   return {
-    mainThesis: parsed.mainThesis,
-    keyArguments: parsed.keyArguments,
+    mainThesis: parsed.mainThesis || "No explicit thesis identified",
+    keyArguments: parsed.keyArguments || [],
     entities,
-    methodology: parsed.methodology,
-    evidenceQuality: parsed.evidenceQuality,
-    researchGaps: parsed.researchGaps,
+    methodology: parsed.methodology || "Unspecified",
+    evidenceQuality: parsed.evidenceQuality || "moderate",
+    researchGaps: parsed.researchGaps || [],
   };
 }
 
@@ -124,22 +133,13 @@ export async function detectContradictions(
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    return [];
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]);
+  const parsed = safeParseJson<any>(responseText, { contradictions: [] });
   return parsed.contradictions || [];
 }
 
 // ===== NOVEL IDEA GENERATION (Hong-Inspired) =====
 
-// ===== NOVEL IDEA GENERATION (Hong-Inspired) =====
-
-const HYPOTHESIS_GENERATION_PROMPT = `You are the Sovereign Synthesis Engine, using the Scientific Method to generate novel inventions.
-
-Your task: Formulate 3-5 distinct scientific hypotheses (inventions) based on the provided evidence.
+const HYPOTHESIS_GENERATION_PROMPT = `You are the Sovereign Synthesis Engine. Generate 3-5 distinct, competing scientific hypotheses (inventions) that resolve the identified contradictions.
 
 **Evidence (Observations):**
 {SOURCES}
@@ -147,30 +147,41 @@ Your task: Formulate 3-5 distinct scientific hypotheses (inventions) based on th
 **Identified Tensions (Contradictions):**
 {CONTRADICTIONS}
 
-**Methodology:**
-1. **Observation**: Synthesize the key facts and "Research Gaps" from the sources.
-2. **Hypothesis**: Propose a NOVEL entity or mechanism that bridges these gaps.
-3. **Mechanism**: Explain the causal chain—HOW does this bridge the gap?
-4. **Prediction**: Deduce a testable prediction—what would we observe if this were true?
+**Scientific Constraints:**
+1. **Explanatory Power**: Prioritize deep mechanistic explanations over predictions.
+2. **Hard to Vary**: Theories must be specific and interconnected. 
+3. **Be Concise**: Each description must be UNDER 200 words. Each mechanism must be UNDER 150 words.
+4. **Evidence Mapping**: Cite specific "Evidence Snippets" (e.g., "From Source A: [text]"). Keep snippets brief.
+
+**LANGUAGE STYLE (IMPORTANT):**
+- **thesis** and **description**: Write in clear, accessible prose suitable for a general educated audience. Avoid jargon and mathematical notation unless absolutely essential. If you reference a technical concept, briefly explain it.
+- **mechanism**: You may use more precise scientific terminology here, but ensure any formulas or notation are accompanied by a plain-English explanation.
+- **prediction** and **crucialExperiment**: Write clearly so anyone can understand what would prove or disprove the idea.
+
+**IMPORTANT: Your response must be EXCLUSIVELY a JSON object. No preamble.**
 
 Format as JSON:
 {
   "novelIdeas": [
     {
-      "thesis": "One-sentence hypothesis statement",
-      "description": "Detailed explanation of the invention/idea",
-      "mechanism": "Step-by-step verified mechanism (How it works)",
-      "prediction": "Specific, falsifiable prediction (If X, then Y)",
-      "bridgedConcepts": ["concept from Source A", "concept from Source B", ...],
-      "confidence": number, // 0-100 based on evidence strength
-      "noveltyAssessment": "Why is this new? Does it exist in prior art?"
+      "thesis": "One-sentence hypothesis statement (clear, non-technical)",
+      "description": "Concise, accessible explanation of the invention/idea",
+      "mechanism": "Step-by-step causal mechanism (can be technical, but explain notation)",
+      "explanationDepth": number, // 0-100 score
+      "evidenceSnippets": ["string from source A", ...],
+      "prediction": "Specific, falsifiable prediction (plain language)",
+      "crucialExperiment": "The ONE experiment to disprove this (accessible)",
+      "bridgedConcepts": ["concept from Source A", ...],
+      "confidence": number, // 0-100
+      "noveltyAssessment": "Why is this new?"
     }
   ]
 }`;
 
 export async function generateNovelIdeas(
   sources: { name: string; concepts: ExtractedConcepts }[],
-  contradictions: Contradiction[]
+  contradictions: Contradiction[],
+  researchFocus?: string
 ): Promise<NovelIdea[]> {
   const model = getClaudeModel();
 
@@ -188,57 +199,121 @@ export async function generateNovelIdeas(
           .join("\n")
       : "No significant contradictions detected.";
 
+  // Inject user research focus if provided
+  const focusContext = researchFocus 
+    ? `\n\n**USER RESEARCH FOCUS:** ${researchFocus}\nPrioritize generating ideas that align with this research direction. Weight contradictions and synthesis opportunities toward this focus.\n`
+    : "";
+
   const prompt = HYPOTHESIS_GENERATION_PROMPT
     .replace("{SOURCES}", sourcesText)
-    .replace("{CONTRADICTIONS}", contradictionsText);
+    .replace("{CONTRADICTIONS}", contradictionsText + focusContext);
 
-  const result = await model.generateContent(prompt);
-  const responseText = result.response.text();
-
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error("Failed to generate novel ideas: Invalid response format");
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]);
-
-  // Add unique IDs to each idea
-  return parsed.novelIdeas.map((idea: Omit<NovelIdea, 'id'>, index: number) => ({
-    ...idea,
-    id: `idea-${Date.now()}-${index}`,
-    // Ensure new fields are present (defaulting if LLM misses them)
-    mechanism: (idea as any).mechanism || "Mechanism inferred from description",
-    prediction: (idea as any).prediction || "No specific prediction generated",
-  }));
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+  
+    const parsed = safeParseJson<{ novelIdeas: any[] }>(responseText, { novelIdeas: [] });
+    const uniqueIdeas = Array.isArray(parsed.novelIdeas) ? parsed.novelIdeas : [];
+      
+    return uniqueIdeas.map((idea: any, index: number) => ({
+      ...idea,
+      id: `idea-${Date.now()}-${index}`,
+      mechanism: idea.mechanism || "Mechanism inferred from description",
+      prediction: idea.prediction || "No specific prediction generated",
+      explanationDepth: idea.explanationDepth || 50,
+      evidenceSnippets: Array.isArray(idea.evidenceSnippets) ? idea.evidenceSnippets : [],
+      crucialExperiment: idea.crucialExperiment || "Verify through disconfirming research",
+      bridgedConcepts: Array.isArray(idea.bridgedConcepts) ? idea.bridgedConcepts : [],
+    }));
 }
 
 // ===== TIER 1: CALIBRATED CONFIDENCE =====
+// Hong Nekrasov-Okounkov: Log-concave confidence calibration
+// Ensures quality distributions have unimodal concentration
 
 /**
- * Calculate confidence based on measurable factors, not LLM intuition
+ * Check if a sorted array of values exhibits log-concavity.
+ * Log-concave: a[i]² ≥ a[i-1] × a[i+1] for all middle elements
  */
+function checkLogConcavity(values: number[]): { isLogConcave: boolean; peakIndex: number } {
+  if (values.length < 3) return { isLogConcave: true, peakIndex: 0 };
+  
+  const sorted = [...values].sort((a, b) => a - b);
+  let violations = 0;
+  let peakIndex = 0;
+  let maxValue = 0;
+  
+  for (let i = 1; i < sorted.length - 1; i++) {
+    const prev = sorted[i - 1] || 0.001;
+    const curr = sorted[i] || 0.001;
+    const next = sorted[i + 1] || 0.001;
+    
+    // Check log-concavity: curr² ≥ prev × next
+    if (curr * curr < prev * next) {
+      violations++;
+    }
+    
+    if (curr > maxValue) {
+      maxValue = curr;
+      peakIndex = i;
+    }
+  }
+  
+  return { isLogConcave: violations === 0, peakIndex };
+}
+
+/**
+ * Calculate geometric mean of weighted factors.
+ * Geometric mean respects log-concavity better than arithmetic mean.
+ */
+function geometricMean(factors: number[], weights: number[]): number {
+  let logSum = 0;
+  let weightSum = 0;
+  
+  for (let i = 0; i < factors.length; i++) {
+    const f = Math.max(0.01, factors[i]); // Avoid log(0)
+    const w = weights[i];
+    logSum += w * Math.log(f);
+    weightSum += w;
+  }
+  
+  return Math.exp(logSum / weightSum);
+}
+
 export function calculateCalibratedConfidence(
   factors: ConfidenceFactors
-): { score: number; explanation: string } {
-  // Weighted average of factors
+): { score: number; explanation: string; isLogConcave?: boolean } {
   const weights = {
     sourceAgreement: 0.20,
-    priorArtDistance: 0.30, // Higher weight on novelty
+    priorArtDistance: 0.30,
     contradictionResolved: 0.15,
     evidenceDepth: 0.15,
     conceptBridgeStrength: 0.20,
   };
 
-  const score = Math.round(
-    (factors.sourceAgreement * weights.sourceAgreement +
-      factors.priorArtDistance * weights.priorArtDistance +
-      factors.contradictionResolved * weights.contradictionResolved +
-      factors.evidenceDepth * weights.evidenceDepth +
-      factors.conceptBridgeStrength * weights.conceptBridgeStrength) *
-      100
-  );
+  const factorValues = [
+    factors.sourceAgreement,
+    factors.priorArtDistance,
+    factors.contradictionResolved,
+    factors.evidenceDepth,
+    factors.conceptBridgeStrength
+  ];
+  const weightValues = Object.values(weights);
+  
+  // Hong Nekrasov-Okounkov: Use geometric mean for log-concave alignment
+  const geoMean = geometricMean(factorValues, weightValues);
+  
+  // Check log-concavity of factor distribution
+  const { isLogConcave, peakIndex } = checkLogConcavity(factorValues);
+  
+  // Apply log-concavity adjustment:
+  // - Unimodal (log-concave) distributions get a small boost
+  // - Scattered (non-log-concave) distributions get a penalty
+  const logConcaveMultiplier = isLogConcave ? 1.05 : 0.90;
+  
+  // Calculate final score using geometric mean (respects log-concavity)
+  const rawScore = geoMean * logConcaveMultiplier * 100;
+  const score = Math.max(0, Math.min(100, Math.round(rawScore)));
 
-  // Generate explanation based on factors
   const explanationParts: string[] = [];
   
   if (factors.priorArtDistance < 0.3) {
@@ -258,45 +333,47 @@ export function calculateCalibratedConfidence(
   }
   
   if (factors.conceptBridgeStrength < 0.4) {
-    explanationParts.push("⚠️ Weak conceptual connection—may be forced synthesis");
+    explanationParts.push("\u26A0\uFE0F Weak conceptual connection\u2014may be forced synthesis");
+  }
+  
+  // Add log-concavity status to explanation
+  if (isLogConcave) {
+    explanationParts.push("✓ Quality factors show unimodal concentration (Hong-aligned)");
+  } else {
+    explanationParts.push("⚠️ Quality factors are scattered (non-unimodal)");
   }
 
   const explanation = explanationParts.length > 0 
     ? explanationParts.join(". ") + "."
     : "Moderate confidence based on available evidence.";
 
-  return { score, explanation };
+  return { score, explanation, isLogConcave };
 }
 
-/**
- * Estimate confidence factors from synthesis context
- */
 export function estimateConfidenceFactors(
   sources: { name: string; concepts: ExtractedConcepts }[],
   contradictions: Contradiction[],
   idea: NovelIdea,
   priorArt: PriorArt[]
 ): ConfidenceFactors {
-  // Source agreement: How many sources contribute concepts to this idea?
+  // Helper to clamp values to [0, 1] range
+  const clamp = (val: number) => Math.max(0, Math.min(1, val));
+
   const bridgedSources = idea.bridgedConcepts.length;
-  const totalSources = sources.length;
-  const sourceAgreement = Math.min(bridgedSources / totalSources, 1);
+  const totalSources = Math.max(sources.length, 1); // Prevent division by zero
+  const sourceAgreement = clamp(bridgedSources / totalSources);
 
-  // Prior art distance: 1 - max similarity (higher = more novel)
+  // Clamp similarity to [0, 1] before calculating distance
   const maxSimilarity = priorArt.length > 0 
-    ? Math.max(...priorArt.map(p => p.similarity)) 
+    ? clamp(Math.max(...priorArt.map(p => p.similarity || 0))) 
     : 0;
-  const priorArtDistance = 1 - maxSimilarity;
+  const priorArtDistance = clamp(1 - maxSimilarity);
 
-  // Contradiction resolution: Were contradictions addressed?
   const hasContradictions = contradictions.length > 0;
-  const contradictionResolved = hasContradictions ? 0.5 : 0.8; // Conservative if contradictions existed
+  const contradictionResolved = hasContradictions ? 0.5 : 0.8;
 
-  // Evidence depth: Inferred from thesis complexity (proxy metric)
-  const evidenceDepth = Math.min(idea.description.length / 1000, 1);
-
-  // Concept bridge strength: Number of concepts bridged divided by ideal (3-5)
-  const conceptBridgeStrength = Math.min(idea.bridgedConcepts.length / 4, 1);
+  const evidenceDepth = clamp((idea.description?.length || 0) / 1000);
+  const conceptBridgeStrength = clamp(idea.bridgedConcepts.length / 4);
 
   return {
     sourceAgreement,
@@ -309,25 +386,30 @@ export function estimateConfidenceFactors(
 
 // ===== TIER 1: IDEA REFINEMENT =====
 
-const REFINEMENT_PROMPT = `You are refining a novel idea that has too much similarity to existing work.
+const REFINEMENT_PROMPT = `You are refining a scientific hypothesis to increase its "Explanatory Depth" and ensure it is "Hard to Vary".
 
 **Original Idea:**
 {ORIGINAL_IDEA}
 
-**Prior Art to AVOID (these existing works are too similar):**
+**Prior Art/Critique to Address:**
 {PRIOR_ART}
 
 **Your task:** Generate a refined version of this idea that:
-1. Maintains the core insight and bridged concepts
-2. Takes a DIFFERENT angle that avoids overlap with the prior art
-3. Finds a unique value proposition not covered by existing work
+1. **Strengthens the Mechanism**: Move from surface-level description to a deep, causal mechanism.
+2. **Hardens the Theory**: Eliminate "Easy to Vary" elements. Make the theory specific and interconnected with the evidence.
+3. **Improves Evidence Integration**: Explicitly map the hypothesis to "Evidence Snippets".
+4. **Defines a Crucial Test**: Provide a specific, falsifiable experiment that could disprove this theory.
 
 Format as JSON:
 {
   "thesis": "refined thesis (one sentence)",
   "description": "refined description (2-3 paragraphs)",
+  "mechanism": "deep causal mechanism",
+  "explanationDepth": number, // 0-100 score
+  "evidenceSnippets": ["snippet 1", "snippet 2"],
+  "crucialExperiment": "Specific disconfirming test",
   "bridgedConcepts": ["concept1", "concept2", ...],
-  "differentiator": "What makes this version unique?"
+  "differentiator": "What makes this version more 'Hard to Vary'?"
 }`;
 
 export async function refineNovelIdea(
@@ -350,28 +432,55 @@ export async function refineNovelIdea(
 
   if (critique) {
     const critiqueText = `CRITIQUE TO ADDRESS:\n- Validity Score: ${critique.validityScore}/100\n- Flaws: ${critique.critique}\n- Biases: ${critique.biasDetected.join(", ")}`;
-    prompt += `\n\n${critiqueText}\n\nIMPORTANT: Address the critique points in your refinement.`;
+    prompt += `\n\n${critiqueText}`;
+    
+    if (critique.remediationConstraints && critique.remediationConstraints.length > 0) {
+      const constraints = critique.remediationConstraints.map(c => `CONSTRAINT: ${c}`).join("\n");
+      prompt += `\n\n${constraints}\n\nWARNING: You MUST adhere to the above constraints in your refinement. Failure to do so will result in rejection.`;
+    }
+
+    prompt += `\n\nIMPORTANT: Address the critique points in your refinement.`;
   }
 
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
+  /*
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error("Failed to refine idea: Invalid response format");
   }
 
   const parsed = JSON.parse(jsonMatch[0]);
+  */
+  // Use safeParseJson with fallback to handle malformed/truncated responses
+  const fallback = {
+    thesis: originalIdea.thesis,
+    description: originalIdea.description,
+    mechanism: originalIdea.mechanism,
+    differentiator: "Fallback due to parsing error",
+    evidenceSnippets: originalIdea.evidenceSnippets,
+    crucialExperiment: originalIdea.crucialExperiment,
+    bridgedConcepts: originalIdea.bridgedConcepts,
+    explanationDepth: originalIdea.explanationDepth || 70
+  };
+  const parsed = safeParseJson<any>(responseText, fallback);
 
   return {
     id: `idea-${Date.now()}-refined-${iteration}`,
     thesis: parsed.thesis,
     description: parsed.description,
+    mechanism: parsed.mechanism || originalIdea.mechanism,
+    explanationDepth: parsed.explanationDepth || 70,
+    evidenceSnippets: parsed.evidenceSnippets || originalIdea.evidenceSnippets,
+    crucialExperiment: parsed.crucialExperiment || originalIdea.crucialExperiment,
     bridgedConcepts: parsed.bridgedConcepts,
-    confidence: originalIdea.confidence, // Will be recalculated with calibration
+    confidence: originalIdea.confidence,
     noveltyAssessment: `Refined (iteration ${iteration}): ${parsed.differentiator}`,
     refinementIteration: iteration,
     refinedFrom: originalIdea.id,
+    explanatoryMechanism: parsed.mechanism || "",
+    isExplainedByPriorArt: false
   };
 }
 
@@ -389,6 +498,12 @@ Create a structured approach with:
 4. Key Steps: 5-10 actionable steps to implement this
 5. Risks: What could go wrong? How to mitigate?
 6. Success Metrics: How do we know this worked?
+
+**LANGUAGE STYLE (CRITICAL):**
+- Write in clear, accessible prose suitable for a business or general educated audience.
+- Avoid jargon, mathematical notation, and overly technical language.
+- Focus on practical, actionable guidance that anyone can understand.
+- Each step description should be concrete and specific.
 
 Format as JSON:
 {
@@ -415,88 +530,85 @@ export async function generateStructuredApproach(
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
+  /*
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error("Failed to generate structured approach: Invalid response format");
   }
 
   return JSON.parse(jsonMatch[0]);
-}
-
-// ===== FULL SYNTHESIS PIPELINE =====
-
-export interface SynthesisResult {
-  sources: { name: string; concepts: ExtractedConcepts }[];
-  contradictions: Contradiction[];
-  novelIdeas: NovelIdea[];
-  selectedIdea?: NovelIdea;
-  structuredApproach?: StructuredApproach;
-  // Tier 1: Pipeline metadata
-  metadata?: {
-    refinementIterations: number;
-    calibrationApplied: boolean;
+  */
+  
+  const fallback: StructuredApproach = {
+    title: "Implementation Plan",
+    problemStatement: "Problem statement could not be parsed.",
+    proposedSolution: "Solution could not be parsed.",
+    keySteps: [],
+    risks: [],
+    successMetrics: []
   };
+
+  return safeParseJson<StructuredApproach>(responseText, fallback);
 }
 
-/**
- * Enhanced synthesis pipeline with Tier 1 improvements:
- * - Self-correction loop (evaluate-and-refine)
- * - Calibrated confidence
- */
-export async function runSynthesisPipeline(
-  pdfResults: PDFExtractionResult[]
-): Promise<SynthesisResult> {
-  // Step 1: Extract concepts from each source
-  const sourcesWithConcepts = await Promise.all(
-    pdfResults.map(async (pdf) => ({
-      name: pdf.fileName,
-      concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName), // Limit for API
-    }))
-  );
+// ===== SCIENTIFIC PROSE GENERATION =====
 
-  // Step 2: Detect contradictions
-  const contradictions = await detectContradictions(
-    sourcesWithConcepts.map((s) => ({
-      name: s.name,
-      thesis: s.concepts.mainThesis,
-      arguments: s.concepts.keyArguments,
-    }))
-  );
+const SCIENTIFIC_PROSE_PROMPT = `You are a professional scientific editor. Your task is to synthesize the following raw hypothesis data into a high-fidelity, peer-review quality scientific narrative.
 
-  // Step 3: Generate novel ideas
-  const novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+**Raw Hypothesis Data:**
+{HYPOTHESIS_DATA}
 
-  // Step 4: Generate structured approach for top idea (if any)
-  let structuredApproach: StructuredApproach | undefined;
-  if (novelIdeas.length > 0) {
-    // Select the idea with highest confidence
-    const topIdea = novelIdeas.reduce((prev, curr) =>
-      curr.confidence > prev.confidence ? curr : prev
-    );
-    structuredApproach = await generateStructuredApproach(topIdea);
-  }
+**Writing Standards:**
+1. **Precision**: Use specific scientific terminology correctly.
+2. **Clarity**: Avoid jargon for the sake of jargon. Explain complex mechanisms clearly.
+3. **Flow**: Ensure a logical progression from Observation -> Contradiction -> Hypothesis -> Mechanism -> Prediction.
+4. **Active Voice**: Use active voice where appropriate.
+5. **Deutschian Depth**: Highlight the "explanatory power" and "crucial tests".
 
-  return {
-    sources: sourcesWithConcepts,
-    contradictions,
-    novelIdeas,
-    selectedIdea: novelIdeas[0],
-    structuredApproach,
-    metadata: {
-      refinementIterations: 0,
-      calibrationApplied: false,
-    },
-  };
+Format as a structured markdown report.`;
+
+export async function synthesizeScientificProse(
+  idea: NovelIdea,
+  contradictions: Contradiction[]
+): Promise<string> {
+  const model = getClaudeModel();
+  
+  const dataText = `
+    Thesis: ${idea.thesis}
+    Description: ${idea.description}
+    Mechanism: ${idea.mechanism}
+    Evidence Snippets: ${idea.evidenceSnippets?.join("; ") || "Directly inferred from source synthesis"}
+    Prediction: ${idea.prediction}
+    Crucial Experiment: ${idea.crucialExperiment}
+    Contradictions Resolved: ${contradictions.map(c => c.concept).join(", ")}
+  `;
+
+  const prompt = SCIENTIFIC_PROSE_PROMPT.replace("{HYPOTHESIS_DATA}", dataText);
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
-/**
- * Enhanced pipeline with full Tier 1 capabilities
- * Includes evaluate-and-refine loop with prior art checking
- */
+// ===== FULL SYNTHESIS PIPELINES =====
+
 export interface EnhancedSynthesisConfig {
   maxRefinementIterations?: number;
-  noveltyThreshold?: number; // 0-1, below this triggers refinement
+  noveltyThreshold?: number;
+  maxNovelIdeas?: number; // Limit output ideas (2 for company analysis)
   priorArtSearchFn?: (thesis: string, description: string) => Promise<PriorArt[]>;
+  priorRejectionCheckFn?: (thesis: string, mechanism: string) => Promise<boolean>;
+  // Hong Pattern Avoidance: Enable equivalence class checking
+  enableEquivalenceClassCheck?: boolean;
+  equivalenceClasses?: PatternEquivalenceClass[]; // Pre-computed clusters (optional)
+  // Hong MCMC Exploration: Enable hypothesis space exploration
+  enableMCMCExploration?: boolean;
+  mcmcConfig?: { numSamples?: number; burnIn?: number; temperature?: number };
+  validateProtocolFn?: (protocolCode: string) => Promise<{ success: boolean; metrics?: { pValue?: number; bayesFactor?: number }; error?: string }>;
+  eventEmitter?: StreamingEventEmitter;
+  // User-guided synthesis direction (optional)
+  researchFocus?: string;
+  // Concurrency control for refinement
+  enableParallelRefinement?: boolean;
+  parallelConcurrency?: number;
 }
 
 export async function runEnhancedSynthesisPipeline(
@@ -504,17 +616,30 @@ export async function runEnhancedSynthesisPipeline(
   config: EnhancedSynthesisConfig = {}
 ): Promise<SynthesisResult> {
   const {
-    maxRefinementIterations = 3,
+    maxRefinementIterations = 2,
     noveltyThreshold = 0.30,
+    maxNovelIdeas, // Limit output ideas (undefined = no limit)
+    eventEmitter
   } = config;
+  
+  // Helper for rate limiting
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  // Step 1: Extract concepts from each source
-  const sourcesWithConcepts = await Promise.all(
-    pdfResults.map(async (pdf) => ({
+  // Step 1: Extract concepts (SERIALIZED to prevent rate limits)
+  const sourcesWithConcepts: SynthesisResult['sources'] = [];
+  for (const pdf of pdfResults) {
+    console.log(`[Synthesis] Extracting concepts from: ${pdf.fileName}`);
+    const concepts = await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName);
+    sourcesWithConcepts.push({
       name: pdf.fileName,
-      concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName),
-    }))
-  );
+      type: pdf.sourceType ?? 'pdf',
+      mainThesis: concepts.mainThesis,
+      keyArguments: concepts.keyArguments,
+      concepts
+    });
+    // Brief delay between extractions
+    await delay(1000);
+  }
 
   // Step 2: Detect contradictions
   const contradictions = await detectContradictions(
@@ -524,118 +649,292 @@ export async function runEnhancedSynthesisPipeline(
       arguments: s.concepts.keyArguments,
     }))
   );
-
-  // Step 3: Generate novel ideas
-  let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
-  let totalRefinements = 0;
-
-  // Step 4: TIER 1 - Evaluate and refine loop (requires priorArtSearchFn to be passed)
-  if (config.priorArtSearchFn) {
-    for (let i = 0; i < novelIdeas.length; i++) {
-      let idea = novelIdeas[i];
-      let iteration = 0;
-
-      while (iteration < maxRefinementIterations) {
-        // Search prior art for this idea
-        const priorArt = await config.priorArtSearchFn(idea.thesis, idea.description);
-        
-        // Estimate confidence factors with prior art data
-        const factors = estimateConfidenceFactors(
-          sourcesWithConcepts,
-          contradictions,
-          idea,
-          priorArt
-        );
-
-        // Calculate calibrated confidence
-        const { score, explanation } = calculateCalibratedConfidence(factors);
-        
-        // Update idea with calibrated confidence
-        idea = {
-          ...idea,
-          confidence: score,
-          confidenceFactors: factors,
-          confidenceExplanation: explanation,
-        };
-
-        // Check if refinement needed (prior art too similar)
-        const maxSimilarity = priorArt.length > 0 
-          ? Math.max(...priorArt.map(p => p.similarity)) 
-          : 0;
-
-        if (maxSimilarity > (1 - noveltyThreshold)) {
-          // Too similar to prior art - refine
-          const similarArt = priorArt.filter(p => p.similarity > 0.5);
-          
-          try {
-            idea = await refineNovelIdea(idea, similarArt, iteration + 1);
-            totalRefinements++;
-            iteration++;
-          } catch {
-            // Refinement failed, keep current idea
-            break;
-          }
-        } else {
-          // Novel enough, exit loop
-          break;
-        }
-      }
-
-      novelIdeas[i] = idea;
+  
+  if (eventEmitter) {
+    if (contradictions.length > 0) {
+      eventEmitter.emit({ event: 'thinking_step', content: `Detected ${contradictions.length} dialectical tensions between sources.` });
     }
-  } else {
-    // No prior art search provided - just apply calibration with empty prior art
-    novelIdeas = novelIdeas.map((idea) => {
-      const factors = estimateConfidenceFactors(
-        sourcesWithConcepts,
-        contradictions,
-        idea,
-        [] // No prior art data
-      );
-      const { score, explanation } = calculateCalibratedConfidence(factors);
-      
-      return {
-        ...idea,
-        confidence: score,
-        confidenceFactors: factors,
-        confidenceExplanation: explanation,
-      };
-    });
   }
 
-
-  // Step 5: TIER 2 - Rigorous Hypothesis Generation (Scientific Method)
-  const hypothesisGenerator = new HypothesisGenerator();
+  // Step 3: Generate initial novel ideas
+  if (eventEmitter) eventEmitter.emit({ event: 'agent_switch', agent: 'creator' });
   
-  // Enhance all ideas with formal hypotheses
-  novelIdeas = await Promise.all(
-    novelIdeas.map(async (idea) => {
-      // Logic: Only apply deep hypothesis generation to high-potential ideas to save latency
-      // For now, we apply to all for maximum rigor as per "K-Dense" principles
-      let deepHypothesis = await hypothesisGenerator.generate(idea);
-      let refinedIdea = { ...idea, structuredHypothesis: deepHypothesis };
+  let novelIdeas: NovelIdea[];
+  
+  // Hong MCMC Exploration: Use Markov Chain Monte Carlo for hypothesis space exploration
+  if (config.enableMCMCExploration) {
+    console.log('[Synthesis] 🔬 Hong MCMC Exploration enabled - using Markov Chain sampling');
+    if (eventEmitter) eventEmitter.emit({ event: 'thinking_step', content: 'Initiating Hong MCMC hypothesis space exploration...' });
+    
+    novelIdeas = await runHongRecombination(
+      sourcesWithConcepts,
+      contradictions,
+      config.mcmcConfig || { numSamples: 8, burnIn: 2, temperature: 0.5 }
+    );
+    
+    console.log(`[Synthesis] MCMC exploration complete: ${novelIdeas.length} unique hypotheses sampled`);
+  } else {
+    // Standard single-shot generation
+    novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions, config.researchFocus);
+  }
+  
+  // VECTOR MEMORY CHECK: Filter out previously rejected ideas
+  if (config.priorRejectionCheckFn) {
+    const filteredIdeas: NovelIdea[] = [];
+    for (const idea of novelIdeas) {
+        if (eventEmitter) {
+           eventEmitter.emit({ 
+              event: 'hypothesis_generated', 
+              hypothesis: {
+                 id: idea.id,
+                 label: idea.thesis,
+                 status: 'generated'
+              }
+           });
+        }
+        
+        const isRejected = await config.priorRejectionCheckFn(idea.thesis, idea.mechanism || "Unspecified");
+        
+        // Hong Pattern Avoidance: Also check equivalence classes if enabled
+        let isInForbiddenClass = false;
+        if (config.enableEquivalenceClassCheck) {
+          const classMatch = await checkEquivalenceClasses(idea.thesis, idea.mechanism || "", config.equivalenceClasses);
+          if (classMatch?.isWithinClass) {
+            isInForbiddenClass = true;
+            console.log(`[Synthesis] Hong Pattern Match: idea in class ${classMatch.classId} (${classMatch.memberCount} prior rejections)`);
+          }
+        }
+        
+        if (!isRejected && !isInForbiddenClass) {
+            filteredIdeas.push(idea);
+        } else {
+            const reason = isInForbiddenClass ? "Hong Equivalence Class match (forbidden pattern)" : "Recurrent failure in vector memory";
+            console.warn(`[Synthesis] Dropped idea: ${idea.thesis.slice(0, 50)}... Reason: ${reason}`);
+            if (eventEmitter) {
+               eventEmitter.emit({ event: 'hypothesis_refuted', id: idea.id, reason });
+            }
+        }
+    }
+    novelIdeas = filteredIdeas;
+  }
 
-      // ADVERSARIAL CRITIQUE LOOP (Target 90+ Score)
-      let critique = await evaluateCriticalThinking(refinedIdea);
-      let attempts = 0;
+  // THERMODYNAMIC BASIS: Detect local optima and trigger expansion if needed
+  const thermoModule = new ThermodynamicBasisExpansion();
+  
+  if (novelIdeas.length >= 2) {
+    const spectralGap = thermoModule.computeSpectralGap(novelIdeas);
+    const lipschitzConstant = thermoModule.estimateLipschitzConstant(novelIdeas);
+    const threshold = 1.0 / Math.sqrt(lipschitzConstant);
+    
+    // Emit spectral gap analysis event
+    if (eventEmitter) {
+      eventEmitter.emit({ 
+        event: 'spectral_gap_analysis',
+        spectralGap: {
+          lambda_min: spectralGap.lambda_min,
+          lambda_max: spectralGap.lambda_max,
+          spectralGap: spectralGap.spectralGap,
+          conditionNumber: spectralGap.conditionNumber,
+          threshold: threshold
+        },
+        lipschitzConstant: lipschitzConstant
+      });
       
-      while (critique.validityScore < 90 && attempts < 2) {
-        // Self-Correction: Refine based on critique
-        refinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
-        // Re-generate hypothesis for the refined idea
-        deepHypothesis = await hypothesisGenerator.generate(refinedIdea);
-        refinedIdea.structuredHypothesis = deepHypothesis;
-        // Re-evaluate
-        critique = await evaluateCriticalThinking(refinedIdea);
-        attempts++;
+      eventEmitter.emit({ 
+        event: 'thinking_step', 
+        content: `Spectral Gap Analysis: λ_min=${spectralGap.lambda_min.toFixed(3)}, L=${lipschitzConstant.toFixed(3)}, threshold=${threshold.toFixed(3)}` 
+      });
+    }
+    
+    if (thermoModule.shouldTriggerExpansion(spectralGap, lipschitzConstant)) {
+      console.log('[Synthesis] 🔥 Thermodynamic expansion triggered - increasing exploration temperature');
+      
+      // Emit expansion event
+      if (eventEmitter) {
+        eventEmitter.emit({
+          event: 'thermodynamic_expansion',
+          triggered: true,
+          temperature: 1.5
+        });
+        
+        eventEmitter.emit({ 
+          event: 'thinking_step', 
+          content: '⚡ Thermodynamic expansion phase activated - melting local barriers...' 
+        });
       }
       
-      // Attach final critique
-      refinedIdea.criticalAnalysis = critique;
+      // Trigger high-temperature MCMC exploration
+      const expansionIdeas = await runHongRecombination(
+        sourcesWithConcepts,
+        contradictions,
+        { numSamples: 5, burnIn: 1, temperature: 1.5 }
+      );
       
-      return refinedIdea;
-    })
-  );
+      console.log(`[Synthesis] Generated ${expansionIdeas.length} high-temperature ideas`);
+      
+      // Merge with existing ideas (keep diversity)
+      novelIdeas = [...novelIdeas, ...expansionIdeas];
+    }
+  }
+
+  // IDEA LIMITING: Apply maxNovelIdeas constraint if specified
+  if (maxNovelIdeas !== undefined && novelIdeas.length > maxNovelIdeas) {
+    console.log(`[Synthesis] Limiting ideas from ${novelIdeas.length} to ${maxNovelIdeas}`);
+    // Sort by confidence to keep the best ideas
+    novelIdeas.sort((a, b) => b.confidence - a.confidence);
+    novelIdeas = novelIdeas.slice(0, maxNovelIdeas);
+  }
+
+  let totalRefinements = 0;
+  // Hong Pop-Stack-Sorting Metrics: Track t-Pop-sortability
+  let convergenceCount = 0; // Ideas that converged before maxIterations
+  let totalConvergenceSteps = 0; // Sum of steps to reach convergence
+
+  // Step 4: Multi-Agent Mastermind Refining Loop
+  const hypothesisGenerator = new HypothesisGenerator();
+  const masaAuditor = new MasaAuditor();
+  const experimentGenerator = new ExperimentGenerator();
+
+  const refinedIdeas: NovelIdea[] = [];
+
+  // Parallel Refinement with Semaphore
+  const concurrencyLevel = config.enableParallelRefinement 
+      ? (config.parallelConcurrency || 3) 
+      : 1;
+  const semaphore = new Semaphore(concurrencyLevel);
+  console.log(`[Synthesis] Refinement Concurrency Level: ${concurrencyLevel}`);
+
+  const refinementPromises = novelIdeas.map((originalIdea) => semaphore.run(async () => {
+      let currentIdea = originalIdea;
+      let iteration = 0;
+      let finalAudit: any;
+      let didConverge = false;
+      let convergenceStep = -1;
+
+      while (iteration < maxRefinementIterations) {
+        // [PHASE TRANSITION] Prior Art Falsification
+        if (eventEmitter) eventEmitter.emit({ event: 'phase_transition', phase: 'prior_art', stepIndex: 2 });
+
+        // Find prior art for calibration
+        const priorArt = config.priorArtSearchFn 
+          ? await config.priorArtSearchFn(currentIdea.thesis, currentIdea.description) 
+          : [];
+        
+        // Calibrate confidence
+        const factors = estimateConfidenceFactors(sourcesWithConcepts, contradictions, currentIdea, priorArt);
+        const { score, explanation, isLogConcave } = calculateCalibratedConfidence(factors);
+        currentIdea = { ...currentIdea, confidence: score, confidenceFactors: factors, confidenceExplanation: explanation, isLogConcave };
+        
+        // Attach prior art to the idea for the frontend
+        currentIdea = { ...currentIdea, priorArt };
+
+        if (eventEmitter) {
+          eventEmitter.emit({ event: 'confidence_update', factor: 'Overall Confidence', score });
+          eventEmitter.emit({ event: 'confidence_update', factor: 'Prior Art Distance', score: factors.priorArtDistance * 100 });
+          eventEmitter.emit({ event: 'confidence_update', factor: 'Mechanism Depth', score: factors.evidenceDepth * 100 });
+        }
+
+        // 1. Generate deep hypothesis
+        const deepHypothesis = await hypothesisGenerator.generate(currentIdea);
+        currentIdea.structuredHypothesis = deepHypothesis;
+        await delay(1000); // Backoff
+
+        // 2. Dialectical Audit (Epistemologist vs. Skeptic via Architect)
+        if (eventEmitter) eventEmitter.emit({ event: 'agent_switch', agent: 'skeptic' });
+        
+        finalAudit = await masaAuditor.audit(currentIdea, priorArt);
+        
+        if (eventEmitter) eventEmitter.emit({ event: 'agent_switch', agent: 'architect' });
+        
+        if (finalAudit.finalSynthesis.isApproved) {
+           if (eventEmitter) {
+             eventEmitter.emit({ 
+                event: 'step_update', 
+                step: `Hypothesis approved by MASA Architect (Score: ${finalAudit.finalSynthesis.validityScore})` 
+             });
+           }
+           // Hong Pop-Stack-Sorting: Record convergence
+           didConverge = true;
+           convergenceStep = iteration;
+           break;
+        }
+
+        // 3. Refine based on Audit findings
+        currentIdea = await refineNovelIdea(currentIdea, priorArt, iteration + 1, {
+            validityScore: finalAudit.finalSynthesis.validityScore,
+            critique: finalAudit.methodologist.critique + " | Remediation: " + finalAudit.finalSynthesis.remediationPlan.join(". "),
+            biasDetected: finalAudit.skeptic.biasesDetected,
+            logicalFallacies: finalAudit.skeptic.fallaciesDetected,
+            remediationConstraints: finalAudit.finalSynthesis.remediationConstraints
+        });
+        
+        totalRefinements++;
+        iteration++;
+        await delay(2000); // Backoff for refinement
+      }
+
+      currentIdea.criticalAnalysis = {
+        validityScore: finalAudit.finalSynthesis.validityScore,
+        critique: finalAudit.methodologist.critique,
+        biasDetected: finalAudit.skeptic.biasesDetected,
+        logicalFallacies: finalAudit.skeptic.fallaciesDetected
+      };
+      
+      // Attach full audit for persistence and UI
+      currentIdea.masaAudit = finalAudit;
+      // Ensure priorArt is attached to the final object as well if loop broke early or finished
+      if (!currentIdea.priorArt) {
+          const priorArt = config.priorArtSearchFn 
+          ? await config.priorArtSearchFn(currentIdea.thesis, currentIdea.description) 
+          : [];
+          currentIdea.priorArt = priorArt;
+      }
+
+      // FINAL HYPOGENIC STAGE: Generate Prose & Artifacts sequentially
+      // [PHASE TRANSITION] Sovereign Synthesis
+      if (eventEmitter) eventEmitter.emit({ event: 'phase_transition', phase: 'synthesis', stepIndex: 3 });
+
+      // Serialized to save token bandwidth
+      const prose = await synthesizeScientificProse(currentIdea, contradictions);
+      await delay(1000);
+      const artifacts = await experimentGenerator.generate(currentIdea);
+      
+      currentIdea.scientificProse = prose;
+      currentIdea.scientificArtifacts = artifacts;
+      
+      // PHYSICAL GROUND TRUTH: Validate protocol in sandbox
+      if (config.validateProtocolFn && artifacts.protocolCode) {
+        try {
+          if (eventEmitter) {
+            eventEmitter.emit({ event: 'thinking_step', content: `Validating simulation protocol...` });
+          }
+          const validation = await config.validateProtocolFn(artifacts.protocolCode);
+          currentIdea.validationResult = validation;
+          if (eventEmitter) {
+            eventEmitter.emit({ 
+              event: 'protocol_validated', 
+              ideaId: currentIdea.id,
+              success: validation.success,
+              pValue: validation.metrics?.pValue
+            });
+          }
+        } catch (valError) {
+          console.warn('[Synthesis] Protocol validation failed:', valError);
+          currentIdea.validationResult = { success: false, error: String(valError) };
+        }
+      }
+      
+      // Track Pop-Stack convergence metrics
+      if (didConverge) {
+        convergenceCount++;
+        totalConvergenceSteps += convergenceStep;
+      }
+      // await delay(1000); // Cooldown between ideas - REMOVED since Semaphore handles rate limiting via concurrency + we assume downstream APIs can handle 3 concurrent
+      
+      return currentIdea;
+  }));
+  
+  novelIdeas = await Promise.all(refinementPromises);
 
   // Step 6: Generate structured approach for top idea
   let structuredApproach: StructuredApproach | undefined;
@@ -643,7 +942,13 @@ export async function runEnhancedSynthesisPipeline(
     const topIdea = novelIdeas.reduce((prev, curr) =>
       curr.confidence > prev.confidence ? curr : prev
     );
-    structuredApproach = await generateStructuredApproach(topIdea);
+    console.log(`[Synthesis] Generating Structured Approach for best idea: ${topIdea.thesis}`);
+    try {
+        structuredApproach = await generateStructuredApproach(topIdea);
+        console.log(`[Synthesis] Structured Approach generated successfully.`);
+    } catch (e) {
+        console.error(`[Synthesis] Failed to generate structured approach:`, e);
+    }
   }
 
   return {
@@ -655,6 +960,16 @@ export async function runEnhancedSynthesisPipeline(
     metadata: {
       refinementIterations: totalRefinements,
       calibrationApplied: true,
+      // Hong Pop-Stack-Sorting Metrics
+      tPopSortable: convergenceCount > 0 && convergenceCount === refinedIdeas.length,
+      convergenceStep: convergenceCount > 0 ? Math.round(totalConvergenceSteps / convergenceCount) : undefined,
+      pdfCount: sourcesWithConcepts.filter(s => s.type === 'pdf').length,
+      companyCount: sourcesWithConcepts.filter(s => s.type === 'company').length,
+      totalSources: sourcesWithConcepts.length,
     },
   };
 }
+
+// delay() helper defined at line 489
+
+

@@ -1,8 +1,10 @@
 // Novelty Evaluator - Prior Art Detection
 // Searches for existing work to ensure honest novelty claims
 
-import { PriorArt } from "@/types";
+import { PriorArt, CriticalAnalysis, NovelIdea } from "@/types";
+import { ScholarService } from "./scholar-service";
 
+const scholarService = new ScholarService();
 const SERPER_API_URL = "https://google.serper.dev/search";
 
 interface SerperResult {
@@ -20,50 +22,70 @@ export async function searchPriorArt(
   ideaThesis: string,
   ideaDescription: string
 ): Promise<PriorArt[]> {
-  const apiKey = process.env.SERPER_API_KEY;
-  
-  if (!apiKey) {
-    console.warn("SERPER_API_KEY not set, skipping prior art search");
-    return [];
-  }
-
-  // Create search query from the idea
+  const serperKey = process.env.SERPER_API_KEY;
   const searchQuery = extractSearchTerms(ideaThesis, ideaDescription);
   
-  try {
-    const response = await fetch(SERPER_API_URL, {
-      method: "POST",
-      headers: {
-        "X-API-KEY": apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        q: searchQuery,
-        num: 10,
-      }),
-    });
+  let webPriorArt: PriorArt[] = [];
+  
+  // 1. Serper Web Search (if key exists)
+  if (serperKey) {
+    try {
+      const response = await fetch(SERPER_API_URL, {
+        method: "POST",
+        headers: {
+          "X-API-KEY": serperKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          q: searchQuery,
+          num: 10,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Serper API error: ${response.status}`);
+      if (response.ok) {
+        const data: SerperResult = await response.json();
+        webPriorArt = await assessSimilarity(
+          ideaThesis,
+          data.organic.map((r) => ({
+            title: r.title,
+            url: r.link,
+            snippet: r.snippet,
+            source: "web" as const
+          }))
+        );
+      } else {
+        console.warn(`Serper API error: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Serper search failed:", error);
     }
-
-    const data: SerperResult = await response.json();
-    
-    // Convert to PriorArt format with similarity assessment
-    const priorArt = await assessSimilarity(
-      ideaThesis,
-      data.organic.map((r) => ({
-        title: r.title,
-        url: r.link,
-        snippet: r.snippet,
-      }))
-    );
-
-    return priorArt;
-  } catch (error) {
-    console.error("Prior art search failed:", error);
-    return [];
+  } else {
+    console.warn("SERPER_API_KEY not set, skipping web prior art search");
   }
+
+  // 2. DEEP SCIENCE: Semantic Scholar Search (Always attempt)
+  let scholarPriorArt: PriorArt[] = [];
+  try {
+    console.log(`[Prior Art] Searching Scholar for: "${searchQuery.slice(0, 60)}..."`);
+    const scholarResults = await scholarService.searchScholar(searchQuery, 3);
+    console.log(`[Prior Art] Scholar returned ${scholarResults.length} results`);
+    scholarPriorArt = scholarResults.map(p => ({
+      title: p.title,
+      description: p.abstract,
+      similarity: p.similarity,
+      differentiator: `Academic Source | Influential Citations: ${p.influenceScore}`,
+      url: p.url,
+      source: "scholar" as const,
+      authors: p.authors,
+      venue: p.venue,
+      year: p.year,
+      openAccessPdf: p.openAccessPdf
+    }));
+  } catch (error) {
+    console.error("[Prior Art] Scholar search failed:", error);
+  }
+
+  return [...webPriorArt, ...scholarPriorArt];
 }
 
 /**
@@ -183,54 +205,42 @@ export function generateNoveltyAssessment(
   }
 }
 
-// ===== CRITICAL THINKING & VALIDATION =====
+// ===== CRITICAL THINKING & VALIDATION (MASA INTEGRATION) =====
 
-import { getClaudeModel } from "@/lib/ai/anthropic";
-import { CriticalAnalysis, NovelIdea } from "@/types";
 
-const CRITICAL_THINKING_PROMPT = `You are a Tier 1 Scientific Reviewer. rigorous critique the following hypothesis for logical flaws and biases.
+import { MasaAuditor } from "./masa-auditor";
 
-**Hypothesis:**
-Thesis: {THESIS}
-Description: {DESCRIPTION}
-Mechanism: {MECHANISM}
+const masaAuditor = new MasaAuditor();
 
-**Your Task:**
-1. Identify potential **Biases** (e.g., Confirmation Bias, Selection Bias, Overgeneralization).
-2. Identify **Logical Fallacies** (e.g., Post hoc ergo propter hoc, Strawman, False Dichotomy).
-3. Evaluate the **Scientific Validity** (Is the mechanism plausible? Is the prediction falsifiable?).
-
-Format as JSON:
-{
-  "biasDetected": ["Bias 1", "Bias 2", ...],
-  "logicalFallacies": ["Fallacy 1", "Fallacy 2", ...],
-  "validityScore": number, // 0-100 (100 = Solid, 0 = Pseudoscientific)
-  "critique": "A concise paragraph summarizing the critical review."
-}`;
-
+/**
+ * Enhanced Critical Thinking via MASA (Multi-Agent Scientific Audit)
+ * Wraps the complex MASA output into the simplified CriticalAnalysis type
+ * for backwards compatibility where needed.
+ */
 export async function evaluateCriticalThinking(
-  idea: NovelIdea
+  idea: NovelIdea,
+  priorArt: PriorArt[] = [] // Now accepts priorArt for context
 ): Promise<CriticalAnalysis> {
-  const model = getClaudeModel();
   
-  const prompt = CRITICAL_THINKING_PROMPT
-    .replace("{THESIS}", idea.thesis)
-    .replace("{DESCRIPTION}", idea.description)
-    .replace("{MECHANISM}", idea.mechanism || "N/A");
-
-  const result = await model.generateContent(prompt);
-  const responseText = result.response.text();
-
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    // Default fallback if parsing fails
+  try {
+    const audit = await masaAuditor.audit(idea, priorArt);
+    
+    // Inject the full audit back into the idea object if possible, 
+    // but here we return the CriticalAnalysis interface.
+    
     return {
-      biasDetected: [],
+      biasDetected: audit.skeptic.biasesDetected,
+      logicalFallacies: audit.skeptic.fallaciesDetected,
+      validityScore: audit.finalSynthesis.validityScore,
+      critique: `[MASA Grade: ${audit.methodologist.grade}] ${audit.methodologist.critique}\n\n[Skeptic]: ${audit.skeptic.devilAdvocacy}`
+    };
+  } catch (error) {
+    console.error("MASA Audit Failed:", error);
+    return {
+      biasDetected: ["Audit Failure"],
       logicalFallacies: [],
-      validityScore: 50,
-      critique: "Automated critique failed to parse. Proceed with caution."
+      validityScore: 0,
+      critique: "Automated MASA audit failed. Manual review recommended."
     };
   }
-
-  return JSON.parse(jsonMatch[0]);
 }

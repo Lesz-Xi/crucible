@@ -1,4 +1,4 @@
-import { runSynthesisPipeline } from "./lib/ai/synthesis-engine";
+import { runEnhancedSynthesisPipeline } from "./lib/ai/synthesis-engine";
 import { NovelIdea, CriticalAnalysis } from "./types";
 
 // COPIED MOCK DATA & OUTPUTS TO SIMULATE GEMINI
@@ -37,7 +37,7 @@ async function main() {
 
   // 1. Verify Imports and Types (Runtime check)
   try {
-      const { runSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
+      const { runEnhancedSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
       const { evaluateCriticalThinking } = await import("./lib/ai/novelty-evaluator");
       console.log("✅ Modules imported successfully.");
   } catch (e) {
@@ -55,6 +55,9 @@ async function main() {
       noveltyAssessment: "New",
       mechanism: "Flux capacitor",
       prediction: "88 mph",
+      explanationDepth: 70,
+      isExplainedByPriorArt: false,
+      explanatoryMechanism: "Test Mechanism",
       criticalAnalysis: {
           biasDetected: ["None"],
           logicalFallacies: [],

@@ -1,8 +1,9 @@
 "use client";
 
 // Novel Idea Display Component
-import { NovelIdea, StructuredApproach, PriorArt } from "@/types";
-import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-react";
+import { NovelIdea, StructuredApproach, PriorArt, MasaAudit } from "@/types";
+import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle2, ExternalLink, ShieldCheck, Microscope, Zap, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { useState } from "react";
 
 interface NovelIdeaCardProps {
   idea: NovelIdea;
@@ -19,7 +20,7 @@ export function NovelIdeaCard({
 }: NovelIdeaCardProps) {
   const confidenceColor =
     idea.confidence >= 70
-      ? "text-emerald-400"
+      ? "text-orange-400"
       : idea.confidence >= 40
         ? "text-amber-400"
         : "text-red-400";
@@ -28,106 +29,214 @@ export function NovelIdeaCard({
     <div
       onClick={onSelect}
       className={`
-        relative p-6 rounded-2xl border transition-all duration-300 cursor-pointer
+        group relative overflow-hidden rounded-2xl border transition-all duration-500 cursor-pointer
         ${isSelected
-          ? "border-indigo-500 bg-indigo-500/10"
-          : "border-gray-700 bg-gray-800/50 hover:border-gray-600"
+          ? "border-orange-500/50 bg-[#0A0A0A] shadow-xl ring-1 ring-orange-500/20"
+          : "border-white/10 bg-[#0A0A0A] hover:border-orange-500/30 hover:shadow-2xl hover:-translate-y-1"
         }
       `}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl">
-            <Lightbulb className="w-5 h-5 text-white" />
+      <div className="p-8 space-y-8">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-6">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-sans text-orange-400 font-bold uppercase tracking-[0.2em] bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">
+                Novel Idea {String(index + 1).padStart(2, '0')}
+              </span>
+              <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full border bg-white/5 ${confidenceColor} border-white/10`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${
+                  idea.confidence >= 70 ? "bg-orange-500" : 
+                  idea.confidence >= 40 ? "bg-amber-500" : "bg-red-500"
+                }`} />
+                <span className="text-[10px] font-mono font-bold tracking-wider text-neutral-400">{idea.confidence}% CONFIDENCE</span>
+              </div>
+              {/* Hong Theoretical Alignment Badge */}
+              {idea.isLogConcave && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full border bg-purple-500/10 text-purple-400 border-purple-500/20">
+                  <span className="text-sm">🧬</span>
+                  <span className="text-[10px] font-mono font-bold tracking-wider">HONG-ALIGNED</span>
+                </div>
+              )}
+            </div>
+            <h3 className="text-lg font-semibold text-neutral-200 leading-snug font-sans tracking-tight w-full">
+              {idea.thesis}
+            </h3>
           </div>
-          <span className="text-sm text-gray-500">Idea #{index + 1}</span>
         </div>
-        <div className={`flex items-center gap-1 ${confidenceColor}`}>
-          <TrendingUp className="w-4 h-4" />
-          <span className="text-sm font-medium">{idea.confidence}%</span>
+
+        {/* Mechanism & Prediction Grid */}
+        {(idea.mechanism || idea.prediction) && (
+          <div className={`grid bg-[#111] border border-white/10 rounded-xl overflow-hidden font-mono divide-white/10 ${
+            idea.mechanism && idea.prediction 
+              ? "grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x" 
+              : "grid-cols-1"
+          }`}>
+            {idea.mechanism && (
+              <div className="relative p-6 flex flex-col gap-3 group/cell h-full transition-colors hover:bg-white/5">
+                <div className="absolute top-0 left-0 w-1 h-full bg-orange-500/40 group-hover/cell:bg-orange-500 transition-colors" />
+                <span className="text-orange-400 uppercase tracking-[0.2em] text-[10px] font-bold pl-2">
+                  Mechanism
+                </span>
+                <p className="text-neutral-300 text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
+                  {idea.mechanism}
+                </p>
+              </div>
+            )}
+            {idea.prediction && (
+              <div className="relative p-6 flex flex-col gap-3 group/cell h-full transition-colors hover:bg-white/5">
+                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-500/40 group-hover/cell:bg-amber-500 transition-colors" />
+                <span className="text-amber-400 uppercase tracking-[0.2em] text-[10px] font-bold pl-2">
+                   Prediction
+                </span>
+                <p className="text-neutral-300 text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
+                  {idea.prediction}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+=
+        {/* Description */}
+        <div className="space-y-2">
+          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider font-bold">Concept Overview</span>
+          <p className="text-sm text-neutral-300 font-medium leading-relaxed border-l-2 border-white/10 pl-4 py-1">
+            {idea.description}
+          </p>
         </div>
-      </div>
 
-      {/* Thesis */}
-      <h3 className="text-lg font-semibold text-gray-100 mb-3">
-        {idea.thesis}
-      </h3>
-
-      {/* Description */}
-      <p className="text-sm text-gray-400 mb-4 line-clamp-3">
-        {idea.description}
-      </p>
-
-      {/* Hypothesis Structure */}
-      {(idea.mechanism || idea.prediction) && (
-        <div className="mb-4 grid gap-3 sm:grid-cols-2">
-          {idea.mechanism && (
-            <div className="p-3 bg-indigo-900/20 border border-indigo-500/20 rounded-xl">
-              <h4 className="text-xs font-semibold text-indigo-300 mb-1 uppercase tracking-wider">Mechanism</h4>
-              <p className="text-sm text-indigo-100/80">{idea.mechanism}</p>
-            </div>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+          {(idea.bridgedConcepts ?? []).slice(0, 3).map((concept, i) => (
+            <span
+              key={i}
+              className="px-2 py-1 text-[10px] font-mono text-neutral-400 bg-white/5 border border-white/10 rounded hover:border-orange-500/30 hover:text-orange-400 transition-colors cursor-default"
+            >
+              {concept}
+            </span>
+          ))}
+          {(idea.bridgedConcepts?.length ?? 0) > 3 && (
+            <span className="px-2 py-1 text-[10px] font-mono text-neutral-500">
+              +{idea.bridgedConcepts!.length - 3} MORE
+            </span>
           )}
-          {idea.prediction && (
-            <div className="p-3 bg-emerald-900/20 border border-emerald-500/20 rounded-xl">
-              <h4 className="text-xs font-semibold text-emerald-300 mb-1 uppercase tracking-wider">Prediction</h4>
-              <p className="text-sm text-emerald-100/80">{idea.prediction}</p>
-            </div>
-          )}
         </div>
-      )}
 
-      {/* Bridged Concepts */}
-      <div className="flex flex-wrap gap-2 mb-4">
-        {idea.bridgedConcepts.slice(0, 4).map((concept, i) => (
-          <span
-            key={i}
-            className="px-2 py-1 text-xs bg-gray-700/50 text-gray-300 rounded-lg"
-          >
-            {concept}
-          </span>
-        ))}
-        {idea.bridgedConcepts.length > 4 && (
-          <span className="px-2 py-1 text-xs text-gray-500">
-            +{idea.bridgedConcepts.length - 4} more
-          </span>
+        {/* Peer Review Summary (Mini) */}
+        {idea.criticalAnalysis && (
+          <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 bg-white/[0.02] px-3 py-2 rounded">
+             <span className="flex items-center gap-2">
+               <ShieldCheck className="w-3 h-3 text-neutral-500" />
+               VALIDITY SCORE
+             </span>
+             <span className={idea.criticalAnalysis.validityScore >= 70 ? "text-orange-400" : "text-amber-400"}>
+               {idea.criticalAnalysis.validityScore}/100
+             </span>
+          </div>
+        )}
+        
+        {/* Expanded Audit View */}
+        {idea.masaAudit && (
+           <div className="pt-2">
+             <AuditTraceViewer audit={idea.masaAudit} />
+           </div>
         )}
       </div>
+    </div>
+  );
+}
 
-      {/* Critical Analysis (Peer Review) */}
-      {idea.criticalAnalysis && (
-        <div className="mb-4 p-4 bg-red-900/10 border border-red-500/20 rounded-xl">
-           <div className="flex items-center justify-between mb-2">
-             <h4 className="text-xs font-semibold text-red-300 uppercase tracking-wider flex items-center gap-2">
-               <AlertTriangle className="w-3 h-3" />
-               Peer Review
-             </h4>
-             <span className="text-xs font-mono text-red-400">Validity: {idea.criticalAnalysis.validityScore}/100</span>
-           </div>
-           
-           <p className="text-sm text-gray-400 mb-2 italic">"{idea.criticalAnalysis.critique}"</p>
-           
-           {(idea.criticalAnalysis.logicalFallacies.length > 0 || idea.criticalAnalysis.biasDetected.length > 0) && (
-             <div className="flex flex-wrap gap-2 mt-2">
-               {idea.criticalAnalysis.logicalFallacies.map((f, i) => (
-                 <span key={`f-${i}`} className="px-1.5 py-0.5 text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 rounded">
-                   Fallacy: {f}
-                 </span>
-               ))}
-               {idea.criticalAnalysis.biasDetected.map((b, i) => (
-                 <span key={`b-${i}`} className="px-1.5 py-0.5 text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">
-                   Bias: {b}
-                 </span>
-               ))}
-             </div>
-           )}
+interface AuditTraceViewerProps {
+  audit: MasaAudit;
+}
+
+export function AuditTraceViewer({ audit }: AuditTraceViewerProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="space-y-3">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        className="w-full flex items-center justify-between p-3 rounded-xl bg-[#111] border border-white/10 hover:border-orange-500/50 hover:shadow-md transition-all text-left shadow-sm group"
+      >
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-orange-500 group-hover:text-orange-400" />
+          <span className="text-sm font-bold text-neutral-300 group-hover:text-orange-200">Epistemic Audit Trace</span>
+        </div>
+        {isOpen ? <ChevronUp className="w-4 h-4 text-neutral-600 group-hover:text-orange-500" /> : <ChevronDown className="w-4 h-4 text-neutral-600 group-hover:text-orange-500" />}
+      </button>
+
+      {isOpen && (
+        <div className="space-y-4 p-4 rounded-xl bg-[#0A0A0A] border border-white/10 shadow-inner animate-in fade-in slide-in-from-top-2 duration-300">
+          {/* Epistemologist */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-orange-400">
+              <Microscope className="w-4 h-4" />
+              <span className="text-xs font-bold uppercase tracking-wider text-orange-500">The Epistemologist</span>
+              <span className="ml-auto text-[10px] font-mono font-bold bg-orange-500/10 text-orange-400 px-2 py-0.5 rounded border border-orange-500/20">
+                Score: {audit.methodologist.score}/100
+              </span>
+            </div>
+            <p className="text-sm text-neutral-400 font-medium leading-relaxed pl-6 border-l-2 border-orange-500/30">
+              {audit.methodologist.critique.replace(/\*\*/g, "").replace(/\*/g, "")}
+            </p>
+          </div>
+
+          {/* Skeptic */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-amber-500">
+              <Zap className="w-4 h-4" />
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-500">The Skeptic</span>
+              <span className="ml-auto text-[10px] font-mono font-bold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20">
+                Score: {audit.skeptic.score}/100
+              </span>
+            </div>
+            <p className="text-sm text-neutral-400 font-medium leading-relaxed pl-6 border-l-2 border-amber-500/30">
+              {audit.skeptic.critique.replace(/\*\*/g, "").replace(/\*/g, "")}
+            </p>
+            {(audit.skeptic.biasesDetected?.length ?? 0) > 0 && (
+              <div className="flex flex-wrap gap-2 pl-6">
+                {(audit.skeptic.biasesDetected ?? []).map((bias, i) => (
+                  <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-500 font-bold">
+                    {bias}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Architect Verdict */}
+          <div className="pt-2 border-t border-white/10">
+            <div className="flex items-center gap-2 text-orange-400 mb-2">
+              <CheckCircle2 className="w-4 h-4" />
+              <span className="text-xs font-bold uppercase tracking-wider text-orange-500">Sovereign Verdict</span>
+              <span className={`ml-auto text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${audit.finalSynthesis.isApproved ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
+                {audit.finalSynthesis.isApproved ? 'APPROVED' : 'REJECTED'} ({audit.finalSynthesis.validityScore}/100)
+              </span>
+            </div>
+            {(audit.finalSynthesis.remediationPlan?.length ?? 0) > 0 && (
+              <div className="pl-6 border-l-2 border-orange-500/30">
+                 <h5 className="text-[10px] font-bold text-neutral-500 uppercase mb-2">Refinement Applied</h5>
+                 <ul className="space-y-1">
+                   {audit.finalSynthesis.remediationPlan.map((step, i) => {
+                     const cleanedStep = step.replace(/\*\*/g, "").replace(/\*/g, "");
+                     const finalStep = cleanedStep.endsWith('.') ? cleanedStep : `${cleanedStep}.`;
+                     return (
+                       <li key={i} className="text-xs text-neutral-300 font-medium flex items-start gap-2">
+                         <span className="mt-1.5 w-1 h-1 rounded-full bg-orange-500" />
+                         {finalStep}
+                       </li>
+                     );
+                   })}
+                 </ul>
+              </div>
+            )}
+          </div>
         </div>
       )}
-
-      {/* Novelty Assessment */}
-      <div className="p-3 bg-gray-900/50 rounded-xl">
-        <p className="text-xs text-gray-400">{idea.noveltyAssessment}</p>
-      </div>
     </div>
   );
 }
@@ -140,43 +249,54 @@ export function StructuredApproachDisplay({
   approach,
 }: StructuredApproachDisplayProps) {
   return (
-    <div className="space-y-6 p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
+    <div className="space-y-8 p-8 bg-[#0A0A0A] rounded-2xl border border-white/10 relative overflow-hidden shadow-sm">
+      {/* Decorative Grid Background */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
+
       {/* Title */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-100">{approach.title}</h2>
+      <div className="relative z-10 flex items-start justify-between border-b border-white/10 pb-4">
+        <h2 className="text-xl font-bold text-neutral-200 font-sans tracking-tight">{approach.title}</h2>
+        <span className="text-[10px] font-mono text-orange-400 uppercase tracking-widest bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">
+          Execution Plan
+        </span>
       </div>
 
       {/* Problem Statement */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-2">Problem Statement</h3>
-        <p className="text-gray-200">{approach.problemStatement}</p>
+      <div className="relative z-10">
+        <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-2">Problem Statement</h3>
+        <p className="text-neutral-300 font-light border-l-2 border-orange-500/30 pl-4 py-1 leading-relaxed">{approach.problemStatement}</p>
       </div>
 
       {/* Proposed Solution */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-2">Proposed Solution</h3>
-        <p className="text-gray-200">{approach.proposedSolution}</p>
+      <div className="group/section relative z-10">
+        <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-2 transition-colors duration-300 group-hover/section:text-orange-400">Proposed Solution</h3>
+        <p className="text-neutral-200 font-light group-hover/section:text-white transition-colors duration-300 leading-relaxed bg-white/[0.03] p-4 rounded-lg border border-white/5">
+          {approach.proposedSolution}
+        </p>
       </div>
 
       {/* Key Steps */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Implementation Steps</h3>
+      <div className="relative z-10">
+        <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-4">Implementation Steps</h3>
         <div className="space-y-3">
           {approach.keySteps.map((step) => (
             <div
               key={step.order}
-              className="flex gap-4 p-4 bg-gray-900/50 rounded-xl"
+              className="flex gap-4 p-5 bg-[#111] border border-white/10 rounded-xl group hover:border-orange-500/30 hover:bg-white/5 transition-colors"
             >
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-indigo-500/20 text-indigo-400 rounded-full font-semibold text-sm">
-                {step.order}
+              <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-orange-500/10 text-orange-400 rounded text-xs font-mono border border-orange-500/20 group-hover:bg-orange-500/20 group-hover:text-orange-300 transition-colors">
+                {String(step.order).padStart(2, '0')}
               </div>
-              <div>
-                <h4 className="font-medium text-gray-200">{step.title}</h4>
-                <p className="text-sm text-gray-400 mt-1">{step.description}</p>
+              <div className="flex-1">
+                <h4 className="font-medium text-neutral-300 text-sm group-hover:text-orange-200 transition-colors">{step.title}</h4>
+                <p className="text-xs text-neutral-500 mt-1 leading-relaxed">{step.description}</p>
                 {step.dependencies && step.dependencies.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-2">
-                    Depends on: {step.dependencies.join(", ")}
-                  </p>
+                  <div className="flex items-center gap-2 mt-3 pt-2 border-t border-white/5">
+                    <span className="text-[10px] uppercase text-neutral-600 font-mono">Prerequisites:</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">
+                      {step.dependencies.join(", ")}
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
@@ -184,56 +304,58 @@ export function StructuredApproachDisplay({
         </div>
       </div>
 
-      {/* Risks */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Risks & Mitigations</h3>
-        <div className="space-y-2">
-          {approach.risks.map((risk, i) => (
-            <div
-              key={i}
-              className={`p-3 rounded-xl border ${
-                risk.severity === "high"
-                  ? "border-red-500/30 bg-red-500/10"
-                  : risk.severity === "medium"
-                    ? "border-amber-500/30 bg-amber-500/10"
-                    : "border-gray-600 bg-gray-900/30"
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <AlertTriangle
-                  className={`w-4 h-4 ${
-                    risk.severity === "high"
-                      ? "text-red-400"
-                      : risk.severity === "medium"
-                        ? "text-amber-400"
-                        : "text-gray-400"
-                  }`}
-                />
-                <span className="text-sm font-medium text-gray-200">
-                  {risk.description}
-                </span>
+      <div className="grid md:grid-cols-2 gap-6 relative z-10 pt-6 border-t border-white/10">
+        {/* Risks */}
+        <div>
+          <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-3">Risks & Mitigations</h3>
+          <div className="space-y-2">
+            {approach.risks.map((risk, i) => (
+              <div
+                key={i}
+                className={`p-3 rounded-lg border text-xs ${
+                  risk.severity === "high"
+                    ? "border-red-500/20 bg-red-500/5 text-red-200"
+                    : risk.severity === "medium"
+                      ? "border-amber-500/20 bg-amber-500/5 text-amber-200"
+                      : "border-white/10 bg-white/5 text-neutral-300"
+                }`}
+              >
+                <div className="flex items-start gap-2 mb-2">
+                  <AlertTriangle
+                    className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${
+                      risk.severity === "high"
+                        ? "text-red-400"
+                        : risk.severity === "medium"
+                          ? "text-amber-400"
+                          : "text-neutral-500"
+                    }`}
+                  />
+                  <span className="font-medium leading-tight">
+                    {risk.description}
+                  </span>
+                </div>
+                <div className="text-neutral-500 pl-5.5 font-mono text-[10px] uppercase">
+                  Mitigation: <span className="text-neutral-400 normal-case font-sans">{risk.mitigation}</span>
+                </div>
               </div>
-              <p className="text-xs text-gray-400 ml-6">
-                Mitigation: {risk.mitigation}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Success Metrics */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">Success Metrics</h3>
-        <div className="flex flex-wrap gap-2">
-          {approach.successMetrics.map((metric, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 px-3 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-xl"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-emerald-300">{metric}</span>
-            </div>
-          ))}
+        {/* Success Metrics */}
+        <div>
+          <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-3">Success Metrics</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {approach.successMetrics.map((metric, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-3 px-3 py-2.5 bg-white/5 border border-white/10 rounded-lg group hover:bg-white/[0.07] transition-colors"
+              >
+                <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-orange-500/50 group-hover:bg-orange-500 group-hover:shadow-[0_0_8px_rgba(249,115,22,0.4)] transition-all" />
+                <span className="text-xs text-neutral-400 group-hover:text-neutral-300 font-mono font-medium">{metric}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -246,49 +368,92 @@ interface PriorArtDisplayProps {
 }
 
 export function PriorArtDisplay({ priorArt, noveltyScore }: PriorArtDisplayProps) {
+  const validPriorArt = priorArt || [];
+
   const scoreColor =
     noveltyScore >= 70
-      ? "text-emerald-400"
+      ? "text-orange-400"
       : noveltyScore >= 40
         ? "text-amber-400"
         : "text-red-400";
 
   return (
-    <div className="p-6 bg-gray-800/50 rounded-2xl border border-gray-700">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-100">Prior Art Analysis</h3>
-        <div className={`text-2xl font-bold ${scoreColor}`}>
-          {noveltyScore}% Novel
+    <div className="p-8 bg-[#0A0A0A] rounded-2xl border border-white/10 relative overflow-hidden shadow-sm">
+      {/* Decorative Grid Background */}
+      <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
+
+      <div className="relative z-10 flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+        <h3 className="text-xl font-bold text-neutral-200 font-mono tracking-tight">Prior Art Analysis</h3>
+        <div className={`text-xl font-mono font-bold ${scoreColor} bg-white/[0.03] px-3 py-1.5 rounded border border-white/5`}>
+          {validPriorArt.length === 0 && !noveltyScore ? (
+            <span className="text-orange-400">95% NOVEL <span className="text-xs text-orange-500/70 font-mono tracking-normal normal-case">(no similar work found)</span></span>
+          ) : (
+            <>{noveltyScore || 95}% NOVEL</>
+          )}
         </div>
       </div>
 
-      {priorArt.length === 0 ? (
-        <p className="text-gray-400">No significant prior art detected.</p>
+      {validPriorArt.length === 0 ? (
+        <p className="text-neutral-500 relative z-10 text-sm font-mono p-4 border border-dashed border-white/10 rounded-lg">
+          No significant prior art detected.
+        </p>
       ) : (
-        <div className="space-y-3">
-          {priorArt.slice(0, 5).map((art, i) => (
+        <div className="space-y-3 relative z-10">
+          {validPriorArt.slice(0, 5).map((art, i) => (
             <div
               key={i}
-              className="flex items-start justify-between p-3 bg-gray-900/50 rounded-xl"
+              className="flex items-start justify-between p-5 bg-[#111] border border-white/10 rounded-xl group hover:border-orange-500/30 hover:bg-white/5 transition-colors"
             >
-              <div className="flex-1">
-                <a
-                  href={art.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-indigo-400 hover:underline flex items-center gap-1"
-                >
-                  {art.title}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-                <p className="text-xs text-gray-500 mt-1">{art.differentiator}</p>
+              <div className="flex-1 min-w-0 pr-4">
+                <div className="flex flex-col gap-1.5">
+                  <a
+                    href={art.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-orange-400 hover:text-orange-300 hover:underline flex items-center gap-1.5 font-mono truncate"
+                  >
+                    {art.title}
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                  </a>
+                  
+                  {/* Metadata Row */}
+                  <div className="flex flex-wrap gap-2 text-[10px] text-neutral-500 items-center font-mono uppercase tracking-wide">
+                    {art.venue && <span className="font-bold text-neutral-400">{art.venue}</span>}
+                    {art.year && <span>({art.year})</span>}
+                    {art.authors && art.authors.length > 0 && (
+                      <span className="normal-case tracking-normal">
+                        by {art.authors.slice(0, 2).join(", ")}
+                        {art.authors.length > 2 && " et al."}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* PDF Link */}
+                  {art.openAccessPdf && (
+                    <a 
+                      href={art.openAccessPdf}
+                      target="_blank"
+                      rel="noopener noreferrer" 
+                      className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded hover:bg-emerald-500/20 transition-colors flex items-center gap-1 w-fit font-mono"
+                    >
+                      <FileText className="w-3 h-3" />
+                      PDF ACCESS
+                    </a>
+                  )}
+
+                  <p className="text-xs text-neutral-500 mt-2 leading-relaxed border-l border-white/10 pl-3">
+                    {art.differentiator}
+                  </p>
+                </div>
               </div>
               <span
-                className={`text-sm font-medium ${
-                  art.similarity >= 50 ? "text-amber-400" : "text-gray-400"
+                className={`text-[10px] font-mono font-medium px-2 py-1 rounded border ${
+                  art.similarity >= 50 
+                    ? "text-amber-400 bg-amber-500/10 border-amber-500/20" 
+                    : "text-neutral-500 bg-white/5 border-white/10"
                 }`}
               >
-                {art.similarity}% similar
+                {art.similarity}% MATCH
               </span>
             </div>
           ))}

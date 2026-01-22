@@ -1,21 +1,33 @@
-// Google Generative AI (Gemini) Client Configuration STUB
-// Replaced by Claude API - keeping this file for interface compatibility
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// STUB: Throw error if Gemini usage is attempted
-export function getGeminiModel(): any {
-  throw new Error("Gemini model is deprecated. Use getClaudeModel() from @/lib/ai/anthropic instead.");
+function getClient(): GoogleGenerativeAI {
+  const apiKey = process.env.GOOGLE_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+  if (!apiKey) {
+    console.warn("GOOGLE_API_KEY not found. Embeddings will fail.");
+    throw new Error("GOOGLE_API_KEY missing");
+  }
+  return new GoogleGenerativeAI(apiKey);
 }
 
-// STUB: Embedding model
-export function getEmbeddingModel(): any {
-  throw new Error("Gemini embedding model is deprecated.");
-}
-
-// MOCK: Generate embeddings for text (Stub implementation for PDF Extractor)
-// Returns a random 768-dimensional vector to allow PDF uploads to proceed without error
-// NOTE: Vector search functionality will be effectively disabled until a new embedding provider is integrated
 export async function generateEmbedding(text: string): Promise<number[]> {
-  console.warn("generateEmbedding: Returning mock embedding vector (Gemini removed).");
-  // Return a simplified mock vector (length 768 is standard for many models, though Gemini's is 768)
-  return Array(768).fill(0).map(() => Math.random());
+  try {
+    const client = getClient();
+    const model = client.getGenerativeModel({ model: "text-embedding-004" });
+    
+    // Truncate if too long (approx 2000 chars) to stay safe
+    const safeText = text.slice(0, 8000); 
+
+    const result = await model.embedContent(safeText);
+    const embedding = result.embedding;
+    
+    if (!embedding || !embedding.values) {
+        throw new Error("Empty embedding returned");
+    }
+    
+    return embedding.values;
+  } catch (error) {
+    console.warn("Gemini Embedding Failed, returning zero vector:", error);
+    // Fallback to zero vector to prevent crash, but warn heavily
+    return Array(768).fill(0);
+  }
 }

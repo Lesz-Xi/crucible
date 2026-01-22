@@ -1,7 +1,7 @@
 // PDF Synthesis API Route
 import { NextRequest, NextResponse } from "next/server";
 import { processMultiplePDFs } from "@/lib/extractors/pdf-extractor";
-import { runSynthesisPipeline } from "@/lib/ai/synthesis-engine";
+import { runEnhancedSynthesisPipeline } from "@/lib/ai/synthesis-engine";
 import {
   searchPriorArt,
   calculateNoveltyScore,
@@ -50,7 +50,10 @@ export async function POST(request: NextRequest) {
     const pdfResults = await processMultiplePDFs(pdfBuffers);
 
     // Step 2: Run synthesis pipeline
-    const synthesisResult = await runSynthesisPipeline(pdfResults);
+    const synthesisResult = await runEnhancedSynthesisPipeline(pdfResults.successful, {
+      priorArtSearchFn: searchPriorArt,
+      maxRefinementIterations: 2
+    });
 
     // Step 3: Evaluate novelty for each idea
     const ideasWithNovelty = await Promise.all(

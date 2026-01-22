@@ -76,6 +76,59 @@ export interface NovelIdea {
   // Validation
   criticalAnalysis?: CriticalAnalysis;
   structuredHypothesis?: StructuredHypothesis;
+  
+  // Deutschian Epistemology
+  explanationDepth: number; // 0-100: How hard it is to vary?
+  isExplainedByPriorArt: boolean;
+  explanatoryMechanism: string;
+
+  // Sovereign Mastermind Fields
+  masaAudit?: MasaAudit;
+  scientificProse?: string;
+  crucialExperiment?: string;
+  evidenceSnippets?: string[];
+  experimentalDesign?: ExperimentalDesign;
+  scientificArtifacts?: {
+    protocolCode: string; // Python/Julia simulation code
+    labManual: string; // Markdown lab guide
+  };
+  // Physical Ground Truth Validation
+  validationResult?: {
+    success: boolean;
+    metrics?: {
+      pValue?: number;
+      bayesFactor?: number;
+      conclusionValid?: boolean;
+    };
+    error?: string;
+  };
+  priorArt?: PriorArt[];
+  // Hong Theoretical Alignment
+  isLogConcave?: boolean; // True if confidence follows log-concave distribution
+}
+
+export interface SynthesisResult {
+  sources: { 
+    name: string; 
+    type: 'pdf' | 'company';
+    mainThesis: string;
+    keyArguments: string[];
+    concepts: ExtractedConcepts;
+  }[];
+  contradictions: Contradiction[];
+  novelIdeas: NovelIdea[];
+  selectedIdea?: NovelIdea;
+  structuredApproach?: StructuredApproach;
+  metadata?: {
+    refinementIterations: number;
+    calibrationApplied: boolean; // Did we run the check loop?
+    // Hong Pop-Stack-Sorting Metrics (t-Pop-sortability tracking)
+    tPopSortable?: boolean; // true if convergence achieved before maxIterations
+    convergenceStep?: number; // Which iteration step reached approval (0̂)
+    pdfCount?: number;
+    companyCount?: number;
+    totalSources?: number;
+  };
 }
 
 // Tier 1: Calibrated Confidence Factors
@@ -124,6 +177,10 @@ export interface PriorArt {
   url?: string;
   similarity: number;
   differentiator: string;
+  authors?: string[];
+  venue?: string;
+  year?: number;
+  openAccessPdf?: string;
 }
 
 export interface VisualAsset {
@@ -165,9 +222,10 @@ export interface CriticalAnalysis {
   logicalFallacies: string[];
   validityScore: number; // 0-100
   critique: string;
+  remediationConstraints?: string[];
 }
 
-// Scientific Rigor Types (K-Dense/Hong Framework) - Hypothesis Generation
+// Scientific Rigor Types (Epistemic/Hong Framework) - Hypothesis Generation
 export interface Prediction {
   description: string;
   expectedOutcome: string;
@@ -183,6 +241,9 @@ export interface ExperimentalDesign {
   };
   sampleSize?: string;
   duration?: string;
+  // Deutschian Field
+  crucialExperiment: string; // The specific test that could disprove this theory
+  falsificationStatus?: "Falsifiable" | "Unfalsifiable" | "Vague";
 }
 
 export interface CompetingHypothesis {
@@ -200,4 +261,64 @@ export interface StructuredHypothesis {
   selectedHypothesisId: string;
   predictions: Prediction[];
   experimentalDesign: ExperimentalDesign;
+  masaAudit?: MasaAudit;
+}
+
+
+export interface HypothesisNode {
+  id: string;
+  label: string;
+  status: 'generated' | 'testing' | 'refuted' | 'surviving';
+  refutationReason?: string;
+  children?: HypothesisNode[];
+}
+
+// ===== MASA (Multi-Agent Scientific Audit) Types =====
+
+export type GradeQuality = "High" | "Moderate" | "Low" | "Very Low";
+
+export interface RoleBasedCritique {
+  score: number; // 0-100
+  critique: string;
+}
+
+export interface MethodologyCritique extends RoleBasedCritique {
+  grade: GradeQuality;
+  constructValidityIssues: string[];
+  causalityIssues: string[];
+}
+
+export interface SkepticCritique extends RoleBasedCritique {
+  biasesDetected: string[]; // Maps to common_biases.md
+  fallaciesDetected: string[]; // Maps to logical_fallacies.md
+  devilAdvocacy: string; // The "steel-manned" counter-argument
+}
+
+export interface MasaAudit {
+  methodologist: MethodologyCritique;
+  skeptic: SkepticCritique;
+  finalSynthesis: {
+    architectVerdict?: string;
+    validityScore: number;
+    remediationPlan: string[]; // Specific actionable fixes
+    remediationConstraints?: string[]; // Mandatory constraints for re-generation
+    isApproved: boolean; // Veto system
+  };
+  timestamp: Date;
+}
+
+// ===== Scholar API Types =====
+
+export interface ScholarPriorArt {
+  paperId: string;
+  title: string;
+  abstract: string;
+  url: string;
+  citationCount: number;
+  influenceScore: number;
+  year: number;
+  similarity: number;
+  authors?: string[];
+  venue?: string;
+  openAccessPdf?: string;
 }

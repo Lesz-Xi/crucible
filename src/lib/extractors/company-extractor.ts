@@ -2,6 +2,7 @@
 // Fetches company information and extracts structured concepts
 
 import { getClaudeModel } from "@/lib/ai/anthropic";
+import { safeParseJson } from "@/lib/ai/ai-utils";
 import { ExtractedConcepts, Entity } from "@/types";
 
 const SERPER_API_URL = "https://google.serper.dev/search";
@@ -147,19 +148,15 @@ export async function extractCompanyData(
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    // Return basic data if parsing fails
-    return {
-      name: companyName,
-      description: searchResults.slice(0, 500),
-      products: [],
-      industry: "Unknown",
-      rawContent: searchResults,
-    };
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]);
+  // Use safeParseJson for robust parsing with fallback
+  const fallback = {
+    name: companyName,
+    description: searchResults.slice(0, 500),
+    products: [],
+    industry: "Unknown",
+  };
+  
+  const parsed = safeParseJson<any>(responseText, fallback);
   return {
     ...parsed,
     rawContent: searchResults,
@@ -217,12 +214,14 @@ export async function extractCompanyConcepts(
   const result = await model.generateContent(prompt);
   const responseText = result.response.text();
 
-  const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error(`Failed to extract concepts for ${companyData.name}`);
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]);
+  // Use safeParseJson with graceful fallback instead of throwing
+  const fallback = {
+    mainThesis: `${companyData.name} operates in ${companyData.industry}`,
+    keyArguments: companyData.products.slice(0, 3),
+    entities: []
+  };
+  
+  const parsed = safeParseJson<any>(responseText, fallback);
   
   const entities: Entity[] = parsed.entities.map((e: Omit<Entity, 'sourceId'>) => ({
     ...e,
@@ -264,28 +263,31 @@ export async function processCompany(
 /**
  * Process multiple companies in parallel
  */
+// Helper delay for rate limiting
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * Process multiple companies SEQUENTIALLY to prevent rate limits
+ */
 export async function processMultipleCompanies(
   companyNames: string[]
 ): Promise<{ successful: CompanyExtractionResult[]; failed: { name: string; error: string }[] }> {
-  const results = await Promise.allSettled(
-    companyNames.map((name) => processCompany(name))
-  );
-  
   const successful: CompanyExtractionResult[] = [];
   const failed: { name: string; error: string }[] = [];
-
-  results.forEach((result, index) => {
-    if (result.status === "fulfilled") {
-      successful.push(result.value);
-    } else {
-      const errorMsg = result.reason instanceof Error ? result.reason.message : String(result.reason);
-      console.error(`Failed to process company ${companyNames[index]}:`, errorMsg);
-      failed.push({
-        name: companyNames[index],
-        error: errorMsg,
-      });
+  
+  // Serialize to prevent rate limit (429) errors
+  for (const name of companyNames) {
+    try {
+      const result = await processCompany(name);
+      successful.push(result);
+      // Rate limiting delay between companies
+      await delay(1500);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to process company ${name}:`, errorMsg);
+      failed.push({ name, error: errorMsg });
     }
-  });
+  }
 
   return { successful, failed };
 }
