@@ -236,7 +236,8 @@ export default function HybridSynthesisPage() {
   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#030303] text-neutral-200 font-sans selection:bg-orange-500/30 relative overflow-x-hidden">
+    <AccessKeyGate>
+      <div className="flex flex-col min-h-screen bg-[#030303] text-neutral-200 font-sans selection:bg-orange-500/30 relative overflow-x-hidden">
 
       {/* Header */}
       <header className="border-b border-white/5 bg-[#030303]/80 backdrop-blur-xl sticky top-0 z-50">
