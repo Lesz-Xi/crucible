@@ -15,7 +15,7 @@ export function AccessKeyGate({ children }: AccessKeyGateProps) {
 
   useEffect(() => {
     const savedKey = localStorage.getItem("crucible_access_key");
-    const masterKey = process.env.NEXT_PUBLIC_APP_ACCESS_KEY;
+    const masterKey = process.env.NEXT_PUBLIC_APP_ACCESS_KEY || "crucible-master-2026";
     
     if (savedKey === masterKey) {
       setIsAuthorized(true);
@@ -26,7 +26,7 @@ export function AccessKeyGate({ children }: AccessKeyGateProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const masterKey = process.env.NEXT_PUBLIC_APP_ACCESS_KEY;
+    const masterKey = process.env.NEXT_PUBLIC_APP_ACCESS_KEY || "crucible-master-2026";
 
     if (passcode === masterKey) {
       localStorage.setItem("crucible_access_key", passcode);
