@@ -91,6 +91,7 @@ export interface NovelIdea {
   scientificArtifacts?: {
     protocolCode: string; // Python/Julia simulation code
     labManual: string; // Markdown lab guide
+    labJob?: LabJob; // RIL JSON payload
   };
   // Physical Ground Truth Validation
   validationResult?: {
@@ -321,4 +322,60 @@ export interface ScholarPriorArt {
   authors?: string[];
   venue?: string;
   openAccessPdf?: string;
+}
+
+// ===== Robotic Interface Layer (Phase 3) =====
+
+export interface LabJob {
+  job_id: string;
+  experiment_name: string;
+  safety_level: 'BSL-1' | 'BSL-2';
+  resources: LabResources;
+  steps: LabStep[];
+}
+
+export interface LabResources {
+  reagents: Reagent[];
+  labware: Labware[];
+}
+
+export interface Reagent {
+  id: string;
+  name: string;
+  initial_structure?: string;
+  volume_ml: number;
+}
+
+export interface Labware {
+  id: string;
+  type: '96-well-plate' | 'trough-12row' | 'tube-rack';
+}
+
+export interface LabStep {
+  step_id: number;
+  action: 'aspirate' | 'dispense' | 'mix' | 'incubate' | 'thermocycle' | 'measure_absorbance';
+  parameters: ActionParams;
+}
+
+export type ActionParams = TransferParams | IncubateParams | MeasureParams;
+
+export interface TransferParams {
+  source_labware?: string;
+  target_labware?: string;
+  source_well?: string;
+  target_well?: string;
+  volume_ul: number;
+  flow_rate_ul_per_sec?: number;
+}
+
+export interface IncubateParams {
+  duration_seconds: number;
+  temperature_celsius: number;
+  shaking_rpm?: number;
+}
+
+export interface MeasureParams {
+  target_labware: string;
+  wavelength_nm: number;
+  metric_name: string;
 }

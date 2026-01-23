@@ -7,6 +7,7 @@ import { getClaudeModel } from "@/lib/ai/anthropic";
 import { HypothesisGenerator } from "@/lib/ai/hypothesis-generator";
 import { MasaAuditor } from "./masa-auditor";
 import { ExperimentGenerator } from "./experiment-generator";
+import { MockCloudLab } from "@/lib/services/mock-cloud-lab";
 import { cleanJson, safeParseJson } from "./ai-utils";
 import {
 PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
@@ -901,9 +902,34 @@ export async function runEnhancedSynthesisPipeline(
       
       currentIdea.scientificProse = prose;
       currentIdea.scientificArtifacts = artifacts;
+
+      // ROBOTIC INTERFACE LAYER (RIL) - Mock Execution (Phase 3)
+      if (artifacts.labJob) {
+        if (eventEmitter) {
+          eventEmitter.emit({ event: 'thinking_step', content: `[RIL] Submitting LabJob ${artifacts.labJob.job_id} to Mock Cloud Lab...` });
+        }
+        const mockLab = new MockCloudLab();
+        const labResult = await mockLab.submitJob(artifacts.labJob);
+        
+        // RIL result takes precedence over In Silico simulation
+        currentIdea.validationResult = labResult;
+        
+        if (eventEmitter) {
+            eventEmitter.emit({ 
+              event: 'protocol_validated', 
+              ideaId: currentIdea.id,
+              success: labResult.success,
+              pValue: labResult.metrics?.pValue
+            });
+            eventEmitter.emit({
+              event: 'thinking_step',
+              content: `[RIL] Execution Complete. Success: ${labResult.success}. p-value: ${labResult.metrics?.pValue}`
+            });
+        }
+      } 
       
-      // PHYSICAL GROUND TRUTH: Validate protocol in sandbox
-      if (config.validateProtocolFn && artifacts.protocolCode) {
+      // PHYSICAL GROUND TRUTH: Validate protocol in sandbox (Fallback/Complementary)
+      else if (config.validateProtocolFn && artifacts.protocolCode) {
         try {
           if (eventEmitter) {
             eventEmitter.emit({ event: 'thinking_step', content: `Validating simulation protocol...` });

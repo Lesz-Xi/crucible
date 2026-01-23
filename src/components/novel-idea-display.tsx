@@ -2,8 +2,10 @@
 
 // Novel Idea Display Component
 import { NovelIdea, StructuredApproach, PriorArt, MasaAudit } from "@/types";
-import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle2, ExternalLink, ShieldCheck, Microscope, Zap, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle2, ExternalLink, ShieldCheck, Microscope, Zap, ChevronDown, ChevronUp, FileText, Code, FlaskConical } from "lucide-react";
 import { useState } from "react";
+import { SpectralHealthWidget } from "./spectral-health-widget";
+import { LabJobViewer } from "./lab-job-viewer";
 
 interface NovelIdeaCardProps {
   idea: NovelIdea;
@@ -141,7 +143,113 @@ export function NovelIdeaCard({
              <AuditTraceViewer audit={idea.masaAudit} />
            </div>
         )}
+
+        {/* Scientific Artifacts (Phase 3) */}
+        {(idea as any).scientificArtifacts && (
+          <ScientificArtifactsViewer artifacts={(idea as any).scientificArtifacts} />
+        )}
+
+        {/* Spectral Health (Phase 3) */}
+        {(idea as any).spectralInterference && (
+          <div className="pt-2">
+            <SpectralHealthWidget interference={(idea as any).spectralInterference} />
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
+
+interface ScientificArtifactsViewerProps {
+  artifacts: {
+    protocolCode?: string;
+    labManual?: string;
+    labJob?: any;
+  };
+}
+
+function ScientificArtifactsViewer({ artifacts }: ScientificArtifactsViewerProps) {
+  const [expandedSection, setExpandedSection] = useState<'protocol' | 'manual' | 'labjob' | null>(null);
+
+  if (!artifacts.protocolCode && !artifacts.labManual && !artifacts.labJob) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-3 pt-4 border-t border-white/5">
+      <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-wider">Scientific Artifacts</h4>
+      
+      {/* Protocol Code */}
+      {artifacts.protocolCode && (
+        <div className="space-y-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedSection(expandedSection === 'protocol' ? null : 'protocol');
+            }}
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-[#111] border border-white/10 hover:border-blue-500/50 transition-all text-left group"
+          >
+            <div className="flex items-center gap-2">
+              <Code className="w-4 h-4 text-blue-500 group-hover:text-blue-400" />
+              <span className="text-sm font-medium text-neutral-300 group-hover:text-blue-200">Protocol Code (Python)</span>
+            </div>
+            {expandedSection === 'protocol' ? <ChevronUp className="w-4 h-4 text-neutral-600" /> : <ChevronDown className="w-4 h-4 text-neutral-600" />}
+          </button>
+          {expandedSection === 'protocol' && (
+            <pre className="p-4 bg-[#0A0A0A] border border-white/10 rounded-lg overflow-x-auto text-xs text-neutral-300 font-mono animate-in fade-in slide-in-from-top-2 duration-300">
+              <code>{artifacts.protocolCode}</code>
+            </pre>
+          )}
+        </div>
+      )}
+
+      {/* Lab Manual */}
+      {artifacts.labManual && (
+        <div className="space-y-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedSection(expandedSection === 'manual' ? null : 'manual');
+            }}
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-[#111] border border-white/10 hover:border-green-500/50 transition-all text-left group"
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4 text-green-500 group-hover:text-green-400" />
+              <span className="text-sm font-medium text-neutral-300 group-hover:text-green-200">Lab Manual (Markdown)</span>
+            </div>
+            {expandedSection === 'manual' ? <ChevronUp className="w-4 h-4 text-neutral-600" /> : <ChevronDown className="w-4 h-4 text-neutral-600" />}
+          </button>
+          {expandedSection === 'manual' && (
+            <div className="p-4 bg-[#0A0A0A] border border-white/10 rounded-lg overflow-x-auto text-sm text-neutral-300 prose prose-invert prose-sm max-w-none animate-in fade-in slide-in-from-top-2 duration-300">
+              <pre className="whitespace-pre-wrap font-sans">{artifacts.labManual}</pre>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Lab Job (RIL) */}
+      {artifacts.labJob && (
+        <div className="space-y-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedSection(expandedSection === 'labjob' ? null : 'labjob');
+            }}
+            className="w-full flex items-center justify-between p-3 rounded-lg bg-[#111] border border-white/10 hover:border-purple-500/50 transition-all text-left group"
+          >
+            <div className="flex items-center gap-2">
+              <FlaskConical className="w-4 h-4 text-purple-500 group-hover:text-purple-400" />
+              <span className="text-sm font-medium text-neutral-300 group-hover:text-purple-200">Robotic Lab Job (RIL)</span>
+            </div>
+            {expandedSection === 'labjob' ? <ChevronUp className="w-4 h-4 text-neutral-600" /> : <ChevronDown className="w-4 h-4 text-neutral-600" />}
+          </button>
+          {expandedSection === 'labjob' && (
+            <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+              <LabJobViewer labJob={artifacts.labJob} />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

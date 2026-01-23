@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "../supabase/server";
 import { SynthesisResult, NovelIdea, MasaAudit } from "../../types";
 import { generateEmbedding } from "../ai/gemini";
+import { SpectralService } from "../services/spectral-service";
 
 export class PersistenceService {
   /**
@@ -30,6 +31,7 @@ export class PersistenceService {
 
       // 2. Create Results (Novel Ideas)
       for (const idea of result.novelIdeas) {
+        const artifacts = (idea as any).scientificArtifacts;
         const { data: savedIdea, error: ideaError } = await supabase
           .from("synthesis_results")
           .insert({
@@ -43,7 +45,10 @@ export class PersistenceService {
             scientific_prose: (idea as any).scientificProse,
             structured_hypothesis: idea.structuredHypothesis,
             evidence_snippets: idea.evidenceSnippets,
-            prior_art: idea.priorArt
+            prior_art: idea.priorArt,
+            protocol_code: artifacts?.protocolCode,
+            lab_manual: artifacts?.labManual,
+            lab_job: artifacts?.labJob
           })
           .select()
           .single();
@@ -82,6 +87,29 @@ export class PersistenceService {
           const rejectReason = isRejected ? masaAudit.finalSynthesis.architectVerdict : undefined;
           
           await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason);
+
+          // 5. Cognitive Sovereignty: Spectral Interference Check
+          const spectralService = new SpectralService();
+          const embedding = await generateEmbedding(embeddingText);
+          const interference = await spectralService.calculateInterference(embedding);
+          
+          // Convert Map to plain object for JSONB storage
+          const interferenceObj = Object.fromEntries(interference);
+          
+          // Save spectral metrics to database
+          if (Object.keys(interferenceObj).length > 0) {
+            await supabase
+              .from("synthesis_results")
+              .update({ spectral_interference: interferenceObj })
+              .eq("id", savedIdea.id);
+              
+            console.log(`[Persistence] Spectral Interference for ${idea.thesis.slice(0, 30)}...`);
+            for (const [domain, strength] of interference) {
+              if (strength > 0.5) {
+                console.warn(`⚠️ High Interference with domain [${domain}]: ${strength.toFixed(2)}`);
+              }
+            }
+          }
         }
       }
 
@@ -146,6 +174,13 @@ export class PersistenceService {
         novelIdeas: (ideas || []).map(idea => ({
           ...idea,
           priorArt: idea.prior_art,
+          scientificArtifacts: {
+            protocolCode: idea.protocol_code || '',
+            labManual: idea.lab_manual || '',
+            labJob: idea.lab_job
+          },
+          spectralInterference: idea.spectral_interference ? 
+            new Map(Object.entries(idea.spectral_interference)) : undefined,
           criticalAnalysis: idea.audit_traces?.[0] ? {
             verdict: idea.audit_traces[0].architect_verdict,
             isApproved: idea.audit_traces[0].is_approved,
