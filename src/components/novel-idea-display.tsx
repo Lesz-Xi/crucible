@@ -414,41 +414,71 @@ export function StructuredApproachDisplay({
 
       <div className="grid md:grid-cols-2 gap-6 relative z-10 pt-6 border-t border-white/10">
         {/* Risks */}
-        <div>
-          <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-3">Risks & Mitigations</h3>
-          <div className="space-y-2">
-            {approach.risks.map((risk, i) => (
-              <div
-                key={i}
-                className={`p-3 rounded-lg border text-xs ${
-                  risk.severity === "high"
-                    ? "border-red-500/20 bg-red-500/5 text-red-200"
-                    : risk.severity === "medium"
-                      ? "border-amber-500/20 bg-amber-500/5 text-amber-200"
-                      : "border-white/10 bg-white/5 text-neutral-300"
-                }`}
-              >
-                <div className="flex items-start gap-2 mb-2">
-                  <AlertTriangle
-                    className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${
-                      risk.severity === "high"
-                        ? "text-red-400"
-                        : risk.severity === "medium"
-                          ? "text-amber-400"
-                          : "text-neutral-500"
-                    }`}
-                  />
-                  <span className="font-medium leading-tight">
-                    {risk.description}
-                  </span>
-                </div>
-                <div className="text-neutral-500 pl-5.5 font-mono text-[10px] uppercase">
-                  Mitigation: <span className="text-neutral-400 normal-case font-sans">{risk.mitigation}</span>
-                </div>
-              </div>
-            ))}
+          <div>
+            <h3 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest mb-3">Risks & Mitigations</h3>
+            <div className="space-y-3">
+              {approach.risks.map((risk, i) => {
+                const severityConfig = {
+                  high: {
+                     color: "text-rose-400",
+                     borderColor: "border-rose-500/20",
+                     bgColor: "bg-rose-500/5 hover:bg-rose-500/10",
+                     badge: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+                     icon: AlertTriangle
+                  },
+                  medium: {
+                     color: "text-amber-400",
+                     borderColor: "border-amber-500/20",
+                     bgColor: "bg-amber-500/5 hover:bg-amber-500/10",
+                     badge: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+                     icon: AlertTriangle
+                  },
+                  low: {
+                     color: "text-blue-400",
+                     borderColor: "border-blue-500/20",
+                     bgColor: "bg-blue-500/5 hover:bg-blue-500/10",
+                     badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                     icon: ShieldCheck
+                  }
+                };
+
+                const config = severityConfig[risk.severity as keyof typeof severityConfig] || severityConfig.medium;
+                const Icon = config.icon;
+
+                return (
+                  <div
+                    key={i}
+                    className={`p-4 rounded-xl border transition-all duration-300 group ${config.borderColor} ${config.bgColor}`}
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-center gap-2">
+                         <div className={`p-1.5 rounded-lg border ${config.borderColor} ${config.badge.split(' ')[0]}`}>
+                            <Icon className={`w-3.5 h-3.5 ${config.color}`} />
+                         </div>
+                         <span className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${config.badge}`}>
+                            {risk.severity || 'Medium'} Risk
+                         </span>
+                      </div>
+                    </div>
+                    
+                    <p className={`text-sm font-medium leading-relaxed mb-3 ${config.color.replace('400', '200')}`}>
+                      {risk.description}
+                    </p>
+
+                    <div className="flex items-start gap-2 pl-3 border-l-2 border-white/10 group-hover:border-white/20 transition-colors">
+                      <ShieldCheck className="w-3.5 h-3.5 text-neutral-500 mt-0.5" />
+                      <div>
+                         <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-0.5">Mitigation Strategy</span>
+                         <p className="text-xs text-neutral-400 leading-relaxed">
+                            {risk.mitigation}
+                         </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
         {/* Success Metrics */}
         <div>

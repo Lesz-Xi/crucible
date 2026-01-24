@@ -10,6 +10,7 @@ import {
   StructuredApproachDisplay,
   PriorArtDisplay,
 } from "@/components/novel-idea-display";
+import MetacognitionDashboard from "@/components/MetacognitionDashboard";
 import { SynthesisAuditView } from "@/components/synthesis-audit-view";
 import { 
   NovelIdea, 
@@ -18,7 +19,8 @@ import {
   SynthesisResult,
   MasaAudit,
   Contradiction,
-  ExtractedConcepts
+  ExtractedConcepts,
+  ConsciousnessState
 } from "@/types";
 import {
   Loader2,
@@ -34,7 +36,8 @@ import {
   Plus,
   AlertCircle,
   Download,
-  Crown
+  Crown,
+  Shield
 } from "lucide-react";
 import { downloadMarkdown, SynthesisExportData } from "@/lib/services/markdown-export-service";
 import { StreamEvent } from "@/lib/streaming-event-emitter";
@@ -71,6 +74,7 @@ interface HybridSynthesisResponse {
       companyCount: number;
       totalSources: number;
     };
+    consciousnessState?: ConsciousnessState; // Phase 23: Layer 0 State
   };
   error?: string;
 }
@@ -107,6 +111,9 @@ export default function HybridSynthesisPage() {
   const totalSources = files.length + companies.length;
   const canSynthesize = totalSources >= 2 && totalSources <= 12;
 
+  // Real-time Consciousness State (SSE)
+  const [realtimeState, setRealtimeState] = useState<ConsciousnessState | null>(null);
+
   // Handle cinematic transition from stabilization to results
   useEffect(() => {
     if (stage === "stabilizing") {
@@ -126,6 +133,7 @@ export default function HybridSynthesisPage() {
     setStage("processing");
     setError(null);
     setLatestEvent(null);
+    setRealtimeState(null); // Reset real-time state
     setIsSynthesizing(true);
 
     try {
@@ -166,6 +174,10 @@ export default function HybridSynthesisPage() {
                  const jsonStr = part.substring(6);
                  const event: StreamEvent = JSON.parse(jsonStr);
                  setLatestEvent(event);
+                 
+                 // Artificial delay to ensure React renders each event state
+                 // preventing batching from swallowing consecutive logs
+                 await new Promise(resolve => setTimeout(resolve, 50));
 
                  if (event.event === 'complete') {
                     // Safe cast assuming the backend returns the correct shape
@@ -264,6 +276,10 @@ export default function HybridSynthesisPage() {
                   <History className="w-3.5 h-3.5" />
                   <span>History</span>
                 </button>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-mono font-bold rounded-lg border border-indigo-500/20 uppercase tracking-wider">
+                  <Shield className="w-3 h-3" />
+                  <span>Phase 3: Orthogonality Active</span>
+                </div>
                 {stage === "results" && (
                   <button
                     onClick={resetToNew}
@@ -618,6 +634,16 @@ export default function HybridSynthesisPage() {
                     </div>
                   )}
                 </div>
+              </section>
+            )}
+
+            {/* Phase 23/24: Layer 0 Consciousness Dashboard (Real-time + Final) */}
+            {(realtimeState || result?.consciousnessState) && (
+              <section className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+                <MetacognitionDashboard 
+                  consciousnessState={realtimeState || result?.consciousnessState!}
+                  className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 shadow-xl"
+                />
               </section>
             )}
 

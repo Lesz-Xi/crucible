@@ -93,13 +93,15 @@ export interface NovelIdea {
     labManual: string; // Markdown lab guide
     labJob?: LabJob; // RIL JSON payload
   };
-  // Physical Ground Truth Validation
+  // Chemical Entity Validation
   validationResult?: {
     success: boolean;
     metrics?: {
       pValue?: number;
       bayesFactor?: number;
       conclusionValid?: boolean;
+      chemicalAlignmentScore?: number;
+      physicalAlignmentScore?: number;
     };
     error?: string;
   };
@@ -130,6 +132,25 @@ export interface SynthesisResult {
     companyCount?: number;
     totalSources?: number;
   };
+  consciousnessState?: ConsciousnessState;
+}
+
+export interface ConsciousnessState {
+  current_mode: 'strict' | 'balanced' | 'exploratory';
+  ceiling: number;
+  friction_alert: boolean;
+  history?: {
+    scores: number[];
+    avg_score: number;
+    rejection_rate: number;
+    variance: number;
+  };
+  causal_evidence?: {
+    PN_mode_caused_failure?: number;
+    PS_switch_to_exploratory?: number;
+    RR_mode_risk_ratio?: number;
+  };
+  mode_history?: { mode: string; score: number; timestamp: string }[];
 }
 
 // Tier 1: Calibrated Confidence Factors

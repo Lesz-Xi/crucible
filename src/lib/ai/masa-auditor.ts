@@ -1,6 +1,9 @@
 import { getClaudeModel } from "./anthropic";
 import { NovelIdea, MasaAudit, PriorArt, GradeQuality } from "../../types";
 import { safeParseJson } from "./ai-utils";
+import { MasaSelfModel } from "./masa-self-model";
+import { MasaMemory } from "./masa-memory";
+import { StreamingEventEmitter } from "../streaming-event-emitter";
 
 // ==========================================
 // 1. THE EPISTEMOLOGIST (Explanatory Depth)
@@ -83,6 +86,16 @@ Your role is to analyze the conflict between "The Epistemologist" (who values de
 `;
 
 export class MasaAuditor {
+  private selfModel?: MasaSelfModel;
+  private memory?: MasaMemory;
+  private emitter?: StreamingEventEmitter;
+
+  constructor(selfModel?: MasaSelfModel, memory?: MasaMemory, emitter?: StreamingEventEmitter) {
+    this.selfModel = selfModel;
+    this.memory = memory;
+    this.emitter = emitter;
+  }
+
   async audit(idea: NovelIdea, priorArt: PriorArt[]): Promise<MasaAudit> {
     const model = getClaudeModel();
     
@@ -90,10 +103,39 @@ export class MasaAuditor {
       ? priorArt.map(p => `- ${p.title}: ${p.differentiator}`).join("\n")
       : "No significant prior art found.";
 
+    // ==============================================
+    // LAYER 0: CONSCIOUSNESS CALIBRATION
+    // ==============================================
+    let metaPrompt = '';
+    let currentMode = 'balanced';
+    
+    if (this.selfModel) {
+      const calibration = this.selfModel.calibrate();
+      currentMode = calibration.mode;
+      
+      if (calibration.meta_prompt) {
+        metaPrompt = '\n\n## LAYER 0 CALIBRATION GUIDANCE:\n' + calibration.meta_prompt;
+        console.log(`[Layer 0] Mode: ${currentMode}, Friction Alert: ${calibration.friction_alert}`);
+      }
+
+      // Check memory for similar successful patterns
+      if (this.memory) {
+        const pattern = this.memory.findSimilarPattern(
+          this.extractDomain(idea.thesis),
+          idea.thesis
+        );
+        if (pattern) {
+          metaPrompt += `\n\n## SUCCESSFUL PATTERN RECALL (Ch 14 Engram):\nYou previously approved a similar idea in "${pattern.engram.domain}" using the "${pattern.engram.lens}" lens with score ${pattern.engram.score}/100.
+Consider applying similar reasoning here.`;
+        }
+      }
+    }
+
     const epistemologistPrompt = EPISTEMOLOGIST_PROMPT
       .replace("{THESIS}", idea.thesis)
       .replace("{MECHANISM}", idea.mechanism || "Not specified")
-      .replace("{PRIOR_ART}", priorArtText);
+      .replace("{PRIOR_ART}", priorArtText)
+      + metaPrompt; // INJECT META-PROMPT
 
     const skepticPrompt = SKEPTIC_PROMPT
       .replace("{THESIS}", idea.thesis)
@@ -145,6 +187,27 @@ export class MasaAuditor {
       idea.experimentalDesign.crucialExperiment = epiJson.crucialExperiment;
     }
 
+    // ==============================================
+    // LAYER 0: UPDATE HISTORY & RECORD SUCCESS
+    // ==============================================
+    const finalScore = Math.round(archJson.synthesisScore || 0);
+    
+    if (this.selfModel) {
+      this.selfModel.updateHistory(finalScore);
+      this.selfModel.updateModeHistory(finalScore); // Pearl L2/L3: Track (mode, score) for causal inference
+    }
+
+    if (this.memory && finalScore > 70) {
+      // Ch 14: Record successful pattern as engram
+      this.memory.recordSuccess(
+        this.extractDomain(idea.thesis),
+        this.detectLens(archJson.fundamentalBreakthrough || ''),
+        finalScore,
+        archJson.architectVerdict || '',
+        idea.thesis
+      );
+    }
+
     return {
       methodologist: { 
         score: epiJson.explanationDepth,
@@ -180,5 +243,30 @@ export class MasaAuditor {
     }
     if (plan.length === 0) plan.push("Theory demonstrates significant explanatory depth. Proceed to crucial testing.");
     return plan;
+  }
+
+  /**
+   * Detect which conceptual lens was used in the breakthrough
+   * (Simple heuristic, could be more sophisticated)
+   */
+  private detectLens(breakthrough: string): string {
+    const lower = breakthrough.toLowerCase();
+    if (lower.includes('complexity') || lower.includes('kolmogorov')) return 'Complexity Theory';
+    if (lower.includes('thermodynamic') || lower.includes('entropy')) return 'Thermodynamics';
+    if (lower.includes('information') || lower.includes('shannon')) return 'Information Theory';
+    if (lower.includes('causal') || lower.includes('structural')) return 'Causal Inference';
+    return 'General Mechanism';
+  }
+
+  /**
+   * Extract domain from thesis (simple keyword matching)
+   */
+  private extractDomain(thesis: string): string {
+    const lower = thesis.toLowerCase();
+    if (lower.includes('interpretability') || lower.includes('mechanistic')) return 'Mechanistic Interpretability';
+    if (lower.includes('alignment') || lower.includes('agi safety')) return 'AI Alignment';
+    if (lower.includes('active inference') || lower.includes('free energy')) return 'Active Inference';
+    if (lower.includes('superposition') || lower.includes('sparse')) return 'Neural Architecture';
+    return 'Unknown';
   }
 }

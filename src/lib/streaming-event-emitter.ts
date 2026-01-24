@@ -17,14 +17,26 @@ export type StreamEvent =
   | { event: 'spectral_gap_analysis', spectralGap: { lambda_min: number, lambda_max: number, spectralGap: number, conditionNumber: number, threshold: number }, lipschitzConstant: number, expansionTriggered?: boolean }
   | { event: 'thermodynamic_expansion', triggered: boolean, temperature: number }
   | { event: 'phase_transition', phase: string, stepIndex: number }
+  | { event: 'phase_transition', phase: string, stepIndex: number }
+  | { 
+      event: 'consciousness_update', 
+      state: {
+        mode: 'strict' | 'balanced' | 'exploratory',
+        ceiling: number,
+        friction_alert: { alert: boolean, reason?: string },
+        causal_evidence?: { pn: number, ps: number, rr: number },
+        history: { scores: number[], avg_score: number, rejection_rate: number },
+        mode_history: Array<{ mode: string, score: number, timestamp: string }>
+      }
+    }
   | { event: 'complete', synthesis: SynthesisResult }
   | { event: 'error', message: string };
 
 export class StreamingEventEmitter {
-  private controller: ReadableStreamDefaultController;
+  private controller: ReadableStreamDefaultController | WritableStreamDefaultWriter;
   private encoder: TextEncoder;
 
-  constructor(controller: ReadableStreamDefaultController) {
+  constructor(controller: ReadableStreamDefaultController | WritableStreamDefaultWriter) {
     this.controller = controller;
     this.encoder = new TextEncoder();
   }
@@ -32,7 +44,13 @@ export class StreamingEventEmitter {
   emit(data: StreamEvent) {
     try {
       const payload = `data: ${JSON.stringify(data)}\n\n`;
-      this.controller.enqueue(this.encoder.encode(payload));
+      const encoded = this.encoder.encode(payload);
+      
+      if ('enqueue' in this.controller) {
+        this.controller.enqueue(encoded);
+      } else {
+        this.controller.write(encoded);
+      }
     } catch (error) {
       console.warn("Failed to emit event:", error);
     }

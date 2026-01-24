@@ -25,7 +25,7 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             key={step.id} 
             className={`
               relative pl-12 transition-all duration-500 group
-              ${isActive ? "scale-[1.02]" : "opacity-60 hover:opacity-100"}
+              ${isActive ? "" : "opacity-60 hover:opacity-100"}
             `}
           >
             {/* Upper Line (Connects to previous) - Hidden for first item */}
@@ -61,7 +61,7 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             {/* Step Content */}
             <div className={`
               relative rounded-xl border p-5 transition-all duration-300
-              ${isActive ? "bg-[#0A0A0A] border-orange-500/30 shadow-lg shadow-orange-500/10" : 
+              ${isActive ? "bg-[#0A0A0A] border-orange-500/30 shadow-lg shadow-orange-500/10 scale-[1.02] origin-left" : 
                 "bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10"}
             `}>
               <div className="flex items-center justify-between mb-2">
