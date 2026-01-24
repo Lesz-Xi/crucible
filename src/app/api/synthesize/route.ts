@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
         pdfResults.successful, 
         {
           priorArtSearchFn: searchPriorArt,
-          maxRefinementIterations: 2
-        },
-        userId,
-        emitter
+          maxRefinementIterations: 2,
+          eventEmitter: emitter,
+          userId: userId // Add explicitly to config
+        }
       );
 
       // Step 3: Evaluate novelty for each idea

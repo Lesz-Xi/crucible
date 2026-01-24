@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "../supabase/server";
 import { SynthesisResult, NovelIdea, MasaAudit } from "../../types";
 import { generateEmbedding } from "../ai/gemini";
+import { DomainProjector } from "../services/embedding-service";
 import { SpectralService } from "../services/spectral-service";
 
 export class PersistenceService {
@@ -86,7 +87,9 @@ export class PersistenceService {
           const isRejected = !masaAudit.finalSynthesis.isApproved;
           const rejectReason = isRejected ? masaAudit.finalSynthesis.architectVerdict : undefined;
           
-          await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason);
+          // Phase 3: Domain-Aware Storage
+          const domain = (idea as any).domain || "General";
+          await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason, domain);
 
           // 5. Cognitive Sovereignty: Spectral Interference Check
           const spectralService = new SpectralService();
@@ -213,12 +216,18 @@ export class PersistenceService {
 
   /**
    * Vector Memory: Check if this idea matches a previously rejected concept
+   * Phase 3: Support domain-aware Vector-Space Orthogonality
    */
-  async checkRejection(thesis: string, mechanism: string): Promise<boolean> {
+  async checkRejection(thesis: string, mechanism: string, domain?: string): Promise<boolean> {
     try {
       const supabase = await createServerSupabaseClient();
       const text = `Thesis: ${thesis}\nMechanism: ${mechanism}`;
-      const embedding = await generateEmbedding(text);
+      let embedding = await generateEmbedding(text);
+      
+      // Phase 3: Orthogonal Manifold Projection
+      if (domain) {
+        embedding = DomainProjector.project(embedding, domain);
+      }
       
       const { data, error } = await supabase.rpc('match_idea_embeddings', {
           query_embedding: embedding,
@@ -245,11 +254,17 @@ export class PersistenceService {
 
   /**
    * Helper: Save embedding to idea_embeddings table
+   * Phase 3: Support domain-aware Vector-Space Orthogonality
    */
-  async saveIdeaEmbedding(ideaId: string, text: string, isRejected: boolean, reason?: string) {
+  async saveIdeaEmbedding(ideaId: string, text: string, isRejected: boolean, reason?: string, domain?: string) {
       try {
           const supabase = await createServerSupabaseClient();
-          const embedding = await generateEmbedding(text);
+          let embedding = await generateEmbedding(text);
+          
+          // Phase 3: Orthogonal Manifold Projection
+          if (domain) {
+            embedding = DomainProjector.project(embedding, domain);
+          }
           
           await supabase.from("idea_embeddings").insert({
               idea_id: ideaId,
