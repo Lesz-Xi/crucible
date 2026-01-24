@@ -131,8 +131,8 @@ export function NovelIdeaCard({
                <ShieldCheck className="w-3 h-3 text-neutral-500" />
                VALIDITY SCORE
              </span>
-             <span className={idea.criticalAnalysis.validityScore >= 70 ? "text-orange-400" : "text-amber-400"}>
-               {idea.criticalAnalysis.validityScore}/100
+             <span className={(idea.criticalAnalysis.validityScore ?? 0) >= 70 ? "text-orange-400" : "text-amber-400"}>
+               {idea.criticalAnalysis.validityScore ?? 0}/100
              </span>
           </div>
         )}
@@ -523,10 +523,10 @@ export function PriorArtDisplay({ priorArt, noveltyScore }: PriorArtDisplayProps
       <div className="relative z-10 flex items-center justify-between mb-6 border-b border-white/10 pb-4">
         <h3 className="text-xl font-bold text-neutral-200 font-mono tracking-tight">Prior Art Analysis</h3>
         <div className={`text-xl font-mono font-bold ${scoreColor} bg-white/[0.03] px-3 py-1.5 rounded border border-white/5`}>
-          {validPriorArt.length === 0 && !noveltyScore ? (
+          {validPriorArt.length === 0 && (noveltyScore === undefined || noveltyScore === null) ? (
             <span className="text-orange-400">95% NOVEL <span className="text-xs text-orange-500/70 font-mono tracking-normal normal-case">(no similar work found)</span></span>
           ) : (
-            <>{noveltyScore || 95}% NOVEL</>
+            <>{noveltyScore ?? 95}% NOVEL</>
           )}
         </div>
       </div>
