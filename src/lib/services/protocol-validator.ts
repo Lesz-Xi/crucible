@@ -1,4 +1,4 @@
-// Protocol Validator Service - Physical Ground Truth Implementation
+// Protocol Validator Service - Chemical Entity Validation Implementation
 // Uses Pyodide (WebAssembly) to securely execute generated Python protocols
 // Transitions MASA from "Philosopher" to "Scientist"
 
@@ -21,6 +21,42 @@ export interface ValidationResult {
   };
   executionTimeMs: number;
   error?: string;
+  feasibilityScore?: number; // 0-1 score for reaction feasibility
+}
+
+/**
+ * Phase 3 Engineering: Sanity Gate
+ * Validates 'Verbs' (reactions/actions) against physical and chemical constraints.
+ */
+export class SanityGate {
+  private static impossibleVerbs = [
+    'react noble gas at stp',
+    'extract energy from vacuum',
+    'cold fusion at room temperature',
+    'impossible yield > 100',
+    'perpetual motion'
+  ];
+
+  /**
+   * Performs a heuristic check on the protocol code for physical impossibilities.
+   */
+  static evaluate(protocolCode: string): number {
+    const codeLower = protocolCode.toLowerCase();
+    let score = 1.0;
+
+    for (const verb of this.impossibleVerbs) {
+      if (codeLower.includes(verb)) {
+        score *= 0.1; // Drastic reduction for impossible verbs
+      }
+    }
+
+    // Heuristic: check for basic thermodynamic violations (mock)
+    if (codeLower.includes('delta_g > 0') && codeLower.includes('spontaneous')) {
+      score *= 0.5;
+    }
+
+    return score;
+  }
 }
 
 /**
@@ -141,11 +177,15 @@ sys.stderr = sys.__stderr__
     // Try to extract metrics from output
     const metrics = parseMetrics(stdout);
     
+    // Phase 3: Run Sanity Gate evaluation
+    const feasibilityScore = SanityGate.evaluate(protocolCode);
+    
     return {
       success: true,
       stdout,
       stderr,
       metrics,
+      feasibilityScore,
       executionTimeMs: Date.now() - startTime
     };
     
