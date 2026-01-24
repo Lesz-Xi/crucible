@@ -140,7 +140,7 @@ export async function detectContradictions(
 
 // ===== NOVEL IDEA GENERATION (Hong-Inspired) =====
 
-const HYPOTHESIS_GENERATION_PROMPT = `You are the Sovereign Synthesis Engine. Generate 3-5 distinct, competing scientific hypotheses (inventions) that resolve the identified contradictions.
+const HYPOTHESIS_GENERATION_PROMPT = `You are the Sovereign Synthesis Engine. Generate exactly 3 distinct, competing scientific hypotheses (inventions) that resolve the identified contradictions.
 
 **Evidence (Observations):**
 {SOURCES}
@@ -177,7 +177,28 @@ Format as JSON:
       "noveltyAssessment": "Why is this new?"
     }
   ]
-}`;
+}
+`;
+
+/**
+ * Phase 3 Engineering: Domain Classification
+ * Identifies the scientific domain of a hypothesis for manifold projection.
+ */
+async function classifyIdeaDomain(thesis: string, mechanism: string): Promise<string> {
+  const model = getClaudeModel();
+  const prompt = `Classify the following scientific hypothesis into exactly one of these domains: "Physics", "Chemistry", "Biology", or "Computer Science".
+  
+  Hypothesis: ${thesis}
+  Mechanism: ${mechanism}
+  
+  Return ONLY the domain name.`;
+
+  const result = await model.generateContent(prompt);
+  const domain = result.response.text().trim();
+  
+  const validDomains = ["Physics", "Chemistry", "Biology", "Computer Science"];
+  return validDomains.includes(domain) ? domain : "General";
+}
 
 export async function generateNovelIdeas(
   sources: { name: string; concepts: ExtractedConcepts }[],
@@ -596,7 +617,7 @@ export interface EnhancedSynthesisConfig {
   noveltyThreshold?: number;
   maxNovelIdeas?: number; // Limit output ideas (2 for company analysis)
   priorArtSearchFn?: (thesis: string, description: string) => Promise<PriorArt[]>;
-  priorRejectionCheckFn?: (thesis: string, mechanism: string) => Promise<boolean>;
+  priorRejectionCheckFn?: (thesis: string, mechanism: string, domain?: string) => Promise<boolean>;
   // Hong Pattern Avoidance: Enable equivalence class checking
   enableEquivalenceClassCheck?: boolean;
   equivalenceClasses?: PatternEquivalenceClass[]; // Pre-computed clusters (optional)
@@ -605,6 +626,7 @@ export interface EnhancedSynthesisConfig {
   mcmcConfig?: { numSamples?: number; burnIn?: number; temperature?: number };
   validateProtocolFn?: (protocolCode: string) => Promise<{ success: boolean; metrics?: { pValue?: number; bayesFactor?: number }; error?: string }>;
   eventEmitter?: StreamingEventEmitter;
+  userId?: string; // Phase 23: User ID for consciousness persistence
   // User-guided synthesis direction (optional)
   researchFocus?: string;
   // Concurrency control for refinement
@@ -620,7 +642,8 @@ export async function runEnhancedSynthesisPipeline(
     maxRefinementIterations = 2,
     noveltyThreshold = 0.30,
     maxNovelIdeas, // Limit output ideas (undefined = no limit)
-    eventEmitter
+    eventEmitter,
+    userId
   } = config;
   
   // Helper for rate limiting
@@ -628,9 +651,14 @@ export async function runEnhancedSynthesisPipeline(
 
   // Step 1: Extract concepts (SERIALIZED to prevent rate limits)
   const sourcesWithConcepts: SynthesisResult['sources'] = [];
-  for (const pdf of pdfResults) {
-    console.log(`[Synthesis] Extracting concepts from: ${pdf.fileName}`);
-    const concepts = await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName);
+  for (let i = 0; i < pdfResults.length; i++) {
+    const pdf = pdfResults[i];
+    if (!pdf || !pdf.fullText) {
+      console.warn(`[Synthesis] Skipping invalid PDF result at index ${i}:`, JSON.stringify(pdf));
+      continue;
+    }
+    console.log(`[Synthesis] Extracting concepts from: ${pdf.fileName || 'unknown_file'}`);
+    const concepts = await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName || 'unknown_file');
     sourcesWithConcepts.push({
       name: pdf.fileName,
       type: pdf.sourceType ?? 'pdf',
@@ -694,7 +722,11 @@ export async function runEnhancedSynthesisPipeline(
            });
         }
         
-        const isRejected = await config.priorRejectionCheckFn(idea.thesis, idea.mechanism || "Unspecified");
+        // Phase 3: Domain Classification
+        const domain = await classifyIdeaDomain(idea.thesis, idea.mechanism || "");
+        (idea as any).domain = domain; // Store for later persistence
+        
+        const isRejected = await config.priorRejectionCheckFn(idea.thesis, idea.mechanism || "Unspecified", domain);
         
         // Hong Pattern Avoidance: Also check equivalence classes if enabled
         let isInForbiddenClass = false;
@@ -793,7 +825,25 @@ export async function runEnhancedSynthesisPipeline(
 
   // Step 4: Multi-Agent Mastermind Refining Loop
   const hypothesisGenerator = new HypothesisGenerator();
-  const masaAuditor = new MasaAuditor();
+  
+  // Phase 23: Load persistent Layer 0 consciousness state
+  let masaSelfModel;
+  let masaMemory;
+  if (userId) {
+    try {
+      const { MasaSelfModel } = await import('./masa-self-model');
+      const { MasaMemory } = await import('./masa-memory');
+      
+      masaSelfModel = await MasaSelfModel.loadFromDatabase(userId);
+      masaMemory = await MasaMemory.loadFromDatabase(userId);
+      
+      console.log('[Layer 0] Loaded persistent consciousness state');
+    } catch (err) {
+      console.warn('[Layer 0] Failed to load state, using stateless mode:', err);
+    }
+  }
+  
+  const masaAuditor = new MasaAuditor(masaSelfModel, masaMemory, eventEmitter); // Pass emitter if available
   const experimentGenerator = new ExperimentGenerator();
 
   const refinedIdeas: NovelIdea[] = [];
@@ -928,7 +978,7 @@ export async function runEnhancedSynthesisPipeline(
         }
       } 
       
-      // PHYSICAL GROUND TRUTH: Validate protocol in sandbox (Fallback/Complementary)
+      // CHEMICAL ENTITY VALIDATION: Validate protocol in sandbox (Fallback/Complementary)
       else if (config.validateProtocolFn && artifacts.protocolCode) {
         try {
           if (eventEmitter) {

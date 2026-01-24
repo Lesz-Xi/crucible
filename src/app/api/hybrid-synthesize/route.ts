@@ -43,6 +43,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Extract User ID from headers (set by middleware or client)
+    const userId = request.headers.get("x-user-id") || undefined;
+
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
@@ -90,14 +93,15 @@ export async function POST(request: NextRequest) {
 
           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, {
             maxRefinementIterations: 2,
-            maxNovelIdeas: companies.length > 0 ? MAX_IDEAS_FOR_COMPANY_ANALYSIS : undefined,
+            maxNovelIdeas: 3, // Always generate exactly 3 ideas
             priorArtSearchFn: searchPriorArt,
-            priorRejectionCheckFn: (t, m) => persistence.checkRejection(t, m),
+            priorRejectionCheckFn: (t, m, d) => persistence.checkRejection(t, m, d),
             validateProtocolFn: validateProtocol,
             eventEmitter: emitter,
             researchFocus: researchFocus || undefined,
             enableParallelRefinement: enableParallel,
-            parallelConcurrency: concurrency
+            parallelConcurrency: concurrency,
+            userId: userId // Add explicitly to config
           });
 
           // Step 4: Persist
