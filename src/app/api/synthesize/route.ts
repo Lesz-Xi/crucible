@@ -77,8 +77,7 @@ export async function POST(request: NextRequest) {
         pdfResults.successful, 
         {
           priorArtSearchFn: searchPriorArt,
-          maxRefinementIterations: 2,
-          eventEmitter: emitter
+          maxRefinementIterations: 2
         },
         userId,
         emitter
