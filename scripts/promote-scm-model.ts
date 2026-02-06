@@ -173,6 +173,18 @@ async function main() {
   const baselineVersion = baselineModelAndVersion.version.version;
   const candidateVersion = candidateModelAndVersion.version.version;
   if (baselineVersion === candidateVersion) {
+    if (args.dryRun) {
+      emitResult({
+        success: true,
+        dryRun: true,
+        noOp: true,
+        modelKey: args.modelKey,
+        baselineVersion,
+        candidateVersion,
+        reason: "Dry-run no-op: candidate already equals baseline/current version.",
+      });
+      return;
+    }
     throw new Error("Candidate already equals baseline/current version.");
   }
 
