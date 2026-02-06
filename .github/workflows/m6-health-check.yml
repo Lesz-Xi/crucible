@@ -47,7 +47,7 @@ jobs:
           npx tsx scripts/promote-scm-model.ts \
             --modelKey hot_rosenthal_v1 \
             --candidateVersion v1.0.0 \
-            --baselineVersion v1.0.0 \
+            --baselineVersion 1.0.0 \
             --outcomeVar output_quality \
             --interventions temperature \
             --dry-run \
@@ -70,14 +70,20 @@ jobs:
               printf '%s\n' "$result_json" > m6_health_output.json
               success=$(jq -r '.success // false' m6_health_output.json 2>/dev/null || echo "false")
               dry_run=$(jq -r '.dryRun // "unknown"' m6_health_output.json 2>/dev/null || echo "unknown")
+              no_op=$(jq -r '.noOp // false' m6_health_output.json 2>/dev/null || echo "false")
+              degraded_mode=$(jq -r '.degradedMode // false' m6_health_output.json 2>/dev/null || echo "false")
             else
               success="false"
               dry_run="unknown"
+              no_op="false"
+              degraded_mode="false"
               echo "{}" > m6_health_output.json
             fi
 
             echo "success=$success" >> $GITHUB_OUTPUT
             echo "dry_run=$dry_run" >> $GITHUB_OUTPUT
+            echo "no_op=$no_op" >> $GITHUB_OUTPUT
+            echo "degraded_mode=$degraded_mode" >> $GITHUB_OUTPUT
 
             # Count resilience telemetry events from structured logs
             retry_count=$(grep -c "\"status\":\"retry\"" m6_health_output.log || true)
@@ -88,6 +94,8 @@ jobs:
           else
             echo "success=false" >> $GITHUB_OUTPUT
             echo "dry_run=unknown" >> $GITHUB_OUTPUT
+            echo "no_op=false" >> $GITHUB_OUTPUT
+            echo "degraded_mode=false" >> $GITHUB_OUTPUT
             echo "retry_count=0" >> $GITHUB_OUTPUT
             echo "fallback_count=0" >> $GITHUB_OUTPUT
             echo "No output file generated"
@@ -112,6 +120,8 @@ jobs:
           echo "- **Success**: ${{ steps.parse.outputs.success }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Exit Code**: ${{ steps.benchmark.outputs.exit_code }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Dry Run**: ${{ steps.parse.outputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **No-Op Mode**: ${{ steps.parse.outputs.no_op }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Degraded Mode**: ${{ steps.parse.outputs.degraded_mode }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Retry Events**: ${{ steps.parse.outputs.retry_count }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Fallback Events**: ${{ steps.parse.outputs.fallback_count }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -125,9 +135,15 @@ jobs:
           fi
       
       - name: Fail if health check failed
-        if: steps.parse.outputs.success != 'true' || steps.benchmark.outputs.exit_code != '0'
+        if: steps.parse.outputs.success != 'true' || steps.benchmark.outputs.exit_code != '0' || steps.parse.outputs.no_op == 'true' || steps.parse.outputs.degraded_mode == 'true'
         run: |
-          echo "::error::M6 health check failed. Review logs for details."
+          if [ "${{ steps.parse.outputs.no_op }}" = "true" ]; then
+            echo "::error::M6 health check failed: run resolved to no-op mode; benchmark signal is not meaningful."
+          elif [ "${{ steps.parse.outputs.degraded_mode }}" = "true" ]; then
+            echo "::error::M6 health check failed: run used degraded mode; SCM dependency path not fully validated."
+          else
+            echo "::error::M6 health check failed. Review logs for details."
+          fi
           exit 1
       
       - name: Alert on excessive retries
