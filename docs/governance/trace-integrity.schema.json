@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masa.synthetic-mind.local/schemas/trace-integrity.schema.json",
+  "title": "Trace Integrity Record",
+  "type": "object",
+  "required": [
+    "trace_id",
+    "created_at",
+    "computation_method",
+    "claim_type",
+    "model_key",
+    "model_version",
+    "input_hash"
+  ],
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "computation_method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_hash": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "seed": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "number" },
+        { "type": "integer" }
+      ]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

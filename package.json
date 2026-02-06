@@ -17,7 +17,10 @@
     "validate:all": "npm run validate:schemas && npm run validate:consistency",
     "governance:claim-drift": "npx --yes tsx scripts/scan-claim-drift.ts",
     "governance:claim-reconcile": "npx --yes tsx scripts/reconcile-claim-ledger.ts",
-    "governance:claim-migrate": "npx --yes tsx scripts/migrate-claim-ledger.ts"
+    "governance:claim-migrate": "npx --yes tsx scripts/migrate-claim-ledger.ts",
+    "governance:trace-integrity": "npx --yes tsx scripts/scan-trace-integrity.ts",
+    "governance:trace-fixtures:generate": "npx --yes tsx scripts/generate-trace-fixtures.ts",
+    "governance:trace-migrate": "npx --yes tsx scripts/migrate-trace-schema.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",

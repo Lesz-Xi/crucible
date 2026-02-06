@@ -3,4 +3,8 @@
 /scripts/scan-claim-drift.ts @Lesz-Xi
 /scripts/reconcile-claim-ledger.ts @Lesz-Xi
 /scripts/migrate-claim-ledger.ts @Lesz-Xi
+/scripts/scan-trace-integrity.ts @Lesz-Xi
+/scripts/generate-trace-fixtures.ts @Lesz-Xi
+/scripts/migrate-trace-schema.ts @Lesz-Xi
 /.github/workflows/claim-drift-sentinel.yml @Lesz-Xi
+/.github/workflows/trace-integrity-sentinel.yml @Lesz-Xi
