@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  ROLLOUT_STAGE: week1
+  ROLLOUT_STAGE: week2
 
 jobs:
   drift-scan:
