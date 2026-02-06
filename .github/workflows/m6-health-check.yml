@@ -1,0 +1,141 @@
+name: M6 Benchmark Health Check
+
+# Run nightly to detect M6 scientific integrity gate regressions early
+on:
+  schedule:
+    # Run at 2 AM UTC daily (10 AM PHT)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allow manual triggers for testing
+
+env:
+  # Use dry-run mode to prevent database pollution in CI
+  DRY_RUN: true
+  # Keep logs parseable by default in CI
+  AI_DEBUG: false
+
+jobs:
+  m6-health-check:
+    name: M6 Scientific Integrity Gate Health Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run M6 benchmark suite (dry-run)
+        id: benchmark
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: |
+          set +e
+          # Run promotion gate with dry-run flag
+          # This tests the full M6 path without database writes
+          npx tsx scripts/promote-scm-model.ts \
+            --modelKey hot_rosenthal_v1 \
+            --candidateVersion v1.0.0 \
+            --baselineVersion v1.0.0 \
+            --outcomeVar output_quality \
+            --interventions temperature \
+            --dry-run \
+            > m6_health_output.log 2>&1
+          
+          # Capture exit code
+          exit_code=$?
+          set -e
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          cat m6_health_output.log
+      
+      - name: Parse health check results
+        id: parse
+        if: always()
+        run: |
+          if [ -f m6_health_output.log ]; then
+            result_line=$(grep "PROMOTE_RESULT_JSON::" m6_health_output.log | tail -n 1 || true)
+            if [ -n "$result_line" ]; then
+              result_json=${result_line#PROMOTE_RESULT_JSON::}
+              printf '%s\n' "$result_json" > m6_health_output.json
+              success=$(jq -r '.success // false' m6_health_output.json 2>/dev/null || echo "false")
+              dry_run=$(jq -r '.dryRun // "unknown"' m6_health_output.json 2>/dev/null || echo "unknown")
+            else
+              success="false"
+              dry_run="unknown"
+              echo "{}" > m6_health_output.json
+            fi
+
+            echo "success=$success" >> $GITHUB_OUTPUT
+            echo "dry_run=$dry_run" >> $GITHUB_OUTPUT
+
+            # Count resilience telemetry events from structured logs
+            retry_count=$(grep -c "\"status\":\"retry\"" m6_health_output.log || true)
+            fallback_count=$(grep -c "\"status\":\"fallback\"" m6_health_output.log || true)
+
+            echo "retry_count=$retry_count" >> $GITHUB_OUTPUT
+            echo "fallback_count=$fallback_count" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+            echo "dry_run=unknown" >> $GITHUB_OUTPUT
+            echo "retry_count=0" >> $GITHUB_OUTPUT
+            echo "fallback_count=0" >> $GITHUB_OUTPUT
+            echo "No output file generated"
+            echo "{}" > m6_health_output.json
+          fi
+      
+      - name: Upload health check logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m6-health-check-logs-${{ github.run_number }}
+          path: |
+            m6_health_output.log
+            m6_health_output.json
+          retention-days: 30
+      
+      - name: Report health status
+        if: always()
+        run: |
+          echo "## M6 Health Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Success**: ${{ steps.parse.outputs.success }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Exit Code**: ${{ steps.benchmark.outputs.exit_code }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry Run**: ${{ steps.parse.outputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Retry Events**: ${{ steps.parse.outputs.retry_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Fallback Events**: ${{ steps.parse.outputs.fallback_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.parse.outputs.success }}" != "true" ]; then
+            echo "❌ **M6 benchmark path is unhealthy**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the artifacts for detailed logs." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **M6 benchmark path is healthy**" >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Fail if health check failed
+        if: steps.parse.outputs.success != 'true' || steps.benchmark.outputs.exit_code != '0'
+        run: |
+          echo "::error::M6 health check failed. Review logs for details."
+          exit 1
+      
+      - name: Alert on excessive retries
+        if: fromJSON(steps.parse.outputs.retry_count) > 5
+        run: |
+          echo "::warning::High retry count (${{ steps.parse.outputs.retry_count }}). AI provider may be experiencing issues."
+      
+      - name: Alert on fallback usage
+        if: fromJSON(steps.parse.outputs.fallback_count) > 0
+        run: |
+          echo "::warning::Fallback provider was used (${{ steps.parse.outputs.fallback_count }} times). Primary provider may have quota issues."
