@@ -1,0 +1,90 @@
+name: M6 Closeout Tracker
+
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  evaluate-closeout:
+    name: Evaluate M6 Closeout Window
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      REQUIRED_CONSECUTIVE_PASSES: "7"
+      LOOKBACK_RUNS: "30"
+      TARGET_WORKFLOW_FILE: "m6-health-check.yml"
+
+    steps:
+      - name: Calculate sustained pass window
+        id: calc
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const required = Number(process.env.REQUIRED_CONSECUTIVE_PASSES || "7");
+            const lookback = Number(process.env.LOOKBACK_RUNS || "30");
+            const workflowId = process.env.TARGET_WORKFLOW_FILE || "m6-health-check.yml";
+
+            const runs = await github.paginate(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: workflowId,
+                branch: "main",
+                per_page: 100
+              },
+              (response) => response.data.workflow_runs
+            );
+
+            const completed = runs
+              .filter((run) => run.status === "completed")
+              .filter((run) => run.event === "schedule" || run.event === "workflow_dispatch")
+              .slice(0, lookback);
+
+            let consecutiveSuccess = 0;
+            for (const run of completed) {
+              if (run.conclusion === "success") {
+                consecutiveSuccess += 1;
+              } else {
+                break;
+              }
+            }
+
+            const ready = consecutiveSuccess >= required;
+            const latest = completed[0];
+            const latestSummary = latest
+              ? `${latest.conclusion || "unknown"} (${latest.html_url})`
+              : "none";
+
+            core.setOutput("required", String(required));
+            core.setOutput("lookback", String(lookback));
+            core.setOutput("completed_count", String(completed.length));
+            core.setOutput("consecutive_success", String(consecutiveSuccess));
+            core.setOutput("closeout_ready", ready ? "true" : "false");
+            core.setOutput("latest_summary", latestSummary);
+
+      - name: Publish closeout summary
+        run: |
+          echo "## M6 Closeout Tracker" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Required consecutive passes: ${{ steps.calc.outputs.required }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Consecutive successful runs: ${{ steps.calc.outputs.consecutive_success }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Completed runs inspected: ${{ steps.calc.outputs.completed_count }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Latest completed run: ${{ steps.calc.outputs.latest_summary }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.calc.outputs.closeout_ready }}" = "true" ]; then
+            echo "✅ M6 closeout window satisfied." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "⏳ M6 closeout window not yet satisfied." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Fail until closeout window is satisfied
+        if: steps.calc.outputs.closeout_ready != 'true'
+        run: |
+          echo "::warning::M6 closeout window not satisfied yet."
+          exit 1
