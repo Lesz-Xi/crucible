@@ -29,17 +29,17 @@ jobs:
             const lookback = Number(process.env.LOOKBACK_RUNS || "30");
             const workflowId = process.env.TARGET_WORKFLOW_FILE || "m6-health-check.yml";
 
-            const runs = await github.paginate(
-              github.rest.actions.listWorkflowRuns,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: workflowId,
-                branch: "main",
-                per_page: 100
-              },
-              (response) => response.data.workflow_runs
-            );
+            const response = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflowId,
+              branch: "main",
+              per_page: 100
+            });
+
+            const runs = Array.isArray(response.data?.workflow_runs)
+              ? response.data.workflow_runs
+              : [];
 
             const completed = runs
               .filter((run) => run.status === "completed")
