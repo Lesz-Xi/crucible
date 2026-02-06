@@ -99,7 +99,7 @@ export default function MetacognitionDashboard({
       {hasCausalData && (
         <div className="causal-metrics">
           <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-            🎯 Causal Attribution (Pearl's L3)
+            🎯 Causal Attribution (Pearl&apos;s L3)
           </div>
           <div className="grid grid-cols-1 gap-2 text-xs">
             {causal_evidence.PN_mode_caused_failure !== undefined && (

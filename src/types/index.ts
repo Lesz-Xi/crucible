@@ -72,11 +72,11 @@ export interface NovelIdea {
   // Refinement tracking
   refinementIteration?: number;
   refinedFrom?: string; // ID of original idea if this was refined
-  
+
   // Validation
   criticalAnalysis?: CriticalAnalysis;
   structuredHypothesis?: StructuredHypothesis;
-  
+
   // Deutschian Epistemology
   explanationDepth: number; // 0-100: How hard it is to vary?
   isExplainedByPriorArt: boolean;
@@ -108,11 +108,12 @@ export interface NovelIdea {
   priorArt?: PriorArt[];
   // Hong Theoretical Alignment
   isLogConcave?: boolean; // True if confidence follows log-concave distribution
+  spectralInterference?: Map<string, number>;
 }
 
 export interface SynthesisResult {
-  sources: { 
-    name: string; 
+  sources: {
+    name: string;
     type: 'pdf' | 'company';
     mainThesis: string;
     keyArguments: string[];

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "overrides": [
+    {
+      "override_id": "TRC-OVR-001",
+      "trace_pattern": {
+        "claim_type": "hypothesis_generation"
+      },
+      "suppressed_violations": [
+        "missing_seed"
+      ],
+      "reason": "Legacy traces pre-seed implementation",
+      "approved_by": "@Lesz-Xi",
+      "created_at": "2026-02-06T00:00:00Z",
+      "expires_at": "2026-02-20T00:00:00Z"
+    }
+  ]
+}

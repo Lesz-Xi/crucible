@@ -48,7 +48,7 @@ interface SynthesisSource {
   type: "pdf" | "company";
   mainThesis: string;
   keyArguments: string[];
-  entities: { name: string; type: string; description: string }[];
+  concepts?: ExtractedConcepts;
 }
 
 interface EnhancedNovelIdea extends NovelIdea {
@@ -177,22 +177,22 @@ export default function HybridSynthesisPage() {
                  
                  // Artificial delay to ensure React renders each event state
                  // preventing batching from swallowing consecutive logs
-                 await new Promise(resolve => setTimeout(resolve, 50));
+                  await new Promise(resolve => setTimeout(resolve, 50));
 
-                 if (event.event === 'complete') {
-                    // Safe cast assuming the backend returns the correct shape
-                    setResult(event.synthesis as any);
-                    setStage("stabilizing");
-                    fetchHistory();
-                 } else if (event.event === 'error') {
-                    throw new Error(event.message);
-                 }
-              } catch (e) {
-                 console.warn("Failed to parse SSE event:", e);
-              }
-           }
-        }
-      }
+                  if (event.event === 'complete') {
+                     // Safe cast assuming the backend returns the correct shape
+                     setResult(event.synthesis as HybridSynthesisResponse["synthesis"]);
+                     setStage("stabilizing");
+                     fetchHistory();
+                  } else if (event.event === 'error') {
+                     throw new Error(event.message);
+                  }
+               } catch (e) {
+                  console.warn("Failed to parse SSE event:", e);
+               }
+            }
+         }
+       }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -247,6 +247,9 @@ export default function HybridSynthesisPage() {
   };
 
   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
+  
+  // Resolve consciousness state for display safely
+  const activeConsciousnessState = realtimeState || result?.consciousnessState;
 
   return (
     <AccessKeyGate>
@@ -473,7 +476,7 @@ export default function HybridSynthesisPage() {
                     contradictions: result.contradictions ?? [],
                     novelIdeas: result.novelIdeas ?? [],
                     structuredApproach: result.structuredApproach,
-                    priorArt: result.novelIdeas?.flatMap(i => (i as any).priorArt || []) ?? [],
+                    priorArt: result.novelIdeas?.flatMap(i => i.priorArt || []) ?? [],
                     metadata: result.metadata,
                     synthesisGoal: "Hybrid Synthesis"
                   };
@@ -638,10 +641,10 @@ export default function HybridSynthesisPage() {
             )}
 
             {/* Phase 23/24: Layer 0 Consciousness Dashboard (Real-time + Final) */}
-            {(realtimeState || result?.consciousnessState) && (
+            {activeConsciousnessState && (
               <section className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
                 <MetacognitionDashboard 
-                  consciousnessState={realtimeState || result?.consciousnessState!}
+                  consciousnessState={activeConsciousnessState}
                   className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 shadow-xl"
                 />
               </section>

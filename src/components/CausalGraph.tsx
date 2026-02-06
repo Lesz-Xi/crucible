@@ -135,7 +135,7 @@ export function CausalGraph({ history, currentMode }: CausalGraphProps) {
           <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
           Real-time Causal Graph (DAG)
         </h3>
-        <p className="text-[10px] text-neutral-500">Pearl's Causal Hierarchy: Mode → Outcome</p>
+        <p className="text-[10px] text-neutral-500">Pearl&apos;s Causal Hierarchy: Mode → Outcome</p>
       </div>
     </div>
   );

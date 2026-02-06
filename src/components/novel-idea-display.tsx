@@ -145,14 +145,14 @@ export function NovelIdeaCard({
         )}
 
         {/* Scientific Artifacts (Phase 3) */}
-        {(idea as any).scientificArtifacts && (
-          <ScientificArtifactsViewer artifacts={(idea as any).scientificArtifacts} />
+        {idea.scientificArtifacts && (
+          <ScientificArtifactsViewer artifacts={idea.scientificArtifacts} />
         )}
 
         {/* Spectral Health (Phase 3) */}
-        {(idea as any).spectralInterference && (
+        {idea.spectralInterference && (
           <div className="pt-2">
-            <SpectralHealthWidget interference={(idea as any).spectralInterference} />
+            <SpectralHealthWidget interference={idea.spectralInterference} />
           </div>
         )}
       </div>

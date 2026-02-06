@@ -1,0 +1,284 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-02-06T15:58:21.439Z",
+  "traces": [
+    {
+      "trace_id": "trc-generated-001",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-002",
+      "created_at": "2026-02-06T15:46:56.229Z",
+      "computation_method": "exact_solver",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-003",
+      "created_at": "2026-02-06T15:45:56.229Z",
+      "computation_method": "mcts",
+      "claim_type": "hypothesis_generation",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "seed": 102,
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-004",
+      "created_at": "2026-02-06T15:44:56.229Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-005",
+      "created_at": "2026-02-06T15:43:56.229Z",
+      "computation_method": "exact_solver",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "5555555555555555555555555555555555555555555555555555555555555555",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-006",
+      "created_at": "2026-02-06T15:42:56.229Z",
+      "computation_method": "mcts",
+      "claim_type": "hypothesis_generation",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "6666666666666666666666666666666666666666666666666666666666666666",
+      "seed": 105,
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-007",
+      "created_at": "2026-02-06T15:41:56.229Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "7777777777777777777777777777777777777777777777777777777777777777",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-008",
+      "created_at": "2026-02-06T15:40:56.229Z",
+      "computation_method": "exact_solver",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "8888888888888888888888888888888888888888888888888888888888888888",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-009",
+      "created_at": "2026-02-06T15:39:56.229Z",
+      "computation_method": "mcts",
+      "claim_type": "hypothesis_generation",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "9999999999999999999999999999999999999999999999999999999999999999",
+      "seed": 108,
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "trc-generated-010",
+      "created_at": "2026-02-06T15:38:56.229Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "metadata": {
+        "fixture": true,
+        "expected": "valid"
+      }
+    },
+    {
+      "trace_id": "",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_critical"
+      }
+    },
+    {
+      "trace_id": "bad-method",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "mcts",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "seed": 11,
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_critical"
+      }
+    },
+    {
+      "trace_id": "bad-seed",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "mcts",
+      "claim_type": "hypothesis_generation",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_critical"
+      }
+    },
+    {
+      "trace_id": "bad-claim",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "unknown_claim",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "bad-date",
+      "created_at": "invalid-date",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "bad-hash",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "not-a-sha",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "bad-model-key",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "bad-version",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "missing-input-hash",
+      "created_at": "2026-02-06T15:47:56.228Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "hot_rosenthal_v1",
+      "model_version": "v1.0.0",
+      "input_hash": "",
+      "metadata": {
+        "fixture": true,
+        "expected": "invalid_noncritical"
+      }
+    },
+    {
+      "trace_id": "trc-exercise-critical-001",
+      "created_at": "2026-02-06T15:58:21.438Z",
+      "computation_method": "deterministic_graph_diff",
+      "claim_type": "causal_intervention",
+      "model_key": "",
+      "model_version": "v1.0.0",
+      "input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "metadata": {
+        "exercise": "governance-proof",
+        "expected": "invalid_critical",
+        "reason": "intentional_missing_model_key"
+      }
+    }
+  ]
+}
