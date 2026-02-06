@@ -27,6 +27,7 @@
     "@react-three/fiber": "^9.5.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.90.1",
+    "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/typography": "^0.5.19",
     "@xyflow/react": "^12.10.0",
     "class-variance-authority": "^0.7.1",
