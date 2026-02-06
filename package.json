@@ -14,7 +14,10 @@
     "promote:scm": "npx --yes tsx scripts/promote-scm-model.ts",
     "validate:schemas": "node scripts/validate-causal-graph-schema.mjs --all",
     "validate:consistency": "node scripts/validate-scm-consistency.mjs --all",
-    "validate:all": "npm run validate:schemas && npm run validate:consistency"
+    "validate:all": "npm run validate:schemas && npm run validate:consistency",
+    "governance:claim-drift": "npx --yes tsx scripts/scan-claim-drift.ts",
+    "governance:claim-reconcile": "npx --yes tsx scripts/reconcile-claim-ledger.ts",
+    "governance:claim-migrate": "npx --yes tsx scripts/migrate-claim-ledger.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",

@@ -1,0 +1,6 @@
+# Governance ownership
+/docs/governance/ @Lesz-Xi
+/scripts/scan-claim-drift.ts @Lesz-Xi
+/scripts/reconcile-claim-ledger.ts @Lesz-Xi
+/scripts/migrate-claim-ledger.ts @Lesz-Xi
+/.github/workflows/claim-drift-sentinel.yml @Lesz-Xi
