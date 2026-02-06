@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "governance:trace-integrity": "npx --yes tsx scripts/scan-trace-integrity.ts",
+    "governance:trace-fixtures:generate": "npx --yes tsx scripts/generate-trace-fixtures.ts",
+    "governance:trace-migrate": "npx --yes tsx scripts/migrate-trace-schema.ts",
+    "governance:trace-exercise:init": "npx --yes tsx scripts/trace-exercise.ts init",
+    "governance:trace-exercise:break": "npx --yes tsx scripts/trace-exercise.ts break",
+    "governance:trace-exercise:restore": "npx --yes tsx scripts/trace-exercise.ts restore",
+    "governance:trace-exercise:status": "npx --yes tsx scripts/trace-exercise.ts status"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
