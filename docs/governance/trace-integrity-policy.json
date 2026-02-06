@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "deterministic_methods": [
+    "exact_solver",
+    "dag_walk",
+    "deterministic_graph_diff"
+  ],
+  "stochastic_methods": [
+    "mcts",
+    "monte_carlo",
+    "llm_generation"
+  ],
+  "claim_type_requirements": {
+    "causal_intervention": {
+      "allowed_methods": [
+        "exact_solver",
+        "dag_walk",
+        "deterministic_graph_diff"
+      ],
+      "determinism_class": "deterministic",
+      "seed_required": false
+    },
+    "counterfactual_explanation": {
+      "allowed_methods": [
+        "exact_solver",
+        "dag_walk",
+        "deterministic_graph_diff"
+      ],
+      "determinism_class": "deterministic",
+      "seed_required": false
+    },
+    "hypothesis_generation": {
+      "allowed_methods": [
+        "mcts",
+        "llm_generation"
+      ],
+      "determinism_class": "stochastic",
+      "seed_required": true
+    }
+  },
+  "critical_invariants": [
+    "trace_id_present",
+    "core_fields_present",
+    "method_allowed_for_claim_type",
+    "seed_present_when_required"
+  ],
+  "aggregate_thresholds": {
+    "non_critical_invalid_rate_max": 0.05
+  },
+  "override_rules": {
+    "critical_ttl_days_max": 14,
+    "approved_by_required": true,
+    "allowed_approvers": [
+      "@Lesz-Xi"
+    ]
+  }
+}
