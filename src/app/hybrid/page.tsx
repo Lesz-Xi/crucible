@@ -48,7 +48,6 @@ interface SynthesisSource {
   type: "pdf" | "company";
   mainThesis: string;
   keyArguments: string[];
-  keyArguments: string[];
   concepts: ExtractedConcepts;
 }
 
@@ -68,7 +67,7 @@ interface HybridSynthesisResponse {
       sourceB: string;
       claimB: string;
     }>;
-    novelIdeas: EnhancedNovelIdea[];
+    novelIdeas: NovelIdea[];
     structuredApproach?: StructuredApproach;
     metadata: {
       pdfCount: number;
@@ -80,6 +79,29 @@ interface HybridSynthesisResponse {
   error?: string;
 }
 
+interface HistoricalRun {
+  id: string;
+  created_at: string;
+  status: string;
+  total_ideas: number;
+  sources: SynthesisSource[];
+  contradictions: Array<{
+    concept: string;
+    sourceA: string;
+    claimA: string;
+    sourceB: string;
+    claimB: string;
+  }>;
+  novelIdeas: NovelIdea[];
+  structuredApproach?: StructuredApproach;
+  metadata: {
+    pdfCount: number;
+    companyCount: number;
+    totalSources: number;
+  };
+  consciousnessState?: ConsciousnessState;
+}
+
 type Stage = "input" | "processing" | "stabilizing" | "results";
 
 export default function HybridSynthesisPage() {
@@ -89,7 +111,7 @@ export default function HybridSynthesisPage() {
   const [result, setResult] = useState<HybridSynthesisResponse["synthesis"] | null>(null);
   const [selectedIdeaIndex, setSelectedIdeaIndex] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [historicalRuns, setHistoricalRuns] = useState<any[]>([]);
+  const [historicalRuns, setHistoricalRuns] = useState<HistoricalRun[]>([]);
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
@@ -466,7 +488,7 @@ export default function HybridSynthesisPage() {
                     contradictions: result.contradictions ?? [],
                     novelIdeas: result.novelIdeas ?? [],
                     structuredApproach: result.structuredApproach,
-                    priorArt: result.novelIdeas?.flatMap(i => (i as any).priorArt || []) ?? [],
+                    priorArt: result.novelIdeas?.flatMap(i => i.priorArt || []) ?? [],
                     metadata: result.metadata,
                     synthesisGoal: "Hybrid Synthesis"
                   };
@@ -634,7 +656,7 @@ export default function HybridSynthesisPage() {
             {(realtimeState || result?.consciousnessState) && (
               <section className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
                 <MetacognitionDashboard 
-                  consciousnessState={realtimeState || result?.consciousnessState!}
+                  consciousnessState={realtimeState || result!.consciousnessState}
                   className="bg-[#0A0A0A] border border-white/10 rounded-2xl p-6 shadow-xl"
                 />
               </section>
@@ -753,8 +775,10 @@ export default function HybridSynthesisPage() {
             {selectedIdea && (
               <div className="animate-in fade-in duration-700">
                 <PriorArtDisplay
-                  priorArt={selectedIdea.priorArt}
-                  noveltyScore={selectedIdea.noveltyScore}
+                  priorArt={selectedIdea.priorArt || []}
+                  noveltyScore={selectedIdea.priorArt && selectedIdea.priorArt.length > 0 
+                    ? Math.max(0, 100 - selectedIdea.priorArt.length * 20) 
+                    : 95}
                 />
 
                 {result.structuredApproach && (

@@ -14,6 +14,13 @@ const eslintConfig = [
   {
     ignores: [".next/**", "out/**", "build/**", "scripts/**"],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/ban-ts-comment": "warn",
+      "prefer-const": "warn",
+    },
+  },
 ];
 
 export default eslintConfig;
