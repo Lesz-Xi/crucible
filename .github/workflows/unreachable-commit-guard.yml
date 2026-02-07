@@ -1,0 +1,114 @@
+name: Unreachable Commit Guard
+
+on:
+  schedule:
+    # Run every Sunday at 3 AM UTC
+    - cron: '0 3 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  unreachable-commit-guard:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history to detect dangling commits
+      
+      - name: Scan for dangling commits
+        id: scan_dangling
+        run: |
+          echo "Scanning for unreachable commits..."
+          
+          # Find dangling commits
+          DANGLING_COMMITS=$(git fsck --lost-found 2>&1 | grep "dangling commit" | awk '{print $3}' || true)
+          
+          if [ -z "$DANGLING_COMMITS" ]; then
+            echo "✅ No dangling commits found"
+            echo "dangling_found=false" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Found dangling commits:"
+            echo "$DANGLING_COMMITS"
+            echo "dangling_found=true" >> $GITHUB_OUTPUT
+            
+            # Save dangling commits to file for next step
+            echo "$DANGLING_COMMITS" > /tmp/dangling_commits.txt
+          fi
+      
+      - name: Inspect dangling commits for route changes
+        if: steps.scan_dangling.outputs.dangling_found == 'true'
+        id: inspect_routes
+        run: |
+          echo "Inspecting dangling commits for route-related changes..."
+          
+          ORPHANED_ROUTES=""
+          
+          while IFS= read -r commit; do
+            # Check if commit contains route files
+            ROUTE_FILES=$(git diff-tree --no-commit-id --name-only -r $commit 2>/dev/null | grep -E "src/app/.*/page\.tsx|src/app/.*/route\.ts" || true)
+            
+            if [ -n "$ROUTE_FILES" ]; then
+              echo "🚨 Orphaned route changes found in commit: $commit"
+              git show --stat $commit || echo "Could not show commit details"
+              ORPHANED_ROUTES="${ORPHANED_ROUTES}\n- Commit $commit: $ROUTE_FILES"
+            fi
+          done < /tmp/dangling_commits.txt
+          
+          if [ -n "$ORPHANED_ROUTES" ]; then
+            echo "orphaned_routes_found=true" >> $GITHUB_OUTPUT
+            echo -e "$ORPHANED_ROUTES" > /tmp/orphaned_routes.txt
+          else
+            echo "✅ No orphaned route changes found"
+            echo "orphaned_routes_found=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create GitHub Issue
+        if: steps.inspect_routes.outputs.orphaned_routes_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const orphanedRoutes = fs.readFileSync('/tmp/orphaned_routes.txt', 'utf8');
+            
+            const issueBody = `## 🚨 Orphaned Route Changes Detected
+
+The weekly Unreachable Commit Guard has detected dangling commits containing route-related changes:
+
+${orphanedRoutes}
+
+### Action Required
+
+1. **Review the orphaned commits** to determine if they contain valuable work
+2. **Recover orphaned routes** if needed:
+   \`\`\`bash
+   git branch recovery/<branch-name> <commit-sha>
+   \`\`\`
+3. **Update the Route Registry** (\`docs/route-registry.md\`) if routes are recovered
+4. **Investigate why these commits became orphaned** (e.g., force push, branch deletion without merge)
+
+### Prevention
+
+To prevent future orphaned commits:
+- Always use feature branches (\`codex/<feature-name>\`)
+- Never use \`git stash\` for route changes
+- Ensure all route work is merged via PR
+- Follow the Route Provenance Policy (\`docs/route-provenance-policy.md\`)
+
+---
+
+*This issue was automatically created by the Unreachable Commit Guard workflow.*
+`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Orphaned Route Changes Detected',
+              body: issueBody,
+              labels: ['route-provenance', 'critical']
+            });
+      
+      - name: Success
+        if: steps.scan_dangling.outputs.dangling_found == 'false'
+        run: |
+          echo "✅ No unreachable commits found, repository is clean"
