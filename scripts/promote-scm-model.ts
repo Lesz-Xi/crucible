@@ -117,10 +117,10 @@ interface PromotionDeps {
 
 async function loadPromotionDeps(): Promise<PromotionDeps> {
   const [registryMod, disagreementMod, governanceMod, integrityMod] = await Promise.all([
-    import("../src/lib/services/scm-registry.ts"),
-    import("../src/lib/services/causal-disagreement-engine.ts"),
-    import("../src/lib/services/scm-promotion-governance.ts"),
-    import("../src/lib/services/scientific-integrity-service.ts"),
+    import("../src/lib/services/scm-registry"),
+    import("../src/lib/services/causal-disagreement-engine"),
+    import("../src/lib/services/scm-promotion-governance"),
+    import("../src/lib/services/scientific-integrity-service"),
   ]);
 
   return {
@@ -353,9 +353,9 @@ async function main() {
       .update({ is_current: true })
       .eq("model_id", modelId)
       .eq("version", candidateVersion);
-  if (promoteError) {
-    throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
-  }
+    if (promoteError) {
+      throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
+    }
   }
 
   emitResult({

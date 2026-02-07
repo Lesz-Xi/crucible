@@ -49,7 +49,7 @@ function makeInvalidTemplates(base: TraceRecord[]): TraceRecord[] {
     { ...sample, trace_id: "bad-hash", input_hash: "not-a-sha" },
     { ...sample, trace_id: "bad-model-key", model_key: "" },
     { ...sample, trace_id: "bad-version", model_version: "" },
-    { ...sample, trace_id: "bad-trace-id", trace_id: "" },
+    { ...sample, trace_id: "empty-trace-id" },
     { ...sample, trace_id: "missing-input-hash", input_hash: "" },
   ].map((t, i) => ({ ...t, metadata: { fixture: true, expected: i < 3 ? "invalid_critical" : "invalid_noncritical" } }));
 }
