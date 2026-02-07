@@ -5,7 +5,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 interface TacticalButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   isLoading?: boolean;
-  icon?: React.ElementType;
+  icon?: any;
   href?: string;
 }
 

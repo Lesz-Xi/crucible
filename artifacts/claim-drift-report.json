@@ -1,0 +1,304 @@
+{
+  "generated_at": "2026-02-07T05:24:51.580Z",
+  "mode": "report",
+  "strict": "critical",
+  "ledger_path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/docs/governance/claim-ledger.json",
+  "duration_ms": 21,
+  "performance_budget_ms": 30000,
+  "performance_within_budget": true,
+  "summary": {
+    "total_claims": 12,
+    "by_state": {
+      "ok": 12,
+      "partial": 0,
+      "missing": 0,
+      "contradicted": 0
+    },
+    "blocking_claims": 0,
+    "overrides_applied": 0
+  },
+  "results": [
+    {
+      "claim_id": "CLM-001",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Fail if health check failed",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "workflow_step:Fail if health check failed"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-002",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Parse health check results",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "workflow_step:Parse health check results"
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "regex",
+          "matcher": "/no_op=\\$no_op/",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "regex:/no_op=\\$no_op/m"
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "regex",
+          "matcher": "/degraded_mode=\\$degraded_mode/",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "regex:/degraded_mode=\\$degraded_mode/m"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-003",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-closeout-tracker.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Fail until closeout window is satisfied",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "workflow_step:Fail until closeout window is satisfied"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-004",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "ast_function_call",
+          "matcher": "emitResult",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_function_call:emitResult"
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "regex",
+          "matcher": "/PROMOTE_RESULT_JSON::/",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "regex:/PROMOTE_RESULT_JSON::/m"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-005",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "ast_function_call",
+          "matcher": "evaluateSCMPromotionGate",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_function_call:evaluateSCMPromotionGate"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-006",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scm-registry.ts",
+          "matcher_type": "ast_export",
+          "matcher": "SCMRegistryService",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:SCMRegistryService"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-007",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/causal-disagreement-engine.ts",
+          "matcher_type": "ast_export",
+          "matcher": "CausalDisagreementEngine",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:CausalDisagreementEngine"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-008",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scm-promotion-governance.ts",
+          "matcher_type": "ast_export",
+          "matcher": "evaluateSCMPromotionGate",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:evaluateSCMPromotionGate"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-009",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scientific-integrity-service.ts",
+          "matcher_type": "ast_export",
+          "matcher": "evaluateScientificIntegrity",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:evaluateScientificIntegrity"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-010",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scientific-integrity-service.ts",
+          "matcher_type": "ast_export",
+          "matcher": "ScientificIntegrityService",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:ScientificIntegrityService"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-011",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/types/scm.ts",
+          "matcher_type": "ast_export",
+          "matcher": "SCMPromotionGate",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:SCMPromotionGate"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-012",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "state": "ok",
+      "declared_status": "implemented",
+      "blocking": false,
+      "override_applied": false,
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/types/scm.ts",
+          "matcher_type": "ast_export",
+          "matcher": "ScientificIntegrityStatus",
+          "required": true,
+          "matched": true,
+          "contradictionMatched": false,
+          "contradictionReasons": [],
+          "details": "ast_export:ScientificIntegrityStatus"
+        }
+      ]
+    }
+  ]
+}

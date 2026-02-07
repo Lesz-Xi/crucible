@@ -31,10 +31,10 @@ export function NovelIdeaCard({
     <div
       onClick={onSelect}
       className={`
-        group relative overflow-hidden rounded-2xl border transition-all duration-500 cursor-pointer
+        group relative overflow-hidden rounded-2xl border transition-all duration-500 cursor-pointer wabi-glass-panel
         ${isSelected
-          ? "border-orange-500/50 bg-[#0A0A0A] shadow-xl ring-1 ring-orange-500/20"
-          : "border-white/10 bg-[#0A0A0A] hover:border-orange-500/30 hover:shadow-2xl hover:-translate-y-1"
+          ? "border-wabi-clay/60 shadow-xl ring-1 ring-wabi-clay/20"
+          : "border-stone-200 hover:border-wabi-clay/40 hover:shadow-2xl hover:-translate-y-1"
         }
       `}
     >
@@ -43,15 +43,15 @@ export function NovelIdeaCard({
         <div className="flex items-start justify-between gap-6">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-sans text-orange-400 font-bold uppercase tracking-[0.2em] bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">
-                Novel Idea {String(index + 1).padStart(2, '0')}
-              </span>
+                <span className="text-[11px] font-sans text-wabi-clay font-bold uppercase tracking-[0.2em] bg-wabi-clay/10 px-2 py-1 rounded border border-wabi-clay/20">
+                  Novel Idea {String(index + 1).padStart(2, '0')}
+                </span>
               <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full border bg-white/5 ${confidenceColor} border-white/10`}>
                 <div className={`w-1.5 h-1.5 rounded-full ${
                   idea.confidence >= 70 ? "bg-orange-500" : 
                   idea.confidence >= 40 ? "bg-amber-500" : "bg-red-500"
                 }`} />
-                <span className="text-[10px] font-mono font-bold tracking-wider text-neutral-400">{idea.confidence}% CONFIDENCE</span>
+                <span className="text-[10px] font-mono font-bold tracking-wider text-wabi-ink-light">{idea.confidence}% CONFIDENCE</span>
               </div>
               {/* Hong Theoretical Alignment Badge */}
               {idea.isLogConcave && (
@@ -61,7 +61,7 @@ export function NovelIdeaCard({
                 </div>
               )}
             </div>
-            <h3 className="text-lg font-semibold text-neutral-200 leading-snug font-sans tracking-tight w-full">
+            <h3 className="text-lg font-semibold text-wabi-sumi leading-snug font-sans tracking-tight w-full">
               {idea.thesis}
             </h3>
           </div>
@@ -69,7 +69,7 @@ export function NovelIdeaCard({
 
         {/* Mechanism & Prediction Grid */}
         {(idea.mechanism || idea.prediction) && (
-          <div className={`grid bg-[#111] border border-white/10 rounded-xl overflow-hidden font-mono divide-white/10 ${
+          <div className={`grid bg-[#FAFAF9] border border-stone-200 rounded-xl overflow-hidden font-mono divide-stone-200 ${
             idea.mechanism && idea.prediction 
               ? "grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x" 
               : "grid-cols-1"
@@ -80,7 +80,7 @@ export function NovelIdeaCard({
                 <span className="text-orange-400 uppercase tracking-[0.2em] text-[10px] font-bold pl-2">
                   Mechanism
                 </span>
-                <p className="text-neutral-300 text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
+                <p className="text-wabi-ink-light text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
                   {idea.mechanism}
                 </p>
               </div>
@@ -91,34 +91,33 @@ export function NovelIdeaCard({
                 <span className="text-amber-400 uppercase tracking-[0.2em] text-[10px] font-bold pl-2">
                    Prediction
                 </span>
-                <p className="text-neutral-300 text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
+                <p className="text-wabi-ink-light text-sm leading-[1.8] relative z-10 flex-1 opacity-90 pl-2">
                   {idea.prediction}
                 </p>
               </div>
             )}
           </div>
         )}
-=
         {/* Description */}
         <div className="space-y-2">
-          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider font-bold">Concept Overview</span>
-          <p className="text-sm text-neutral-300 font-medium leading-relaxed border-l-2 border-white/10 pl-4 py-1">
+          <span className="text-[10px] font-mono text-wabi-ink-light uppercase tracking-wider font-bold">Concept Overview</span>
+          <p className="text-sm text-wabi-sumi font-medium leading-relaxed border-l-2 border-stone-200 pl-4 py-1">
             {idea.description}
           </p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+        <div className="flex flex-wrap gap-2 pt-2 border-t border-stone-200/70">
           {(idea.bridgedConcepts ?? []).slice(0, 3).map((concept, i) => (
             <span
               key={i}
-              className="px-2 py-1 text-[10px] font-mono text-neutral-400 bg-white/5 border border-white/10 rounded hover:border-orange-500/30 hover:text-orange-400 transition-colors cursor-default"
+              className="px-2 py-1 text-[10px] font-mono text-wabi-ink-light bg-white/70 border border-stone-200 rounded hover:border-wabi-clay/40 hover:text-wabi-clay transition-colors cursor-default"
             >
               {concept}
             </span>
           ))}
           {(idea.bridgedConcepts?.length ?? 0) > 3 && (
-            <span className="px-2 py-1 text-[10px] font-mono text-neutral-500">
+            <span className="px-2 py-1 text-[10px] font-mono text-wabi-ink-light">
               +{idea.bridgedConcepts!.length - 3} MORE
             </span>
           )}
@@ -126,7 +125,7 @@ export function NovelIdeaCard({
 
         {/* Peer Review Summary (Mini) */}
         {idea.criticalAnalysis && (
-          <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 bg-white/[0.02] px-3 py-2 rounded">
+          <div className="flex items-center justify-between text-[10px] font-mono text-wabi-ink-light bg-white/70 px-3 py-2 rounded border border-stone-200">
              <span className="flex items-center gap-2">
                <ShieldCheck className="w-3 h-3 text-neutral-500" />
                VALIDITY SCORE

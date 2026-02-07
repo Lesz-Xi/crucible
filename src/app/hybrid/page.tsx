@@ -41,7 +41,6 @@ import {
 } from "lucide-react";
 import { downloadMarkdown, SynthesisExportData } from "@/lib/services/markdown-export-service";
 import { StreamEvent } from "@/lib/streaming-event-emitter";
-import { AccessKeyGate } from "@/components/access-key-gate";
 
 interface SynthesisSource {
   name: string;
@@ -249,11 +248,10 @@ export default function HybridSynthesisPage() {
   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
 
   return (
-    <AccessKeyGate>
-      <div className="flex flex-col min-h-screen bg-[#030303] text-neutral-200 font-sans selection:bg-orange-500/30 relative overflow-x-hidden">
+      <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-wabi-clay/20 relative overflow-x-hidden">
 
       {/* Header */}
-      <header className="border-b border-white/5 bg-[#030303]/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-[var(--border-subtle)] bg-white/70 backdrop-blur-xl sticky top-0 z-50">
         <div className="w-full px-6 lg:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-between gap-4">
@@ -262,7 +260,7 @@ export default function HybridSynthesisPage() {
 <img src="/upsclae-logo-new.png" alt="Crucible Logo" className="w-full h-full object-contain drop-shadow-md" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-mono font-bold text-white tracking-wider">
+                  <h1 className="text-xl font-mono font-bold text-[var(--text-primary)] tracking-wider">
                     Crucible
                   </h1>
                 </div>
@@ -271,19 +269,19 @@ export default function HybridSynthesisPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setHistoryOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-neutral-300 text-sm rounded-lg border border-white/10 hover:border-white/20 transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-white/80 hover:bg-white text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-wabi-clay/40 transition-all"
                 >
                   <History className="w-3.5 h-3.5" />
                   <span>History</span>
                 </button>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-mono font-bold rounded-lg border border-indigo-500/20 uppercase tracking-wider">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-wabi-clay/10 text-wabi-clay text-[10px] font-mono font-bold rounded-lg border border-wabi-clay/20 uppercase tracking-wider">
                   <Shield className="w-3 h-3" />
                   <span>Phase 3: Orthogonality Active</span>
                 </div>
                 {stage === "results" && (
                   <button
                     onClick={resetToNew}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-sm rounded-lg border border-orange-500/20 transition-all"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-wabi-clay/10 hover:bg-wabi-clay/15 text-wabi-clay text-sm rounded-lg border border-wabi-clay/25 transition-all"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>New</span>
@@ -303,10 +301,10 @@ export default function HybridSynthesisPage() {
         {stage === "input" && (
           <div className="w-full max-w-[1536px] mx-auto space-y-8 px-8">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-mono font-bold tracking-tight text-white">
+              <h2 className="text-3xl font-mono font-bold tracking-tight text-[var(--text-primary)]">
                 Dialectical Synthesis Engine
               </h2>
-              <p className="text-neutral-400 max-w-xl mx-auto leading-relaxed">
+              <p className="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
                 Upload research papers and analyze companies. The Sovereign Mastermind will detect 
                 contradictions between sources and generate novel ideas that bridge opposing claims.
               </p>
@@ -314,28 +312,28 @@ export default function HybridSynthesisPage() {
 
             {/* Source Counters */}
             <div className="flex justify-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/30 rounded-xl">
-                <FileText className="w-4 h-4 text-orange-400" />
-                <span className="text-sm font-medium text-orange-300">
+              <div className="flex items-center gap-2 px-4 py-2 bg-wabi-clay/10 border border-wabi-clay/30 rounded-xl">
+                <FileText className="w-4 h-4 text-wabi-clay" />
+                <span className="text-sm font-medium text-[var(--text-primary)]">
                   {files.length} PDFs
                 </span>
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-xl">
-                <Building2 className="w-4 h-4 text-amber-400" />
-                <span className="text-sm font-medium text-amber-300">
+              <div className="flex items-center gap-2 px-4 py-2 bg-wabi-charcoal/10 border border-wabi-charcoal/30 rounded-xl">
+                <Building2 className="w-4 h-4 text-wabi-charcoal" />
+                <span className="text-sm font-medium text-[var(--text-primary)]">
                   {companies.length} Companies
                 </span>
               </div>
               <div
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${
                   canSynthesize
-                    ? "bg-emerald-500/10 border-emerald-500/30"
-                    : "bg-white/5 border-white/10"
+                    ? "bg-wabi-moss/10 border-wabi-moss/30"
+                    : "bg-white/80 border-[var(--border-subtle)]"
                 }`}
               >
                 <span
                   className={`text-sm font-medium font-mono ${
-                    canSynthesize ? "text-emerald-300" : "text-neutral-500"
+                    canSynthesize ? "text-wabi-moss" : "text-[var(--text-tertiary)]"
                   }`}
                 >
                   {totalSources}/12 Total
@@ -350,9 +348,9 @@ export default function HybridSynthesisPage() {
                 placeholder="Research focus (optional): e.g., 'drug delivery mechanisms' or 'diagnostic tools'"
                 value={researchFocus}
                 onChange={(e) => setResearchFocus(e.target.value)}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-neutral-300 placeholder:text-neutral-600 focus:border-orange-500/50 focus:outline-none focus:ring-1 focus:ring-orange-500/20 transition-all"
+                className="w-full px-4 py-3 wabi-glass-panel border-[var(--border-subtle)] rounded-xl text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:border-wabi-clay/60 focus:outline-none focus:ring-1 focus:ring-wabi-clay/20 transition-all"
               />
-              <p className="text-xs text-neutral-600 mt-1.5 text-center">
+              <p className="text-xs text-[var(--text-tertiary)] mt-1.5 text-center">
                 Leave empty for autonomous exploration across all contradictions
               </p>
             </div>
@@ -361,8 +359,8 @@ export default function HybridSynthesisPage() {
               {/* PDF Upload Section */}
               <div className="space-y-3 h-full">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-orange-400" />
-                  <h3 className="text-lg font-mono font-bold text-neutral-200">Research & Documents</h3>
+                  <FileText className="w-5 h-5 text-wabi-clay" />
+                  <h3 className="text-lg font-mono font-bold text-[var(--text-primary)]">Research & Documents</h3>
                 </div>
                 <PDFUpload
                   onFilesSelected={setFiles}
@@ -374,8 +372,8 @@ export default function HybridSynthesisPage() {
               {/* Company Input Section */}
               <div className="space-y-3 h-full">
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-lg font-mono font-bold text-neutral-200">Companies to Analyze</h3>
+                  <Building2 className="w-5 h-5 text-wabi-charcoal" />
+                  <h3 className="text-lg font-mono font-bold text-[var(--text-primary)]">Companies to Analyze</h3>
                 </div>
                 <CompanyInput
                   companies={companies}
@@ -387,7 +385,7 @@ export default function HybridSynthesisPage() {
             </div>
 
             {error && (
-              <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm">
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
                 {error}
               </div>
             )}
@@ -408,19 +406,6 @@ export default function HybridSynthesisPage() {
         {/* Processing Stage (Epistemic Audit) */}
         {stage === "processing" && (
           <div className="w-full h-full mx-auto space-y-8 px-6">
-            <div className="text-center space-y-2 mb-8">
-              <h3 className="text-2xl font-bold text-orange-100 flex items-center justify-center gap-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-orange-500 blur-lg opacity-20 animate-pulse" />
-                  <Zap className="w-6 h-6 text-orange-400 relative z-10" />
-                </div>
-                Epistemic Synthesis in Progress
-              </h3>
-              <p className="text-orange-200/60">
-                The Sovereign Mastermind is currently auditing {totalSources} sources through a dialectical hardening pass.
-              </p>
-            </div>
-            
             <SynthesisAuditView 
                files={files} 
                companies={companies} 
@@ -453,7 +438,7 @@ export default function HybridSynthesisPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Results Header with Export Button */}
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Synthesis Results</h2>
+              <h2 className="text-2xl font-serif font-bold text-[var(--text-primary)]">Synthesis Results</h2>
               <button
                 onClick={() => {
                   const exportData: SynthesisExportData = {
@@ -479,7 +464,7 @@ export default function HybridSynthesisPage() {
                   };
                   downloadMarkdown(exportData, { title: "Hybrid Synthesis Report" });
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-md hover:shadow-[0_0_20px_-5px_rgba(249,115,22,0.4)] transition-all duration-300 border border-orange-400/20"
+                className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white text-[var(--text-primary)] font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-sm transition-all duration-300 border border-[var(--border-subtle)] hover:border-wabi-clay/45"
               >
                 <Download className="w-4 h-4" />
                 Download Markdown
@@ -488,8 +473,8 @@ export default function HybridSynthesisPage() {
 
             {/* Sources Summary - Separated by Type */}
             <section className="space-y-8">
-              <h2 className="text-2xl font-bold flex items-center gap-3 text-neutral-200">
-                <BookOpen className="w-6 h-6 text-orange-500" />
+              <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-[var(--text-primary)]">
+                <BookOpen className="w-6 h-6 text-wabi-clay" />
                 Sources Analyzed ({result.metadata?.totalSources ?? result.sources?.length ?? 0})
               </h2>
 
@@ -512,20 +497,20 @@ export default function HybridSynthesisPage() {
                       {pdfSources.map((source, i) => (
                         <div
                           key={`pdf-${i}`}
-                          className="group p-4 rounded-xl border bg-gradient-to-br from-[#0A0A0A] to-[#111] border-white/5 hover:border-orange-500/40 hover:shadow-[0_0_30px_-5px_rgba(249,115,22,0.15)] transition-all duration-500"
+                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-clay/40 hover:shadow-[0_0_30px_-5px_rgba(158,126,107,0.15)] transition-all duration-500"
                         >
                           <div className="flex items-start gap-2.5 mb-2.5">
-                            <div className="p-1.5 rounded-lg bg-orange-500/10 text-orange-400 group-hover:bg-orange-500/20 group-hover:shadow-[0_0_15px_-3px_rgba(249,115,22,0.3)] transition-all">
+                            <div className="p-1.5 rounded-lg bg-wabi-clay/10 text-wabi-clay group-hover:bg-wabi-clay/20 group-hover:shadow-[0_0_15px_-3px_rgba(158,126,107,0.3)] transition-all">
                               <FileText className="w-3.5 h-3.5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-neutral-200 truncate text-xs font-mono tracking-tight group-hover:text-orange-200 transition-colors">
+                              <h4 className="font-bold text-[var(--text-primary)] truncate text-xs font-mono tracking-tight group-hover:text-wabi-clay transition-colors">
                                 {source.name}
                               </h4>
-                              <span className="text-[9px] uppercase font-bold tracking-wider text-neutral-600">PDF Document</span>
+                              <span className="text-[9px] uppercase font-bold tracking-wider text-[var(--text-tertiary)]">PDF Document</span>
                             </div>
                           </div>
-                          <p className="text-[10px] text-neutral-500 line-clamp-3 leading-relaxed border-l-2 border-orange-500/20 pl-2.5">
+                          <p className="text-[10px] text-[var(--text-secondary)] line-clamp-3 leading-relaxed border-l-2 border-wabi-clay/20 pl-2.5">
                             {source.mainThesis}
                           </p>
                         </div>
@@ -554,20 +539,20 @@ export default function HybridSynthesisPage() {
                       {companySources.map((source, i) => (
                         <div
                           key={`company-${i}`}
-                          className="group p-4 rounded-xl border bg-gradient-to-br from-[#0A0A0A] to-[#111] border-white/5 hover:border-sky-500/40 hover:shadow-[0_0_30px_-5px_rgba(14,165,233,0.15)] transition-all duration-500"
+                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-charcoal/40 hover:shadow-[0_0_30px_-5px_rgba(139,94,60,0.15)] transition-all duration-500"
                         >
                           <div className="flex items-start gap-2.5 mb-2.5">
-                            <div className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400 group-hover:bg-sky-500/20 group-hover:shadow-[0_0_15px_-3px_rgba(14,165,233,0.3)] transition-all">
+                            <div className="p-1.5 rounded-lg bg-wabi-charcoal/10 text-wabi-charcoal group-hover:bg-wabi-charcoal/20 group-hover:shadow-[0_0_15px_-3px_rgba(139,94,60,0.3)] transition-all">
                               <Building2 className="w-3.5 h-3.5" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-bold text-neutral-200 truncate text-xs font-mono tracking-tight group-hover:text-sky-200 transition-colors">
+                              <h4 className="font-bold text-[var(--text-primary)] truncate text-xs font-mono tracking-tight group-hover:text-wabi-charcoal transition-colors">
                                 {source.name}
                               </h4>
-                              <span className="text-[9px] uppercase font-bold tracking-wider text-neutral-600">Company Profile</span>
+                              <span className="text-[9px] uppercase font-bold tracking-wider text-[var(--text-tertiary)]">Company Profile</span>
                             </div>
                           </div>
-                          <p className="text-[10px] text-neutral-500 line-clamp-3 leading-relaxed border-l-2 border-sky-500/20 pl-2.5">
+                          <p className="text-[10px] text-[var(--text-secondary)] line-clamp-3 leading-relaxed border-l-2 border-wabi-charcoal/25 pl-2.5">
                             {source.mainThesis}
                           </p>
                         </div>
@@ -867,7 +852,6 @@ export default function HybridSynthesisPage() {
           </div>
         )}
       </main>
-    </div>
-  </AccessKeyGate>
-);
+      </div>
+  );
 }

@@ -1,26 +1,66 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Wabi Sabi 2041 - Light (Paper) */
+  --background: #FAFAF9;
+  --foreground: #2A2621;
+  --bg-primary: #FAFAF9;
+  --bg-secondary: #F5F5F4;
+  --bg-card: #FFFFFF;
+  --text-primary: #2A2621;
+  --text-secondary: #57534E;
+  --text-tertiary: #A8A29E;
+  --border-subtle: #D6D3D1;
+  
+  --wabi-washi: #FAFAF9;
+  --wabi-sumi: #2A2621;
+  --wabi-patina: #57534E;
+  --wabi-clay: #9E7E6B;
+  --wabi-ink-light: #57534E;
+  --wabi-moss: #606C38;
+  --wabi-rust: #BC6C25;
+  --wabi-stone: #A8A29E;
+  --wabi-sand: #D6CCC2;
+  --wabi-charcoal: #8B5E3C;
+  
+  /* Fonts */
+  --font-geist-sans: "Geist Sans", sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
+  --font-crimson: "Crimson Pro", serif;
+  --font-playfair: "Playfair Display", serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Ensure class-based dark mode works effectively */
+.dark {
+  --background: #1C1C1E;
+  --foreground: #FAFAF9;
+  --bg-primary: #1C1C1E;
+  --bg-secondary: #232326;
+  --bg-card: #2A2A2D;
+  --text-primary: #FAFAF9;
+  --text-secondary: #D6D3D1;
+  --text-tertiary: #A8A29E;
+  --border-subtle: #3F3F46;
+  --wabi-washi: #1C1C1C;
+  --wabi-sumi: #EBE9E4;
+  --wabi-ink-light: #A8A29E;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F0EFF4;
-    --foreground: #171717;
-  }
+.wabi-glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.05);
+}
+
+.dark .wabi-glass-panel {
+  background: rgba(28, 28, 30, 0.8);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
 }

@@ -71,34 +71,34 @@ jobs:
             const fs = require('fs');
             const orphanedRoutes = fs.readFileSync('/tmp/orphaned_routes.txt', 'utf8');
             
-            const issueBody = `## 🚨 Orphaned Route Changes Detected
+            const issueBody = \`## 🚨 Orphaned Route Changes Detected
 
-The weekly Unreachable Commit Guard has detected dangling commits containing route-related changes:
+            The weekly Unreachable Commit Guard has detected dangling commits containing route-related changes:
 
-${orphanedRoutes}
+            \${orphanedRoutes}
 
-### Action Required
+            ### Action Required
 
-1. **Review the orphaned commits** to determine if they contain valuable work
-2. **Recover orphaned routes** if needed:
-   \`\`\`bash
-   git branch recovery/<branch-name> <commit-sha>
-   \`\`\`
-3. **Update the Route Registry** (\`docs/route-registry.md\`) if routes are recovered
-4. **Investigate why these commits became orphaned** (e.g., force push, branch deletion without merge)
+            1. **Review the orphaned commits** to determine if they contain valuable work
+            2. **Recover orphaned routes** if needed:
+               \`\`\`bash
+               git branch recovery/<branch-name> <commit-sha>
+               \`\`\`
+            3. **Update the Route Registry** (\`docs/route-registry.md\`) if routes are recovered
+            4. **Investigate why these commits became orphaned** (e.g., force push, branch deletion without merge)
 
-### Prevention
+            ### Prevention
 
-To prevent future orphaned commits:
-- Always use feature branches (\`codex/<feature-name>\`)
-- Never use \`git stash\` for route changes
-- Ensure all route work is merged via PR
-- Follow the Route Provenance Policy (\`docs/route-provenance-policy.md\`)
+            To prevent future orphaned commits:
+            - Always use feature branches (\`codex/<feature-name>\`)
+            - Never use \`git stash\` for route changes
+            - Ensure all route work is merged via PR
+            - Follow the Route Provenance Policy (\`docs/route-provenance-policy.md\`)
 
----
+            ---
 
-*This issue was automatically created by the Unreachable Commit Guard workflow.*
-`;
+            *This issue was automatically created by the Unreachable Commit Guard workflow.*
+            \`;
 
             await github.rest.issues.create({
               owner: context.repo.owner,
