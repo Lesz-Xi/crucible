@@ -22,15 +22,22 @@ export interface Message {
  * Integrates with the causal_chat_sessions and causal_chat_messages tables.
  */
 export class ChatPersistence {
-  private supabase = createClient();
+  private supabase: ReturnType<typeof createClient> | null = null;
   private causalDensityColumnAvailable: boolean | null = null;
+
+  private getSupabase() {
+    if (!this.supabase) {
+      this.supabase = createClient();
+    }
+    return this.supabase;
+  }
 
   private async verifyCausalDensityColumn(): Promise<boolean> {
     if (this.causalDensityColumnAvailable !== null) {
       return this.causalDensityColumnAvailable;
     }
 
-    const { error } = await this.supabase
+    const { error } = await this.getSupabase()
       .from('causal_chat_messages')
       .select('causal_density')
       .limit(1);
@@ -68,7 +75,7 @@ export class ChatPersistence {
       ? firstMessage.substring(0, 47) + '...' 
       : firstMessage;
 
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getSupabase()
       .from('causal_chat_sessions')
       .insert({
         user_id: userId || null, // Handle unauthenticated users
@@ -110,7 +117,7 @@ export class ChatPersistence {
       payload.causal_density = message.causalDensity;
     }
 
-    let { data, error } = await this.supabase
+    let { data, error } = await this.getSupabase()
       .from('causal_chat_messages')
       .insert(payload)
       .select();
@@ -121,7 +128,7 @@ export class ChatPersistence {
       );
       this.causalDensityColumnAvailable = false;
       delete payload.causal_density;
-      const retry = await this.supabase
+      const retry = await this.getSupabase()
         .from('causal_chat_messages')
         .insert(payload)
         .select();
@@ -146,7 +153,7 @@ export class ChatPersistence {
    * @param sessionId - The session ID
    */
   async touchSession(sessionId: string): Promise<void> {
-    const { error } = await this.supabase
+    const { error } = await this.getSupabase()
       .from('causal_chat_sessions')
       .update({ updated_at: new Date().toISOString() })
       .eq('id', sessionId);
@@ -162,7 +169,7 @@ export class ChatPersistence {
    * @returns Array of messages in chronological order
    */
   async loadSession(sessionId: string): Promise<Message[]> {
-    const { data, error } = await this.supabase
+    const { data, error } = await this.getSupabase()
       .from('causal_chat_messages')
       .select('*')
       .eq('session_id', sessionId)

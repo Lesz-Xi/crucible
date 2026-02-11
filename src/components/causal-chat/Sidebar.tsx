@@ -76,15 +76,19 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
 
   useEffect(() => {
     const fetchHistory = async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('causal_chat_sessions')
-        .select('id, title, updated_at')
-        .order('updated_at', { ascending: false })
-        .limit(10);
-      
-      if (data) {
-        setRecentSessions(data);
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from('causal_chat_sessions')
+          .select('id, title, updated_at')
+          .order('updated_at', { ascending: false })
+          .limit(10);
+
+        if (data) {
+          setRecentSessions(data);
+        }
+      } catch (error) {
+        console.warn('[Sidebar] Supabase not configured; skipping chat history fetch.', error);
       }
     };
     
@@ -226,4 +230,3 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
     </div>
   );
 }
-
