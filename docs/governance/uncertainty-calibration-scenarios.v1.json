@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "scenarioId": "UC-S001",
+      "label": "Well-calibrated predictions — all gates pass",
+      "predictions": [
+        { "predicted": 0.9, "confidence": 0.85, "actual": 1.0 },
+        { "predicted": 0.7, "confidence": 0.65, "actual": 1.0 },
+        { "predicted": 0.3, "confidence": 0.30, "actual": 0.0 },
+        { "predicted": 0.1, "confidence": 0.15, "actual": 0.0 },
+        { "predicted": 0.8, "confidence": 0.75, "actual": 1.0 },
+        { "predicted": 0.2, "confidence": 0.25, "actual": 0.0 },
+        { "predicted": 0.6, "confidence": 0.55, "actual": 1.0 },
+        { "predicted": 0.4, "confidence": 0.40, "actual": 0.0 },
+        { "predicted": 0.5, "confidence": 0.50, "actual": 1.0 },
+        { "predicted": 0.95, "confidence": 0.90, "actual": 1.0 }
+      ],
+      "expectedHardGates": [],
+      "expectedDecision": "good"
+    },
+    {
+      "scenarioId": "UC-S002",
+      "label": "Overconfident predictions — ECE hard gate trips",
+      "predictions": [
+        { "predicted": 0.99, "confidence": 0.99, "actual": 0.0 },
+        { "predicted": 0.95, "confidence": 0.95, "actual": 0.0 },
+        { "predicted": 0.98, "confidence": 0.98, "actual": 0.0 },
+        { "predicted": 0.97, "confidence": 0.97, "actual": 1.0 },
+        { "predicted": 0.92, "confidence": 0.92, "actual": 0.0 },
+        { "predicted": 0.96, "confidence": 0.96, "actual": 0.0 },
+        { "predicted": 0.91, "confidence": 0.91, "actual": 1.0 },
+        { "predicted": 0.93, "confidence": 0.93, "actual": 0.0 }
+      ],
+      "expectedHardGates": ["max_ece"],
+      "expectedDecision": "poor"
+    },
+    {
+      "scenarioId": "UC-S003",
+      "label": "Moderate calibration — soft gates warn",
+      "predictions": [
+        { "predicted": 0.7, "confidence": 0.80, "actual": 1.0 },
+        { "predicted": 0.3, "confidence": 0.50, "actual": 0.0 },
+        { "predicted": 0.6, "confidence": 0.70, "actual": 0.0 },
+        { "predicted": 0.8, "confidence": 0.60, "actual": 1.0 },
+        { "predicted": 0.2, "confidence": 0.40, "actual": 0.0 },
+        { "predicted": 0.5, "confidence": 0.55, "actual": 1.0 }
+      ],
+      "expectedHardGates": [],
+      "expectedDecision": "fair"
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "scenarioId": "LF-S001",
+      "label": "Valid proposed→tested transition with strong evidence",
+      "candidate": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "hypothesis": "Increasing sample size beyond N=500 yields diminishing information gain in linear Gaussian SCMs",
+        "formalExpression": "IG(N) ~ log(N) for N > 500",
+        "domain": "causal_inference",
+        "evidenceBasis": [
+          {
+            "sourceId": "EXP-001",
+            "sourceType": "experiment",
+            "summary": "Monte Carlo simulation across 1000 random DAGs showed log-convergence of IG",
+            "strength": "strong",
+            "timestamp": "2026-01-15T10:00:00Z"
+          }
+        ],
+        "falsificationEvidence": [],
+        "status": "proposed",
+        "proposedAt": "2026-01-15T10:00:00Z",
+        "lastTransitionAt": "2026-01-15T10:00:00Z",
+        "falsificationCriteria": "Find a linear Gaussian SCM where IG(N) grows super-logarithmically for N > 500",
+        "confidenceScore": 0.72,
+        "disqualified": false,
+        "disqualifyReasons": []
+      },
+      "requestedTransition": {
+        "from": "proposed",
+        "to": "tested"
+      },
+      "additionalEvidence": [
+        {
+          "sourceId": "EXP-002",
+          "sourceType": "experiment",
+          "summary": "Replicated on 500 additional DAGs with consistent results",
+          "strength": "strong",
+          "timestamp": "2026-02-01T14:00:00Z"
+        }
+      ],
+      "expectedHardGates": [],
+      "expectedDecision": "tested"
+    },
+    {
+      "scenarioId": "LF-S002",
+      "label": "Invalid transition proposed→confirmed (skips tested)",
+      "candidate": {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "hypothesis": "Bayesian optimization with UCB always outperforms random search",
+        "domain": "optimization",
+        "evidenceBasis": [
+          {
+            "sourceId": "OBS-001",
+            "sourceType": "observation",
+            "summary": "Observed in 3 benchmark functions",
+            "strength": "moderate",
+            "timestamp": "2026-01-20T08:00:00Z"
+          }
+        ],
+        "falsificationEvidence": [],
+        "status": "proposed",
+        "proposedAt": "2026-01-20T08:00:00Z",
+        "lastTransitionAt": "2026-01-20T08:00:00Z",
+        "falsificationCriteria": "Find a function class where random search statistically outperforms BO-UCB",
+        "confidenceScore": 0.45,
+        "disqualified": false,
+        "disqualifyReasons": []
+      },
+      "requestedTransition": {
+        "from": "proposed",
+        "to": "confirmed"
+      },
+      "expectedHardGates": ["invalid_transition"],
+      "expectedDecision": "proposed"
+    },
+    {
+      "scenarioId": "LF-S003",
+      "label": "Falsification — critical counter-evidence triggers falsified state",
+      "candidate": {
+        "id": "00000000-0000-0000-0000-000000000003",
+        "hypothesis": "All causal effects in biological systems are linear",
+        "domain": "biology",
+        "evidenceBasis": [
+          {
+            "sourceId": "OBS-010",
+            "sourceType": "observation",
+            "summary": "Linear fit on small gene expression dataset",
+            "strength": "weak",
+            "timestamp": "2026-01-10T12:00:00Z"
+          }
+        ],
+        "falsificationEvidence": [
+          {
+            "method": "contradiction",
+            "description": "Non-linear dose-response curve documented in standard pharmacology",
+            "severity": "critical",
+            "timestamp": "2026-01-25T09:00:00Z"
+          }
+        ],
+        "status": "tested",
+        "proposedAt": "2026-01-10T12:00:00Z",
+        "lastTransitionAt": "2026-01-22T16:00:00Z",
+        "falsificationCriteria": "Find any non-linear causal relationship in a biological system",
+        "confidenceScore": 0.15,
+        "disqualified": false,
+        "disqualifyReasons": []
+      },
+      "requestedTransition": {
+        "from": "tested",
+        "to": "falsified"
+      },
+      "additionalFalsificationEvidence": [
+        {
+          "method": "cross-domain",
+          "description": "Enzyme kinetics universally follow Michaelis-Menten (non-linear) dynamics",
+          "severity": "critical",
+          "timestamp": "2026-02-05T11:00:00Z"
+        }
+      ],
+      "expectedHardGates": [],
+      "expectedDecision": "falsified"
+    }
+  ]
+}

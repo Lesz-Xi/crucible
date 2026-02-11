@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0.0",
+  "overrides": [
+    {
+      "id": "OVR-LF-001",
+      "gate": "invalid_transition",
+      "ticket": "GOV-000",
+      "reason": "Example override shape only. Not used in active evaluation.",
+      "expiresAt": "2026-12-31T23:59:59Z"
+    }
+  ]
+}
