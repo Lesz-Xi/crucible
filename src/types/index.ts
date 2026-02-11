@@ -546,4 +546,6 @@ export type {
   LocalHistoryExport,
   ImportDomainSummary,
   HistoryImportSummary,
+  LegacyAdoptionSummary,
+  HistorySyncStatus,
 } from './history-import';

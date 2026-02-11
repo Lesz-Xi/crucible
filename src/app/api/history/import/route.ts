@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
             user_id: user.id,
             title: row.payload.title,
             updated_at: row.payload.updatedAt || new Date().toISOString(),
+            legacy_client_token: row.payload.legacyClientToken || null,
             external_import_id: externalId,
           },
           { onConflict: 'external_import_id' }

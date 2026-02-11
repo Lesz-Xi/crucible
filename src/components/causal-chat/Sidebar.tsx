@@ -2,13 +2,13 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { 
   Plus, 
-  Search, 
   MessageSquare, 
-  Database, // Truth Store
-  ShieldCheck, // Axiom Validator
-  Layers, // Obsidian Layer alternative
+  Sparkles,
+  Scale,
   Star, 
   Clock, 
   PanelLeftClose,
@@ -19,6 +19,8 @@ import { useEffect, useState } from "react";
 import { ChatPersistence } from "@/lib/services/chat-persistence";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthButton } from "@/components/auth/AuthButton";
+import { readLastHistorySyncStatus } from "@/lib/migration/history-import-bootstrap";
+import type { HistorySyncStatus } from "@/types/history-import";
 
 interface ChatSession {
   id: string;
@@ -35,28 +37,45 @@ interface SidebarItemProps {
   label: string;
   active?: boolean;
   onClick?: () => void;
+  href?: string;
   badge?: string;
 }
 
-const SidebarItem = ({ icon: Icon, label, active, onClick, badge }: SidebarItemProps) => (
-  <button 
-    onClick={onClick}
-    className={cn(
-      "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 group relative",
-      active 
-        ? "bg-wabi-white/10 text-wabi-white font-medium" 
-        : "text-wabi-stone hover:bg-wabi-white/5 hover:text-wabi-mist"
-    )}
-  >
-    <Icon className="w-4 h-4" />
-    <span className="truncate">{label}</span>
-    {badge && (
-      <span className="ml-auto text-xs bg-wabi-white/10 px-1.5 py-0.5 rounded-full text-wabi-mist">
-        {badge}
-      </span>
-    )}
-  </button>
-);
+const sidebarItemClasses = (active?: boolean) =>
+  cn(
+    "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 group relative",
+    active
+      ? "bg-wabi-white/10 text-wabi-white font-medium"
+      : "text-wabi-stone hover:bg-wabi-white/5 hover:text-wabi-mist"
+  );
+
+const SidebarItem = ({ icon: Icon, label, active, onClick, href, badge }: SidebarItemProps) => {
+  if (href) {
+    return (
+      <Link href={href} className={sidebarItemClasses(active)}>
+        <Icon className="w-4 h-4" />
+        <span className="truncate">{label}</span>
+        {badge && (
+          <span className="ml-auto text-xs bg-wabi-white/10 px-1.5 py-0.5 rounded-full text-wabi-mist">
+            {badge}
+          </span>
+        )}
+      </Link>
+    );
+  }
+
+  return (
+    <button onClick={onClick} className={sidebarItemClasses(active)}>
+      <Icon className="w-4 h-4" />
+      <span className="truncate">{label}</span>
+      {badge && (
+        <span className="ml-auto text-xs bg-wabi-white/10 px-1.5 py-0.5 rounded-full text-wabi-mist">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+};
 
 const SectionHeader = ({ label }: { label: string }) => (
   <div className="px-3 py-2 text-xs font-serif uppercase tracking-wider text-wabi-stone/50 mt-4 mb-1">
@@ -73,8 +92,10 @@ interface SidebarProps {
 }
 
 export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat }: SidebarProps) {
+  const pathname = usePathname() ?? "";
   const [recentSessions, setRecentSessions] = useState<ChatSession[]>([]);
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<HistorySyncStatus | null>(null);
   const chatPersistence = new ChatPersistence();
 
   const loadLocalFallbackSessions = (): ChatSession[] => {
@@ -91,6 +112,25 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
       return [];
     }
   };
+
+  useEffect(() => {
+    const lastStatus = readLastHistorySyncStatus();
+    if (lastStatus) {
+      setSyncStatus(lastStatus);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleSyncStatus = (event: Event) => {
+      const customEvent = event as CustomEvent<HistorySyncStatus>;
+      if (customEvent.detail) {
+        setSyncStatus(customEvent.detail);
+      }
+    };
+
+    window.addEventListener("historySyncStatus", handleSyncStatus);
+    return () => window.removeEventListener("historySyncStatus", handleSyncStatus);
+  }, []);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -189,11 +229,10 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
           <span>New chat</span>
         </button>
 
-        <SidebarItem icon={Search} label="Search" />
-        <SidebarItem icon={MessageSquare} label="Chats" active />
-        <SidebarItem icon={Layers} label="Obsidian Layer" />
-        <SidebarItem icon={Database} label="Truth Store" />
-        <SidebarItem icon={ShieldCheck} label="Axiom Validator" />
+        <SectionHeader label="Features" />
+        <SidebarItem icon={MessageSquare} label="Chat" href="/chat" active={pathname.startsWith("/chat")} />
+        <SidebarItem icon={Sparkles} label="Hybrid" href="/hybrid" active={pathname.startsWith("/hybrid")} />
+        <SidebarItem icon={Scale} label="Legal" href="/legal" active={pathname.startsWith("/legal")} />
       </div>
 
       {/* Starred */}
@@ -242,7 +281,13 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
       </div>
 
       {/* User Footer */}
-       <div className="p-4 mt-auto border-t border-wabi-stone/20">
+       <div className="p-4 mt-auto border-t border-wabi-stone/20 space-y-3">
+         <div className="rounded-lg border border-wabi-stone/20 bg-wabi-white/5 px-3 py-2">
+           <p className="text-[10px] uppercase tracking-wider text-wabi-stone/70">History sync</p>
+           <p className="mt-1 text-xs text-wabi-mist">
+             {syncStatus?.message || "No sync status yet."}
+           </p>
+         </div>
          <AuthButton />
       </div>
     </div>

@@ -54,6 +54,8 @@ function normalizeChat(): LocalHistoryExport['domains']['chat'] {
       const payload: ChatSessionImportPayload = {
         title,
         updatedAt: typeof record.updated_at === 'string' ? record.updated_at : undefined,
+        legacyClientToken:
+          typeof record.legacy_client_token === 'string' ? record.legacy_client_token : undefined,
         messages: messagesRaw
           .map((message) => {
             const msg = message as Record<string, unknown>;
@@ -85,6 +87,8 @@ function normalizeChat(): LocalHistoryExport['domains']['chat'] {
       const payload: ChatSessionImportPayload = {
         title,
         updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : undefined,
+        legacyClientToken:
+          typeof record.legacyClientToken === 'string' ? record.legacyClientToken : undefined,
         messages: messagesRaw
           .map((message) => {
             const msg = message as Record<string, unknown>;

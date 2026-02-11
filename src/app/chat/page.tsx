@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
 import { CausalChatInterface } from "@/components/causal-chat/CausalChatInterface";
 import { ChatLayout } from "@/components/causal-chat/ChatLayout";
+import { bootstrapHistoryRecovery } from "@/lib/migration/history-import-bootstrap";
 
 export default function ChatPage() {
+  useEffect(() => {
+    void bootstrapHistoryRecovery();
+  }, []);
+
   // This function will be passed down to both components
   const handleLoadSession = async (sessionId: string) => {
     // This triggers the load - implementation is actually in CausalChatInterface

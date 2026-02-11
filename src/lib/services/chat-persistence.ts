@@ -25,6 +25,7 @@ export class ChatPersistence {
   private supabase: ReturnType<typeof createClient> | null = null;
   private causalDensityColumnAvailable: boolean | null = null;
   private static readonly LOCAL_STORAGE_KEY = "causal-chat-local-fallback-v1";
+  private static readonly LEGACY_CLIENT_TOKEN_KEY = "crucible_legacy_client_token";
 
   private getSupabase() {
     if (!this.supabase) {
@@ -249,12 +250,14 @@ export class ChatPersistence {
 
   private createLocalSession(firstMessage: string): string {
     const localSessionId = `local-${crypto.randomUUID()}`;
+    const legacyClientToken = this.getOrCreateLegacyClientToken();
     const title =
       firstMessage.length > 50 ? `${firstMessage.substring(0, 47)}...` : firstMessage;
 
     const store = this.readLocalStore();
     store.sessions.unshift({
       id: localSessionId,
+      legacy_client_token: legacyClientToken,
       title,
       updated_at: new Date().toISOString(),
       created_at: new Date().toISOString(),
@@ -311,6 +314,7 @@ export class ChatPersistence {
   private readLocalStore(): {
     sessions: Array<{
       id: string;
+      legacy_client_token?: string;
       title: string;
       created_at: string;
       updated_at: string;
@@ -345,6 +349,7 @@ export class ChatPersistence {
       return parsed as {
         sessions: Array<{
           id: string;
+          legacy_client_token?: string;
           title: string;
           created_at: string;
           updated_at: string;
@@ -372,5 +377,20 @@ export class ChatPersistence {
       return;
     }
     window.localStorage.setItem(ChatPersistence.LOCAL_STORAGE_KEY, JSON.stringify(store));
+  }
+
+  private getOrCreateLegacyClientToken(): string {
+    if (typeof window === "undefined") {
+      return "";
+    }
+
+    const existing = window.localStorage.getItem(ChatPersistence.LEGACY_CLIENT_TOKEN_KEY);
+    if (existing) {
+      return existing;
+    }
+
+    const token = crypto.randomUUID();
+    window.localStorage.setItem(ChatPersistence.LEGACY_CLIENT_TOKEN_KEY, token);
+    return token;
   }
 }

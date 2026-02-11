@@ -9,6 +9,7 @@ export interface ImportRecordEnvelope<T> {
 export interface ChatSessionImportPayload {
   title: string;
   updatedAt?: string;
+  legacyClientToken?: string;
   messages: Array<{
     role: 'user' | 'assistant' | 'system';
     content: string;
@@ -63,3 +64,35 @@ export interface HistoryImportSummary {
   completedAt: string;
   domains: ImportDomainSummary[];
 }
+
+export interface LegacyAdoptionSummary {
+  success: boolean;
+  adoptedSessions: number;
+  adoptedMessages: number;
+  errors?: string[];
+}
+
+export type HistorySyncStatus =
+  | {
+      status: 'pending';
+      message: string;
+      timestamp: string;
+    }
+  | {
+      status: 'imported';
+      message: string;
+      timestamp: string;
+      summary?: HistoryImportSummary;
+    }
+  | {
+      status: 'adopted';
+      message: string;
+      timestamp: string;
+      adoptedSessions: number;
+      adoptedMessages: number;
+    }
+  | {
+      status: 'failed';
+      message: string;
+      timestamp: string;
+    };
