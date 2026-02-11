@@ -7,14 +7,22 @@
  * Phase 28.Legal: History persistence following Demis-Workflow
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { LegalCase } from '@/types/legal';
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let supabaseClient: SupabaseClient | null = null;
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+function getSupabaseClient(): SupabaseClient | null {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
+  }
+  if (!supabaseClient) {
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return supabaseClient;
+}
 
 /**
  * History entry for list display (summary only)
@@ -47,8 +55,8 @@ export async function saveAnalysisToHistory(
   documentNames: string[]
 ): Promise<string | null> {
   try {
-    // Don't save if Supabase not configured
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       console.log('[LegalHistory] Supabase not configured, skipping save');
       return null;
     }
@@ -92,8 +100,8 @@ export async function getAnalysisHistory(
   limit: number = 20
 ): Promise<LegalHistoryEntry[]> {
   try {
-    // Return empty if Supabase not configured
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       console.log('[LegalHistory] Supabase not configured');
       return [];
     }
@@ -145,8 +153,8 @@ export async function loadAnalysisFromHistory(
   id: string
 ): Promise<LegalCase | null> {
   try {
-    // Return null if Supabase not configured
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       console.log('[LegalHistory] Supabase not configured');
       return null;
     }
@@ -196,8 +204,8 @@ export async function deleteAnalysisFromHistory(
   id: string
 ): Promise<boolean> {
   try {
-    // Return false if Supabase not configured
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       console.log('[LegalHistory] Supabase not configured');
       return false;
     }
@@ -225,8 +233,8 @@ export async function deleteAnalysisFromHistory(
  */
 export async function clearAllHistory(): Promise<boolean> {
   try {
-    // Return false if Supabase not configured
-    if (!supabaseUrl || !supabaseAnonKey) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       return false;
     }
 
