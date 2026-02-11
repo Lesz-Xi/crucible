@@ -69,88 +69,15 @@ export interface NovelIdea {
   // Tier 1 Improvements: Calibrated Confidence
   confidenceFactors?: ConfidenceFactors;
   confidenceExplanation?: string;
+  statisticalMetrics?: StatisticalMetrics;
+  evidenceSnippets?: EvidenceSnippet[];
   // Refinement tracking
   refinementIteration?: number;
   refinedFrom?: string; // ID of original idea if this was refined
-  
+
   // Validation
   criticalAnalysis?: CriticalAnalysis;
   structuredHypothesis?: StructuredHypothesis;
-  
-  // Deutschian Epistemology
-  explanationDepth: number; // 0-100: How hard it is to vary?
-  isExplainedByPriorArt: boolean;
-  explanatoryMechanism: string;
-
-  // Sovereign Mastermind Fields
-  masaAudit?: MasaAudit;
-  scientificProse?: string;
-  crucialExperiment?: string;
-  evidenceSnippets?: string[];
-  experimentalDesign?: ExperimentalDesign;
-  scientificArtifacts?: {
-    protocolCode: string; // Python/Julia simulation code
-    labManual: string; // Markdown lab guide
-    labJob?: LabJob; // RIL JSON payload
-  };
-  // Chemical Entity Validation
-  validationResult?: {
-    success: boolean;
-    metrics?: {
-      pValue?: number;
-      bayesFactor?: number;
-      conclusionValid?: boolean;
-      chemicalAlignmentScore?: number;
-      physicalAlignmentScore?: number;
-    };
-    error?: string;
-  };
-  priorArt?: PriorArt[];
-  // Hong Theoretical Alignment
-  isLogConcave?: boolean; // True if confidence follows log-concave distribution
-}
-
-export interface SynthesisResult {
-  sources: { 
-    name: string; 
-    type: 'pdf' | 'company';
-    mainThesis: string;
-    keyArguments: string[];
-    concepts: ExtractedConcepts;
-  }[];
-  contradictions: Contradiction[];
-  novelIdeas: NovelIdea[];
-  selectedIdea?: NovelIdea;
-  structuredApproach?: StructuredApproach;
-  metadata?: {
-    refinementIterations: number;
-    calibrationApplied: boolean; // Did we run the check loop?
-    // Hong Pop-Stack-Sorting Metrics (t-Pop-sortability tracking)
-    tPopSortable?: boolean; // true if convergence achieved before maxIterations
-    convergenceStep?: number; // Which iteration step reached approval (0̂)
-    pdfCount?: number;
-    companyCount?: number;
-    totalSources?: number;
-  };
-  consciousnessState?: ConsciousnessState;
-}
-
-export interface ConsciousnessState {
-  current_mode: 'strict' | 'balanced' | 'exploratory';
-  ceiling: number;
-  friction_alert: boolean;
-  history?: {
-    scores: number[];
-    avg_score: number;
-    rejection_rate: number;
-    variance: number;
-  };
-  causal_evidence?: {
-    PN_mode_caused_failure?: number;
-    PS_switch_to_exploratory?: number;
-    RR_mode_risk_ratio?: number;
-  };
-  mode_history?: { mode: string; score: number; timestamp: string }[];
 }
 
 // Tier 1: Calibrated Confidence Factors
@@ -160,6 +87,7 @@ export interface ConfidenceFactors {
   contradictionResolved: number; // 0-1: Were tensions addressed in the synthesis?
   evidenceDepth: number;        // 0-1: Direct evidence vs inference
   conceptBridgeStrength: number; // 0-1: How well do concepts actually connect?
+  temporalDecayApplied?: boolean; // true when temporal weighting affected prior-art penalty
 }
 
 // Tier 1: Refinement tracking for evaluate-and-refine loop
@@ -199,10 +127,38 @@ export interface PriorArt {
   url?: string;
   similarity: number;
   differentiator: string;
+  publicationYear?: number;
+  temporalWeight?: number;
+  adjustedSimilarity?: number;
+  snippet?: string;
+}
+
+export interface StatisticalMetrics {
+  pValue: number;
+  bayesFactor: number;
+  effectSize: number;
+  interpretation: string;
+}
+
+export interface EvidenceSnippet {
+  snippet: string;
+  page: number | null;
+  offset: number | null;
+  confidence: number;
+  sourceName?: string;
+}
+
+export interface ScholarPriorArt {
+  paperId: string;
+  title: string;
+  abstract: string;
+  url: string;
+  citationCount: number;
+  influenceScore: number;
+  year: number;
+  similarity: number;
   authors?: string[];
   venue?: string;
-  year?: number;
-  openAccessPdf?: string;
 }
 
 export interface VisualAsset {
@@ -244,10 +200,9 @@ export interface CriticalAnalysis {
   logicalFallacies: string[];
   validityScore: number; // 0-100
   critique: string;
-  remediationConstraints?: string[];
 }
 
-// Scientific Rigor Types (Epistemic/Hong Framework) - Hypothesis Generation
+// Scientific Rigor Types (K-Dense/Hong Framework) - Hypothesis Generation
 export interface Prediction {
   description: string;
   expectedOutcome: string;
@@ -263,9 +218,6 @@ export interface ExperimentalDesign {
   };
   sampleSize?: string;
   duration?: string;
-  // Deutschian Field
-  crucialExperiment: string; // The specific test that could disprove this theory
-  falsificationStatus?: "Falsifiable" | "Unfalsifiable" | "Vague";
 }
 
 export interface CompetingHypothesis {
@@ -283,16 +235,6 @@ export interface StructuredHypothesis {
   selectedHypothesisId: string;
   predictions: Prediction[];
   experimentalDesign: ExperimentalDesign;
-  masaAudit?: MasaAudit;
-}
-
-
-export interface HypothesisNode {
-  id: string;
-  label: string;
-  status: 'generated' | 'testing' | 'refuted' | 'surviving';
-  refutationReason?: string;
-  children?: HypothesisNode[];
 }
 
 // ===== MASA (Multi-Agent Scientific Audit) Types =====
@@ -329,23 +271,27 @@ export interface MasaAudit {
   timestamp: Date;
 }
 
-// ===== Scholar API Types =====
+// ===== Consciousness State Types =====
 
-export interface ScholarPriorArt {
-  paperId: string;
-  title: string;
-  abstract: string;
-  url: string;
-  citationCount: number;
-  influenceScore: number;
-  year: number;
-  similarity: number;
-  authors?: string[];
-  venue?: string;
-  openAccessPdf?: string;
+export interface ConsciousnessState {
+  current_mode: 'strict' | 'balanced' | 'exploratory';
+  ceiling: number;
+  friction_alert: boolean;
+  history?: {
+    scores: number[];
+    avg_score: number;
+    rejection_rate: number;
+    variance: number;
+  };
+  causal_evidence?: {
+    PN_mode_caused_failure?: number;
+    PS_switch_to_exploratory?: number;
+    RR_mode_risk_ratio?: number;
+  };
+  mode_history?: { mode: string; score: number; timestamp: string }[];
 }
 
-// ===== Robotic Interface Layer (Phase 3) =====
+// ===== Robotic Interface Layer (Laboratory Automation) =====
 
 export interface LabJob {
   job_id: string;
@@ -400,3 +346,51 @@ export interface MeasureParams {
   wavelength_nm: number;
   metric_name: string;
 }
+
+// ─── Governance Contracts (S1) ─────────────────────────────────────
+
+export type {
+  GovernanceResultEnvelope,
+  GovernanceOverride,
+  GovernancePromotionRecord,
+} from './governance-envelope';
+
+export type {
+  PolicyFamily,
+  PolicyFamilyDescriptor,
+  PolicyEvalScenario,
+  PolicyEvalScenarioPack,
+  ScenarioResult,
+  PolicyDecision,
+  PolicyPromotionRecord,
+} from './policy-evaluation';
+
+export type {
+  DataRegime,
+  CausalMethodId,
+  MethodCard,
+  EligibilityResult,
+  SelectionOutput,
+  CausalMethodScenario,
+  CausalMethodScenarioPack,
+} from './causal-method-policy';
+
+export type {
+  CalibrationLevel,
+  CalibrationMetric,
+  GateResult,
+  ConfidenceReport,
+  UncertaintyCalibrationScenario,
+  UncertaintyCalibrationScenarioPack,
+} from './uncertainty-calibration';
+
+export type {
+  LawLifecycleState,
+  EvidenceBasis,
+  FalsificationEvidence,
+  LawCandidate,
+  LawEvaluationResult,
+  LawFalsificationScenario,
+  LawFalsificationScenarioPack,
+} from './law-discovery-falsification';
+

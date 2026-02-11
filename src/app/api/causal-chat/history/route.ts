@@ -9,14 +9,14 @@ export async function GET(request: NextRequest) {
 
     if (sessionId) {
       // Fetch specific session details
-      const details = await persistence.getCausalSessionDetails(sessionId);
+      const details = await persistence.getRunDetails(sessionId);
       if (!details) {
         return NextResponse.json({ error: "Session not found" }, { status: 404 });
       }
       return NextResponse.json({ success: true, session: details });
     } else {
       // Fetch list of sessions
-      const history = await persistence.getCausalSessions(20);
+      const history = await persistence.getHistoricalRuns(20);
       return NextResponse.json({ success: true, history });
     }
   } catch (error) {

@@ -2,10 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { processMultiplePDFs } from "@/lib/extractors/pdf-extractor";
 import { processMultipleCompanies } from "@/lib/extractors/company-extractor";
-import { 
-  runEnhancedSynthesisPipeline 
+import {
+  runEnhancedSynthesisPipeline,
+  SynthesisResult
 } from "@/lib/ai/synthesis-engine";
-import { SynthesisResult } from "@/types";
 import { searchPriorArt } from "@/lib/ai/novelty-evaluator";
 import { PersistenceService } from "@/lib/db/persistence-service";
 import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
@@ -22,16 +22,16 @@ export const maxDuration = 300; // Extended time to 5 minutes
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    
+
     // Get PDFs
     const files = formData.getAll("files") as File[];
-    
+
     // Get company names (JSON array)
     const companiesJson = formData.get("companies") as string | null;
     const companies: string[] = companiesJson ? JSON.parse(companiesJson) : [];
     const researchFocus = formData.get("researchFocus") as string || "";
     // Default to Parallel Enabled (3 concurrent) for speed unless explicitly disabled
-    const enableParallel = formData.get("enableParallelRefinement") !== "false"; 
+    const enableParallel = formData.get("enableParallelRefinement") !== "false";
     const concurrency = parseInt(formData.get("parallelConcurrency") as string) || 3;
 
     const totalSources = files.length + companies.length;
@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
     const stream = new ReadableStream({
       async start(controller) {
         const emitter = new StreamingEventEmitter(controller);
-        
+
         try {
           emitter.emit({ event: 'ingestion_start', files: files.length });
 
           // Step 1: Process PDFs to text
           const pdfResults: PDFExtractionResult[] = [];
-          
+
           for (const file of files) {
             const buffer = await file.arrayBuffer();
             // We'll process one by one to stream updates if needed, 
@@ -93,28 +93,27 @@ export async function POST(request: NextRequest) {
 
           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, {
             maxRefinementIterations: 2,
-            maxNovelIdeas: 3, // Always generate exactly 3 ideas
             priorArtSearchFn: searchPriorArt,
-            priorRejectionCheckFn: (t, m, d) => persistence.checkRejection(t, m, d),
+            priorRejectionCheckFn: (t: any, m: any, d: any) => persistence.checkRejection(t, m, d),
             validateProtocolFn: validateProtocol,
             eventEmitter: emitter,
             researchFocus: researchFocus || undefined,
             enableParallelRefinement: enableParallel,
             parallelConcurrency: concurrency,
             userId: userId // Add explicitly to config
-          });
+          } as any);
 
           // Step 4: Persist
           const saveStatus = await persistence.saveSynthesis(result);
-          
+
           const finalResult = {
             ...result,
             runId: saveStatus?.runId
           };
 
-          emitter.emit({ 
-            event: 'complete', 
-            synthesis: finalResult 
+          emitter.emit({
+            event: 'complete',
+            synthesis: finalResult
           });
 
         } catch (error) {

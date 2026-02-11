@@ -70,9 +70,9 @@ export default function MetacognitionDashboard({
 
       {/* Performance History */}
       {history && history.scores.length > 0 && (
-        <div className="performance-history mb-4">
-          <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Performance</div>
-          <div className="grid grid-cols-3 gap-2 text-xs">
+        <div className="performance-history mb-6">
+          <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Performance</div>
+          <div className="grid grid-cols-3 gap-4 text-xs">
             <div className="metric p-2 bg-gray-50 dark:bg-gray-800 rounded">
               <div className="text-gray-500 dark:text-gray-400">Avg Score</div>
               <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
@@ -101,7 +101,7 @@ export default function MetacognitionDashboard({
           <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
             🎯 Causal Attribution (Pearl's L3)
           </div>
-          <div className="grid grid-cols-1 gap-2 text-xs">
+          <div className="grid grid-cols-1 gap-4 text-xs">
             {causal_evidence.PN_mode_caused_failure !== undefined && (
               <div className="metric p-2 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded">
                 <div className="flex justify-between items-center">

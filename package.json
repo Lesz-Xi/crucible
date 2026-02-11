@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "dev:webpack": "next dev",
-    "build": "next build --turbo",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test:benchmark-governance": "vitest run src/lib/services/__tests__/benchmark-governance.test.ts",
@@ -18,7 +18,13 @@
     "validate:all": "npm run validate:schemas && npm run validate:consistency",
     "governance:claim-drift": "npx --yes tsx scripts/scan-claim-drift.ts",
     "governance:claim-reconcile": "npx --yes tsx scripts/reconcile-claim-ledger.ts",
-    "governance:claim-migrate": "npx --yes tsx scripts/migrate-claim-ledger.ts"
+    "governance:claim-migrate": "npx --yes tsx scripts/migrate-claim-ledger.ts",
+    "governance:policy-eval": "npx --yes tsx scripts/evaluate-experiment-policies.ts",
+    "governance:causal-method": "npx --yes tsx scripts/evaluate-causal-method-selection.ts",
+    "governance:causal-method-eval": "npm run governance:causal-method --",
+    "governance:uncertainty-cal": "npx --yes tsx scripts/evaluate-uncertainty-calibration.ts",
+    "governance:uncertainty-calibration": "npm run governance:uncertainty-cal --",
+    "governance:law-falsification": "npx --yes tsx scripts/evaluate-law-falsification.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -36,10 +42,13 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "framer-motion": "^12.29.2",
+    "jstat": "^1.9.6",
     "lucide-react": "^0.562.0",
     "mathjs": "^15.1.0",
     "next": "^15.4.3",
     "next-themes": "^0.4.6",
+    "pdf2json": "^4.0.2",
+    "pdfjs-dist": "^5.4.624",
     "pyodide": "^0.29.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -50,23 +59,31 @@
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0",
     "unpdf": "^1.4.0",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^15.4.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/scope-manager": "^8.53.1",
     "autoprefixer": "^10.4.23",
     "eslint": "^9",
-    "eslint-config-next": "^15.5.9",
+    "eslint-config-next": "^15.4.3",
+    "eslint-plugin-react": "^7.37.0",
     "jest": "^30.2.0",
+    "jsx-ast-utils": "^2.4.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
     "ts-jest": "^29.4.6",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.18"
+  },
+  "overrides": {
+    "resolve": "1.22.10"
   }
 }

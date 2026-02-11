@@ -42,13 +42,13 @@ export class SpectralService {
 
       // 4. Perform Eigenvalue Decomposition
       const { eigenvalues, eigenvectors } = math.eigs(Cov) as any;
-      
+
       // Map to a more usable format and sort by eigenvalues (descending)
       const eigenPairs = eigenvectors.map((p: any) => ({
         value: typeof p.value === 'number' ? p.value : p.value.valueOf(),
         vector: p.vector.toArray ? p.vector.toArray() : p.vector
       }));
-      
+
       eigenPairs.sort((a: any, b: any) => b.value - a.value);
 
       // 5. Determine Rank (Thresholding eigenvalues)
@@ -64,7 +64,7 @@ export class SpectralService {
         selectedVectors.push(pair.vector);
         selectedValues.push(pair.value);
         rank++;
-        if (cumulativeVariance / totalVariance > 0.95) break; 
+        if (cumulativeVariance / totalVariance > 0.95) break;
       }
 
       const subspace: SpectralSubspace = {
@@ -147,7 +147,7 @@ export class SpectralService {
       .select('*');
 
     if (error || !data) return [];
-    
+
     return data.map(row => ({
       ...row,
       eigenvectors: row.eigenvectors as number[][]

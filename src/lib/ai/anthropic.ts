@@ -1,210 +1,92 @@
+
 import Anthropic from "@anthropic-ai/sdk";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { executeWithRetry } from "./resilient-ai-orchestrator";
 
-let isInitialized = false;
-let anthropicClientInstance: Anthropic | null = null;
+// Initialize Anthropic client
+// Lazy-init Anthropic client
+let anthropicClient: Anthropic | null = null;
 
-// Debug logging - only log if AI_DEBUG env var is set
-const isDebug = process.env.AI_DEBUG === 'true' || process.env.NODE_ENV === 'development';
-
-function debugLog(...args: any[]) {
-  if (isDebug) {
-    console.log(...args);
-  }
-}
-
-// --- Anthropic Implementation ---
 function getAnthropicClient(): Anthropic {
-  // Reuse existing client instance to avoid repeated initialization
-  if (anthropicClientInstance) {
-    return anthropicClientInstance;
-  }
-  
+  if (anthropicClient) return anthropicClient;
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  
-  if (!isInitialized) {
-    if (apiKey) {
-      const keyPreview = `${apiKey.slice(0, 10)}...${apiKey.slice(-4)}`;
-      debugLog(`[Anthropic] Client initialized using key: ${keyPreview}`);
-    } else {
-      console.warn(`[Anthropic] WARNING: ANTHROPIC_API_KEY not found in environment`);
-    }
-    isInitialized = true;
+
+  if (!apiKey) {
+    throw new Error("ANTHROPIC_API_KEY is missing in environment variables!");
   }
-  
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is missing!");
-  
-  anthropicClientInstance = new Anthropic({ apiKey: apiKey.trim() });
-  return anthropicClientInstance;
+
+  // Validate API Key format
+  if (apiKey.length < 40) {
+    throw new Error(`Invalid ANTHROPIC_API_KEY: Key is too short (${apiKey.length} chars). Expected > 40 chars.`);
+  }
+
+  if (apiKey.includes("api-key-here") || apiKey.includes("your-api-key")) {
+    throw new Error(`Invalid ANTHROPIC_API_KEY: Detected placeholder value ('${apiKey}'). Please check your .env.local file or SHELL variables.`);
+  }
+
+  console.log(`[Anthropic Init] API Key loaded successfully. Length: ${apiKey.length}`);
+
+  anthropicClient = new Anthropic({
+    apiKey: apiKey.trim(),
+  });
+
+  return anthropicClient;
 }
 
-// --- Gemini Implementation ---
-function getGeminiClient(): GoogleGenerativeAI {
-  const apiKey =
-    process.env.GOOGLE_API_KEY ||
-    process.env.GEMINI_API_KEY ||
-    process.env.NEXT_PUBLIC_GOOGLE_API_KEY ||
-    process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GOOGLE_API_KEY is missing!");
-  return new GoogleGenerativeAI(apiKey);
-}
-
-// --- Shared Interface ---
+// Adapter Interface to mimic Gemini's GenerativeModel
 export interface ClaudeModel {
   generateContent(prompt: string): Promise<{ response: { text: () => string } }>;
-  generateContentStream(prompt: string): AsyncIterable<{ text: () => string }>;
 }
 
-// --- Adapters ---
-
+// Concrete Adapter
 class ClaudeAdapter implements ClaudeModel {
-  constructor(private model: string = "claude-sonnet-4-5-20250929") {}
+  private model: string;
+
+  constructor(model: string = "claude-sonnet-4-20250514") {
+    this.model = model;
+  }
 
   async generateContent(prompt: string) {
-    return await executeWithRetry(
-      async () => {
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      try {
         const client = getAnthropicClient();
-        const stream = client.messages.stream({
+        const msg = await client.messages.create({
           model: this.model,
           max_tokens: 8192,
           messages: [{ role: "user", content: prompt }],
         });
-        const finalMsg = await stream.finalMessage();
-        const textContent = finalMsg.content[0].type === 'text' ? finalMsg.content[0].text : "";
-        return { response: { text: () => textContent } };
-      },
-      {
-        provider: 'anthropic',
-        operationName: 'claude-generate-content',
-        maxAttempts: 3,
-      }
-    );
-  }
 
-  async *generateContentStream(prompt: string) {
-    // Note: Streaming has inherent retry complexity (partial consumption)
-    // For now, wrap the stream creation with retry, but not individual chunks
-    const stream = await executeWithRetry(
-      async () => {
-        const client = getAnthropicClient();
-        return client.messages.stream({
-          model: this.model,
-          max_tokens: 8192,
-          messages: [{ role: "user", content: prompt }],
-        });
-      },
-      {
-        provider: 'anthropic',
-        operationName: 'claude-generate-content-stream',
-        maxAttempts: 2, // Fewer retries for streaming (avoid long delays)
-      }
-    );
+        const textContent = msg.content[0].type === 'text' ? msg.content[0].text : "";
 
-    for await (const chunk of stream) {
-      if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-        const delta = chunk.delta as { type: 'text_delta'; text: string };
-        yield { text: () => delta.text };
+        return {
+          response: {
+            text: () => textContent,
+          },
+        };
+      } catch (error) {
+        attempts++;
+        console.warn(`Claude API attempt ${attempts} failed:`, error);
+
+        if (attempts >= maxAttempts) throw error;
+
+        // Exponential backoff: 1000ms, 2000ms, 4000ms
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempts - 1)));
       }
     }
+
+    throw new Error("Unreachable");
   }
 }
 
-class GeminiAdapter implements ClaudeModel {
-  constructor(private model?: string) {}
-
-  private getModelCandidates(): string[] {
-    return Array.from(
-      new Set(
-        [
-          this.model,
-          process.env.GEMINI_TEXT_MODEL,
-          "gemini-2.5-flash",
-          "gemini-2.0-flash",
-          "gemini-2.0-flash-001",
-          "gemini-flash-latest",
-        ].filter((value): value is string => Boolean(value && value.trim().length > 0))
-      )
-    );
-  }
-
-  async generateContent(prompt: string) {
-    const client = getGeminiClient();
-    let lastError: unknown = null;
-
-    for (const modelName of this.getModelCandidates()) {
-      try {
-        const model = client.getGenerativeModel({ model: modelName });
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
-        return { response: { text: () => text } };
-      } catch (error) {
-        lastError = error;
-      }
-    }
-
-    throw lastError ?? new Error("No Gemini text models available");
-  }
-
-  async *generateContentStream(prompt: string) {
-    const client = getGeminiClient();
-    let lastError: unknown = null;
-
-    for (const modelName of this.getModelCandidates()) {
-      try {
-        const model = client.getGenerativeModel({ model: modelName });
-        const result = await model.generateContentStream(prompt);
-
-        for await (const chunk of result.stream) {
-          const text = chunk.text();
-          if (text) {
-            yield { text: () => text };
-          }
-        }
-        return;
-      } catch (error) {
-        lastError = error;
-      }
-    }
-
-    throw lastError ?? new Error("No Gemini text models available for streaming");
-  }
-}
-
-// --- Factory ---
-
-// Singleton instances for reuse
-let claudeAdapterInstance: ClaudeAdapter | null = null;
-let geminiAdapterInstance: GeminiAdapter | null = null;
-let factoryInitialized = false;
-
-/**
- * Global factory for the Causal Explorer's reasoning engine.
- * Defaults to Anthropic, but supports Gemini fallback via CAUSAL_AI_PROVIDER environment variable.
- * 
- * OPTIMIZED: Returns singleton instances to avoid repeated initialization logs.
- */
+// Factory function
 export function getClaudeModel(): ClaudeModel {
-  const provider = process.env.CAUSAL_AI_PROVIDER?.toLowerCase() || "anthropic";
-  
-  if (provider === "gemini") {
-    if (!geminiAdapterInstance) {
-      if (!factoryInitialized) {
-        debugLog("[AI Factory] Initializing Gemini Provider...");
-        factoryInitialized = true;
-      }
-      geminiAdapterInstance = new GeminiAdapter();
-    }
-    return geminiAdapterInstance;
-  }
-  
-  if (!claudeAdapterInstance) {
-    if (!factoryInitialized) {
-      debugLog("[AI Factory] Initializing Anthropic Provider...");
-      factoryInitialized = true;
-    }
-    claudeAdapterInstance = new ClaudeAdapter();
-  }
-  return claudeAdapterInstance;
+  return new ClaudeAdapter();
 }
+
+// TODO: Claude does not support embeddings natively.
+// If your pipeline relies on generateEmbedding, you must either:
+// 1. Keep using Gemini for embeddings
+// 2. Use OpenAI or local transformers.js
+// 3. Refactor to remove embedding dependency

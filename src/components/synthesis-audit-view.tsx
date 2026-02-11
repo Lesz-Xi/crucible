@@ -10,6 +10,10 @@ import {
   X,
 } from "lucide-react";
 import { StreamEvent } from "@/lib/streaming-event-emitter";
+import { TraceIntegrityPanel } from "./trace-integrity-panel";
+import { LiveEpistemicMonitor } from "./live-epistemic-monitor";
+import { SpectralHealthMonitor } from "./spectral-health-monitor";
+import { IterativeTimelineView } from "./iterative-timeline-view";
 
 type TimelineStepKey =
   | "ingestion"
@@ -42,6 +46,40 @@ interface SynthesisAuditViewProps {
   companies: string[];
   latestEvent?: StreamEvent | null;
   userPrompt?: string;
+  // Phase 2: Real-Time Monitoring SSE Data
+  traceManifest?: {
+    sessionUUID: string;
+    inputHashes: Array<{ name: string; hash: string }>;
+    seedValue: number | null;
+    timestamp: string;
+  } | null;
+  epistemicData?: {
+    consciousnessState: {
+      energy: number;
+      entropy: number;
+      freeEnergy: number;
+      perceptionIntensity: number;
+      workingMemoryAccess: number;
+      awarenessLevel: number;
+    };
+    iteration: number;
+    maxIterations: number;
+    plateauReached: boolean;
+  } | null;
+  spectralHealth?: {
+    lambda_min: number;
+    lambda_max: number;
+    spectralGap: number;
+    healthStatus: 'optimal' | 'good' | 'warning' | 'critical';
+    timestamp: number;
+  } | null;
+  refinementCycle?: {
+    iteration: number;
+    maxIterations: number;
+    status: 'running' | 'complete';
+    approved?: boolean;
+    validityScore?: number;
+  } | null;
 }
 
 const BASE_STEPS: TimelineStep[] = [
@@ -99,12 +137,22 @@ function toLog(event: StreamEvent): LogEntry {
   }
 }
 
-export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }: SynthesisAuditViewProps) {
+export function SynthesisAuditView({ 
+  files, 
+  companies, 
+  latestEvent, 
+  userPrompt,
+  traceManifest,
+  epistemicData,
+  spectralHealth,
+  refinementCycle
+}: SynthesisAuditViewProps) {
   const steps = useMemo(
     () => (companies.length > 0 ? BASE_STEPS : BASE_STEPS.filter((s) => s.key !== "entity_harvest")),
     [companies.length]
   );
 
+  // Core state
   const [activeKey, setActiveKey] = useState<TimelineStepKey>("ingestion");
   const [completed, setCompleted] = useState<Set<TimelineStepKey>>(new Set());
   const [warnings, setWarnings] = useState<Set<TimelineStepKey>>(new Set());
@@ -112,9 +160,14 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
   const [pdfDone, setPdfDone] = useState(0);
   const [companyDone, setCompanyDone] = useState(0);
 
+  // MASA Gating state
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [pendingEvents, setPendingEvents] = useState<StreamEvent[]>([]);
+
   const expectedPdf = files.length;
   const expectedCompany = companies.length;
 
+  // Reset state on new synthesis
   useEffect(() => {
     setActiveKey("ingestion");
     setCompleted(new Set());
@@ -122,28 +175,33 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
     setLog([]);
     setPdfDone(0);
     setCompanyDone(0);
+    setIsReviewing(false);
+    setPendingEvents([]);
   }, [files.length, companies.length, userPrompt]);
 
-  useEffect(() => {
-    if (!latestEvent) return;
+  // Helper to handle timeline updates
+  const completeStep = (key: TimelineStepKey) => setCompleted((prev) => new Set(prev).add(key));
+  const warnStep = (key: TimelineStepKey) => setWarnings((prev) => new Set(prev).add(key));
 
-    setLog((prev) => [toLog(latestEvent), ...prev].slice(0, 100));
+  const processStreamEvent = (event: StreamEvent) => {
+    // Always log the event (unless buffering? No, log immediately even if buffering? 
+    // MASA Spec: User should see log, but timeline pauses? 
+    // Actually, if we buffer, we hide it.
+    // So logging happens here.)
+    setLog((prev) => [toLog(event), ...prev].slice(0, 100));
 
-    const completeStep = (key: TimelineStepKey) => setCompleted((prev) => new Set(prev).add(key));
-    const warnStep = (key: TimelineStepKey) => setWarnings((prev) => new Set(prev).add(key));
-
-    switch (latestEvent.event) {
+    switch (event.event) {
       case "ingestion_start":
         setActiveKey("ingestion");
         break;
       case "pdf_processed": {
-        const isCompany = latestEvent.filename.startsWith("Company:");
+        const isCompany = event.filename.startsWith("Company:");
         if (isCompany) {
           setCompanyDone((prev) => {
             const next = prev + 1;
             if (companies.length > 0 && next >= expectedCompany) {
-              completeStep("entity_harvest");
-              setActiveKey("contradiction_scan");
+               // MASA Gating: Stop here
+               setIsReviewing(true);
             }
             return next;
           });
@@ -157,7 +215,10 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
             const next = prev + 1;
             if (next >= expectedPdf) {
               completeStep("pdf_parsing");
-              if (companies.length === 0) setActiveKey("contradiction_scan");
+              if (companies.length === 0) {
+                 // MASA Gating: Stop here if no companies
+                 setIsReviewing(true);
+              }
             } else {
               setActiveKey("pdf_parsing");
             }
@@ -173,7 +234,7 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
         setActiveKey("pdf_parsing");
         break;
       case "thinking_step": {
-        const lower = latestEvent.content.toLowerCase();
+        const lower = event.content.toLowerCase();
         if (lower.includes("contradict")) setActiveKey("contradiction_scan");
         if (lower.includes("audit") || lower.includes("skeptic")) setActiveKey("audit_refinement");
         break;
@@ -194,7 +255,7 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
       case "protocol_validated":
         completeStep("audit_refinement");
         setActiveKey("protocol_validation");
-        if (!latestEvent.success) warnStep("protocol_validation");
+        if (!event.success) warnStep("protocol_validation");
         break;
       case "complete":
         steps.forEach((s) => completeStep(s.key));
@@ -206,7 +267,36 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
       default:
         break;
     }
-  }, [latestEvent, activeKey, steps, companies.length, expectedCompany, expectedPdf]);
+  };
+
+  // Main Event Listener
+  useEffect(() => {
+    if (!latestEvent) return;
+
+    if (isReviewing) {
+        setPendingEvents(prev => [...prev, latestEvent]);
+    } else {
+        processStreamEvent(latestEvent);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [latestEvent]); // We exclude processing dependencies to avoid stale closures if possible, but standard practice suggests including them or using refs. 
+                     // Here we rely on functional state updates mostly. activeKey is the weak point.
+
+  // Flush Buffer on Approve
+  const handleApprove = () => {
+     setIsReviewing(false);
+     // Flush buffer
+     pendingEvents.forEach(e => processStreamEvent(e));
+     setPendingEvents([]);
+     
+     // Advance state manually after approval
+     if (companies.length > 0) {
+        completeStep("entity_harvest");
+        setActiveKey("contradiction_scan");
+     } else {
+        setActiveKey("contradiction_scan");
+     }
+  };
 
   const currentStep = steps.find((s) => s.key === activeKey) ?? steps[0];
   const inputCount = files.length + companies.length;
@@ -217,6 +307,22 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
         <p className="text-xs font-mono uppercase tracking-[0.34em] text-[var(--text-tertiary)]">Phase II: {phaseLabel(activeKey)}</p>
         <h3 className="font-serif text-5xl md:text-6xl leading-none text-[var(--text-primary)]">Synthesis</h3>
         <p className="text-xs font-mono uppercase tracking-[0.3em] text-[var(--text-secondary)]">Current Step: {currentStep.title}</p>
+      </div>
+
+      {/* Real-Time Monitoring Grid (Phase 2 - Live SSE Data) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 mb-8">
+        <div className="h-[500px] 2xl:h-[600px]">
+          <TraceIntegrityPanel data={traceManifest || undefined} />
+        </div>
+        <div className="h-[500px] 2xl:h-[600px]">
+          <IterativeTimelineView data={undefined} />
+        </div>
+        <div className="h-[500px] 2xl:h-[600px]">
+          <LiveEpistemicMonitor data={epistemicData || undefined} />
+        </div>
+        <div className="h-[500px] 2xl:h-[600px]">
+          <SpectralHealthMonitor data={spectralHealth ? { current: spectralHealth, history: [] } : undefined} />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[5fr_7fr] gap-8 items-start">
@@ -304,6 +410,37 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
               })}
             </ol>
           </section>
+
+          {/* MASA GAP-05: Manual Gate UI */}
+          {isReviewing && (
+            <section className="rounded-3xl p-6 bg-wabi-clay/5 border border-wabi-clay/20 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex flex-col gap-6">
+                 <div className="flex items-start gap-4">
+                    <div className="rounded-full bg-wabi-clay/10 p-2">
+                       <Check className="h-5 w-5 text-wabi-clay" />
+                    </div>
+                    <div>
+                       <h4 className="font-serif text-lg font-medium text-[var(--text-primary)]">Initiation Complete</h4>
+                       <p className="text-sm text-[var(--text-secondary)] mt-1">
+                          Sources have been ingested and parsed. MASA Protocol requires human verification of the "Source Ledger" before engaging the Synthesis Engine.
+                       </p>
+                    </div>
+                 </div>
+                 
+                 <div className="flex items-center gap-3 pt-2">
+                    <button 
+                       onClick={handleApprove}
+                       className="px-5 py-2.5 rounded-full bg-[#303030] text-white text-sm font-medium hover:bg-black transition-colors"
+                    >
+                       Approve & Begin Synthesis
+                    </button>
+                    <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
+                       {pendingEvents.length > 0 ? `${pendingEvents.length} events buffered` : "Ready"}
+                    </p>
+                 </div>
+              </div>
+            </section>
+          )}
 
           <section className="rounded-3xl p-6 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-white/20 border-stone-200 shadow-sm">
             <div className="mb-4 flex items-center justify-between">

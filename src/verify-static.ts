@@ -37,46 +37,46 @@ async function main() {
 
   // 1. Verify Imports and Types (Runtime check)
   try {
-      const { runEnhancedSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
-      const { evaluateCriticalThinking } = await import("./lib/ai/novelty-evaluator");
-      console.log("✅ Modules imported successfully.");
+    const { runEnhancedSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
+    const { evaluateCriticalThinking } = await import("./lib/ai/novelty-evaluator");
+    console.log("✅ Modules imported successfully.");
   } catch (e) {
-      console.error("❌ Import failed:", e);
-      process.exit(1);
+    console.error("❌ Import failed:", e);
+    process.exit(1);
   }
 
   // 2. Mock Data Structure Verification
   const TestIdea: NovelIdea = {
-      id: "test-1",
-      thesis: "Test Thesis",
-      description: "Test Desc",
-      bridgedConcepts: ["A", "B"],
-      confidence: 80,
-      noveltyAssessment: "New",
-      mechanism: "Flux capacitor",
-      prediction: "88 mph",
-      explanationDepth: 70,
-      isExplainedByPriorArt: false,
-      explanatoryMechanism: "Test Mechanism",
-      criticalAnalysis: {
-          biasDetected: ["None"],
-          logicalFallacies: [],
-          validityScore: 90,
-          critique: "Solid."
-      }
+    id: "test-1",
+    thesis: "Test Thesis",
+    description: "Test Desc",
+    bridgedConcepts: ["A", "B"],
+    confidence: 80,
+    noveltyAssessment: "New",
+    mechanism: "Flux capacitor",
+    prediction: "88 mph",
+    explanationDepth: 70,
+    isExplainedByPriorArt: false,
+    explanatoryMechanism: "Test Mechanism",
+    criticalAnalysis: {
+      biasDetected: ["None"],
+      logicalFallacies: [],
+      validityScore: 90,
+      critique: "Solid."
+    }
   };
 
-  console.log("✅ NovelIdea Type Structure Verified with fields:", 
-      Object.keys(TestIdea).filter(k => ["mechanism", "prediction", "criticalAnalysis"].includes(k)));
+  console.log("✅ NovelIdea Type Structure Verified with fields:",
+    Object.keys(TestIdea).filter(k => ["mechanism", "prediction", "criticalAnalysis"].includes(k)));
 
   // 3. Verify Hypothesis Generator Integration
   console.log("3. Verifying Hypothesis Generator Integration...");
-  
+
   try {
     const { HypothesisGenerator } = await import("./lib/ai/hypothesis-generator");
     const generator = new HypothesisGenerator();
     if (typeof generator.generate !== 'function') {
-        throw new Error("HypothesisGenerator.generate is not a function");
+      throw new Error("HypothesisGenerator.generate is not a function");
     }
     console.log("✅ HypothesisGenerator class is importable and has generate method.");
   } catch (e: any) {

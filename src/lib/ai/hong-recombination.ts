@@ -49,7 +49,7 @@ export class HongRecombinationEngine {
   private config: HongRecombinationConfig;
   private sources: { name: string; concepts: ExtractedConcepts }[];
   private contradictions: Contradiction[];
-  
+
   constructor(
     sources: { name: string; concepts: ExtractedConcepts }[],
     contradictions: Contradiction[],
@@ -59,7 +59,7 @@ export class HongRecombinationEngine {
     this.contradictions = contradictions;
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
-  
+
   /**
    * Calculate "energy" of a hypothesis state.
    * Lower energy = better hypothesis.
@@ -68,28 +68,27 @@ export class HongRecombinationEngine {
   private calculateEnergy(idea: NovelIdea): number {
     // Energy is inverse of quality
     const confidenceComponent = 100 - (idea.confidence || 50);
-    const depthComponent = 100 - (idea.explanationDepth || 50);
     const bridgeComponent = 100 - (idea.bridgedConcepts?.length || 0) * 25;
-    
-    return (confidenceComponent * 0.5 + depthComponent * 0.3 + bridgeComponent * 0.2);
+
+    return (confidenceComponent * 0.6 + bridgeComponent * 0.4);
   }
-  
+
   /**
    * Propose a new hypothesis state by recombining concepts.
    * This is the transition kernel of the Markov chain.
    */
   private async proposeTransition(current: HypothesisState): Promise<HypothesisState> {
     const model = getClaudeModel();
-    
+
     // Select random concepts to recombine
     const shuffledSources = [...this.sources].sort(() => Math.random() - 0.5);
     const selectedSources = shuffledSources.slice(0, Math.min(3, shuffledSources.length));
-    
+
     const conceptMix = selectedSources.map(s => ({
       thesis: s.concepts.mainThesis,
       args: s.concepts.keyArguments.slice(0, 2)
     }));
-    
+
     const prompt = `You are exploring hypothesis space via recombination.
 
 Current Hypothesis:
@@ -112,20 +111,19 @@ Output JSON:
   "description": "2-3 sentences explaining the hypothesis",
   "mechanism": "The causal mechanism that explains why this works",
   "bridgedConcepts": ["Source 1 concept", "Source 2 concept"],
-  "prediction": "A testable prediction",
-  "crucialExperiment": "How to falsify this"
+  "prediction": "A testable prediction that could falsify this hypothesis"
 }`;
 
     try {
       const result = await model.generateContent(prompt);
       const responseText = result.response.text();
-      
+
       const parsed = safeParseJson<any>(responseText, null);
       if (!parsed) {
         // Failed to parse - return current state (reject proposal)
         return current;
       }
-      
+
       const newIdea: NovelIdea = {
         id: `idea-mcmc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         thesis: parsed.thesis || "Unparsed thesis",
@@ -133,15 +131,11 @@ Output JSON:
         mechanism: parsed.mechanism || "Mechanism unspecified",
         bridgedConcepts: parsed.bridgedConcepts || [],
         prediction: parsed.prediction || "No prediction",
-        crucialExperiment: parsed.crucialExperiment || "No experiment specified",
         confidence: 50, // Will be recalculated
-        explanationDepth: 50,
         // Required NovelIdea properties
-        noveltyAssessment: "MCMC-explored hypothesis",
-        isExplainedByPriorArt: false,
-        explanatoryMechanism: parsed.mechanism || "Mechanism unspecified"
+        noveltyAssessment: "MCMC-explored hypothesis"
       };
-      
+
       const energy = this.calculateEnergy(newIdea);
       return { idea: newIdea, energy };
     } catch (error) {
@@ -149,7 +143,7 @@ Output JSON:
       return current;
     }
   }
-  
+
   /**
    * Metropolis-Hastings acceptance criterion.
    * Accept proposal with probability min(1, exp((E_current - E_proposal) / T))
@@ -159,24 +153,24 @@ Output JSON:
       // Always accept if proposal is better (lower energy)
       return true;
     }
-    
+
     // Probabilistic acceptance for worse proposals
     const deltaEnergy = proposalEnergy - currentEnergy;
     const acceptanceProb = Math.exp(-deltaEnergy / (this.config.temperature * 100));
-    
+
     return Math.random() < acceptanceProb;
   }
-  
+
   /**
    * Generate initial hypothesis state from sources.
    */
   private async generateInitialState(): Promise<HypothesisState> {
     const model = getClaudeModel();
-    
-    const sourceContext = this.sources.map(s => 
+
+    const sourceContext = this.sources.map(s =>
       `"${s.name}": ${s.concepts.mainThesis}`
     ).join("\n");
-    
+
     const prompt = `Generate an initial synthesis hypothesis from these sources:
 
 ${sourceContext}
@@ -189,8 +183,7 @@ Output JSON:
   "description": "Brief explanation",
   "mechanism": "Causal mechanism",
   "bridgedConcepts": ["concept1", "concept2"],
-  "prediction": "Testable prediction",
-  "crucialExperiment": "Falsification test"
+  "prediction": "Testable prediction for falsification"
 }`;
 
     const result = await model.generateContent(prompt);
@@ -199,10 +192,9 @@ Output JSON:
       description: "Synthesized from provided sources",
       mechanism: "Mechanism to be determined",
       bridgedConcepts: [],
-      prediction: "No prediction",
-      crucialExperiment: "No experiment"
+      prediction: "No prediction"
     });
-    
+
     const idea: NovelIdea = {
       id: `idea-initial-${Date.now()}`,
       thesis: parsed.thesis,
@@ -210,18 +202,14 @@ Output JSON:
       mechanism: parsed.mechanism,
       bridgedConcepts: parsed.bridgedConcepts,
       prediction: parsed.prediction,
-      crucialExperiment: parsed.crucialExperiment,
       confidence: 50,
-      explanationDepth: 50,
       // Required NovelIdea properties
-      noveltyAssessment: "Initial MCMC state",
-      isExplainedByPriorArt: false,
-      explanatoryMechanism: parsed.mechanism
+      noveltyAssessment: "Initial MCMC state"
     };
-    
+
     return { idea, energy: this.calculateEnergy(idea) };
   }
-  
+
   /**
    * Run MCMC exploration and return sampled hypotheses.
    * 
@@ -233,47 +221,47 @@ Output JSON:
    */
   async sample(): Promise<NovelIdea[]> {
     console.log(`[HongRecombination] Starting MCMC exploration: ${this.config.numSamples} samples, burn-in: ${this.config.burnIn}`);
-    
+
     // Initialize
     let current = await this.generateInitialState();
     const samples: NovelIdea[] = [];
     let acceptedCount = 0;
-    
+
     // MCMC Loop
     for (let i = 0; i < this.config.numSamples; i++) {
       // Propose new state
       const proposal = await this.proposeTransition(current);
-      
+
       // Accept/reject
       if (this.accept(current.energy, proposal.energy)) {
         current = proposal;
         acceptedCount++;
       }
-      
+
       // Collect sample after burn-in
       if (i >= this.config.burnIn) {
         samples.push({ ...current.idea });
       }
-      
+
       // Rate limiting delay
       await new Promise(resolve => setTimeout(resolve, 1500));
     }
-    
+
     const acceptanceRate = acceptedCount / this.config.numSamples;
     console.log(`[HongRecombination] MCMC complete. Acceptance rate: ${(acceptanceRate * 100).toFixed(1)}%, Samples: ${samples.length}`);
-    
+
     // Deduplicate and sort by energy (best first)
     const uniqueSamples = this.deduplicateSamples(samples);
     return uniqueSamples.sort((a, b) => this.calculateEnergy(a) - this.calculateEnergy(b));
   }
-  
+
   /**
    * Remove duplicate hypotheses based on thesis similarity.
    */
   private deduplicateSamples(samples: NovelIdea[]): NovelIdea[] {
     const seen = new Set<string>();
     const unique: NovelIdea[] = [];
-    
+
     for (const sample of samples) {
       // Simple dedup based on thesis hash
       const key = sample.thesis.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 50);
@@ -282,7 +270,7 @@ Output JSON:
         unique.push(sample);
       }
     }
-    
+
     return unique;
   }
 }

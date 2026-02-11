@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "../supabase/server";
-import { SynthesisResult, NovelIdea, MasaAudit } from "../../types";
+import { NovelIdea, MasaAudit } from "../../types";
+import { SynthesisResult } from "../ai/synthesis-engine";
 import { generateEmbedding } from "../ai/gemini";
 import { DomainProjector } from "../services/embedding-service";
 import { SpectralService } from "../services/spectral-service";
@@ -41,12 +42,9 @@ export class PersistenceService {
             description: idea.description,
             mechanism: idea.mechanism,
             confidence: idea.confidence,
-            explanation_depth: idea.explanationDepth,
             novelty_assessment: idea.noveltyAssessment,
             scientific_prose: (idea as any).scientificProse,
             structured_hypothesis: idea.structuredHypothesis,
-            evidence_snippets: idea.evidenceSnippets,
-            prior_art: idea.priorArt,
             protocol_code: artifacts?.protocolCode,
             lab_manual: artifacts?.labManual,
             lab_job: artifacts?.labJob
@@ -81,12 +79,12 @@ export class PersistenceService {
           if (auditError) {
             console.error("Failed to save audit trace:", auditError);
           }
-          
+
           // 4. Save Vector Embedding (for Long-Term Memory)
           const embeddingText = `Thesis: ${idea.thesis}\nMechanism: ${idea.mechanism || ""}`;
           const isRejected = !masaAudit.finalSynthesis.isApproved;
           const rejectReason = isRejected ? masaAudit.finalSynthesis.architectVerdict : undefined;
-          
+
           // Phase 3: Domain-Aware Storage
           const domain = (idea as any).domain || "General";
           await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason, domain);
@@ -95,17 +93,17 @@ export class PersistenceService {
           const spectralService = new SpectralService();
           const embedding = await generateEmbedding(embeddingText);
           const interference = await spectralService.calculateInterference(embedding);
-          
+
           // Convert Map to plain object for JSONB storage
           const interferenceObj = Object.fromEntries(interference);
-          
+
           // Save spectral metrics to database
           if (Object.keys(interferenceObj).length > 0) {
             await supabase
               .from("synthesis_results")
               .update({ spectral_interference: interferenceObj })
               .eq("id", savedIdea.id);
-              
+
             console.log(`[Persistence] Spectral Interference for ${idea.thesis.slice(0, 30)}...`);
             for (const [domain, strength] of interference) {
               if (strength > 0.5) {
@@ -149,7 +147,7 @@ export class PersistenceService {
   async getRunDetails(runId: string): Promise<any | null> {
     try {
       const supabase = await createServerSupabaseClient();
-      
+
       // Fetch ideas and their audits
       const { data: ideas, error: ideasError } = await supabase
         .from("synthesis_results")
@@ -182,7 +180,7 @@ export class PersistenceService {
             labManual: idea.lab_manual || '',
             labJob: idea.lab_job
           },
-          spectralInterference: idea.spectral_interference ? 
+          spectralInterference: idea.spectral_interference ?
             new Map(Object.entries(idea.spectral_interference)) : undefined,
           criticalAnalysis: idea.audit_traces?.[0] ? {
             verdict: idea.audit_traces[0].architect_verdict,
@@ -190,12 +188,12 @@ export class PersistenceService {
             remediationPlan: idea.audit_traces[0].remediation_plan
           } : undefined,
           masaAudit: idea.audit_traces?.[0] ? {
-            methodologist: { 
-              critique: idea.audit_traces[0].epistemologist_critique, 
-              score: idea.audit_traces[0].epistemologist_score 
+            methodologist: {
+              critique: idea.audit_traces[0].epistemologist_critique,
+              score: idea.audit_traces[0].epistemologist_score
             },
-            skeptic: { 
-              critique: idea.audit_traces[0].skeptic_critique, 
+            skeptic: {
+              critique: idea.audit_traces[0].skeptic_critique,
               score: idea.audit_traces[0].skeptic_score,
               biasesDetected: idea.audit_traces[0].skeptic_biases
             },
@@ -223,32 +221,32 @@ export class PersistenceService {
       const supabase = await createServerSupabaseClient();
       const text = `Thesis: ${thesis}\nMechanism: ${mechanism}`;
       let embedding = await generateEmbedding(text);
-      
+
       // Phase 3: Orthogonal Manifold Projection
       if (domain) {
         embedding = DomainProjector.project(embedding, domain);
       }
-      
+
       const { data, error } = await supabase.rpc('match_idea_embeddings', {
-          query_embedding: embedding,
-          match_threshold: 0.90, // Strict similarity
-          match_count: 1
+        query_embedding: embedding,
+        match_threshold: 0.90, // Strict similarity
+        match_count: 1
       });
-      
+
       if (error) {
-          // If RPC missing, ignore (migration might not run yet)
-          console.warn("Vector search failed (RPC likely missing):", error.message);
-          return false; 
+        // If RPC missing, ignore (migration might not run yet)
+        console.warn("Vector search failed (RPC likely missing):", error.message);
+        return false;
       }
-      
+
       if (data && data.length > 0 && data[0].is_rejected) {
-          console.log(`[Persistence] BLOCKED: Found similar rejected idea. Reason: ${data[0].rejection_reason}`);
-          return true;
+        console.log(`[Persistence] BLOCKED: Found similar rejected idea. Reason: ${data[0].rejection_reason}`);
+        return true;
       }
       return false;
     } catch (e) {
       console.error("Vector Search Exception:", e);
-      return false; 
+      return false;
     }
   }
 
@@ -257,23 +255,23 @@ export class PersistenceService {
    * Phase 3: Support domain-aware Vector-Space Orthogonality
    */
   async saveIdeaEmbedding(ideaId: string, text: string, isRejected: boolean, reason?: string, domain?: string) {
-      try {
-          const supabase = await createServerSupabaseClient();
-          let embedding = await generateEmbedding(text);
-          
-          // Phase 3: Orthogonal Manifold Projection
-          if (domain) {
-            embedding = DomainProjector.project(embedding, domain);
-          }
-          
-          await supabase.from("idea_embeddings").insert({
-              idea_id: ideaId,
-              embedding: embedding,
-              is_rejected: isRejected,
-              rejection_reason: reason
-          });
-      } catch (e) {
-          console.error("Failed to save idea embedding:", e);
+    try {
+      const supabase = await createServerSupabaseClient();
+      let embedding = await generateEmbedding(text);
+
+      // Phase 3: Orthogonal Manifold Projection
+      if (domain) {
+        embedding = DomainProjector.project(embedding, domain);
       }
+
+      await supabase.from("idea_embeddings").insert({
+        idea_id: ideaId,
+        embedding: embedding,
+        is_rejected: isRejected,
+        rejection_reason: reason
+      });
+    } catch (e) {
+      console.error("Failed to save idea embedding:", e);
+    }
   }
 }

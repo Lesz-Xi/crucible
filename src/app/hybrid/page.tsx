@@ -1,7 +1,7 @@
 "use client";
 
 // Hybrid Synthesis Page - Combine PDFs + Companies
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { PDFUpload } from "@/components/pdf-upload";
 import { CompanyInput } from "@/components/company-input";
 import { TacticalButton } from "@/components/ui/tactical-button";
@@ -16,12 +16,12 @@ import {
   NovelIdea, 
   StructuredApproach, 
   PriorArt,
-  SynthesisResult,
   MasaAudit,
   Contradiction,
   ExtractedConcepts,
   ConsciousnessState
 } from "@/types";
+import { SynthesisResult } from "@/lib/ai/synthesis-engine";
 import {
   Loader2,
   Sparkles,
@@ -109,9 +109,57 @@ export default function HybridSynthesisPage() {
 
   const totalSources = files.length + companies.length;
   const canSynthesize = totalSources >= 2 && totalSources <= 12;
+  const pdfSourceUrls = useMemo(() => {
+    const entries = files.map((file) => [file.name, URL.createObjectURL(file)] as const);
+    return Object.fromEntries(entries);
+  }, [files]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(pdfSourceUrls).forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [pdfSourceUrls]);
 
   // Real-time Consciousness State (SSE)
   const [realtimeState, setRealtimeState] = useState<ConsciousnessState | null>(null);
+  
+  // Phase 2: Real-Time Monitoring SSE States
+  const [traceManifest, setTraceManifest] = useState<{
+    sessionUUID: string;
+    inputHashes: Array<{ name: string; hash: string }>;
+    seedValue: number | null;
+    timestamp: string;
+  } | null>(null);
+  
+  const [epistemicData, setEpistemicData] = useState<{
+    consciousnessState: {
+      energy: number;
+      entropy: number;
+      freeEnergy: number;
+      perceptionIntensity: number;
+      workingMemoryAccess: number;
+      awarenessLevel: number;
+    };
+    iteration: number;
+    maxIterations: number;
+    plateauReached: boolean;
+  } | null>(null);
+  
+  const [spectralHealth, setSpectralHealth] = useState<{
+    lambda_min: number;
+    lambda_max: number;
+    spectralGap: number;
+    healthStatus: 'optimal' | 'good' | 'warning' | 'critical';
+    timestamp: number;
+  } | null>(null);
+  
+  const [refinementCycle, setRefinementCycle] = useState<{
+    iteration: number;
+    maxIterations: number;
+    status: 'running' | 'complete';
+    approved?: boolean;
+    validityScore?: number;
+  } | null>(null);
 
   // Handle cinematic transition from stabilization to results
   useEffect(() => {
@@ -178,6 +226,45 @@ export default function HybridSynthesisPage() {
                  // preventing batching from swallowing consecutive logs
                  await new Promise(resolve => setTimeout(resolve, 50));
 
+                  // Phase 2: Handle Real-Time Monitoring Events
+                  if (event.event === 'trace_manifest') {
+                    setTraceManifest({
+                      sessionUUID: event.sessionUUID,
+                      inputHashes: event.inputHashes,
+                      seedValue: event.seedValue,
+                      timestamp: event.timestamp
+                    });
+                  } else if (event.event === 'epistemic_update') {
+                    setEpistemicData({
+                      consciousnessState: event.consciousnessState,
+                      iteration: event.iteration,
+                      maxIterations: event.maxIterations,
+                      plateauReached: event.plateauReached
+                    });
+                  } else if (event.event === 'spectral_health_tick') {
+                    setSpectralHealth({
+                      lambda_min: event.lambda_min,
+                      lambda_max: event.lambda_max,
+                      spectralGap: event.spectralGap,
+                      healthStatus: event.healthStatus,
+                      timestamp: event.timestamp
+                    });
+                  } else if (event.event === 'refinement_cycle_start') {
+                    setRefinementCycle({
+                      iteration: event.iteration,
+                      maxIterations: event.maxIterations,
+                      status: 'running'
+                    });
+                  } else if (event.event === 'refinement_cycle_complete') {
+                    setRefinementCycle({
+                      iteration: event.iteration,
+                      maxIterations: event.maxIterations,
+                      status: 'complete',
+                      approved: event.approved,
+                      validityScore: event.validityScore
+                    });
+                  }
+
                  if (event.event === 'complete') {
                     // Safe cast assuming the backend returns the correct shape
                     setResult(event.synthesis as any);
@@ -243,6 +330,11 @@ export default function HybridSynthesisPage() {
     setFiles([]);
     setCompanies([]);
     setLatestEvent(null);
+    // Phase 2: Clear monitoring states
+    setTraceManifest(null);
+    setEpistemicData(null);
+    setSpectralHealth(null);
+    setRefinementCycle(null);
   };
 
   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
@@ -251,10 +343,10 @@ export default function HybridSynthesisPage() {
       <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-wabi-clay/20 relative overflow-x-hidden">
 
       {/* Header */}
-      <header className="border-b border-[var(--border-subtle)] bg-white/70 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-[var(--border-subtle)] bg-[var(--paper-050)]/70 backdrop-blur-xl sticky top-0 z-50">
         <div className="w-full px-6 lg:px-12 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 relative">
 <img src="/upsclae-logo-new.png" alt="Crucible Logo" className="w-full h-full object-contain drop-shadow-md" />
@@ -269,7 +361,7 @@ export default function HybridSynthesisPage() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setHistoryOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white/80 hover:bg-white text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-wabi-clay/40 transition-all"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[var(--paper-050)]/80 hover:bg-[var(--paper-050)] text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-[var(--oxide-500)]/40 transition-all"
                 >
                   <History className="w-3.5 h-3.5" />
                   <span>History</span>
@@ -301,7 +393,7 @@ export default function HybridSynthesisPage() {
         {stage === "input" && (
           <div className="w-full max-w-[1536px] mx-auto space-y-8 px-8">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-mono font-bold tracking-tight text-[var(--text-primary)]">
+              <h2 className="wabi-heading-2">
                 Dialectical Synthesis Engine
               </h2>
               <p className="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
@@ -311,8 +403,8 @@ export default function HybridSynthesisPage() {
             </div>
 
             {/* Source Counters */}
-            <div className="flex justify-center gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 bg-wabi-clay/10 border border-wabi-clay/30 rounded-xl">
+            <div className="flex justify-center gap-6">
+              <div className="flex items-center gap-3 px-4 py-2 bg-wabi-clay/10 border border-wabi-clay/30 rounded-xl">
                 <FileText className="w-4 h-4 text-wabi-clay" />
                 <span className="text-sm font-medium text-[var(--text-primary)]">
                   {files.length} PDFs
@@ -328,7 +420,7 @@ export default function HybridSynthesisPage() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${
                   canSynthesize
                     ? "bg-wabi-moss/10 border-wabi-moss/30"
-                    : "bg-white/80 border-[var(--border-subtle)]"
+                    : "bg-[var(--paper-050)]/80 border-[var(--border-subtle)]"
                 }`}
               >
                 <span
@@ -411,6 +503,10 @@ export default function HybridSynthesisPage() {
                companies={companies} 
                latestEvent={latestEvent} 
                userPrompt={researchFocus}
+               traceManifest={traceManifest}
+               epistemicData={epistemicData}
+               spectralHealth={spectralHealth}
+               refinementCycle={refinementCycle}
             />
           </div>
         )}
@@ -419,9 +515,9 @@ export default function HybridSynthesisPage() {
         {stage === "stabilizing" && (
           <div className="flex flex-col items-center justify-center h-[600px] space-y-6 text-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-orange-500 blur-2xl opacity-20 animate-pulse" />
-              <div className="p-6 bg-[#0A0A0A] border border-white/10 rounded-2xl relative z-10 shadow-lg backdrop-blur-sm">
-                <Loader2 className="w-12 h-12 text-orange-500 animate-spin" />
+              <div className="absolute inset-0 bg-[var(--oxide-500)] blur-2xl opacity-20 animate-pulse" />
+              <div className="p-6 bg-[var(--obsidian-900)] border border-[var(--ash-200)]/20 rounded-2xl relative z-10 shadow-lg backdrop-blur-sm">
+                <Loader2 className="w-12 h-12 text-[var(--oxide-500)] animate-spin" />
               </div>
             </div>
             <div className="space-y-2">
@@ -438,7 +534,7 @@ export default function HybridSynthesisPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* Results Header with Export Button */}
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-serif font-bold text-[var(--text-primary)]">Synthesis Results</h2>
+              <h2 className="wabi-heading-2">Synthesis Results</h2>
               <button
                 onClick={() => {
                   const exportData: SynthesisExportData = {
@@ -464,7 +560,7 @@ export default function HybridSynthesisPage() {
                   };
                   downloadMarkdown(exportData, { title: "Hybrid Synthesis Report" });
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white text-[var(--text-primary)] font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-sm transition-all duration-300 border border-[var(--border-subtle)] hover:border-wabi-clay/45"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--paper-050)]/80 hover:bg-[var(--paper-050)] text-[var(--text-primary)] font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-sm transition-all duration-300 border border-[var(--border-subtle)] hover:border-[var(--oxide-500)]/45"
               >
                 <Download className="w-4 h-4" />
                 Download Markdown
@@ -473,7 +569,7 @@ export default function HybridSynthesisPage() {
 
             {/* Sources Summary - Separated by Type */}
             <section className="space-y-8">
-              <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-[var(--text-primary)]">
+              <h2 className="wabi-heading-2 flex items-center gap-3">
                 <BookOpen className="w-6 h-6 text-wabi-clay" />
                 Sources Analyzed ({result.metadata?.totalSources ?? result.sources?.length ?? 0})
               </h2>
@@ -485,19 +581,19 @@ export default function HybridSynthesisPage() {
                 return (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                        <FileText className="w-5 h-5 text-orange-400" />
+                      <div className="p-2 rounded-lg bg-[var(--oxide-500)]/10 border border-[var(--oxide-500)]/20">
+                        <FileText className="w-5 h-5 text-[var(--oxide-500)]" />
                       </div>
                       <h3 className="text-lg font-bold text-neutral-300 font-mono uppercase tracking-wider">
                         Research & Publications
                         <span className="ml-2 text-sm text-neutral-500 font-normal">({pdfSources.length})</span>
                       </h3>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                       {pdfSources.map((source, i) => (
                         <div
                           key={`pdf-${i}`}
-                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-clay/40 hover:shadow-[0_0_30px_-5px_rgba(158,126,107,0.15)] transition-all duration-500"
+                          className="group p-4 rounded-xl border wabi-glass-panel wabi-texture wabi-elevation-light border-stone-200 hover:border-wabi-clay/40 transition-all duration-300"
                         >
                           <div className="flex items-start gap-2.5 mb-2.5">
                             <div className="p-1.5 rounded-lg bg-wabi-clay/10 text-wabi-clay group-hover:bg-wabi-clay/20 group-hover:shadow-[0_0_15px_-3px_rgba(158,126,107,0.3)] transition-all">
@@ -535,11 +631,11 @@ export default function HybridSynthesisPage() {
                         <span className="ml-2 text-sm text-neutral-500 font-normal">({companySources.length})</span>
                       </h3>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                       {companySources.map((source, i) => (
                         <div
                           key={`company-${i}`}
-                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-charcoal/40 hover:shadow-[0_0_30px_-5px_rgba(139,94,60,0.15)] transition-all duration-500"
+                          className="group p-4 rounded-xl border wabi-glass-panel wabi-texture wabi-elevation-light border-stone-200 hover:border-wabi-charcoal/40 transition-all duration-300"
                         >
                           <div className="flex items-start gap-2.5 mb-2.5">
                             <div className="p-1.5 rounded-lg bg-wabi-charcoal/10 text-wabi-charcoal group-hover:bg-wabi-charcoal/20 group-hover:shadow-[0_0_15px_-3px_rgba(139,94,60,0.3)] transition-all">
@@ -574,20 +670,20 @@ export default function HybridSynthesisPage() {
                 </div>
                 <div className="p-6 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-2xl">
                   {/* Metrics Grid */}
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
+                  <div className="grid grid-cols-3 gap-6 mb-6">
+                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">λ_min</div>
                       <div className="text-2xl font-bold text-amber-300">
                         {latestEvent.spectralGap.lambda_min.toFixed(3)}
                       </div>
                     </div>
-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
+                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">λ_max</div>
                       <div className="text-2xl font-bold text-amber-300">
                         {latestEvent.spectralGap.lambda_max.toFixed(3)}
                       </div>
                     </div>
-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
+                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">Spectral Gap</div>
                       <div className="text-2xl font-bold text-amber-300">
                         {latestEvent.spectralGap.spectralGap.toFixed(3)}
@@ -601,7 +697,7 @@ export default function HybridSynthesisPage() {
                       <span>Expansion Threshold</span>
                       <span>{latestEvent.spectralGap.threshold?.toFixed(3) || 'N/A'}</span>
                     </div>
-                    <div className="relative h-3 bg-black/40 rounded-full overflow-hidden">
+                    <div className="relative h-3 bg-[var(--obsidian-900)]/50 rounded-full overflow-hidden">
                       <div 
                         className="absolute left-0 h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-1000"
                         style={{ width: `${Math.min(100, (latestEvent.spectralGap.lambda_min / (latestEvent.spectralGap.threshold || 1)) * 100)}%` }}
@@ -611,9 +707,9 @@ export default function HybridSynthesisPage() {
 
                   {/* Expansion Status */}
                   {latestEvent.expansionTriggered && (
-                    <div className="mt-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-xl flex items-center gap-3">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                      <span className="text-sm text-orange-300 font-medium">
+                    <div className="mt-4 p-3 bg-[var(--oxide-500)]/10 border border-[var(--oxide-500)]/30 rounded-xl flex items-center gap-3">
+                      <div className="w-2 h-2 bg-[var(--oxide-500)] rounded-full animate-pulse" />
+                      <span className="text-sm text-[var(--oxide-500)] font-medium">
                         🔥 Thermodynamic expansion phase activated - generating diverse ideas
                       </span>
                     </div>
@@ -632,28 +728,30 @@ export default function HybridSynthesisPage() {
               </section>
             )}
 
-            {/* Contradictions - Redesigned */}
+            {/* Conceptual Tensions - Redesigned with Wabi-Sabi palette */}
             {(result.contradictions?.length ?? 0) > 0 && (
               <section className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="w-6 h-6 text-amber-400" />
-                  <h2 className="text-2xl font-bold text-amber-400">
-                    Tensions Detected
+                  <div className="w-6 h-6 rounded-full border-2 border-[rgba(158,126,107,0.6)] flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-[rgba(158,126,107,0.8)]" />
+                  </div>
+                  <h2 className="wabi-heading-2 text-[var(--oxide-500)]">
+                    Conceptual Tensions
                   </h2>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {(result.contradictions ?? []).map((c, i) => (
                     <div
                       key={i}
-                      className="group relative p-6 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-2xl hover:border-amber-500/40 transition-all duration-300"
+                      className="group relative p-6 wabi-gradient-tension border border-[rgba(158,126,107,0.3)] rounded-2xl wabi-elevation-mid hover:border-[rgba(158,126,107,0.5)] transition-all duration-300 wabi-glow-hover"
                     >
                       {/* Tension Number Badge */}
-                      <div className="absolute -top-3 -left-3 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
+                      <div className="absolute -top-3 -left-3 w-8 h-8 bg-[rgba(158,126,107,0.2)] backdrop-blur-sm rounded-full flex items-center justify-center text-xs font-bold text-[var(--oxide-500)] border-2 border-[rgba(158,126,107,0.4)]">
                         {i + 1}
                       </div>
 
                       {/* Concept Title */}
-                      <h3 className="text-lg font-bold text-amber-300 mb-4 pr-8">
+                      <h3 className="wabi-heading-3 text-[var(--oxide-500)] mb-4 pr-8">
                         {c.concept}
                       </h3>
 
@@ -661,13 +759,13 @@ export default function HybridSynthesisPage() {
                       <div className="space-y-3">
                         <div className="flex gap-3">
                           <div className="shrink-0 mt-1">
-                            <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xs font-bold text-amber-400">
+                            <div className="w-6 h-6 rounded-full bg-[rgba(158,126,107,0.2)] border border-[rgba(158,126,107,0.4)] flex items-center justify-center text-xs font-bold text-[rgba(158,126,107,0.8)]">
                               A
                             </div>
                           </div>
                           <div className="flex-1">
-                            <div className="text-xs text-amber-500/60 font-medium mb-1">{c.sourceA}</div>
-                            <p className="text-sm text-neutral-300 leading-relaxed bg-black/20 p-3 rounded-lg border-l-2 border-amber-500/30">
+                            <div className="text-xs text-[rgba(158,126,107,0.7)] font-medium mb-1">{c.sourceA}</div>
+                            <p className="text-sm text-[var(--mist-400)] leading-relaxed bg-[var(--obsidian-900)]/30 p-3 rounded-lg border-l-2 border-[var(--oxide-500)]/40">
                               {c.claimA}
                             </p>
                           </div>
@@ -675,20 +773,20 @@ export default function HybridSynthesisPage() {
 
                         {/* VS Divider */}
                         <div className="flex items-center gap-3 py-1">
-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-                          <span className="text-xs font-bold text-amber-500/40">VS</span>
-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(158,126,107,0.3)] to-transparent" />
+                          <span className="text-xs font-bold text-[rgba(158,126,107,0.5)]">VS</span>
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(158,126,107,0.3)] to-transparent" />
                         </div>
 
                         <div className="flex gap-3">
                           <div className="shrink-0 mt-1">
-                            <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-xs font-bold text-orange-400">
+                            <div className="w-6 h-6 rounded-full bg-[rgba(168,181,160,0.2)] border border-[rgba(168,181,160,0.4)] flex items-center justify-center text-xs font-bold text-[rgba(168,181,160,0.8)]">
                               B
                             </div>
                           </div>
                           <div className="flex-1">
-                            <div className="text-xs text-orange-500/60 font-medium mb-1">{c.sourceB}</div>
-                            <p className="text-sm text-neutral-300 leading-relaxed bg-black/20 p-3 rounded-lg border-l-2 border-orange-500/30">
+                            <div className="text-xs text-[rgba(168,181,160,0.7)] font-medium mb-1">{c.sourceB}</div>
+                            <p className="text-sm text-[var(--mist-400)] leading-relaxed bg-[var(--obsidian-900)]/30 p-3 rounded-lg border-l-2 border-[var(--oxide-500)]/40">
                               {c.claimB}
                             </p>
                           </div>
@@ -703,13 +801,13 @@ export default function HybridSynthesisPage() {
             {/* Novel Ideas */}
             <section className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold flex items-center gap-3 text-neutral-200">
-                  <Sparkles className="w-6 h-6 text-orange-500" />
+                <h2 className="wabi-heading-2 flex items-center gap-3 text-neutral-200">
+                  <Sparkles className="w-6 h-6 text-[var(--moss-500)]" />
                   Novel Ideas
                 </h2>
                 
                 {/* Navigation Controls */}
-                <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200">
+                <div className="flex bg-[var(--ash-200)]/20 p-1 rounded-lg border border-[var(--ash-200)]">
                   {(result.novelIdeas ?? []).map((_, i) => (
                     <button
                       key={i}
@@ -717,8 +815,8 @@ export default function HybridSynthesisPage() {
                       className={`
                         px-4 py-1.5 text-xs font-mono font-bold rounded-md transition-all
                         ${selectedIdeaIndex === i 
-                          ? "bg-white text-gray-900 shadow-sm border border-gray-200" 
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                          ? "bg-[var(--paper-050)] text-[var(--stone-700)] shadow-sm border border-[var(--ash-200)]" 
+                          : "text-[var(--mist-400)] hover:text-[var(--stone-700)] hover:bg-[var(--ash-200)]/30"
                         }
                       `}
                     >
@@ -736,6 +834,7 @@ export default function HybridSynthesisPage() {
                     index={selectedIdeaIndex}
                     isSelected={true}
                     onSelect={() => {}} 
+                    pdfSourceUrls={pdfSourceUrls}
                   />
                 )}
               </div>
@@ -751,7 +850,7 @@ export default function HybridSynthesisPage() {
 
                 {result.structuredApproach && (
                   <section className="space-y-4 mt-8">
-                    <h2 className="text-2xl font-bold">Implementation Approach</h2>
+                    <h2 className="wabi-heading-2">Implementation Approach</h2>
                     <StructuredApproachDisplay
                       approach={result.structuredApproach}
                     />
@@ -784,19 +883,19 @@ export default function HybridSynthesisPage() {
             className="fixed inset-0 z-[100] flex justify-end"
             onClick={() => setHistoryOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-[var(--obsidian-900)]/70 backdrop-blur-sm" />
             <div 
-              className="relative w-full max-w-md h-full bg-[#0A0A0A] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
+              className="relative w-full max-w-md h-full bg-[var(--obsidian-900)] border-l border-[var(--ash-200)]/20 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
               onClick={e => e.stopPropagation()}
             >
               <div className="p-6 border-b border-gray-800 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-neutral-200 flex items-center gap-2 font-mono uppercase tracking-wider">
-                  <History className="w-5 h-5 text-orange-500" />
+                  <History className="w-5 h-5 text-[var(--oxide-500)]" />
                   Synthesis History
                 </h2>
                 <button 
                   onClick={() => setHistoryOpen(false)}
-                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                  className="p-2 hover:bg-[var(--ash-200)]/10 rounded-lg transition-colors"
                   aria-label="Close history"
                 >
                   <Plus className="w-5 h-5 text-gray-500 rotate-45" />
@@ -816,14 +915,14 @@ export default function HybridSynthesisPage() {
                     <button
                       key={run.id}
                       onClick={() => loadHistoricalRun(run.id)}
-                      className="w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-orange-500/50 hover:bg-white/10 transition-all text-left group"
+                      className="w-full p-4 rounded-xl bg-[var(--obsidian-900)]/60 border border-[var(--ash-200)]/10 hover:border-[var(--oxide-500)]/50 hover:bg-[var(--obsidian-900)]/80 transition-all text-left group"
                     >
                       <div className="flex items-start justify-between mb-2">
                          <span className="text-xs text-neutral-500 flex items-center gap-1 font-mono">
                            <Clock className="w-3 h-3" />
                            {new Date(run.created_at).toLocaleDateString()}
                          </span>
-                         <span className="px-1.5 py-0.5 text-[10px] bg-orange-500/10 text-orange-400 rounded border border-orange-500/20 font-mono tracking-wider">
+                         <span className="px-1.5 py-0.5 text-[10px] bg-[var(--moss-500)]/10 text-[var(--moss-500)] rounded border border-[var(--moss-500)]/20 font-mono tracking-wider">
                            {run.total_ideas} Ideas
                          </span>
                       </div>
@@ -833,14 +932,14 @@ export default function HybridSynthesisPage() {
                       </h4>
                       <div className="flex items-center justify-between text-[10px] text-neutral-500">
                          <span className="uppercase tracking-wider font-bold">{run.status}</span>
-                         <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-orange-500" />
+                         <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[var(--oxide-500)]" />
                       </div>
                     </button>
                   ))
                 )}
               </div>
               
-              <div className="p-6 border-t border-white/5 bg-[#0A0A0A]">
+              <div className="p-6 border-t border-[var(--ash-200)]/10 bg-[var(--obsidian-900)]">
                 <TacticalButton
                   onClick={resetToNew}
                   icon={Plus}

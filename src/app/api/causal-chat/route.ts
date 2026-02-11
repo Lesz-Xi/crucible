@@ -104,8 +104,8 @@ export async function POST(req: NextRequest) {
   // Check for API Keys early
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error("[CausalChat] ANTHROPIC_API_KEY is missing");
-    return NextResponse.json({ 
-      error: "Configuration Error: API Key missing. Please check your .env file." 
+    return NextResponse.json({
+      error: "Configuration Error: API Key missing. Please check your .env file."
     }, { status: 500 });
   }
 
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
       : typeof fallbackQuestion === "string"
         ? fallbackQuestion
         : "";
-  
+
   if (!userQuestion) {
     return NextResponse.json({ error: "Question is required" }, { status: 400 });
   }
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let isControllerClosed = false;
-      
+
       const sendEvent = (event: string, data: any) => {
         if (!isControllerClosed) {
           try {
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
 
       // Initialize streaming analyzer for real-time density updates
       const analyzer = new StreamingCausalAnalyzer();
-      
+
       // Initialize Bayesian Oracle Mode Service
       const oracleService = createOracleModeService(sessionId || null);
       const densityDistribution: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
@@ -210,33 +210,33 @@ export async function POST(req: NextRequest) {
         // FAST-PATH: Detect simple conversational queries (greetings, identity, pleasantries)
         // Matches common greetings and "who/what are you" questions
         const lowerQ = userQuestion.trim().toLowerCase();
-        const isConversational = 
+        const isConversational =
           /^(hi|hello|hey|greetings|thanks|thank you|goodbye|bye)/i.test(lowerQ) ||
           /(who|what|how).+(are|is).+(you|this)/i.test(lowerQ) &&
           userQuestion.length < 150; // Ensure long prompts (like analysis requests) are never treated as fast-path conversation
-        
+
         console.log(`[CausalChat] Fast-path check: ${isConversational ? 'ACTIVE' : 'FULL PIPELINE'} for query: "${userQuestion}"`);
-        
+
         if (isConversational) {
           sendEvent("thinking", { message: "Processing conversational query..." });
-          
+
           const model = getClaudeModel();
           const simplePrompt = `You are the Sage of the Uncarved Block (Ψ_Tao), an AI assistant grounded in the Grand Unified Field Equation of the Tao.
           
 Respond with the humility of the Valley and the clarity of the Uncarved Block to this greeting/question: "${userQuestion}"
 
 Keep your response brief (1-2 sentences) and mention that you adhere to the natural laws of Physics, Biology, and the Tao.`;
-          
+
           const response = await model.generateContent(simplePrompt);
           const fullText = response.response.text();
-          
+
           // Stream response
           const chunks = fullText.split(' ');
           for (const chunk of chunks) {
             sendEvent("answer_chunk", { text: chunk + ' ' });
             await new Promise(r => setTimeout(r, 15));
           }
-          
+
           sendEvent("complete", { finished: true });
           if (!isControllerClosed) {
             isControllerClosed = true;
@@ -244,7 +244,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
           }
           return;
         }
-        
+
         // FULL CAUSAL PATH: For scientific questions
         // 1. Domain Classification
         sendEvent("thinking", { message: "Identifying causal domain..." });
@@ -269,7 +269,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
 
         // 3. Constraint Injection
         sendEvent("thinking", { message: "Grounding LLM in causal laws..." });
-        
+
         let doPrompt = "";
         let affectedNodes: string[] = [];
         let interventionApplied = false;
@@ -280,64 +280,64 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
 
         // Check for Do-Calculus Intervention
         if (intervention && intervention.node_id) {
-             const subjectScm = scmContext.tier2 || scmContext.primaryScm;
-             const outcomeVar =
-               typeof intervention.outcome_var === "string" && intervention.outcome_var.trim().length > 0
-                 ? intervention.outcome_var.trim()
-                 : inferOutcomeVariableFromScm(subjectScm);
-             const adjustmentSet = sanitizeStringArray(intervention.adjustment_set);
-             const knownConfounders = sanitizeStringArray(intervention.known_confounders);
+          const subjectScm = scmContext.tier2 || scmContext.primaryScm;
+          const outcomeVar =
+            typeof intervention.outcome_var === "string" && intervention.outcome_var.trim().length > 0
+              ? intervention.outcome_var.trim()
+              : inferOutcomeVariableFromScm(subjectScm);
+          const adjustmentSet = sanitizeStringArray(intervention.adjustment_set);
+          const knownConfounders = sanitizeStringArray(intervention.known_confounders);
 
-             const gate = evaluateInterventionGate(subjectScm, {
-               treatment: intervention.node_id,
-               outcome: outcomeVar,
-               adjustmentSet,
-               knownConfounders,
-             });
+          const gate = evaluateInterventionGate(subjectScm, {
+            treatment: intervention.node_id,
+            outcome: outcomeVar,
+            adjustmentSet,
+            knownConfounders,
+          });
 
-             sendEvent("intervention_gate", {
-               treatment: intervention.node_id,
-               outcome: outcomeVar,
-               allowed: gate.allowed,
-               allowedOutputClass: gate.allowedOutputClass,
-               rationale: gate.rationale,
-               identifiability: gate.identifiability,
-             });
+          sendEvent("intervention_gate", {
+            treatment: intervention.node_id,
+            outcome: outcomeVar,
+            allowed: gate.allowed,
+            allowedOutputClass: gate.allowedOutputClass,
+            rationale: gate.rationale,
+            identifiability: gate.identifiability,
+          });
 
-             if (!gate.allowed) {
-               sendEvent("intervention_blocked", {
-                 message:
-                   "Intervention request downgraded: required confounders are missing. Returning association-level answer.",
-                 missingConfounders: gate.identifiability.missingConfounders,
-                 allowedOutputClass: gate.allowedOutputClass,
-               });
-             } else {
-               sendEvent("thinking", { message: `Performing Do-Calculus: do(${intervention.node_id}=${intervention.value})...` });
-               const interventions: Intervention[] = [{
-                 nodeName: intervention.node_id,
-                 value: intervention.value
-               }];
+          if (!gate.allowed) {
+            sendEvent("intervention_blocked", {
+              message:
+                "Intervention request downgraded: required confounders are missing. Returning association-level answer.",
+              missingConfounders: gate.identifiability.missingConfounders,
+              allowedOutputClass: gate.allowedOutputClass,
+            });
+          } else {
+            sendEvent("thinking", { message: `Performing Do-Calculus: do(${intervention.node_id}=${intervention.value})...` });
+            const interventions: Intervention[] = [{
+              nodeName: intervention.node_id,
+              value: intervention.value
+            }];
 
-               // Measure Latency (L3 Calibration)
-               const startTime = performance.now();
+            // Measure Latency (L3 Calibration)
+            const startTime = performance.now();
 
-               // Identify downstream effects (Tier 1 Physics)
-               affectedNodes = solver.getAffectedNodes(subjectScm, intervention.node_id);
+            // Identify downstream effects (Tier 1 Physics)
+            affectedNodes = solver.getAffectedNodes(subjectScm, intervention.node_id);
 
-               doPrompt = solver.generateDoPrompt(interventions);
-               interventionApplied = true;
+            doPrompt = solver.generateDoPrompt(interventions);
+            interventionApplied = true;
 
-               const latency = performance.now() - startTime;
-               console.log(`[CausalSolver] Latency: ${latency.toFixed(2)}ms for do(${intervention.node_id})`);
+            const latency = performance.now() - startTime;
+            console.log(`[CausalSolver] Latency: ${latency.toFixed(2)}ms for do(${intervention.node_id})`);
 
-               sendEvent("intervention_effect", {
-                   do: interventions,
-                   affected: affectedNodes,
-                   latency_ms: latency
-               });
-             }
+            sendEvent("intervention_effect", {
+              do: interventions,
+              affected: affectedNodes,
+              latency_ms: latency
+            });
+          }
         }
-        
+
         const { systemPrompt } = constraintInjector.inject(userQuestion, scmContext, doPrompt, {
           conversationContext: contextResult.promptContext,
           explicitCarryover: true,
@@ -347,77 +347,73 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
 
         // 4. LLM Generation (True Streaming)
         const model = getClaudeModel();
-        
-        console.log("[Streaming] Starting LLM generation with streaming...");
+
+
+        console.log("[Streaming] Starting LLM generation (simulated streaming)...");
         let fullText = "";
         let chunkCount = 0;
-        const stream = model.generateContentStream(systemPrompt);
-        
-        for await (const chunk of stream) {
-          const text = chunk.text();
-          fullText += text;
-          chunkCount++;
-          
-          // Send chunk immediately
-          sendEvent("answer_chunk", { text });
-          
-          if (chunkCount === 1) {
-            console.log("[Streaming] First chunk sent! Latency to first token achieved.");
-          }
-          
-          // Analyze chunk for causal density in real-time
-          const densityUpdate = analyzer.onChunk(text);
-          if (densityUpdate && densityUpdate.isSignificant) {
-            densityDistribution[densityUpdate.score as 1 | 2 | 3] += 1;
-            if (lastDensityScore !== densityUpdate.score) {
-              console.log(
-                `[Density] Level transition ${lastDensityScore ?? "none"} -> ${densityUpdate.score}`,
-                {
-                  confidence: densityUpdate.confidence,
-                  evidence: densityUpdate.evidence,
-                }
-              );
-              lastDensityScore = densityUpdate.score as 1 | 2 | 3;
-            }
 
-            sendEvent("causal_density_update", {
-              score: densityUpdate.score,
-              label: densityUpdate.label,
-              confidence: densityUpdate.confidence,
-              detectedMechanisms: densityUpdate.detectedMechanisms,
-              evidence: densityUpdate.evidence,
-              progress: densityUpdate.progress,
-            });
-            
-            // Update Bayesian Oracle Mode state
-            const transition = oracleService.processResult(
+        // TODO: Implement true streaming when Claude SDK supports it
+        const result = await model.generateContent(systemPrompt);
+        fullText = result.response.text();
+        chunkCount = 1;
+
+        // Send the full response as a single chunk
+        sendEvent("answer_chunk", { text: fullText });
+        console.log("[Streaming] Response sent as single chunk.");
+
+        // Analyze chunk for causal density
+        const densityUpdate = analyzer.onChunk(fullText);
+        if (densityUpdate && densityUpdate.isSignificant) {
+          densityDistribution[densityUpdate.score as 1 | 2 | 3] += 1;
+          if (lastDensityScore !== densityUpdate.score) {
+            console.log(
+              `[Density] Level transition ${lastDensityScore ?? "none"} -> ${densityUpdate.score}`,
               {
-                score: densityUpdate.score,
                 confidence: densityUpdate.confidence,
-                label: densityUpdate.label,
-                detectedMechanisms: densityUpdate.detectedMechanisms || []
-              },
-              new Date()
+                evidence: densityUpdate.evidence,
+              }
             );
-            
-            // Emit Bayesian probability event
-            sendEvent("bayesian_oracle_update", {
-              probability: transition.state.bayesianProbability,
-              isActive: transition.state.isActive
-            });
-            
-            // Maintain backward compatibility
-            if (transition.enteredOracleMode) {
-              oracleActivations += 1;
-              sendEvent("oracle_mode_change", { active: true });
-            } else if (transition.exitedOracleMode) {
-              sendEvent("oracle_mode_change", { active: false });
-            }
+            lastDensityScore = densityUpdate.score as 1 | 2 | 3;
+          }
+
+          sendEvent("causal_density_update", {
+            score: densityUpdate.score,
+            label: densityUpdate.label,
+            confidence: densityUpdate.confidence,
+            detectedMechanisms: densityUpdate.detectedMechanisms,
+            evidence: densityUpdate.evidence,
+            progress: densityUpdate.progress,
+          });
+
+          // Update Bayesian Oracle Mode state
+          const transition = oracleService.processResult(
+            {
+              score: densityUpdate.score,
+              confidence: densityUpdate.confidence,
+              label: densityUpdate.label,
+              detectedMechanisms: densityUpdate.detectedMechanisms || []
+            },
+            new Date()
+          );
+
+          // Emit Bayesian probability event
+          sendEvent("bayesian_oracle_update", {
+            probability: transition.state.bayesianProbability,
+            isActive: transition.state.isActive
+          });
+
+          // Maintain backward compatibility
+          if (transition.enteredOracleMode) {
+            oracleActivations += 1;
+            sendEvent("oracle_mode_change", { active: true });
+          } else if (transition.exitedOracleMode) {
+            sendEvent("oracle_mode_change", { active: false });
           }
         }
-        
+
         console.log(`[Streaming] Complete! Sent ${chunkCount} chunks, total text length: ${fullText.length} chars`);
-        
+
         // Send final density update
         const finalAnalysis = analyzer.getCurrentAnalysis();
         sendEvent("causal_density_final", {
@@ -437,9 +433,9 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
 
         // Generate and stream counterfactuals (Layer 3) if an intervention was performed
         if (interventionApplied) {
-            sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
-            const scenarios = await cfGenerator.generateScenarios(fullText);
-            sendEvent("counterfactuals", scenarios);
+          sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
+          const scenarios = await cfGenerator.generateScenarios(fullText);
+          sendEvent("counterfactuals", scenarios);
         }
 
 
@@ -493,7 +489,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
         // 6. Persistence (only if user is authenticated)
         if (sessionId && user && supabase) {
           const canPersistDensity = await verifyCausalDensityColumn(supabase);
-          
+
           // Ensure session exists
           const { error: sessionError } = await supabase
             .from("causal_chat_sessions")
@@ -505,16 +501,16 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
             }, { onConflict: "id" });
 
           if (sessionError) {
-             console.error("[Persistence] Failed to upsert session:", sessionError);
+            console.error("[Persistence] Failed to upsert session:", sessionError);
           } else {
-             // Save User Message
+            // Save User Message
             await supabase.from("causal_chat_messages").insert({
               session_id: sessionId,
               role: "user",
               content: userQuestion
             });
 
-             // Save Assistant Message with causal density
+            // Save Assistant Message with causal density
             const finalDensity = analyzer.getCurrentAnalysis();
             const assistantPayload: Record<string, unknown> = {
               session_id: sessionId,

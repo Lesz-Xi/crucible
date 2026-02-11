@@ -59,7 +59,7 @@ function resolveEnv() {
   return { url, key };
 }
 
-async function resolveActorUserId(supabase: ReturnType<typeof createClient>): Promise<string> {
+async function resolveActorUserId(supabase: any): Promise<string> {
   const explicit = process.env.PROMOTION_ACTOR_USER_ID?.trim();
   if (explicit) return explicit;
 
@@ -100,27 +100,22 @@ function emitResult(payload: Record<string, unknown>) {
 }
 
 interface PromotionDeps {
-  SCMRegistryService: new (supabase: ReturnType<typeof createClient>) => {
+  SCMRegistryService: new (supabase: any) => {
     getModelVersion: (modelKey: string, version?: string) => Promise<any>;
   };
-  CausalDisagreementEngine: new (registry: unknown) => {
-    compare: (input: Record<string, unknown>) => Promise<any>;
-  };
-  evaluateSCMPromotionGate: (input: Record<string, unknown>) => {
-    blocked: boolean;
-    reason: string;
-  };
-  ScientificIntegrityService: new (supabase: ReturnType<typeof createClient>) => {
+  CausalDisagreementEngine: any;
+  evaluateSCMPromotionGate: any;
+  ScientificIntegrityService: new (supabase: any) => {
     getStatus: () => Promise<{ freezePromotion: boolean }>;
   };
 }
 
 async function loadPromotionDeps(): Promise<PromotionDeps> {
   const [registryMod, disagreementMod, governanceMod, integrityMod] = await Promise.all([
-    import("../src/lib/services/scm-registry.ts"),
-    import("../src/lib/services/causal-disagreement-engine.ts"),
-    import("../src/lib/services/scm-promotion-governance.ts"),
-    import("../src/lib/services/scientific-integrity-service.ts"),
+    import("../src/lib/services/scm-registry"),
+    import("../src/lib/services/causal-disagreement-engine"),
+    import("../src/lib/services/scm-promotion-governance"),
+    import("../src/lib/services/scientific-integrity-service"),
   ]);
 
   return {
@@ -245,7 +240,7 @@ async function main() {
   }
 
   if (report.atoms.length > 0) {
-    const atomsPayload = report.atoms.map((atom) => ({
+    const atomsPayload = report.atoms.map((atom: any) => ({
       report_id: persistedReport.id,
       atom_type: atom.type,
       severity: atom.severity,
@@ -353,9 +348,9 @@ async function main() {
       .update({ is_current: true })
       .eq("model_id", modelId)
       .eq("version", candidateVersion);
-  if (promoteError) {
-    throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
-  }
+    if (promoteError) {
+      throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
+    }
   }
 
   emitResult({

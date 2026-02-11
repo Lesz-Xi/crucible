@@ -98,8 +98,8 @@ export class MasaAuditor {
 
   async audit(idea: NovelIdea, priorArt: PriorArt[]): Promise<MasaAudit> {
     const model = getClaudeModel();
-    
-    const priorArtText = priorArt.length > 0 
+
+    const priorArtText = priorArt.length > 0
       ? priorArt.map(p => `- ${p.title}: ${p.differentiator}`).join("\n")
       : "No significant prior art found.";
 
@@ -108,11 +108,11 @@ export class MasaAuditor {
     // ==============================================
     let metaPrompt = '';
     let currentMode = 'balanced';
-    
+
     if (this.selfModel) {
       const calibration = this.selfModel.calibrate();
       currentMode = calibration.mode;
-      
+
       if (calibration.meta_prompt) {
         metaPrompt = '\n\n## LAYER 0 CALIBRATION GUIDANCE:\n' + calibration.meta_prompt;
         console.log(`[Layer 0] Mode: ${currentMode}, Friction Alert: ${calibration.friction_alert}`);
@@ -143,7 +143,7 @@ Consider applying similar reasoning here.`;
 
     // SERIALIZED EXECUTION to prevent "concurrent connection" rate limits
     const epiResult = await model.generateContent(epistemologistPrompt);
-    
+
     const epiJson = safeParseJson(epiResult.response.text(), {
       explanationDepth: 40, // Default to moderate if parsing fails but content exist
       isHardToVary: false,
@@ -155,7 +155,7 @@ Consider applying similar reasoning here.`;
     try {
       // Brief delay between concurrent connections
       await new Promise(resolve => setTimeout(resolve, 1000));
-    } catch (e) {}
+    } catch (e) { }
 
     const skepticResult = await model.generateContent(skepticPrompt);
 
@@ -182,16 +182,11 @@ Consider applying similar reasoning here.`;
       architectVerdict: "Synthesis failed due to output formatting errors."
     });
 
-    // Inject the Crucial Experiment into the idea structure
-    if (idea.experimentalDesign) {
-      idea.experimentalDesign.crucialExperiment = epiJson.crucialExperiment;
-    }
-
     // ==============================================
     // LAYER 0: UPDATE HISTORY & RECORD SUCCESS
     // ==============================================
     const finalScore = Math.round(archJson.synthesisScore || 0);
-    
+
     if (this.selfModel) {
       this.selfModel.updateHistory(finalScore);
       this.selfModel.updateModeHistory(finalScore); // Pearl L2/L3: Track (mode, score) for causal inference
@@ -209,7 +204,7 @@ Consider applying similar reasoning here.`;
     }
 
     return {
-      methodologist: { 
+      methodologist: {
         score: epiJson.explanationDepth,
         critique: epiJson.critique,
         grade: epiJson.grade as GradeQuality,

@@ -1,0 +1,49 @@
+{
+  "simulation": "baseline",
+  "parameters": {
+    "N": 5,
+    "gamma": 0.15,
+    "topology": "watts_strogatz",
+    "t_span": [
+      0.0,
+      100.0
+    ],
+    "n_timesteps": 500,
+    "model_params": {
+      "alpha_struct": 0.15,
+      "alpha_plastic": 0.1,
+      "alpha_energy": 0.2,
+      "alpha_network": 0.12,
+      "beta_entropy": 0.08,
+      "beta_disturb": 0.05,
+      "beta_human": 0.03,
+      "D_wood": 0.7,
+      "D_ref": 1.0,
+      "f_integrity": 0.9,
+      "sigma_g": 0.6,
+      "G_adapt": 0.7,
+      "E_net_balance": 0.8,
+      "tau_decay": 50.0,
+      "entropy_rate": 0.02,
+      "E_dist_base": 0.1,
+      "I_human": 0.0,
+      "beta_isolation": 0.0,
+      "S_eq": 0.8,
+      "K_capacity": 1.0,
+      "r_growth": 0.1
+    }
+  },
+  "network": {
+    "n_edges": 5,
+    "mean_degree": 1.29981615734661,
+    "density": 0.5
+  },
+  "results": {
+    "initial_mean_S": 0.4922425694010172,
+    "final_mean_S": 0.9720509181727609,
+    "initial_std_S": 0.06338161161735674,
+    "final_std_S": 0.00048028748181000935,
+    "equalization_percent": 99.21811246261429,
+    "converged": true
+  }
+}

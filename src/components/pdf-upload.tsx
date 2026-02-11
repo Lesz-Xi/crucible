@@ -71,95 +71,84 @@ export function PDFUpload({
   return (
     <div className="w-full space-y-4">
       {/* Dropzone */}
-      {/* Dropzone - Hidden when limit reached */}
-      {files.length < maxFiles && (
-        <div
-          {...getRootProps()}
-          className={`
-            relative overflow-hidden rounded-3xl p-12 transition-all duration-500 cursor-pointer group wabi-glass-panel
-            border-stone-200
-            ${isDragActive ? "scale-[1.01] border-wabi-clay/60" : "hover:shadow-2xl hover:scale-[1.005] hover:border-wabi-clay/40"}
-            ${isProcessing ? "opacity-50 cursor-not-allowed grayscale" : ""}
-          `}
-        >
-          {/* Animated Gradient Background */}
-          <div className={`absolute inset-0 bg-gradient-to-br from-[#9E7E6B]/10 via-[#F5F5F4]/40 to-[#FAFAF9]/70 transition-opacity duration-500 ${isDragActive ? "opacity-100" : "opacity-80 group-hover:opacity-100"}`} />
-          
-          {/* Glow Blobs */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-500/10 transition-all duration-700" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-amber-500/10 transition-all duration-700" />
-          
-          <input {...getInputProps()} />
-          
-          <div className="relative z-10 flex flex-col items-center justify-center gap-6">
-            {/* Glowing Orb Icon Container */}
-            <div className="relative">
-              <div className={`absolute inset-0 bg-orange-500/30 blur-xl rounded-full transition-all duration-500 ${isDragActive ? "scale-150 opacity-100" : "scale-100 opacity-0 group-hover:opacity-50"}`} />
-              <div
-                className={`
-                  relative w-20 h-20 rounded-full flex items-center justify-center
-                  bg-[#FAFAF9] border border-stone-200 shadow-[0_8px_32px_rgba(158,126,107,0.12)]
-                  backdrop-blur-md transition-all duration-500
-                  ${isDragActive ? "scale-110 shadow-[0_8px_32px_rgba(158,126,107,0.25)] border-wabi-clay/50" : "group-hover:scale-105 group-hover:shadow-[0_8px_32px_rgba(158,126,107,0.2)] group-hover:border-wabi-clay/40"}
-                `}
-              >
-                <Upload className={`w-8 h-8 transition-colors duration-300 ${isDragActive ? "text-wabi-clay" : "text-wabi-stone group-hover:text-wabi-clay"}`} />
-              </div>
-              {/* Orbiting particles (optional aesthetic touch) */}
-              <div className="absolute inset-0 -m-1 border border-orange-500/20 rounded-full w-22 h-22 animate-[spin_10s_linear_infinite] opacity-0 group-hover:opacity-100 transition-opacity" style={{ borderTopColor: 'transparent', borderBottomColor: 'transparent' }} />
-            </div>
-
-            <div className="text-center space-y-2">
-              <p className="text-2xl font-mono text-wabi-sumi tracking-tight">
-                {isDragActive
-                  ? "Drop Files Now"
-                  : "Drag & Drop PDFs Here"}
-              </p>
-              <p className="text-wabi-ink-light font-medium tracking-wide text-xs uppercase opacity-80">
-                or click to browse • Max {maxFiles} files
-              </p>
-            </div>
+      <div
+        {...getRootProps()}
+        className={`
+          relative border-2 border-dashed rounded-2xl p-8 transition-all duration-300 cursor-pointer
+          ${isDragActive
+            ? "border-indigo-500 bg-indigo-500/10"
+            : "border-gray-700 hover:border-gray-600 bg-gray-900/50"
+          }
+          ${isProcessing || files.length >= maxFiles
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+          }
+        `}
+      >
+        <input {...getInputProps()} />
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div
+            className={`
+              p-4 rounded-full transition-all duration-300
+              ${isDragActive ? "bg-indigo-500/20" : "bg-gray-800"}
+            `}
+          >
+            <Upload
+              className={`w-8 h-8 ${isDragActive ? "text-indigo-400" : "text-gray-400"}`}
+            />
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-medium text-gray-200">
+              {isDragActive
+                ? "Drop PDFs here..."
+                : files.length >= maxFiles
+                  ? `Maximum ${maxFiles} files reached`
+                  : "Drag & drop PDFs here"}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              or click to browse • Max {maxFiles} files • PDF only
+            </p>
           </div>
         </div>
-      )}
+      </div>
 
       {/* File List */}
       {files.length > 0 && (
-        <div className="space-y-3 pt-2">
-          <p className="text-xs text-wabi-ink-light font-bold uppercase tracking-wider px-2">
-            Selected Documents ({files.length}/{maxFiles})
+        <div className="space-y-2">
+          <p className="text-sm text-gray-400">
+            {files.length} of {maxFiles} files selected
           </p>
-          <div className="grid gap-2">
+          <div className="space-y-2">
             {files.map((file, index) => (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between p-4 wabi-glass-panel border-stone-200 rounded-xl shadow-sm hover:shadow-md hover:border-wabi-clay/30 transition-all duration-300 group/file"
+                className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl border border-gray-700"
               >
-                <div className="flex items-center gap-4">
-                  <div className="p-2.5 bg-wabi-clay/10 rounded-lg group-hover/file:bg-wabi-clay/20 transition-colors">
-                    <FileText className="w-5 h-5 text-wabi-clay" />
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-indigo-500/20 rounded-lg">
+                    <FileText className="w-5 h-5 text-indigo-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-wabi-sumi truncate max-w-[200px] sm:max-w-[300px]">
+                    <p className="text-sm font-medium text-gray-200 truncate max-w-[200px] sm:max-w-[300px]">
                       {file.name}
                     </p>
-                    <p className="text-xs text-wabi-ink-light font-medium">
+                    <p className="text-xs text-gray-500">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {isProcessing ? (
-                    <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
+                    <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
                   ) : (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFile(index);
                       }}
-                      className="p-2 hover:bg-red-500/10 text-neutral-500 hover:text-red-500 rounded-lg transition-all duration-200"
+                      className="p-1 hover:bg-gray-700 rounded-lg transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-4 h-4 text-gray-400" />
                     </button>
                   )}
                 </div>

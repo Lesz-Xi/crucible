@@ -52,12 +52,12 @@ export class ExperimentGenerator {
     const prompt = EXPERIMENT_PROMPT
       .replace("{THESIS}", idea.thesis)
       .replace("{MECHANISM}", idea.mechanism || "Not specified")
-      .replace("{EXPERIMENT}", idea.crucialExperiment || "Not specified");
+      .replace("{EXPERIMENT}", idea.prediction || "Not specified");
 
     try {
       const result = await model.generateContent(prompt);
       const text = result.response.text();
-      
+
       const json = safeParseJson(text, {
         protocolCode: "# Error generating code",
         labManual: "# Error generating manual",

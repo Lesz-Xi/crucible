@@ -1,0 +1,104 @@
+{
+  "climate_change": {
+    "parameters": {
+      "N": 20,
+      "gamma": 0.1,
+      "T_baseline": 15.0,
+      "T_max": 42.0,
+      "t_max": 200.0,
+      "Q10": 2.5
+    },
+    "results": {
+      "tipping_point_detected": true,
+      "tipping_time": 168.76876876876878,
+      "tipping_stability": 0.5877555720142363,
+      "tipping_temperature": 37.78378378378379,
+      "final_mean_stability": 0.17127185818987808,
+      "initial_mean_stability": 0.6914350719279085,
+      "stability_decline": 0.5201632137380304
+    }
+  },
+  "management_interventions": {
+    "parameters": {
+      "N": 25,
+      "gamma": 0.15,
+      "harvest_fraction": 0.2,
+      "harvest_time": 50.0,
+      "n_harvested": 5
+    },
+    "selective_logging": {
+      "pattern": "random",
+      "harvested_nodes": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ]
+    },
+    "clear_cutting": {
+      "pattern": "cluster",
+      "harvested_nodes": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    "metrics": {
+      "final_control": 0.9715253067896805,
+      "final_selective": 0.9714886489013651,
+      "final_clearcut": 0.9715075697670981,
+      "impact_selective": 0.13239807842722617,
+      "impact_clearcut": 0.0636619951049423,
+      "recovery_selective": 0.17557079449669766,
+      "recovery_clearcut": 0.08554437834423623
+    },
+    "comparison": {
+      "selective_vs_clearcut_final": -1.8920865732963144e-05,
+      "selective_less_impact": false,
+      "selective_better_recovery": true
+    }
+  }
+}

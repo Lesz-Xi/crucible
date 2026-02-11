@@ -3,60 +3,305 @@
 @tailwind utilities;
 
 :root {
-  /* Wabi Sabi 2041 - Light (Paper) */
-  --background: #FAFAF9;
-  --foreground: #2A2621;
-  --bg-primary: #FAFAF9;
-  --bg-secondary: #F5F5F4;
-  --bg-card: #FFFFFF;
-  --text-primary: #2A2621;
-  --text-secondary: #57534E;
-  --text-tertiary: #A8A29E;
-  --border-subtle: #D6D3D1;
+  /* === Wabi-Sabi 2041 Design System === */
   
-  --wabi-washi: #FAFAF9;
-  --wabi-sumi: #2A2621;
-  --wabi-patina: #57534E;
-  --wabi-clay: #9E7E6B;
-  --wabi-ink-light: #57534E;
-  --wabi-moss: #606C38;
-  --wabi-rust: #BC6C25;
-  --wabi-stone: #A8A29E;
-  --wabi-sand: #D6CCC2;
-  --wabi-charcoal: #8B5E3C;
+  /* Core Palette - Mineral & Paper */
+  --obsidian-900: #111310;  /* Deep surfaces, not pure black */
+  --stone-700: #4D534A;     /* Primary text on light */
+  --ash-200: #D4D2C8;       /* Neutral containers */
+  --paper-050: #F5F2E8;     /* Warm off-white */
   
-  /* Fonts */
-  --font-geist-sans: "Geist Sans", sans-serif;
-  --font-geist-mono: "Geist Mono", monospace;
-  --font-crimson: "Crimson Pro", serif;
+  /* Accents - Earth & Oxide */
+  --moss-500: #5F7555;      /* Success, novelty, growth */
+  --oxide-500: #A0603B;     /* Earthy links, warm accents */
+  --mist-400: #8FA1A8;      /* Metadata, secondary text */
+  
+  /* Legacy Compatibility (map to new system) */
+  --background: var(--paper-050);
+  --foreground: var(--stone-700);
+  --bg-primary: var(--paper-050);
+  --bg-secondary: #F0EDE3;  /* Slightly darker paper */
+  --bg-card: rgba(255, 255, 255, 0.6);
+  --text-primary: var(--stone-700);
+  --text-secondary: var(--mist-400);
+  --text-tertiary: var(--ash-200);
+  --border-subtle: var(--ash-200);
+  
+  /* Old Wabi tokens (keep for backward compat) */
+  --wabi-washi: var(--paper-050);
+  --wabi-sumi: var(--stone-700);
+  --wabi-patina: var(--mist-400);
+  --wabi-clay: var(--oxide-500);
+  --wabi-moss: var(--moss-500);
+  --wabi-rust: var(--oxide-500);
+  --wabi-stone: var(--ash-200);
+  
+  /* Shadows & Depth (soft ambient, never hard borders) */
+  --shadow-ambient: 0 8px 24px rgba(17, 19, 16, 0.08);
+  --shadow-lift: 0 12px 32px rgba(17, 19, 16, 0.12);
+  --shadow-deep: 0 16px 48px rgba(17, 19, 16, 0.16);
+  
+  /* Spacing Scale */
+  --space-xs: 8px;
+  --space-s: 12px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  
+  /* Typography */
+  --font-geist-sans: "Geist Sans", -apple-system, sans-serif;
+  --font-geist-mono: "Geist Mono", "Courier New", monospace;
+  --font-crimson: "Crimson Pro", "Times New Roman", serif;
   --font-playfair: "Playfair Display", serif;
 }
 
-/* Ensure class-based dark mode works effectively */
+/* Dark Mode - Obsidian foundations */
 .dark {
-  --background: #1C1C1E;
-  --foreground: #FAFAF9;
-  --bg-primary: #1C1C1E;
-  --bg-secondary: #232326;
-  --bg-card: #2A2A2D;
-  --text-primary: #FAFAF9;
-  --text-secondary: #D6D3D1;
-  --text-tertiary: #A8A29E;
+  /* Override core palette for dark */
+  --obsidian-900: #111310;  /* Same as light */
+  --stone-700: #EBE9E4;     /* Inverted: light text on dark */
+  --ash-200: #3F3F3C;       /* Darker containers */
+  --paper-050: #1C1C1E;     /* Dark background */
+  
+  --moss-500: #7A9070;      /* Slightly lighter for contrast */
+  --oxide-500: #C4805A;     /* Warmer for dark mode */
+  --mist-400: #A8B5BC;      /* More visible metadata */
+  
+  /* Legacy overrides */
+  --background: var(--obsidian-900);
+  --foreground: var(--stone-700);
+  --bg-primary: var(--obsidian-900);
+  --bg-secondary: #1A1A1C;
+  --bg-card: rgba(28, 28, 30, 0.8);
+  --text-primary: var(--stone-700);
+  --text-secondary: var(--mist-400);
+  --text-tertiary: var(--ash-200);
   --border-subtle: #3F3F46;
-  --wabi-washi: #1C1C1C;
-  --wabi-sumi: #EBE9E4;
-  --wabi-ink-light: #A8A29E;
+  
+  /* Shadow adjustments for dark */
+  --shadow-ambient: 0 8px 24px rgba(0, 0, 0, 0.24);
+  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.32);
+  --shadow-deep: 0 16px 48px rgba(0, 0, 0, 0.48);
 }
 
+/* Utility Classes */
 .wabi-glass-panel {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(212, 210, 200, 0.4); /* ash-200 with alpha */
+  box-shadow: var(--shadow-ambient);
 }
 
 .dark .wabi-glass-panel {
-  background: rgba(28, 28, 30, 0.8);
+  background: rgba(17, 19, 16, 0.8);
+  border-color: rgba(63, 63, 60, 0.4);
+}
+
+/* Card glass effect - per Wabi-Sabi 2041 spec */
+.bg-glass-card {
+  background: rgba(245, 242, 232, 0.7); /* paper-050 with transparency */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 210, 200, 0.3);
+  box-shadow: var(--shadow-ambient);
+}
+
+.dark .bg-glass-card {
+  background: rgba(17, 19, 16, 0.7); /* obsidian-900 with transparency */
+  border-color: rgba(63, 63, 60, 0.3);
+}
+
+/* ========================================
+   PHASE 2: TYPOGRAPHY SYSTEM
+   ======================================== */
+
+/* Sculpted serif headings - Playfair Display */
+.wabi-heading-1 {
+  font-family: var(--font-playfair), serif;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 48px;
+  color: var(--stone-700);
+  letter-spacing: -0.02em;
+}
+
+.wabi-heading-2 {
+  font-family: var(--font-playfair), serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 40px;
+  color: var(--stone-700);
+  letter-spacing: -0.01em;
+}
+
+.wabi-heading-3 {
+  font-family: var(--font-playfair), serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 30px;
+  color: var(--stone-700);
+}
+
+/* Crimson Pro body text - high readability */
+.wabi-prose {
+  font-family: var(--font-crimson), serif;
+  font-size: 18px;
+  line-height: 28px; /* 1.56 ratio */
+  color: var(--stone-700);
+}
+
+.wabi-prose-medium {
+  font-family: var(--font-crimson), serif;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--stone-700);
+}
+
+.wabi-prose-small {
+  font-family: var(--font-crimson), serif;
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--stone-700);
+}
+
+/* UI labels - keep Geist Sans for clarity */
+.wabi-label {
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mist-400);
+}
+
+/* Dark mode typography adjustments */
+.dark .wabi-heading-1,
+.dark .wabi-heading-2,
+.dark .wabi-heading-3,
+.dark .wabi-prose,
+.dark .wabi-prose-medium,
+.dark .wabi-prose-small {
+  color: var(--stone-700); /* Inverted in dark mode */
+}
+
+/* ========================================
+   PHASE 3: MATERIALITY SYSTEM
+   ======================================== */
+
+/* Paper texture overlay - subtle grain */
+.wabi-texture {
+  position: relative;
+}
+
+.wabi-texture::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.dark .wabi-texture::after {
+  mix-blend-mode: overlay;
+  opacity: 0.05;
+}
+
+/* Soft lift on hover (tactile feedback) - refined with deliberate timing */
+.wabi-lift-hover {
+  transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.wabi-lift-hover:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Smooth transitions for state changes - deliberate organic timing */
+.wabi-smooth {
+  transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Staggered reveal animation */
+@keyframes wabi-reveal {
+  from { 
+    opacity: 0; 
+    transform: translateY(16px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.wabi-reveal {
+  animation: wabi-reveal 240ms cubic-bezier(0.4, 0.0, 0.2, 1) both;
+}
+
+/* Stagger delays for sequential reveals */
+.wabi-reveal:nth-child(1) { animation-delay: 0ms; }
+.wabi-reveal:nth-child(2) { animation-delay: 30ms; }
+.wabi-reveal:nth-child(3) { animation-delay: 60ms; }
+.wabi-reveal:nth-child(4) { animation-delay: 90ms; }
+.wabi-reveal:nth-child(5) { animation-delay: 120ms; }
+.wabi-reveal:nth-child(6) { animation-delay: 150ms; }
+
+/* ========================================
+   PHASE 4: WABI-SABI REDESIGN UTILITIES
+   ======================================== */
+
+/* Warm gradient backgrounds for output cards */
+.wabi-gradient-output {
+  background: linear-gradient(to bottom right, 
+    #2C2420,              /* wabi-ink - warm dark */
+    rgba(139, 94, 60, 0.8) /* wabi-charcoal with transparency */
+  );
+}
+
+/* Calming gradient for tensions section */
+.wabi-gradient-tension {
+  background: linear-gradient(to right,
+    rgba(158, 126, 107, 0.1),  /* wabi-clay/10 */
+    rgba(168, 181, 160, 0.1)   /* wabi-sage/10 */
+  );
+}
+
+/* Elevation shadow system */
+.wabi-elevation-light {
+  box-shadow: 0 1px 3px rgba(44, 36, 32, 0.1);
+}
+
+.wabi-elevation-mid {
+  box-shadow: 0 4px 6px rgba(158, 126, 107, 0.15);
+}
+
+.wabi-elevation-rich {
+  box-shadow: 0 8px 40px -8px rgba(139, 94, 60, 0.25);
+}
+
+/* Hover glow effect with clay warmth */
+.wabi-glow-hover {
+  transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.wabi-glow-hover:hover {
+  box-shadow: 0 8px 40px -8px rgba(158, 126, 107, 0.3);
+  transform: scale(1.01);
+}
+
+/* Dark mode adjustments for gradients */
+.dark .wabi-gradient-output {
+  background: linear-gradient(to bottom right,
+    #1C1C1E,
+    rgba(139, 94, 60, 0.6)
+  );
+}
+
+.dark .wabi-elevation-rich {
+  box-shadow: 0 8px 40px -8px rgba(0, 0, 0, 0.4);
 }
 
 body {

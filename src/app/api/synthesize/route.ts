@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
   const emitter = new StreamingEventEmitter(writer);
-  
+
   // Extract User ID from headers (set by middleware or client)
   const userId = request.headers.get("x-user-id") || undefined;
 
@@ -40,11 +40,11 @@ export async function POST(request: NextRequest) {
 
       // Step 1: Process PDFs
       emitter.emit({ event: 'ingestion_start', files: files.length });
-      
+
       // Validate file types
       for (const file of files) {
         if (file.type !== "application/pdf") {
-           emitter.emit({ event: 'pdf_error', filename: file.name, error: "Invalid file type. Only PDFs are allowed." });
+          emitter.emit({ event: 'pdf_error', filename: file.name, error: "Invalid file type. Only PDFs are allowed." });
         }
       }
 
@@ -56,36 +56,36 @@ export async function POST(request: NextRequest) {
       );
 
       const pdfResults = await processMultiplePDFs(pdfBuffers);
-      
+
       // Emit PDF processing status
       pdfResults.successful.forEach(pdf => {
         emitter.emit({ event: 'pdf_processed', filename: pdf.fileName });
       });
-      
+
       pdfResults.failed.forEach(pdf => {
-         emitter.emit({ event: 'pdf_error', filename: pdf.name, error: pdf.error || "Unknown error" });
+        emitter.emit({ event: 'pdf_error', filename: pdf.name, error: pdf.error || "Unknown error" });
       });
 
       if (pdfResults.successful.length === 0) {
-         emitter.emit({ event: 'error', message: "No valid PDFs could be processed." });
-         emitter.close();
-         return;
+        emitter.emit({ event: 'error', message: "No valid PDFs could be processed." });
+        emitter.close();
+        return;
       }
 
       // Step 2: Run synthesis pipeline (with streaming)
       const synthesisResult = await runEnhancedSynthesisPipeline(
-        pdfResults.successful, 
+        pdfResults.successful,
         {
           priorArtSearchFn: searchPriorArt,
           maxRefinementIterations: 2,
           eventEmitter: emitter,
           userId: userId // Add explicitly to config
-        }
+        } as any
       );
 
       // Step 3: Evaluate novelty for each idea
       emitter.emit({ event: 'thinking_step', content: "Evaluating novelty against prior art..." });
-      
+
       const ideasWithNovelty = await Promise.all(
         synthesisResult.novelIdeas.map(async (idea) => {
           const priorArt = await searchPriorArt(idea.thesis, idea.description);
@@ -105,7 +105,6 @@ export async function POST(request: NextRequest) {
       const finalSynthesis = {
         sources: synthesisResult.sources.map((s) => ({
           name: s.name,
-          type: s.type, // Pass through type
           mainThesis: s.concepts.mainThesis,
           keyArguments: s.concepts.keyArguments,
           entities: s.concepts.entities,
@@ -113,17 +112,16 @@ export async function POST(request: NextRequest) {
         })),
         contradictions: synthesisResult.contradictions,
         novelIdeas: ideasWithNovelty,
-        structuredApproach: synthesisResult.structuredApproach,
-        consciousnessState: synthesisResult.consciousnessState
+        structuredApproach: synthesisResult.structuredApproach
       };
 
       emitter.emit({ event: 'complete', synthesis: finalSynthesis });
 
     } catch (error) {
       console.error("Synthesis error:", error);
-      emitter.emit({ 
-        event: 'error', 
-        message: error instanceof Error ? error.message : "Synthesis failed" 
+      emitter.emit({
+        event: 'error',
+        message: error instanceof Error ? error.message : "Synthesis failed"
       });
     } finally {
       emitter.close();
