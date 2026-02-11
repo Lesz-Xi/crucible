@@ -12,6 +12,7 @@ import { PersistenceService } from "@/lib/db/persistence-service";
 import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
 import { StreamingEventEmitter } from "@/lib/streaming-event-emitter";
 import { validateProtocol } from "@/lib/services/protocol-validator";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 // Synthesis limits configuration
 const MAX_PDF_FILES = 6;
@@ -44,8 +45,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract User ID from headers (set by middleware or client)
-    const userId = request.headers.get("x-user-id") || undefined;
+    let userId = request.headers.get("x-user-id") || undefined;
+    try {
+      const supabase = await createServerSupabaseClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.id) {
+        userId = user.id;
+      }
+    } catch {
+      // Keep header fallback for environments where auth is unavailable.
+    }
 
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
@@ -107,7 +116,7 @@ export async function POST(request: NextRequest) {
           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, config);
 
           // Step 4: Persist
-          const saveStatus = await persistence.saveSynthesis(result);
+          const saveStatus = await persistence.saveSynthesis(result, userId);
 
           const finalResult = {
             ...result,

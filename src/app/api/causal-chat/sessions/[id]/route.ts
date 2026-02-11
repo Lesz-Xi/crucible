@@ -16,33 +16,28 @@ export async function DELETE(
     // Initialize Supabase client
     const supabase = await createServerSupabaseClient();
     
-    // Get user (but don't fail if anonymous)
+    // Require authenticated user
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
     const sessionId = params.id;
 
     let error, count;
 
-    if (user) {
-      // Authenticated user: RLS policy enforces ownership automatically
-      const result = await supabase
-        .from("causal_chat_sessions")
-        .delete({ count: "exact" })
-        .eq("id", sessionId);
-      
-      error = result.error;
-      count = result.count;
-    } else {
-      // Anonymous user: Only allow deleting sessions with user_id = NULL
-      const result = await supabase
-        .from("causal_chat_sessions")
-        .delete({ count: "exact" })
-        .eq("id", sessionId)
-        .is("user_id", null);
-      
-      error = result.error;
-      count = result.count;
-    }
+    // Authenticated user: RLS policy enforces ownership automatically
+    const result = await supabase
+      .from("causal_chat_sessions")
+      .delete({ count: "exact" })
+      .eq("id", sessionId)
+      .eq("user_id", user.id);
+
+    error = result.error;
+    count = result.count;
 
     if (error) {
       console.error("[Delete Session] Supabase error:", error);

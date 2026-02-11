@@ -60,10 +60,16 @@ export async function saveAnalysisToHistory(
       console.log('[LegalHistory] Supabase not configured, skipping save');
       return null;
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) {
+      console.log('[LegalHistory] User not signed in, skipping cloud save');
+      return null;
+    }
 
     const { data, error } = await supabase
       .from('legal_analysis_history')
       .insert({
+        user_id: user.id,
         case_id: legalCase.id,
         case_title: legalCase.title,
         jurisdiction: legalCase.jurisdiction,
@@ -105,6 +111,10 @@ export async function getAnalysisHistory(
       console.log('[LegalHistory] Supabase not configured');
       return [];
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) {
+      return [];
+    }
 
     const { data, error } = await supabase
       .from('legal_analysis_history')
@@ -120,6 +130,7 @@ export async function getAnalysisHistory(
         document_names,
         created_at
       `)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -158,11 +169,16 @@ export async function loadAnalysisFromHistory(
       console.log('[LegalHistory] Supabase not configured');
       return null;
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) {
+      return null;
+    }
 
     const { data, error } = await supabase
       .from('legal_analysis_history')
       .select('analysis_result')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single();
 
     if (error) {
@@ -209,11 +225,16 @@ export async function deleteAnalysisFromHistory(
       console.log('[LegalHistory] Supabase not configured');
       return false;
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) {
+      return false;
+    }
 
     const { error } = await supabase
       .from('legal_analysis_history')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('[LegalHistory] Failed to delete:', error.message);
@@ -237,11 +258,15 @@ export async function clearAllHistory(): Promise<boolean> {
     if (!supabase) {
       return false;
     }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) {
+      return false;
+    }
 
     const { error } = await supabase
       .from('legal_analysis_history')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('[LegalHistory] Failed to clear:', error.message);

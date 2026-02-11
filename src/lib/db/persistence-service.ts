@@ -24,7 +24,7 @@ export class PersistenceService {
   /**
    * Saves a full synthesis run and its results to Supabase
    */
-  async saveSynthesis(result: SynthesisResult): Promise<{ runId: string } | null> {
+  async saveSynthesis(result: SynthesisResult, userId?: string): Promise<{ runId: string } | null> {
     try {
       const supabase = await createServerSupabaseClient();
 
@@ -32,6 +32,7 @@ export class PersistenceService {
       const { data: run, error: runError } = await supabase
         .from("synthesis_runs")
         .insert({
+          user_id: userId ?? null,
           sources: result.sources.map(s => ({ name: s.name, thesis: s.concepts.mainThesis })),
           total_ideas: result.novelIdeas.length,
           status: "completed",
@@ -140,14 +141,19 @@ export class PersistenceService {
   /**
    * Fetches the most recent synthesis runs
    */
-  async getHistoricalRuns(limit = 10): Promise<JsonRecord[]> {
+  async getHistoricalRuns(limit = 10, userId?: string): Promise<JsonRecord[]> {
     try {
       const supabase = await createServerSupabaseClient();
-      const { data, error } = await supabase
+      let query = supabase
         .from("synthesis_runs")
         .select("*")
-        .order("created_at", { ascending: false })
-        .limit(limit);
+        .order("created_at", { ascending: false });
+
+      if (userId) {
+        query = query.eq("user_id", userId);
+      }
+
+      const { data, error } = await query.limit(limit);
 
       if (error) throw error;
       return data || [];
@@ -160,7 +166,7 @@ export class PersistenceService {
   /**
    * Fetches full details for a synthesis run including results and audits
    */
-  async getRunDetails(runId: string): Promise<JsonRecord | null> {
+  async getRunDetails(runId: string, userId?: string): Promise<JsonRecord | null> {
     try {
       const supabase = await createServerSupabaseClient();
 
@@ -176,13 +182,19 @@ export class PersistenceService {
       if (ideasError) throw ideasError;
 
       // Fetch run metadata
-      const { data: run, error: runError } = await supabase
+      let runQuery = supabase
         .from("synthesis_runs")
         .select("*")
-        .eq("id", runId)
-        .single();
+        .eq("id", runId);
+
+      if (userId) {
+        runQuery = runQuery.eq("user_id", userId);
+      }
+
+      const { data: run, error: runError } = await runQuery.maybeSingle();
 
       if (runError) throw runError;
+      if (!run) return null;
 
       return {
         ...run,

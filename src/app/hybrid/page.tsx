@@ -41,6 +41,7 @@ import {
 } from "lucide-react";
 import { downloadMarkdown, SynthesisExportData } from "@/lib/services/markdown-export-service";
 import { StreamEvent } from "@/lib/streaming-event-emitter";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 interface SynthesisSource {
   name: string;
@@ -291,12 +292,20 @@ export default function HybridSynthesisPage() {
   // Fetch history on mount
   useEffect(() => {
     fetchHistory();
+    window.addEventListener("historyImported", fetchHistory);
+    return () => {
+      window.removeEventListener("historyImported", fetchHistory);
+    };
   }, []);
 
   const fetchHistory = async () => {
     setIsHistoryLoading(true);
     try {
       const res = await fetch("/api/synthesis-history");
+      if (res.status === 401) {
+        setHistoricalRuns([]);
+        return;
+      }
       const data = await res.json();
       if (data.history) setHistoricalRuns(data.history);
     } catch (err) {
@@ -359,6 +368,7 @@ export default function HybridSynthesisPage() {
               </div>
               
               <div className="flex items-center gap-2">
+                <AuthButton compact className="hidden sm:block" />
                 <button
                   onClick={() => setHistoryOpen(true)}
                   className="flex items-center gap-2 px-3 py-1.5 bg-[var(--paper-050)]/80 hover:bg-[var(--paper-050)] text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-[var(--oxide-500)]/40 transition-all"

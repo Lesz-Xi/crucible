@@ -531,3 +531,19 @@ export type {
   LawFalsificationScenario,
   LawFalsificationScenarioPack,
 } from './law-discovery-falsification';
+
+export type {
+  AppAuthUser,
+  AuthState,
+} from './auth';
+
+export type {
+  ImportDomain,
+  ImportRecordEnvelope,
+  ChatSessionImportPayload,
+  HybridRunImportPayload,
+  LegalImportPayload,
+  LocalHistoryExport,
+  ImportDomainSummary,
+  HistoryImportSummary,
+} from './history-import';

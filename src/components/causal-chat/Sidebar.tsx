@@ -11,20 +11,23 @@ import {
   Layers, // Obsidian Layer alternative
   Star, 
   Clock, 
-  MoreHorizontal,
   PanelLeftClose,
   Trash2, // Delete icon
   Loader2 // Loading spinner
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { ChatPersistence } from "@/lib/services/chat-persistence";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 interface ChatSession {
   id: string;
   title: string;
   updated_at: string;
+}
+
+interface LocalChatStore {
+  sessions?: ChatSession[];
 }
 
 interface SidebarItemProps {
@@ -74,18 +77,37 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
   const chatPersistence = new ChatPersistence();
 
+  const loadLocalFallbackSessions = (): ChatSession[] => {
+    try {
+      const raw = window.localStorage.getItem('causal-chat-local-fallback-v1');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as LocalChatStore;
+      if (!Array.isArray(parsed.sessions)) return [];
+      return parsed.sessions
+        .slice()
+        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+        .slice(0, 10);
+    } catch {
+      return [];
+    }
+  };
+
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from('causal_chat_sessions')
-          .select('id, title, updated_at')
-          .order('updated_at', { ascending: false })
-          .limit(10);
+        const response = await fetch('/api/causal-chat/history');
+        if (response.status === 401) {
+          setRecentSessions(loadLocalFallbackSessions());
+          return;
+        }
 
-        if (data) {
-          setRecentSessions(data);
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        if (Array.isArray(data?.history)) {
+          setRecentSessions(data.history as ChatSession[]);
         }
       } catch (error) {
         console.warn('[Sidebar] Supabase not configured; skipping chat history fetch.', error);
@@ -97,8 +119,12 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
     
     // Poll for updates every 5 seconds
     const interval = setInterval(fetchHistory, 5000);
+    window.addEventListener('historyImported', fetchHistory);
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('historyImported', fetchHistory);
+    };
   }, []);
 
   const handleDeleteSession = async (sessionId: string, event: React.MouseEvent) => {
@@ -141,7 +167,8 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
             Crucible
           </span>
         </div>
-        <div className="flex items-center gap-2">
+       <div className="flex items-center gap-2">
+           <AuthButton compact className="hidden lg:block" />
            <ThemeToggle />
            <button 
              onClick={onToggle}
@@ -216,16 +243,7 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
 
       {/* User Footer */}
        <div className="p-4 mt-auto border-t border-wabi-stone/20">
-         <button className="w-full flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-wabi-stone/10 transition-colors group">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8B5E3C] to-[#5C4033] flex items-center justify-center text-white text-xs font-medium border border-[#A67B5B]/30">
-            RL
-          </div>
-           <div className="flex-1 text-left">
-             <div className="text-sm font-medium text-foreground group-hover:text-foreground">Rhine Lesther</div>
-             <div className="text-xs text-wabi-stone">Free Plan</div>
-           </div>
-           <MoreHorizontal className="w-4 h-4 text-wabi-stone" />
-        </button>
+         <AuthButton />
       </div>
     </div>
   );

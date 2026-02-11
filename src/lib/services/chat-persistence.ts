@@ -11,7 +11,7 @@ export interface Message {
   tier1Used?: string[];
   tier2Used?: string[];
   confidenceScore?: number;
-  causalGraph?: any;
+  causalGraph?: Record<string, unknown>;
   causalDensity?: CausalDensityResult;
 }
 
@@ -24,6 +24,7 @@ export interface Message {
 export class ChatPersistence {
   private supabase: ReturnType<typeof createClient> | null = null;
   private causalDensityColumnAvailable: boolean | null = null;
+  private static readonly LOCAL_STORAGE_KEY = "causal-chat-local-fallback-v1";
 
   private getSupabase() {
     if (!this.supabase) {
@@ -68,6 +69,10 @@ export class ChatPersistence {
    * @returns Session ID
    */
   async getOrCreateSession(userId: string | undefined, firstMessage: string): Promise<string> {
+    if (!userId) {
+      return this.createLocalSession(firstMessage);
+    }
+
     console.log('[ChatPersistence] Creating session for user:', userId || 'ANONYMOUS', 'with message:', firstMessage.substring(0, 50));
     
     // Generate title from first message (first 50 chars)
@@ -78,7 +83,7 @@ export class ChatPersistence {
     const { data, error } = await this.getSupabase()
       .from('causal_chat_sessions')
       .insert({
-        user_id: userId || null, // Handle unauthenticated users
+        user_id: userId,
         title,
       })
       .select('id')
@@ -99,6 +104,11 @@ export class ChatPersistence {
    * @param message - The message to save
    */
   async saveMessage(sessionId: string, message: Message): Promise<void> {
+    if (this.isLocalSession(sessionId)) {
+      this.saveLocalMessage(sessionId, message);
+      return;
+    }
+
     console.log('[ChatPersistence] Saving', message.role, 'message to session:', sessionId);
     console.log('[ChatPersistence] Message content preview:', message.content.substring(0, 100));
     
@@ -169,6 +179,10 @@ export class ChatPersistence {
    * @returns Array of messages in chronological order
    */
   async loadSession(sessionId: string): Promise<Message[]> {
+    if (this.isLocalSession(sessionId)) {
+      return this.loadLocalSession(sessionId);
+    }
+
     const { data, error } = await this.getSupabase()
       .from('causal_chat_messages')
       .select('*')
@@ -222,9 +236,141 @@ export class ChatPersistence {
 
       console.log('[ChatPersistence] ✅ Session deleted:', sessionId);
       return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[ChatPersistence] Delete error:', error);
-      return { success: false, error: error.message || 'Network error' };
+      const message = error instanceof Error ? error.message : 'Network error';
+      return { success: false, error: message };
     }
+  }
+
+  private isLocalSession(sessionId: string): boolean {
+    return sessionId.startsWith("local-");
+  }
+
+  private createLocalSession(firstMessage: string): string {
+    const localSessionId = `local-${crypto.randomUUID()}`;
+    const title =
+      firstMessage.length > 50 ? `${firstMessage.substring(0, 47)}...` : firstMessage;
+
+    const store = this.readLocalStore();
+    store.sessions.unshift({
+      id: localSessionId,
+      title,
+      updated_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      messages: [],
+    });
+    this.writeLocalStore(store);
+    return localSessionId;
+  }
+
+  private saveLocalMessage(sessionId: string, message: Message): void {
+    const store = this.readLocalStore();
+    const session = store.sessions.find((entry) => entry.id === sessionId);
+    if (!session) {
+      return;
+    }
+
+    session.messages.push({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+      created_at: message.timestamp.toISOString(),
+      domain_classified: message.domain || null,
+      scm_tier1_used: message.tier1Used || [],
+      scm_tier2_used: message.tier2Used || [],
+      confidence_score: message.confidenceScore || null,
+      causal_graph: message.causalGraph || null,
+      causal_density: message.causalDensity || null,
+    });
+    session.updated_at = new Date().toISOString();
+    this.writeLocalStore(store);
+  }
+
+  private loadLocalSession(sessionId: string): Message[] {
+    const store = this.readLocalStore();
+    const session = store.sessions.find((entry) => entry.id === sessionId);
+    if (!session) {
+      return [];
+    }
+
+    return session.messages.map((row) => ({
+      id: row.id,
+      role: row.role,
+      content: row.content,
+      timestamp: new Date(row.created_at),
+      domain: row.domain_classified || undefined,
+      tier1Used: row.scm_tier1_used || undefined,
+      tier2Used: row.scm_tier2_used || undefined,
+      confidenceScore: row.confidence_score || undefined,
+      causalDensity: row.causal_density || undefined,
+      causalGraph: row.causal_graph || undefined,
+    }));
+  }
+
+  private readLocalStore(): {
+    sessions: Array<{
+      id: string;
+      title: string;
+      created_at: string;
+      updated_at: string;
+      messages: Array<{
+        id: string;
+        role: "user" | "assistant" | "system";
+        content: string;
+        created_at: string;
+        domain_classified: string | null;
+        scm_tier1_used: string[];
+        scm_tier2_used: string[];
+        confidence_score: number | null;
+        causal_graph: Record<string, unknown> | null;
+        causal_density: CausalDensityResult | null;
+      }>;
+    }>;
+  } {
+    if (typeof window === "undefined") {
+      return { sessions: [] };
+    }
+
+    const raw = window.localStorage.getItem(ChatPersistence.LOCAL_STORAGE_KEY);
+    if (!raw) {
+      return { sessions: [] };
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as { sessions?: unknown };
+      if (!Array.isArray(parsed.sessions)) {
+        return { sessions: [] };
+      }
+      return parsed as {
+        sessions: Array<{
+          id: string;
+          title: string;
+          created_at: string;
+          updated_at: string;
+          messages: Array<{
+            id: string;
+            role: "user" | "assistant" | "system";
+            content: string;
+            created_at: string;
+            domain_classified: string | null;
+            scm_tier1_used: string[];
+            scm_tier2_used: string[];
+            confidence_score: number | null;
+            causal_graph: Record<string, unknown> | null;
+            causal_density: CausalDensityResult | null;
+          }>;
+        }>;
+      };
+    } catch {
+      return { sessions: [] };
+    }
+  }
+
+  private writeLocalStore(store: { sessions: unknown[] }): void {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.setItem(ChatPersistence.LOCAL_STORAGE_KEY, JSON.stringify(store));
   }
 }

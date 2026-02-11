@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai/novelty-evaluator";
 import { StreamingEventEmitter } from "@/lib/streaming-event-emitter";
 import { NovelIdea } from "@/types";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const maxDuration = 60; // Max execution time in seconds
 
@@ -18,7 +19,16 @@ export async function POST(request: NextRequest) {
   const emitter = new StreamingEventEmitter(writer);
 
   // Extract User ID from headers (set by middleware or client)
-  const userId = request.headers.get("x-user-id") || undefined;
+  let userId = request.headers.get("x-user-id") || undefined;
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.id) {
+      userId = user.id;
+    }
+  } catch {
+    // Keep header fallback for environments where auth is unavailable.
+  }
 
   // Start background processing
   (async () => {
