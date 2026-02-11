@@ -59,7 +59,7 @@ export function Navbar() {
       const { error } = await signInWithGoogle();
       if (error) {
         console.error("[Navbar] Failed to start Google sign-in:", error);
-        setAuthError("Unable to start sign-in. Please try again.");
+        setAuthError(error);
       }
     } catch (error) {
       console.error("[Navbar] Failed to start Google sign-in:", error);
