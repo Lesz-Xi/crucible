@@ -59,26 +59,35 @@
 
 /* Dark Mode - Obsidian foundations */
 .dark {
-  /* Override core palette for dark */
-  --obsidian-900: #111310;  /* Same as light */
-  --stone-700: #EBE9E4;     /* Inverted: light text on dark */
-  --ash-200: #3F3F3C;       /* Darker containers */
-  --paper-050: #1C1C1E;     /* Dark background */
-  
-  --moss-500: #7A9070;      /* Slightly lighter for contrast */
-  --oxide-500: #C4805A;     /* Warmer for dark mode */
-  --mist-400: #A8B5BC;      /* More visible metadata */
-  
+  /* Codex-like obsidian theme */
+  --obsidian-900: #121316;
+  --stone-700: #f3f4f6;
+  --ash-200: #262a31;
+  --paper-050: #171a1f;
+
+  --moss-500: #6fb08f;
+  --oxide-500: #d18f67;
+  --mist-400: #a9b0bb;
+
   /* Legacy overrides */
-  --background: var(--obsidian-900);
-  --foreground: var(--stone-700);
-  --bg-primary: var(--obsidian-900);
-  --bg-secondary: #1A1A1C;
-  --bg-card: rgba(28, 28, 30, 0.8);
-  --text-primary: var(--stone-700);
-  --text-secondary: var(--mist-400);
-  --text-tertiary: var(--ash-200);
-  --border-subtle: #3F3F46;
+  --background: #121316;
+  --foreground: #f3f4f6;
+  --bg-primary: #121316;
+  --bg-secondary: #171a1f;
+  --bg-card: rgba(23, 26, 31, 0.92);
+  --text-primary: #f3f4f6;
+  --text-secondary: #a9b0bb;
+  --text-tertiary: #7f8794;
+  --border-subtle: #2a2f38;
+
+  /* Backward-compat tokens with readable contrast in dark */
+  --wabi-washi: #121316;
+  --wabi-sumi: #f3f4f6;
+  --wabi-patina: #a9b0bb;
+  --wabi-clay: #d18f67;
+  --wabi-moss: #6fb08f;
+  --wabi-rust: #d18f67;
+  --wabi-stone: #8f96a3;
   
   /* Shadow adjustments for dark */
   --shadow-ambient: 0 8px 24px rgba(0, 0, 0, 0.24);

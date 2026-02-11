@@ -74,17 +74,21 @@ async function runLegacyAdoption(userId: string): Promise<LegacyAdoptionSummary>
   };
 }
 
-async function runHistoryImport(userId: string): Promise<{ imported: boolean; summary?: HistoryImportSummary }> {
+async function runHistoryImport(
+  userId: string,
+  options?: { force?: boolean; ignoreSentinel?: boolean }
+): Promise<{ imported: boolean; summary?: HistoryImportSummary }> {
   const sentinelKey = `${IMPORT_SENTINEL_PREFIX}:${userId}`;
-  if (window.localStorage.getItem(sentinelKey) === 'true') {
+  if (!options?.ignoreSentinel && !options?.force && window.localStorage.getItem(sentinelKey) === 'true') {
     return { imported: false };
   }
 
   const payload = collectLocalHistoryExport();
+  const requestPayload = options?.force ? { ...payload, force: true } : payload;
   const response = await fetch('/api/history/import', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(requestPayload),
   });
 
   const body = (await response.json()) as {
@@ -115,6 +119,15 @@ async function runHistoryImportWithRetry(userId: string): Promise<{ imported: bo
   }
 }
 
+async function getCloudHistoryCount(): Promise<number> {
+  const response = await fetch('/api/causal-chat/history');
+  if (!response.ok) {
+    return 0;
+  }
+  const body = (await response.json()) as { history?: unknown[] };
+  return Array.isArray(body.history) ? body.history.length : 0;
+}
+
 export async function bootstrapHistoryRecovery(): Promise<void> {
   if (typeof window === 'undefined') {
     return;
@@ -134,7 +147,20 @@ export async function bootstrapHistoryRecovery(): Promise<void> {
 
   try {
     const adoption = await runLegacyAdoption(currentUser.id);
-    const importResult = await runHistoryImportWithRetry(currentUser.id);
+    let importResult = await runHistoryImportWithRetry(currentUser.id);
+
+    const localExport = collectLocalHistoryExport();
+    const localChatCount = Array.isArray(localExport.domains.chat) ? localExport.domains.chat.length : 0;
+    const cloudHistoryCount = await getCloudHistoryCount();
+    const shouldForceImport =
+      !importResult.imported && localChatCount > 0 && cloudHistoryCount === 0;
+
+    if (shouldForceImport) {
+      importResult = await runHistoryImport(currentUser.id, {
+        force: true,
+        ignoreSentinel: true,
+      });
+    }
 
     if (adoption.adoptedSessions > 0 || adoption.adoptedMessages > 0) {
       dispatchSyncStatus({
@@ -153,12 +179,15 @@ export async function bootstrapHistoryRecovery(): Promise<void> {
         ? `Legacy adoption skipped: ${adoption.errors[0]}. `
         : '';
 
+    const cloudHistoryCountAfter = await getCloudHistoryCount();
     dispatchSyncStatus({
       status: 'imported',
       message: `${messagePrefix}${
-        importResult.imported
-          ? 'Local history imported to cloud.'
-          : 'History already synced for this account.'
+        cloudHistoryCountAfter > 0
+          ? `History available (${cloudHistoryCountAfter} session${cloudHistoryCountAfter === 1 ? '' : 's'}).`
+          : importResult.imported
+            ? 'Local history imported to cloud.'
+            : 'No cloud history found for this account on this browser.'
       }`,
       summary: importResult.summary,
       timestamp: nowIso(),

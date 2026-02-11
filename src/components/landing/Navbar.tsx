@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MessageSquare, Scale, Sparkles, GraduationCap } from "lucide-react";
-import { ThemeToggle } from "../ThemeToggle";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 
 export function Navbar() {
@@ -120,7 +119,6 @@ export function Navbar() {
                <GraduationCap className="w-3 h-3 text-emerald-500 group-hover:scale-110 transition-transform" />
                <span>Learn</span>
             </Link>
-            <ThemeToggle />
             <button
               type="button"
               onClick={handleTryCrucible}
@@ -167,9 +165,6 @@ export function Navbar() {
             {(isLoadingAuthState || isBusy) && <Loader2 className="w-3 h-3 animate-spin" />}
             <span>{isSignedIn ? "Open" : "Try"}</span>
           </button>
-          <div className="pl-1">
-            <ThemeToggle />
-          </div>
         </div>
         {authError && (
           <p className="mt-2 text-[10px] text-[var(--text-secondary)]">{authError}</p>

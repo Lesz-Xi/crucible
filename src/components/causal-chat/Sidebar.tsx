@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ChatPersistence } from "@/lib/services/chat-persistence";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { readLastHistorySyncStatus } from "@/lib/migration/history-import-bootstrap";
 import type { HistorySyncStatus } from "@/types/history-import";
@@ -31,6 +30,13 @@ interface ChatSession {
 interface LocalChatStore {
   sessions?: ChatSession[];
 }
+
+const LOCAL_FALLBACK_KEYS = [
+  "causal-chat-local-fallback-v1",
+  "causal_chat_sessions_local",
+  "causalChatSessions",
+  "chatHistory",
+] as const;
 
 interface SidebarItemProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -100,14 +106,23 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
 
   const loadLocalFallbackSessions = (): ChatSession[] => {
     try {
-      const raw = window.localStorage.getItem('causal-chat-local-fallback-v1');
-      if (!raw) return [];
-      const parsed = JSON.parse(raw) as LocalChatStore;
-      if (!Array.isArray(parsed.sessions)) return [];
-      return parsed.sessions
-        .slice()
-        .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
-        .slice(0, 10);
+      for (const key of LOCAL_FALLBACK_KEYS) {
+        const raw = window.localStorage.getItem(key);
+        if (!raw) continue;
+        const parsed = JSON.parse(raw) as LocalChatStore | ChatSession[];
+        const sessions = Array.isArray(parsed)
+          ? parsed
+          : Array.isArray(parsed.sessions)
+            ? parsed.sessions
+            : [];
+        if (sessions.length > 0) {
+          return sessions
+            .slice()
+            .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+            .slice(0, 10);
+        }
+      }
+      return [];
     } catch {
       return [];
     }
@@ -147,6 +162,10 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
 
         const data = await response.json();
         if (Array.isArray(data?.history)) {
+          if (data.history.length === 0) {
+            setRecentSessions(loadLocalFallbackSessions());
+            return;
+          }
           setRecentSessions(data.history as ChatSession[]);
         }
       } catch (error) {
@@ -209,7 +228,6 @@ export function Sidebar({ className, isOpen, onToggle, onLoadSession, onNewChat 
         </div>
        <div className="flex items-center gap-2">
            <AuthButton compact className="hidden lg:block" />
-           <ThemeToggle />
            <button 
              onClick={onToggle}
              className="p-1 hover:bg-white/5 rounded-md text-wabi-stone transition-colors"

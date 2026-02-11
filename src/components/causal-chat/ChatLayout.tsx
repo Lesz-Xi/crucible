@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Sidebar } from "@/components/causal-chat/Sidebar";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface ChatLayoutProps {
   children: React.ReactNode;
@@ -41,11 +40,6 @@ export function ChatLayout({ children, onLoadSession, onNewChat }: ChatLayoutPro
                 <PanelLeftOpen className="w-5 h-5" />
              )}
            </button>
-        </div>
-
-        {/* Theme Toggle - Floating Top Right */}
-        <div className="absolute top-4 right-4 z-50">
-          <ThemeToggle />
         </div>
 
         {/* Background depth layers */}

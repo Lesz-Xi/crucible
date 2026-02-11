@@ -42,27 +42,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    const payload = (await request.json()) as LocalHistoryExport;
+    const rawPayload = (await request.json()) as LocalHistoryExport & { force?: boolean };
+    const force = Boolean(rawPayload.force);
+    const payload: LocalHistoryExport = {
+      sourceVersion: rawPayload.sourceVersion,
+      exportedAt: rawPayload.exportedAt,
+      domains: rawPayload.domains,
+    };
 
     if (!payload || !payload.domains || typeof payload.sourceVersion !== 'string') {
       return NextResponse.json({ success: false, error: 'Invalid import payload' }, { status: 400 });
     }
 
-    const existingJob = await supabase
-      .from('history_import_jobs')
-      .select('id, status, summary_json')
-      .eq('user_id', user.id)
-      .eq('status', 'completed')
-      .limit(1)
-      .maybeSingle();
+    if (!force) {
+      const existingJob = await supabase
+        .from('history_import_jobs')
+        .select('id, status, summary_json')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .limit(1)
+        .maybeSingle();
 
-    if (existingJob.data?.id) {
-      return NextResponse.json({
-        success: true,
-        imported: false,
-        reason: 'already_imported',
-        summary: existingJob.data.summary_json,
-      });
+      if (existingJob.data?.id) {
+        return NextResponse.json({
+          success: true,
+          imported: false,
+          reason: 'already_imported',
+          summary: existingJob.data.summary_json,
+        });
+      }
     }
 
     const { data: jobRow, error: jobError } = await supabase

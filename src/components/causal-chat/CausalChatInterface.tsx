@@ -28,33 +28,6 @@ import { AlignmentDagView } from "./AlignmentDagView";
 import { resolveOracleModeFromEvent } from "@/lib/services/oracle-event-state";
 
 
-interface ScmModelOption {
-  modelKey: string;
-  name: string;
-  domain: string;
-}
-
-const BUILTIN_MODEL_OPTIONS: ScmModelOption[] = [
-  { modelKey: "alignment_bias_scm", name: "Alignment Bias Structural Model", domain: "alignment" },
-  { modelKey: "hot_rosenthal_v1", name: "Rosenthal Higher-Order Theory", domain: "consciousness" },
-  { modelKey: "neural_topology_v1", name: "Neural Topology Hamiltonian Model", domain: "neuroscience" },
-  { modelKey: "neural_dynamics_v1", name: "Neural Dynamics N=<B,D,I,L> SCM", domain: "theoretical_neuroscience" },
-  { modelKey: "iml_epistemology_v1", name: "Interpretable Epistemology SCM", domain: "iml" },
-];
-
-function uniqueModelOptions(options: ScmModelOption[]): ScmModelOption[] {
-  const dedup = new Map<string, ScmModelOption>();
-  for (const option of options) {
-    dedup.set(option.modelKey, option);
-  }
-  return Array.from(dedup.values()).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-function formatModelOptionLabel(option: ScmModelOption): string {
-  return `${option.name} (${option.domain})`;
-}
-
-
 export function CausalChatInterface() {
   // Initialize empty to show Welcome Screen first
   const [messages, setMessages] = useState<MessageWithDensity[]>([]);
@@ -65,10 +38,6 @@ export function CausalChatInterface() {
   const [dbSessionId, setDbSessionId] = useState<string | null>(null);
   const [currentDomain, setCurrentDomain] = useState<string | null>(null);
   const [currentModelKey, setCurrentModelKey] = useState<string | null>(null);
-  const [selectedModelKey, setSelectedModelKey] = useState<string>("");
-  const [modelOptions, setModelOptions] = useState<ScmModelOption[]>(
-    uniqueModelOptions(BUILTIN_MODEL_OPTIONS)
-  );
   const [causalGraphPayload, setCausalGraphPayload] = useState<{ nodes: any[]; edges: any[] } | null>(null);
   const [alignmentAuditReport, setAlignmentAuditReport] = useState<AlignmentAuditReport | null>(null);
   const [biasSensitivePaths, setBiasSensitivePaths] = useState<string[][]>([]);
@@ -152,41 +121,6 @@ export function CausalChatInterface() {
   // Initialize Session ID on mount
   useEffect(() => {
     setSessionId(uuidv4());
-  }, []);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const loadRegistryModelOptions = async () => {
-      try {
-        const response = await fetch("/api/scm/models");
-        if (!response.ok) {
-          return;
-        }
-
-        const payload = await response.json();
-        const dynamicOptions: ScmModelOption[] = Array.isArray(payload?.models)
-          ? payload.models
-              .filter((row: any) => row?.modelKey && row?.name && row?.domain)
-              .map((row: any) => ({
-                modelKey: String(row.modelKey),
-                name: String(row.name),
-                domain: String(row.domain),
-              }))
-          : [];
-
-        if (!isCancelled && dynamicOptions.length > 0) {
-          setModelOptions(uniqueModelOptions([...BUILTIN_MODEL_OPTIONS, ...dynamicOptions]));
-        }
-      } catch {
-        // Keep static model options when registry list is unavailable (e.g., unauthenticated).
-      }
-    };
-
-    loadRegistryModelOptions();
-    return () => {
-      isCancelled = true;
-    };
   }, []);
 
   // Listen for session load events from Sidebar (via ChatLayout -> page.tsx)
@@ -472,7 +406,7 @@ export function CausalChatInterface() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId: sessionId,
-          modelKey: selectedModelKey || undefined,
+          modelKey: undefined,
           messages: messages
             .filter((m) => !m.isStreaming)
             .map((m) => ({ role: m.role, content: m.content }))
@@ -519,7 +453,7 @@ export function CausalChatInterface() {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [input, isLoading, messages, sessionId, chatPersistence, dbSessionId, selectedModelKey, handleStreamEvent]);
+  }, [input, isLoading, messages, sessionId, chatPersistence, dbSessionId, handleStreamEvent]);
 
  
   const handleStop = () => {
@@ -554,22 +488,6 @@ export function CausalChatInterface() {
 
            {/* Input Area - Centered */}
            <div className="w-full max-w-2xl mb-12">
-              <div className="mb-3 flex items-center gap-2">
-                <label className="text-xs font-medium text-wabi-stone">Truth Cartridge</label>
-                <select
-                  value={selectedModelKey}
-                  onChange={(event) => setSelectedModelKey(event.target.value)}
-                  className="flex-1 rounded-lg border border-wabi-sand/40 bg-white/80 px-3 py-2 text-sm text-wabi-sumi focus:outline-none focus:ring-2 focus:ring-wabi-clay/40"
-                  disabled={isLoading}
-                >
-                  <option value="">Auto-select by domain</option>
-                  {modelOptions.map((option) => (
-                    <option key={option.modelKey} value={option.modelKey}>
-                      {formatModelOptionLabel(option)}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <ChatInput 
                 input={input}
                 setInput={setInput}
@@ -620,22 +538,6 @@ export function CausalChatInterface() {
 
           <div className="w-full sticky bottom-0 z-20 bg-wabi-washi/80 backdrop-blur-md border-t border-wabi-white/10">
             <div className="max-w-3xl mx-auto px-4 pb-6 pt-4">
-               <div className="mb-3 flex items-center gap-2">
-                  <label className="text-xs font-medium text-wabi-stone">Truth Cartridge</label>
-                  <select
-                    value={selectedModelKey}
-                    onChange={(event) => setSelectedModelKey(event.target.value)}
-                    className="flex-1 rounded-lg border border-wabi-sand/40 bg-white/80 px-3 py-2 text-sm text-wabi-sumi focus:outline-none focus:ring-2 focus:ring-wabi-clay/40"
-                    disabled={isLoading}
-                  >
-                    <option value="">Auto-select by domain</option>
-                    {modelOptions.map((option) => (
-                      <option key={option.modelKey} value={option.modelKey}>
-                        {formatModelOptionLabel(option)}
-                      </option>
-                    ))}
-                  </select>
-               </div>
                {/* Tutorial Section (dismissible/collapsible) */}
 
 
