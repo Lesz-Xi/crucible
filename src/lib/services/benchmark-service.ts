@@ -1375,7 +1375,7 @@ export class BenchmarkService {
         
         const labJob = result.novelIdeas.find(idea => idea.scientificArtifacts?.labJob)?.scientificArtifacts?.labJob;
         
-        if (labJob) {
+        if (labJob && typeof labJob !== "string") {
           totalJobsExtracted++;
           const labResult = await mockLab.submitJob(labJob);
           

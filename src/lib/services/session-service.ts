@@ -14,6 +14,32 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { CausalDensityResult } from "@/lib/ai/causal-integrity-service";
 
+type JsonRecord = Record<string, unknown>;
+
+interface CausalSessionStatsRow {
+  session_id: string;
+  title: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  user_id?: string | null;
+  total_messages?: number | null;
+  assistant_messages?: number | null;
+  l3_messages?: number | null;
+  l2_messages?: number | null;
+  l1_messages?: number | null;
+  avg_confidence?: number | null;
+  extracted_axioms?: number | null;
+}
+
+interface CausalDensityMessageRow {
+  causal_density?: CausalDensityResult | null;
+}
+
+interface SessionIdRow {
+  session_id: string;
+}
+
 export interface SessionWithStats {
   id: string;
   title: string;
@@ -39,7 +65,7 @@ export interface MessageWithDensity {
   scm_tier2_used?: string[];
   confidence_score?: number;
   causal_density?: CausalDensityResult;
-  causal_graph?: any;
+  causal_graph?: JsonRecord;
   created_at: string;
 }
 
@@ -114,7 +140,7 @@ export class SessionService {
       domain?: string;
       constraints?: string[];
       confidence?: number;
-      graph?: any;
+      graph?: JsonRecord;
     },
     densityResult?: CausalDensityResult
   ): Promise<string> {
@@ -208,7 +234,8 @@ export class SessionService {
       throw error;
     }
 
-    return (data || []).map((row: any) => ({
+    const rows = (data || []) as CausalSessionStatsRow[];
+    return rows.map((row) => ({
       id: row.session_id,
       title: row.title,
       status: row.status,
@@ -219,7 +246,7 @@ export class SessionService {
       l3Messages: row.l3_messages || 0,
       l2Messages: row.l2_messages || 0,
       l1Messages: row.l1_messages || 0,
-      avgConfidence: row.avg_confidence,
+      avgConfidence: row.avg_confidence ?? null,
       extractedAxioms: row.extracted_axioms || 0,
     }));
   }
@@ -255,7 +282,8 @@ export class SessionService {
 
     // Extract top mechanisms
     const mechanismCounts: Record<string, number> = {};
-    mechanisms?.forEach((msg: any) => {
+    const mechanismRows = (mechanisms || []) as CausalDensityMessageRow[];
+    mechanismRows.forEach((msg) => {
       const detected = msg.causal_density?.detectedMechanisms || [];
       detected.forEach((m: string) => {
         mechanismCounts[m] = (mechanismCounts[m] || 0) + 1;
@@ -344,7 +372,8 @@ export class SessionService {
       throw error;
     }
 
-    const sessionIds = [...new Set(messageMatches?.map((m: any) => m.session_id) || [])];
+    const messageRows = (messageMatches || []) as SessionIdRow[];
+    const sessionIds = [...new Set(messageRows.map((m) => m.session_id))];
 
     if (sessionIds.length === 0) return [];
 
@@ -365,7 +394,8 @@ export class SessionService {
       throw sessionError;
     }
 
-    return (sessions || []).map((row: any) => ({
+    const rows = (sessions || []) as CausalSessionStatsRow[];
+    return rows.map((row) => ({
       id: row.session_id,
       title: row.title,
       status: row.status,
@@ -376,7 +406,7 @@ export class SessionService {
       l3Messages: row.l3_messages || 0,
       l2Messages: row.l2_messages || 0,
       l1Messages: row.l1_messages || 0,
-      avgConfidence: row.avg_confidence,
+      avgConfidence: row.avg_confidence ?? null,
       extractedAxioms: row.extracted_axioms || 0,
     }));
   }
@@ -395,7 +425,7 @@ export class SessionService {
       domain?: string;
       constraints?: string[];
       confidence?: number;
-      graph?: any;
+      graph?: JsonRecord;
       causalDensity?: CausalDensityResult;
     }>
   ): Promise<void> {

@@ -4,7 +4,8 @@ import { processMultiplePDFs } from "@/lib/extractors/pdf-extractor";
 import { processMultipleCompanies } from "@/lib/extractors/company-extractor";
 import {
   runEnhancedSynthesisPipeline,
-  SynthesisResult
+  SynthesisResult,
+  type EnhancedSynthesisConfig,
 } from "@/lib/ai/synthesis-engine";
 import { searchPriorArt } from "@/lib/ai/novelty-evaluator";
 import { PersistenceService } from "@/lib/db/persistence-service";
@@ -91,17 +92,19 @@ export async function POST(request: NextRequest) {
           const combinedSources = [...pdfResults, ...companyResults];
           const persistence = new PersistenceService();
 
-          const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, {
+          const config = {
             maxRefinementIterations: 2,
             priorArtSearchFn: searchPriorArt,
-            priorRejectionCheckFn: (t: any, m: any, d: any) => persistence.checkRejection(t, m, d),
+            priorRejectionCheckFn: (t: string, m: string, d?: string) => persistence.checkRejection(t, m, d),
             validateProtocolFn: validateProtocol,
             eventEmitter: emitter,
             researchFocus: researchFocus || undefined,
             enableParallelRefinement: enableParallel,
             parallelConcurrency: concurrency,
             userId: userId // Add explicitly to config
-          } as any);
+          } as unknown as EnhancedSynthesisConfig;
+
+          const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, config);
 
           // Step 4: Persist
           const saveStatus = await persistence.saveSynthesis(result);

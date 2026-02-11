@@ -123,6 +123,13 @@ export class CausalIntegrityService {
     };
   }
 
+  /**
+   * Backward-compatible alias retained for older tests and callers.
+   */
+  public scoreEvidence(text: string): CausalDensityResult {
+    return this.evaluate(text);
+  }
+
   private collectMatches(patterns: RegExp[], text: string): string[] {
     const matches = patterns
       .filter((regex) => regex.test(text))

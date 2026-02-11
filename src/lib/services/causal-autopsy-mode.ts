@@ -9,6 +9,10 @@ interface CausalAutopsyDeps {
 }
 
 type GraphEdge = { from: string; to: string };
+type DagNodeLike = { name?: string; id?: string };
+type DagEdgeLike = { from?: string; to?: string; source?: string; target?: string };
+type AutopsyIdeaLike = { thesis?: string; doPlan?: string; bridgedConcepts?: string[]; mechanism?: string };
+type AutopsyRunDetails = { novelIdeas?: AutopsyIdeaLike[]; contradictions?: Array<{ concept?: string }> };
 
 const clamp = (value: number, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
@@ -16,17 +20,25 @@ function normalize(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function extractNodes(version: any): string[] {
-  return (version?.dagJson?.nodes ?? [])
-    .map((node: any) => node?.name ?? node?.id)
+function extractNodes(version: unknown): string[] {
+  const dag = (version as { dagJson?: { nodes?: unknown } })?.dagJson;
+  const nodes = Array.isArray(dag?.nodes) ? (dag.nodes as DagNodeLike[]) : [];
+  return nodes
+    .map((node) => node?.name ?? node?.id)
     .filter((node: unknown): node is string => typeof node === "string" && node.trim().length > 0);
 }
 
-function extractEdges(version: any): GraphEdge[] {
-  return (version?.dagJson?.edges ?? [])
-    .map((edge: any) => ({ from: edge?.from ?? edge?.source, to: edge?.to ?? edge?.target }))
+function extractEdges(version: unknown): GraphEdge[] {
+  const dag = (version as { dagJson?: { edges?: unknown } })?.dagJson;
+  const edges = Array.isArray(dag?.edges) ? (dag.edges as DagEdgeLike[]) : [];
+  return edges
+    .map((edge) => ({ from: edge?.from ?? edge?.source, to: edge?.to ?? edge?.target }))
     .filter(
-      (edge: GraphEdge) => typeof edge.from === "string" && edge.from.length > 0 && typeof edge.to === "string" && edge.to.length > 0
+      (edge): edge is GraphEdge =>
+        typeof edge.from === "string" &&
+        edge.from.length > 0 &&
+        typeof edge.to === "string" &&
+        edge.to.length > 0
     );
 }
 
@@ -71,7 +83,7 @@ function shortestPathLength(edges: GraphEdge[], from: string, to: string): numbe
 function stringifyAssumption(item: unknown): string {
   if (typeof item === "string") return item;
   if (item && typeof item === "object") {
-    const maybeDescription = (item as any).description;
+    const maybeDescription = (item as { description?: unknown }).description;
     if (typeof maybeDescription === "string") return maybeDescription;
     return JSON.stringify(item);
   }
@@ -82,7 +94,9 @@ export class CausalAutopsyMode {
   constructor(private readonly deps: CausalAutopsyDeps) {}
 
   async run(request: CausalAutopsyRequest): Promise<CausalAutopsyResponse> {
-    const runDetails = request.runId ? await this.deps.persistence.getRunDetails(request.runId) : null;
+    const runDetails = (request.runId
+      ? await this.deps.persistence.getRunDetails(request.runId)
+      : null) as AutopsyRunDetails | null;
 
     const lookupKey = request.modelKey ?? request.domain;
     if (!lookupKey) {
@@ -115,7 +129,7 @@ export class CausalAutopsyMode {
     const observedActions = [
       ...(request.failureEvent?.observedActions ?? []),
       ...((runDetails?.novelIdeas ?? [])
-        .flatMap((idea: any) => [idea?.thesis, idea?.doPlan, ...(idea?.bridgedConcepts ?? [])])
+        .flatMap((idea) => [idea?.thesis, idea?.doPlan, ...(idea?.bridgedConcepts ?? [])])
         .filter((item: unknown): item is string => typeof item === "string" && item.length > 0)),
     ];
 
@@ -128,7 +142,7 @@ export class CausalAutopsyMode {
     const failedAssumptions = [
       ...(modelRecord.version.assumptionsJson ?? []).map(stringifyAssumption),
       ...((runDetails?.contradictions ?? [])
-        .map((item: any) => item?.concept)
+        .map((item) => item?.concept)
         .filter((item: unknown): item is string => typeof item === "string" && item.length > 0)
         .slice(0, 2)),
     ].filter((value, index, array) => value && array.indexOf(value) === index);

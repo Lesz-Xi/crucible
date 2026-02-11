@@ -78,6 +78,25 @@ export interface NovelIdea {
   // Validation
   criticalAnalysis?: CriticalAnalysis;
   structuredHypothesis?: StructuredHypothesis;
+
+  // MASA causal/governance extensions
+  doPlan?: string;
+  falsifier?: string;
+  confounderSet?: string[];
+  explanatoryMechanism?: string;
+  identifiabilityScore?: number; // 0-1 or 0-100 depending on source scaling
+  interventionValueScore?: number; // 0-1
+  falsifiabilityScore?: number; // 0-1
+  noveltyScore?: number; // 0-100
+  explanationDepth?: number; // 0-100
+  isExplainedByPriorArt?: boolean;
+  validationResult?: ValidationResult;
+  hypothesisState?: HypothesisState;
+  hypothesisAuditEvents?: HypothesisAuditEvent[];
+  scientificArtifacts?: ScientificArtifacts;
+  scientificProse?: string;
+  masaAudit?: MasaAudit;
+  causalOutput?: CausalOutputContract;
 }
 
 // Tier 1: Calibrated Confidence Factors
@@ -128,9 +147,28 @@ export interface PriorArt {
   similarity: number;
   differentiator: string;
   publicationYear?: number;
+  year?: number;
+  venue?: string;
+  authors?: string[];
   temporalWeight?: number;
   adjustedSimilarity?: number;
   snippet?: string;
+}
+
+export interface ValidationResult {
+  success: boolean;
+  stdout?: string;
+  stderr?: string;
+  metrics?: {
+    pValue?: number;
+    bayesFactor?: number;
+    conclusionValid?: boolean;
+    sampleSize?: number;
+    physicalAlignmentScore?: number;
+  };
+  executionTimeMs?: number;
+  error?: string;
+  feasibilityScore?: number;
 }
 
 export interface StatisticalMetrics {
@@ -237,6 +275,100 @@ export interface StructuredHypothesis {
   experimentalDesign: ExperimentalDesign;
 }
 
+export interface ScientificArtifacts {
+  protocolCode?: string;
+  labManual?: string;
+  labJob?: LabJob | string;
+}
+
+export type HypothesisState = "proposed" | "tested" | "falsified" | "retracted";
+export type HypothesisAuditTrigger =
+  | "generation"
+  | "intervention_result"
+  | "counterfactual_failure"
+  | "manual_review";
+
+export interface HypothesisAuditEvent {
+  hypothesisId: string;
+  state: HypothesisState;
+  trigger: HypothesisAuditTrigger;
+  rationale: string;
+  evidenceRef: string[];
+  timestamp: string;
+}
+
+export type CausalStatus =
+  | "Exploratory (Association-Level)"
+  | "Partially Identified (Intervention-Inferred)"
+  | "Identified (Intervention-Supported)"
+  | "Falsified / Inconclusive";
+
+export type InterventionEvidenceClass =
+  | "Structural (Graph-Inferred Only)"
+  | "Simulated (Assumption-Bound)"
+  | "Empirical (Data-Grounded)";
+
+export interface CausalOutputContract {
+  statusBanner: {
+    status: CausalStatus;
+    justification: string;
+    downgradedByMissingFalsifier: boolean;
+  };
+  causalClaim: string;
+  supportingStructure: {
+    modelRef: string;
+    variables: string[];
+    directedEdges: Array<{ from: string; to: string }>;
+    confounders: string[];
+    mechanismSummary: string;
+  };
+  interventionLayer: {
+    class: InterventionEvidenceClass;
+    notes: string[];
+    assumptionsForSimulation?: string[];
+  };
+  counterfactualLayer: {
+    necessity: string;
+    sufficiency: string;
+    evaluable: {
+      necessity: boolean;
+      sufficiency: boolean;
+    };
+  };
+  assumptionsAndConfounders: Array<{
+    assumption: string;
+    type: "empirical" | "theoretical" | "convenience-based";
+    failureImpact: string;
+  }>;
+  stressTestInterpretation?: {
+    challengedAssumption: string;
+    result: "collapsed" | "weakened" | "survived";
+    statusDowngraded: boolean;
+  };
+  unresolvedGaps: string[];
+  nextScientificAction: string;
+}
+
+export interface HypothesisNode {
+  id: string;
+  thesis: string;
+  confidence: number;
+  label?: string;
+  mechanism?: string;
+}
+
+export interface SynthesisResult {
+  sources: Array<{ name: string; concepts: ExtractedConcepts }>;
+  contradictions: Contradiction[];
+  novelIdeas: NovelIdea[];
+  selectedIdea?: NovelIdea;
+  structuredApproach?: StructuredApproach;
+  metadata?: {
+    refinementIterations?: number;
+    calibrationApplied?: boolean;
+  };
+}
+
 // ===== MASA (Multi-Agent Scientific Audit) Types =====
 
 export type GradeQuality = "High" | "Moderate" | "Low" | "Very Low";
@@ -267,6 +399,12 @@ export interface MasaAudit {
     remediationPlan: string[]; // Specific actionable fixes
     remediationConstraints?: string[]; // Mandatory constraints for re-generation
     isApproved: boolean; // Veto system
+  };
+  causal_credit?: {
+    mechanism_fault: number;
+    evidence_fault: number;
+    novelty_fault: number;
+    formulation_fault: number;
   };
   timestamp: Date;
 }
@@ -393,4 +531,3 @@ export type {
   LawFalsificationScenario,
   LawFalsificationScenarioPack,
 } from './law-discovery-falsification';
-

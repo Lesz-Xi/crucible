@@ -506,9 +506,16 @@ export async function runSynthesisPipeline(
  */
 export interface EnhancedSynthesisConfig {
   maxRefinementIterations?: number;
+  maxNovelIdeas?: number;
   noveltyThreshold?: number; // 0-1, below this triggers refinement
   priorArtSearchFn?: (thesis: string, description: string) => Promise<PriorArt[]>;
-  eventEmitter?: { emit: (data: any) => void };
+  priorRejectionCheckFn?: (thesis: string, mechanism: string, domain?: string) => Promise<boolean>;
+  validateProtocolFn?: (protocolCode: string, timeoutMs?: number) => Promise<unknown>;
+  researchFocus?: string;
+  enableParallelRefinement?: boolean;
+  parallelConcurrency?: number;
+  userId?: string;
+  eventEmitter?: { emit: (data: unknown) => void };
 }
 
 export async function runEnhancedSynthesisPipeline(
@@ -517,6 +524,7 @@ export async function runEnhancedSynthesisPipeline(
 ): Promise<SynthesisResult> {
   const {
     maxRefinementIterations = 3,
+    maxNovelIdeas,
     noveltyThreshold = 0.30,
     eventEmitter,
   } = config;
@@ -540,6 +548,9 @@ export async function runEnhancedSynthesisPipeline(
 
   // Step 3: Generate novel ideas
   let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+  if (typeof maxNovelIdeas === "number" && maxNovelIdeas > 0) {
+    novelIdeas = novelIdeas.slice(0, maxNovelIdeas);
+  }
   let totalRefinements = 0;
 
   const statValidator = process.env.ENABLE_STATISTICAL_VALIDATION === "true"

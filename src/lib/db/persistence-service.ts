@@ -5,6 +5,21 @@ import { generateEmbedding } from "../ai/gemini";
 import { DomainProjector } from "../services/embedding-service";
 import { SpectralService } from "../services/spectral-service";
 
+interface ScientificArtifacts {
+  protocolCode?: string;
+  labManual?: string;
+  labJob?: string;
+}
+
+interface NovelIdeaExtended extends NovelIdea {
+  scientificArtifacts?: ScientificArtifacts;
+  scientificProse?: string;
+  masaAudit?: MasaAudit;
+  domain?: string;
+}
+
+type JsonRecord = Record<string, unknown>;
+
 export class PersistenceService {
   /**
    * Saves a full synthesis run and its results to Supabase
@@ -33,7 +48,8 @@ export class PersistenceService {
 
       // 2. Create Results (Novel Ideas)
       for (const idea of result.novelIdeas) {
-        const artifacts = (idea as any).scientificArtifacts;
+        const ideaExtended = idea as NovelIdeaExtended;
+        const artifacts = ideaExtended.scientificArtifacts;
         const { data: savedIdea, error: ideaError } = await supabase
           .from("synthesis_results")
           .insert({
@@ -43,7 +59,7 @@ export class PersistenceService {
             mechanism: idea.mechanism,
             confidence: idea.confidence,
             novelty_assessment: idea.noveltyAssessment,
-            scientific_prose: (idea as any).scientificProse,
+            scientific_prose: ideaExtended.scientificProse,
             structured_hypothesis: idea.structuredHypothesis,
             protocol_code: artifacts?.protocolCode,
             lab_manual: artifacts?.labManual,
@@ -59,7 +75,7 @@ export class PersistenceService {
 
         // 3. Save Audit Trace if available
         // Note: The engine now attaches masaAudit to idea during the loop
-        const masaAudit = (idea as any).masaAudit as MasaAudit;
+        const masaAudit = ideaExtended.masaAudit;
         if (masaAudit) {
           const { error: auditError } = await supabase
             .from("audit_traces")
@@ -86,7 +102,7 @@ export class PersistenceService {
           const rejectReason = isRejected ? masaAudit.finalSynthesis.architectVerdict : undefined;
 
           // Phase 3: Domain-Aware Storage
-          const domain = (idea as any).domain || "General";
+          const domain = ideaExtended.domain || "General";
           await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason, domain);
 
           // 5. Cognitive Sovereignty: Spectral Interference Check
@@ -124,7 +140,7 @@ export class PersistenceService {
   /**
    * Fetches the most recent synthesis runs
    */
-  async getHistoricalRuns(limit = 10): Promise<any[]> {
+  async getHistoricalRuns(limit = 10): Promise<JsonRecord[]> {
     try {
       const supabase = await createServerSupabaseClient();
       const { data, error } = await supabase
@@ -144,7 +160,7 @@ export class PersistenceService {
   /**
    * Fetches full details for a synthesis run including results and audits
    */
-  async getRunDetails(runId: string): Promise<any | null> {
+  async getRunDetails(runId: string): Promise<JsonRecord | null> {
     try {
       const supabase = await createServerSupabaseClient();
 

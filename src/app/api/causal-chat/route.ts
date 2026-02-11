@@ -12,7 +12,9 @@ import { evaluateInterventionGate } from "@/lib/services/identifiability-gate";
 import { CausalSolver, type Intervention } from '@/lib/services/causal-solver';
 import { CounterfactualGenerator } from '@/lib/services/counterfactual-generator';
 import { selectLatestAlignmentAuditReport } from "@/lib/services/alignment-audit";
+import type { AlignmentAuditReportRow } from "@/lib/services/alignment-audit";
 import { buildConversationContext, normalizeChatTurns, type ChatTurn } from "@/lib/services/conversation-context";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -34,7 +36,7 @@ function buildDomainClassificationInput(messages: ChatTurn[], userQuestion: stri
   return `${contextJoined} ${current}`.trim();
 }
 
-async function verifyCausalDensityColumn(supabase: any): Promise<boolean> {
+async function verifyCausalDensityColumn(supabase: SupabaseClient | null): Promise<boolean> {
   if (!supabase) return false;
   if (causalDensityColumnAvailable !== null) return causalDensityColumnAvailable;
 
@@ -88,13 +90,13 @@ function sanitizeStringArray(values: unknown): string[] {
 }
 
 export async function POST(req: NextRequest) {
-  let supabase = null;
-  let user = null;
+  let supabase: SupabaseClient | null = null;
+  let user: { id: string } | null = null;
 
   try {
     supabase = await createServerSupabaseClient();
     const { data } = await supabase.auth.getUser();
-    user = data.user;
+    user = data.user?.id ? { id: data.user.id } : null;
   } catch (error) {
     console.warn("[CausalChat] Supabase initialization failed (Persistence disabled):", error);
   }
@@ -149,7 +151,7 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       let isControllerClosed = false;
 
-      const sendEvent = (event: string, data: any) => {
+      const sendEvent = (event: string, data: unknown) => {
         if (!isControllerClosed) {
           try {
             controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
@@ -464,7 +466,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
             .eq("scope", "global")
             .order("created_at", { ascending: false });
 
-          const latest = reportError ? null : selectLatestAlignmentAuditReport(reportRows as any[]);
+          const latest = reportError ? null : selectLatestAlignmentAuditReport(reportRows as AlignmentAuditReportRow[]);
           if (latest) {
             sendEvent("alignment_audit_report", {
               id: latest.id,
@@ -553,10 +555,12 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
           isControllerClosed = true;
           controller.close();
         }
-      } catch (error: any) {
-        console.error("[CausalChat API] Error:", error, error.stack);
+      } catch (error: unknown) {
+        const stack = error instanceof Error ? error.stack : undefined;
+        console.error("[CausalChat API] Error:", error, stack);
         if (!isControllerClosed) {
-          sendEvent("error", { message: error.message || "Unknown error" });
+          const message = error instanceof Error ? error.message : "Unknown error";
+          sendEvent("error", { message });
           isControllerClosed = true;
           controller.close();
         }

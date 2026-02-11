@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const extractMultipleMock = vi.fn();
-const analyzeMock = vi.fn(async () => ({
+const analyzeMock = vi.fn(async (_action?: unknown, _harm?: unknown) => ({
   question: "but-for?",
   counterfactualScenario: "test",
   result: "necessary",
@@ -13,16 +13,16 @@ const analyzeMock = vi.fn(async () => ({
 
 vi.mock("@/lib/extractors/legal-extractor", () => ({
   LegalDocumentExtractor: class {
-    async extractMultiple(...args: unknown[]) {
-      return extractMultipleMock(...args);
+    async extractMultiple(documents: string[]) {
+      return extractMultipleMock(documents);
     }
   },
 }));
 
 vi.mock("@/lib/services/but-for-analyzer", () => ({
   ButForAnalyzer: class {
-    async analyze(...args: unknown[]) {
-      return analyzeMock(...args);
+    async analyze(action: unknown, harm: unknown) {
+      return analyzeMock(action, harm);
     }
     async analyzeMultiple() {
       return new Map();

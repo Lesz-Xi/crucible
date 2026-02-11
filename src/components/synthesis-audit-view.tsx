@@ -115,7 +115,12 @@ function toLog(event: StreamEvent): LogEntry {
     case "agent_switch":
       return { id: `${at}-agent`, at, kind: "AGENT", title: `Switched to ${event.agent}` };
     case "hypothesis_generated":
-      return { id: `${at}-hyp-${event.hypothesis.id}`, at, kind: "HYPOTHESIS", title: event.hypothesis.label };
+      return {
+        id: `${at}-hyp-${event.hypothesis.id}`,
+        at,
+        kind: "HYPOTHESIS",
+        title: event.hypothesis.label ?? event.hypothesis.thesis,
+      };
     case "hypothesis_refuted":
       return { id: `${at}-hyp-r-${event.id}`, at, kind: "REFUTATION", title: `Refuted: ${event.id}`, details: event.reason };
     case "protocol_validated":

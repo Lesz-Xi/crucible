@@ -9,6 +9,11 @@ import { FEATURE_FLAGS } from "@/lib/config/feature-flags";
 import { PhenomenalBridge, EpistemicQualia } from "./phenomenal-bridge";
 
 import { SupabaseClient } from "@supabase/supabase-js";
+import type { CausalEdge, CausalNode } from "../ai/causal-blueprint";
+
+type DagNodeLike = Partial<CausalNode> & { id?: string; label?: string };
+type DagEdgeLike = Partial<CausalEdge> & { source?: string; target?: string };
+type DagJsonLike = { nodes?: unknown; edges?: unknown } | null | undefined;
 
 /**
  * SCMContext: The complete causal + phenomenal state
@@ -191,29 +196,56 @@ export class SCMRetriever {
       });
     };
 
-    const applyDagToModel = (targetScm: StructuralCausalModel, dagJson: any) => {
-      const rawNodes = Array.isArray(dagJson?.nodes) ? dagJson.nodes : [];
-      const rawEdges = Array.isArray(dagJson?.edges) ? dagJson.edges : [];
+    const applyDagToModel = (targetScm: StructuralCausalModel, dagJson: DagJsonLike) => {
+      const rawNodes = Array.isArray(dagJson?.nodes) ? (dagJson.nodes as DagNodeLike[]) : [];
+      const rawEdges = Array.isArray(dagJson?.edges) ? (dagJson.edges as DagEdgeLike[]) : [];
 
       const nodes = rawNodes
-        .map((node: any) => ({
+        .map((node): CausalNode => ({
+          type: node.type === "observable" || node.type === "latent" || node.type === "exogenous" || node.type === "intervention"
+            ? node.type
+            : "observable",
+          domain: node.domain === "physics" || node.domain === "chemistry" || node.domain === "biology" || node.domain === "abstract"
+            ? node.domain
+            : "abstract",
+          description: typeof node.description === "string" ? node.description : undefined,
+          domain_range: typeof node.domain_range === "string" ? node.domain_range : undefined,
+          measurement_method: typeof node.measurement_method === "string" ? node.measurement_method : undefined,
           ...node,
-          id: node?.id ?? node?.name ?? node?.label,
-          name: node?.name ?? node?.id ?? node?.label,
-          label: node?.label ?? node?.name ?? node?.id,
+          name: node?.name ?? node?.id ?? node?.label ?? "Unknown",
         }))
-        .filter((node: any) => Boolean(node?.name));
+        .filter((node) => Boolean(node?.name));
 
       const edges = rawEdges
-        .map((edge: any) => ({
+        .map((edge): CausalEdge => ({
+          constraint:
+            edge.constraint === "conservation" ||
+            edge.constraint === "entropy" ||
+            edge.constraint === "causality" ||
+            edge.constraint === "locality" ||
+            edge.constraint === "network_cooperation" ||
+            edge.constraint === "empirical_contradiction" ||
+            edge.constraint === "kin_selection" ||
+            edge.constraint === "reference_point" ||
+            edge.constraint === "loss_aversion" ||
+            edge.constraint === "beta_regime" ||
+            edge.constraint === "singularity_risk" ||
+            edge.constraint === "interventional_contradiction"
+              ? edge.constraint
+              : "causality",
+          reversible: typeof edge.reversible === "boolean" ? edge.reversible : false,
+          sign: edge.sign === "+" || edge.sign === "-" || edge.sign === "unknown" ? edge.sign : undefined,
+          strength: typeof edge.strength === "number" ? edge.strength : undefined,
+          mechanism_description: typeof edge.mechanism_description === "string" ? edge.mechanism_description : undefined,
+          evidence_type: typeof edge.evidence_type === "string" ? edge.evidence_type : undefined,
           ...edge,
-          from: edge?.from ?? edge?.source,
-          to: edge?.to ?? edge?.target,
+          from: edge?.from ?? edge?.source ?? "",
+          to: edge?.to ?? edge?.target ?? "",
         }))
-        .filter((edge: any) => Boolean(edge?.from) && Boolean(edge?.to));
+        .filter((edge) => Boolean(edge?.from) && Boolean(edge?.to));
 
       if (nodes.length > 0 || edges.length > 0) {
-        targetScm.hydrate(nodes as any[], edges as any[]);
+        targetScm.hydrate(nodes, edges);
       }
     };
 
@@ -286,8 +318,10 @@ export class SCMRetriever {
           }
 
           if (data.nodes && data.edges) {
-            console.log(`[SCMRetriever] Legacy hydrated ${lookupDomain} with ${(data.nodes as any[]).length} nodes.`);
-            targetScm.hydrate(data.nodes as any[], data.edges as any[]);
+            const nodes = Array.isArray(data.nodes) ? (data.nodes as CausalNode[]) : [];
+            const edges = Array.isArray(data.edges) ? (data.edges as CausalEdge[]) : [];
+            console.log(`[SCMRetriever] Legacy hydrated ${lookupDomain} with ${nodes.length} nodes.`);
+            targetScm.hydrate(nodes, edges);
             return {
               primaryScm,
               tier2,

@@ -58,20 +58,20 @@ function uniqueSorted(values: string[]): string[] {
 }
 
 function getNodeName(node: GraphNode): string | null {
-  if (typeof (node as any).name === "string") return (node as any).name;
-  if (typeof (node as any).id === "string") return (node as any).id;
+  if ("name" in node && typeof node.name === "string") return node.name;
+  if ("id" in node && typeof node.id === "string") return node.id;
   return null;
 }
 
 function getEdgeFrom(edge: GraphEdge): string | null {
-  if (typeof (edge as any).from === "string") return (edge as any).from;
-  if (typeof (edge as any).source === "string") return (edge as any).source;
+  if ("from" in edge && typeof edge.from === "string") return edge.from;
+  if ("source" in edge && typeof edge.source === "string") return edge.source;
   return null;
 }
 
 function getEdgeTo(edge: GraphEdge): string | null {
-  if (typeof (edge as any).to === "string") return (edge as any).to;
-  if (typeof (edge as any).target === "string") return (edge as any).target;
+  if ("to" in edge && typeof edge.to === "string") return edge.to;
+  if ("target" in edge && typeof edge.target === "string") return edge.target;
   return null;
 }
 
@@ -103,7 +103,10 @@ function summarizeAssumptions(version: SCMModelVersion): string[] {
     .map((item) => {
       if (typeof item === "string") return item;
       if (typeof item === "object" && item !== null) {
-        return (item as any).description || JSON.stringify(item);
+        const maybeDescription = item as { description?: unknown };
+        return typeof maybeDescription.description === "string"
+          ? maybeDescription.description
+          : JSON.stringify(item);
       }
       return String(item);
     })
@@ -252,8 +255,8 @@ function parseConfounders(values: Array<Record<string, unknown> | string> | unde
     .map((item) => {
       if (typeof item === "string") return item;
       if (typeof item === "object" && item !== null) {
-        const name = (item as any).name;
-        if (typeof name === "string") return name;
+        const maybeName = item as { name?: unknown };
+        if (typeof maybeName.name === "string") return maybeName.name;
         return JSON.stringify(item);
       }
       return String(item);

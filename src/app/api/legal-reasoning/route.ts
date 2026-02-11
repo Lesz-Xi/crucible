@@ -275,30 +275,52 @@ const REQUEST_LIMITS = {
   MAX_CASE_TITLE_LENGTH: 200, // Max title length
 };
 
+type LegalCaseType = 'tort' | 'criminal' | 'contract' | 'other';
+
+interface LegalReasoningRequestBody {
+  documents: string[];
+  caseTitle?: string;
+  jurisdiction?: string;
+  caseType?: LegalCaseType;
+}
+
+function isLegalReasoningRequestBody(value: unknown): value is LegalReasoningRequestBody {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return Array.isArray(candidate.documents);
+}
+
 /**
  * Validate and sanitize request body
  */
-function validateRequest(body: any): { valid: boolean; error?: string } {
-  // Check documents array
-  if (!body.documents || !Array.isArray(body.documents)) {
+function validateRequest(body: unknown): { valid: boolean; error?: string; sanitized?: LegalReasoningRequestBody } {
+  if (!isLegalReasoningRequestBody(body)) {
     return { valid: false, error: 'Invalid request: documents must be an array' };
   }
 
-  if (body.documents.length === 0) {
+  const sanitized: LegalReasoningRequestBody = {
+    documents: body.documents,
+    caseTitle: typeof body.caseTitle === "string" ? body.caseTitle : undefined,
+    jurisdiction: typeof body.jurisdiction === "string" ? body.jurisdiction : undefined,
+    caseType: typeof body.caseType === "string" ? (body.caseType as LegalCaseType) : undefined,
+  };
+
+  // Check documents array
+  if (sanitized.documents.length === 0) {
     return { valid: false, error: 'No documents provided' };
   }
 
-  if (body.documents.length > REQUEST_LIMITS.MAX_DOCUMENTS) {
+  if (sanitized.documents.length > REQUEST_LIMITS.MAX_DOCUMENTS) {
     return { 
       valid: false, 
-      error: `Too many documents: maximum ${REQUEST_LIMITS.MAX_DOCUMENTS} allowed, got ${body.documents.length}` 
+      error: `Too many documents: maximum ${REQUEST_LIMITS.MAX_DOCUMENTS} allowed, got ${sanitized.documents.length}` 
     };
   }
 
   // Check individual document sizes
   let totalSize = 0;
-  for (let i = 0; i < body.documents.length; i++) {
-    const doc = body.documents[i];
+  for (let i = 0; i < sanitized.documents.length; i++) {
+    const doc = sanitized.documents[i];
     if (typeof doc !== 'string') {
       return { valid: false, error: `Document ${i + 1} is not a string` };
     }
@@ -321,17 +343,17 @@ function validateRequest(body: any): { valid: boolean; error?: string } {
   }
 
   // Sanitize optional fields
-  if (body.caseTitle && body.caseTitle.length > REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH) {
-    body.caseTitle = body.caseTitle.slice(0, REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH);
+  if (sanitized.caseTitle && sanitized.caseTitle.length > REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH) {
+    sanitized.caseTitle = sanitized.caseTitle.slice(0, REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH);
   }
 
   // Validate case type
-  const validCaseTypes = ['tort', 'criminal', 'contract', 'administrative'];
-  if (body.caseType && !validCaseTypes.includes(body.caseType)) {
-    body.caseType = 'tort'; // Default to tort
+  const validCaseTypes = ['tort', 'criminal', 'contract', 'other'];
+  if (sanitized.caseType && !validCaseTypes.includes(sanitized.caseType)) {
+    sanitized.caseType = 'tort'; // Default to tort
   }
 
-  return { valid: true };
+  return { valid: true, sanitized };
 }
 
 export async function POST(req: NextRequest) {
@@ -364,7 +386,7 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
       );
     }
     
-    const { documents, caseTitle, jurisdiction, caseType } = body;
+    const { documents, caseTitle, jurisdiction, caseType } = validation.sanitized as LegalReasoningRequestBody;
 
     const startTime = performance.now();
 
@@ -453,12 +475,13 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
       processingTimeMs: Math.round(processingTime),
     } as LegalReasoningResponse);
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[LegalReasoning API] Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Legal reasoning failed';
     return NextResponse.json(
       { 
         success: false, 
-        error: error.message || 'Legal reasoning failed' 
+        error: errorMessage
       } as LegalReasoningResponse,
       { status: 500 }
     );
@@ -517,7 +540,7 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
           return;
         }
         
-        const { documents, caseTitle, jurisdiction, caseType } = body;
+        const { documents, caseTitle, jurisdiction, caseType } = validation.sanitized as LegalReasoningRequestBody;
 
         // Initialize services
         const extractor = new LegalDocumentExtractor();
@@ -663,9 +686,10 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
         sendEvent({ event: 'legal_analysis_complete', case: legalCase });
         safeClose();
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('[LegalReasoning Streaming] Error:', error);
-        sendEvent({ event: 'legal_error', message: error.message || 'Analysis failed' });
+        const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+        sendEvent({ event: 'legal_error', message: errorMessage });
         safeClose();
       }
     },
@@ -737,7 +761,7 @@ async function buildCausalChains(
  */
 function generateVerdict(
   chains: LegalCausalChain[],
-  extraction: { entities: any[]; warnings?: string[] }
+  extraction: { entities: LegalCase['parties']; warnings?: string[] }
 ): LegalVerdict {
   const hasEstablishedCausation = chains.length > 0;
   const butForSatisfied = chains.some(c => 

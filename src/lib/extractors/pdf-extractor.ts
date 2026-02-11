@@ -32,6 +32,7 @@ export interface PagedText {
 
 export interface PDFExtractionResult {
   fileName: string;
+  sourceType?: "pdf" | "company";
   totalPages: number;
   fullText: string;
   pagedText?: PagedText;

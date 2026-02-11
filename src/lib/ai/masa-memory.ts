@@ -24,6 +24,13 @@ export interface PatternMatch {
   similarity: number; // 0-1, based on keyword overlap
 }
 
+export interface FailurePatternVector {
+  mechanism_fault: number;
+  evidence_fault: number;
+  novelty_fault: number;
+  formulation_fault: number;
+}
+
 /**
  * MasaMemory: The engram storage and replay system
  * 
@@ -33,6 +40,7 @@ export interface PatternMatch {
  */
 export class MasaMemory {
   private engrams: Engram[] = [];
+  private failurePatterns: Array<{ domain: string; vector: FailurePatternVector; timestamp: Date }> = [];
   private readonly MAX_ENGRAMS = 50; // Limit memory size
 
   /**
@@ -187,6 +195,18 @@ export class MasaMemory {
    */
   clear(): void {
     this.engrams = [];
+    this.failurePatterns = [];
+  }
+
+  /**
+   * Records recurring failure vectors for governance diagnostics.
+   */
+  recordFailurePattern(domain: string, vector: FailurePatternVector): void {
+    this.failurePatterns.push({
+      domain,
+      vector,
+      timestamp: new Date(),
+    });
   }
 
   // ==============================================
@@ -289,4 +309,3 @@ export class MasaMemory {
     }
   }
 }
-
