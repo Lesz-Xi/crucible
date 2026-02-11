@@ -55,6 +55,20 @@
   --font-geist-mono: "Geist Mono", "Courier New", monospace;
   --font-crimson: "Crimson Pro", "Times New Roman", serif;
   --font-playfair: "Playfair Display", serif;
+
+  /* 2041 Automated Scientist (feature namespace) */
+  --lab-bg: #FAFAF9;
+  --lab-bg-elevated: #F5F5F4;
+  --lab-panel: rgba(255, 255, 255, 0.82);
+  --lab-border: rgba(42, 38, 33, 0.10);
+  --lab-text-primary: #2A2621;
+  --lab-text-secondary: #57534E;
+  --lab-text-tertiary: #A8A29E;
+  --lab-accent-clay: #9E7E6B;
+  --lab-accent-earth: #8B5E3C;
+  --lab-accent-moss: #5F7555;
+  --lab-shadow-soft: 0 8px 24px rgba(42, 38, 33, 0.08);
+  --lab-shadow-lift: 0 12px 30px rgba(42, 38, 33, 0.12);
 }
 
 /* Dark Mode - Obsidian foundations */
@@ -257,6 +271,84 @@
 .wabi-reveal:nth-child(4) { animation-delay: 90ms; }
 .wabi-reveal:nth-child(5) { animation-delay: 120ms; }
 .wabi-reveal:nth-child(6) { animation-delay: 150ms; }
+
+/* ========================================
+   Automated Scientist 2041 Workbench
+   ======================================== */
+
+.lab-shell {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(158, 126, 107, 0.10) 0%, transparent 42%),
+    radial-gradient(circle at 88% 6%, rgba(95, 117, 85, 0.10) 0%, transparent 40%),
+    var(--lab-bg);
+  color: var(--lab-text-primary);
+}
+
+.lab-panel,
+.lab-panel-elevated {
+  border-radius: 16px;
+  border: 1px solid var(--lab-border);
+  background: var(--lab-panel);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--lab-shadow-soft);
+}
+
+.lab-panel-elevated {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(245, 245, 244, 0.78) 100%);
+}
+
+.lab-chip-mono {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--lab-accent-earth);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+}
+
+.lab-section-title {
+  color: var(--lab-text-primary);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lab-kpi-card {
+  border-radius: 12px;
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 3px 14px rgba(42, 38, 33, 0.05);
+  padding: 12px;
+  transition: transform 240ms ease-out, box-shadow 240ms ease-out, border-color 240ms ease-out;
+}
+
+.lab-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(158, 126, 107, 0.35);
+  box-shadow: var(--lab-shadow-lift);
+}
+
+.lab-divider-gradient {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(42, 38, 33, 0.20) 50%, transparent 100%);
+}
+
+.lab-focus-ring {
+  outline: none;
+}
+
+.lab-focus-ring:focus-visible {
+  box-shadow: 0 0 0 2px rgba(139, 94, 60, 0.30);
+}
 
 /* ========================================
    PHASE 4: WABI-SABI REDESIGN UTILITIES
