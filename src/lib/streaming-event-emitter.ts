@@ -1,5 +1,6 @@
 
 import { SynthesisResult, HypothesisNode } from "@/types";
+import type { HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
 
 export type AgentPersona = 'creator' | 'skeptic' | 'architect' | 'methodologist';
 
@@ -17,6 +18,13 @@ export type StreamEvent =
   | { event: 'novelty_proof_computed', proofCount: number }
   | { event: 'novelty_gate_decision', decision: 'pass' | 'recover' | 'fail', passingIdeas: number, blockedIdeas: number, reasons: string[] }
   | { event: 'recovery_plan_generated', diagnosisCount: number }
+  | {
+    event: 'timeline_stage_started' | 'timeline_stage_progress' | 'timeline_stage_completed' | 'timeline_stage_skipped',
+    stage: HybridTimelineStageKey,
+    state: HybridTimelineStageState,
+    timestamp: string,
+    meta?: HybridTimelineStageTelemetry,
+  }
   | { event: 'statistical_validation', pValue: number, bayesFactor: number, interpretation: string }
   | { event: 'protocol_validated', ideaId: string, success: boolean, pValue?: number }
   | { event: 'spectral_gap_analysis', spectralGap: { lambda_min: number, lambda_max: number, spectralGap: number, conditionNumber: number, threshold: number }, lipschitzConstant: number, expansionTriggered?: boolean }

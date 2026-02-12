@@ -21,6 +21,7 @@ import type {
   NoveltyProof,
   RecoveryPlan,
 } from "@/types/hybrid-novelty";
+import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
 import { evaluateCriticalThinking } from "./novelty-evaluator";
 import { StatisticalValidator } from "./statistical-validator";
 import { linkSnippetsToPDF } from "./citation-linker";
@@ -461,6 +462,7 @@ export interface SynthesisResult {
   noveltyProof?: NoveltyProof[];
   noveltyGate?: NoveltyGateResult;
   recoveryPlan?: RecoveryPlan;
+  timelineReceipt?: HybridTimelineReceipt;
   // Tier 1: Pipeline metadata
   metadata?: {
     refinementIterations: number;
@@ -537,6 +539,13 @@ export interface EnhancedSynthesisConfig {
   userId?: string;
   eventEmitter?: { emit: (data: unknown) => void };
   noveltyProofEnabled?: boolean;
+  abortSignal?: AbortSignal;
+}
+
+function ensureNotAborted(signal?: AbortSignal): void {
+  if (signal?.aborted) {
+    throw new Error("Synthesis run aborted by client");
+  }
 }
 
 export async function runEnhancedSynthesisPipeline(
@@ -549,17 +558,39 @@ export async function runEnhancedSynthesisPipeline(
     noveltyThreshold = 0.30,
     eventEmitter,
     noveltyProofEnabled = process.env.HYBRID_NOVELTY_PROOF_V1 === "true",
+    abortSignal,
   } = config;
+  const emitTimeline = (
+    event: "timeline_stage_started" | "timeline_stage_progress" | "timeline_stage_completed" | "timeline_stage_skipped",
+    stage: HybridTimelineStageKey,
+    state: "pending" | "active" | "done" | "blocked" | "skipped",
+    meta?: HybridTimelineStageTelemetry,
+  ) => {
+    eventEmitter?.emit({
+      event,
+      stage,
+      state,
+      timestamp: new Date().toISOString(),
+      meta,
+    });
+  };
+
+  ensureNotAborted(abortSignal);
 
   // Step 1: Extract concepts from each source
   const sourcesWithConcepts = await Promise.all(
-    pdfResults.map(async (pdf) => ({
-      name: pdf.fileName,
-      concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName),
-    }))
+    pdfResults.map(async (pdf) => {
+      ensureNotAborted(abortSignal);
+      return {
+        name: pdf.fileName,
+        concepts: await extractConcepts(pdf.fullText.slice(0, 50000), pdf.fileName),
+      };
+    })
   );
+  ensureNotAborted(abortSignal);
 
   // Step 2: Detect contradictions
+  emitTimeline("timeline_stage_started", "contradiction_scan", "active");
   const contradictions = await detectContradictions(
     sourcesWithConcepts.map((s) => ({
       name: s.name,
@@ -567,7 +598,12 @@ export async function runEnhancedSynthesisPipeline(
       arguments: s.concepts.keyArguments,
     }))
   );
+  ensureNotAborted(abortSignal);
   const contradictionMatrix = buildContradictionMatrix(contradictions, sourcesWithConcepts);
+  emitTimeline("timeline_stage_completed", "contradiction_scan", "done", {
+    rows: contradictionMatrix.length,
+    highConfidenceRows: contradictionMatrix.filter((row) => row.highConfidence).length,
+  });
   eventEmitter?.emit({
     event: "contradiction_matrix_built",
     rows: contradictionMatrix.length,
@@ -575,10 +611,17 @@ export async function runEnhancedSynthesisPipeline(
   });
 
   // Step 3: Generate novel ideas
+  emitTimeline("timeline_stage_started", "hypothesis_generation", "active", {
+    totalFiles: sourcesWithConcepts.length,
+  });
   let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+  ensureNotAborted(abortSignal);
   if (typeof maxNovelIdeas === "number" && maxNovelIdeas > 0) {
     novelIdeas = novelIdeas.slice(0, maxNovelIdeas);
   }
+  emitTimeline("timeline_stage_progress", "hypothesis_generation", "active", {
+    passCount: novelIdeas.length,
+  });
   let totalRefinements = 0;
   let noveltyProof: NoveltyProof[] = [];
   let noveltyGate: NoveltyGateResult | undefined;
@@ -591,12 +634,15 @@ export async function runEnhancedSynthesisPipeline(
   // Step 4: TIER 1 - Evaluate and refine loop (requires priorArtSearchFn to be passed)
   if (config.priorArtSearchFn) {
     for (let i = 0; i < novelIdeas.length; i++) {
+      ensureNotAborted(abortSignal);
       let idea = novelIdeas[i];
       let iteration = 0;
 
       while (iteration < maxRefinementIterations) {
+        ensureNotAborted(abortSignal);
         // Search prior art for this idea
         const priorArt = await config.priorArtSearchFn(idea.thesis, idea.description);
+        ensureNotAborted(abortSignal);
 
         // Estimate confidence factors with prior art data
         const factors = estimateConfidenceFactors(
@@ -648,6 +694,7 @@ export async function runEnhancedSynthesisPipeline(
             idea = await refineNovelIdea(idea, similarArt, iteration + 1);
             totalRefinements++;
             iteration++;
+            ensureNotAborted(abortSignal);
           } catch {
             // Refinement failed, keep current idea
             break;
@@ -659,6 +706,10 @@ export async function runEnhancedSynthesisPipeline(
       }
 
       novelIdeas[i] = idea;
+      emitTimeline("timeline_stage_progress", "hypothesis_generation", "active", {
+        processedFiles: i + 1,
+        totalFiles: novelIdeas.length,
+      });
     }
   } else {
     // No prior art search provided - just apply calibration with empty prior art
@@ -706,9 +757,11 @@ export async function runEnhancedSynthesisPipeline(
   // Enhance all ideas with formal hypotheses
   novelIdeas = await Promise.all(
     novelIdeas.map(async (idea) => {
+      ensureNotAborted(abortSignal);
       // Logic: Only apply deep hypothesis generation to high-potential ideas to save latency
       // For now, we apply to all for maximum rigor as per "K-Dense" principles
       let deepHypothesis = await hypothesisGenerator.generate(idea);
+      ensureNotAborted(abortSignal);
       let refinedIdea = { ...idea, structuredHypothesis: deepHypothesis };
 
       // ADVERSARIAL CRITIQUE LOOP (Target 90+ Score)
@@ -718,8 +771,10 @@ export async function runEnhancedSynthesisPipeline(
       while (critique.validityScore < 90 && attempts < 2) {
         // Self-Correction: Refine based on critique
         const tempRefinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
+        ensureNotAborted(abortSignal);
         // Re-generate hypothesis for the refined idea
         deepHypothesis = await hypothesisGenerator.generate(tempRefinedIdea);
+        ensureNotAborted(abortSignal);
         refinedIdea = { ...tempRefinedIdea, structuredHypothesis: deepHypothesis };
         // Re-evaluate
         critique = await evaluateCriticalThinking(refinedIdea);
@@ -747,9 +802,15 @@ export async function runEnhancedSynthesisPipeline(
       return refinedIdea;
     })
   );
+  emitTimeline("timeline_stage_completed", "hypothesis_generation", "done", {
+    passCount: novelIdeas.length,
+    blockedCount: 0,
+  });
 
   let gatedIdeas = novelIdeas;
   if (noveltyProofEnabled) {
+    emitTimeline("timeline_stage_started", "novelty_proof", "active");
+    ensureNotAborted(abortSignal);
     // Step 6: Novelty Proof Engine + hard gate policy
     noveltyProof = await computeNoveltyProofs(novelIdeas, contradictionMatrix, {
       noveltyThreshold,
@@ -757,9 +818,17 @@ export async function runEnhancedSynthesisPipeline(
       contradictionThreshold: 0.45,
       priorArtSearchFn: config.priorArtSearchFn,
     });
+    ensureNotAborted(abortSignal);
     eventEmitter?.emit({
       event: "novelty_proof_computed",
       proofCount: noveltyProof.length,
+    });
+    const avgPriorArtDistance = noveltyProof.length > 0
+      ? noveltyProof.reduce((sum, row) => sum + row.priorArtDistance, 0) / noveltyProof.length
+      : 0;
+    emitTimeline("timeline_stage_completed", "novelty_proof", "done", {
+      proofCount: noveltyProof.length,
+      avgPriorArtDistance: Number(avgPriorArtDistance.toFixed(3)),
     });
 
     noveltyGate = computeNoveltyGate(noveltyProof, { noveltyThreshold });
@@ -779,16 +848,30 @@ export async function runEnhancedSynthesisPipeline(
       blockedIdeas: noveltyGate.blockedIdeas,
       reasons: noveltyGate.reasons,
     });
+    emitTimeline("timeline_stage_completed", "novelty_gate", noveltyGate.decision === "fail" ? "blocked" : "done", {
+      decision: noveltyGate.decision,
+      passCount: noveltyGate.passingIdeas,
+      blockedCount: noveltyGate.blockedIdeas,
+    });
 
     if (noveltyGate.decision !== "pass") {
+      emitTimeline("timeline_stage_started", "recovery_plan", "active");
       recoveryPlan = buildNoveltyRecoveryPlan({
         gate: noveltyGate,
         proofs: noveltyProof,
         contradictionMatrix,
       });
+      ensureNotAborted(abortSignal);
       eventEmitter?.emit({
         event: "recovery_plan_generated",
         diagnosisCount: recoveryPlan.diagnosis.length,
+      });
+      emitTimeline("timeline_stage_completed", "recovery_plan", "done", {
+        signal: recoveryPlan.message,
+      });
+    } else {
+      emitTimeline("timeline_stage_skipped", "recovery_plan", "skipped", {
+        reason: "gate_passed",
       });
     }
 
@@ -798,15 +881,21 @@ export async function runEnhancedSynthesisPipeline(
     gatedIdeas = noveltyGate.decision === "pass"
       ? novelIdeas.filter((idea) => passingIdeaIds.has(idea.id))
       : [];
+  } else {
+    emitTimeline("timeline_stage_skipped", "novelty_proof", "skipped", { reason: "feature_flag_disabled" });
+    emitTimeline("timeline_stage_skipped", "novelty_gate", "skipped", { reason: "feature_flag_disabled" });
+    emitTimeline("timeline_stage_skipped", "recovery_plan", "skipped", { reason: "feature_flag_disabled" });
   }
 
   // Step 7: Generate structured approach for top idea
   let structuredApproach: StructuredApproach | undefined;
   if (gatedIdeas.length > 0) {
+    ensureNotAborted(abortSignal);
     const topIdea = gatedIdeas.reduce((prev, curr) =>
       curr.confidence > prev.confidence ? curr : prev
     );
     structuredApproach = await generateStructuredApproach(topIdea);
+    ensureNotAborted(abortSignal);
   }
 
   return {

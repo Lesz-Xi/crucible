@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
   AlertTriangle,
@@ -20,6 +20,10 @@ import { StatusStrip } from '@/components/workbench/StatusStrip';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { HybridInputPanelV2 } from '@/components/hybrid/HybridInputPanelV2';
 import { HybridResultPanelV2, type HybridResultData } from '@/components/hybrid/HybridResultPanelV2';
+import { HybridProcessingTimelineV2 } from '@/components/hybrid/HybridProcessingTimelineV2';
+import { HybridTimelineSummaryStripV2 } from '@/components/hybrid/HybridTimelineSummaryStripV2';
+import { createInitialTimelineReceipt, updateTimelineStage } from '@/lib/hybrid/timeline';
+import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from '@/types/hybrid-timeline';
 
 interface HistoryEntry {
   id: string;
@@ -30,10 +34,16 @@ interface HistoryEntry {
 
 type Stage = 'input' | 'processing' | 'stabilizing' | 'results';
 
+type TimelineEventName =
+  | 'timeline_stage_started'
+  | 'timeline_stage_progress'
+  | 'timeline_stage_completed'
+  | 'timeline_stage_skipped';
+
 type StreamPayload = {
   event?: string;
   message?: string;
-  synthesis?: HybridResultData;
+  synthesis?: unknown;
   rows?: number;
   highConfidenceRows?: number;
   proofCount?: number;
@@ -41,9 +51,18 @@ type StreamPayload = {
   passingIdeas?: number;
   blockedIdeas?: number;
   reasons?: string[];
+  stage?: HybridTimelineStageKey;
+  state?: HybridTimelineStageState;
+  timestamp?: string;
+  meta?: HybridTimelineStageTelemetry;
 };
 
-function normalizeRunPayload(raw: unknown): HybridResultData | null {
+interface NormalizedRunPayload {
+  result: HybridResultData;
+  timelineReceipt: HybridTimelineReceipt | null;
+}
+
+function normalizeRunPayload(raw: unknown): NormalizedRunPayload | null {
   if (!raw || typeof raw !== 'object') {
     return null;
   }
@@ -63,22 +82,40 @@ function normalizeRunPayload(raw: unknown): HybridResultData | null {
     risks: Array.isArray(rawStructured.risks) ? (rawStructured.risks as string[]) : undefined,
   };
 
+  const timelineReceipt = row.timelineReceipt && typeof row.timelineReceipt === 'object'
+    ? (row.timelineReceipt as HybridTimelineReceipt)
+    : rawStructured.__timelineReceipt && typeof rawStructured.__timelineReceipt === 'object'
+      ? (rawStructured.__timelineReceipt as HybridTimelineReceipt)
+      : null;
+
   return {
-    sources: Array.isArray(row.sources) ? (row.sources as HybridResultData['sources']) : [],
-    contradictions: contradictions as HybridResultData['contradictions'],
-    contradictionMatrix: contradictions as HybridResultData['contradictionMatrix'],
-    novelIdeas: Array.isArray(row.novelIdeas) ? (row.novelIdeas as HybridResultData['novelIdeas']) : [],
-    noveltyProof: noveltyProof as HybridResultData['noveltyProof'],
-    noveltyGate:
-      row.noveltyGate && typeof row.noveltyGate === 'object'
-        ? (row.noveltyGate as HybridResultData['noveltyGate'])
-        : null,
-    recoveryPlan:
-      row.recoveryPlan && typeof row.recoveryPlan === 'object'
-        ? (row.recoveryPlan as HybridResultData['recoveryPlan'])
-        : null,
-    structuredApproach,
+    result: {
+      sources: Array.isArray(row.sources) ? (row.sources as HybridResultData['sources']) : [],
+      contradictions: contradictions as HybridResultData['contradictions'],
+      contradictionMatrix: contradictions as HybridResultData['contradictionMatrix'],
+      novelIdeas: Array.isArray(row.novelIdeas) ? (row.novelIdeas as HybridResultData['novelIdeas']) : [],
+      noveltyProof: noveltyProof as HybridResultData['noveltyProof'],
+      noveltyGate:
+        row.noveltyGate && typeof row.noveltyGate === 'object'
+          ? (row.noveltyGate as HybridResultData['noveltyGate'])
+          : null,
+      recoveryPlan:
+        row.recoveryPlan && typeof row.recoveryPlan === 'object'
+          ? (row.recoveryPlan as HybridResultData['recoveryPlan'])
+          : null,
+      structuredApproach,
+    },
+    timelineReceipt,
   };
+}
+
+function isTimelineEvent(event?: string): event is TimelineEventName {
+  return (
+    event === 'timeline_stage_started' ||
+    event === 'timeline_stage_progress' ||
+    event === 'timeline_stage_completed' ||
+    event === 'timeline_stage_skipped'
+  );
 }
 
 export function HybridWorkbenchV2() {
@@ -95,6 +132,9 @@ export function HybridWorkbenchV2() {
   const [matrixStats, setMatrixStats] = useState({ rows: 0, highConfidenceRows: 0 });
   const [proofCount, setProofCount] = useState(0);
   const [gatePreview, setGatePreview] = useState<HybridResultData['noveltyGate']>(null);
+  const [timelineReceipt, setTimelineReceipt] = useState<HybridTimelineReceipt | null>(null);
+  const [timelineNow, setTimelineNow] = useState<string>(new Date().toISOString());
+  const activeRunAbortRef = useRef<AbortController | null>(null);
 
   const totalSources = files.length + companies.length;
   const canRun = totalSources >= 2 && totalSources <= 12;
@@ -105,6 +145,16 @@ export function HybridWorkbenchV2() {
   );
   const passingIdeas = useMemo(() => result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0, [result, gatePreview]);
   const blockedIdeas = useMemo(() => result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0, [result, gatePreview]);
+
+  useEffect(() => {
+    if (stage !== 'processing' && stage !== 'stabilizing') {
+      return;
+    }
+    const interval = setInterval(() => {
+      setTimelineNow(new Date().toISOString());
+    }, 500);
+    return () => clearInterval(interval);
+  }, [stage]);
 
   const fetchHistory = async () => {
     setHistoryLoading(true);
@@ -126,6 +176,30 @@ export function HybridWorkbenchV2() {
   useEffect(() => {
     void fetchHistory();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      activeRunAbortRef.current?.abort();
+      activeRunAbortRef.current = null;
+    };
+  }, []);
+
+  const applyTimelineUpdate = (
+    key: HybridTimelineStageKey,
+    state: HybridTimelineStageState,
+    telemetry?: HybridTimelineStageTelemetry,
+    timestamp?: string,
+  ) => {
+    setTimelineReceipt((current) => {
+      const seed = current || createInitialTimelineReceipt(timestamp || new Date().toISOString());
+      return updateTimelineStage(seed, {
+        stage: key,
+        state,
+        timestamp,
+        telemetry,
+      });
+    });
+  };
 
   const addCompany = () => {
     const trimmed = companyDraft.trim();
@@ -152,6 +226,12 @@ export function HybridWorkbenchV2() {
     setProofCount(0);
     setGatePreview(null);
     setMatrixStats({ rows: 0, highConfidenceRows: 0 });
+    setTimelineReceipt(createInitialTimelineReceipt());
+    setTimelineNow(new Date().toISOString());
+
+    activeRunAbortRef.current?.abort();
+    const abortController = new AbortController();
+    activeRunAbortRef.current = abortController;
 
     try {
       const formData = new FormData();
@@ -162,6 +242,7 @@ export function HybridWorkbenchV2() {
       const response = await fetch('/api/hybrid-synthesize', {
         method: 'POST',
         body: formData,
+        signal: abortController.signal,
       });
 
       if (!response.ok || !response.body) {
@@ -186,6 +267,10 @@ export function HybridWorkbenchV2() {
 
           if (payload.event === 'error') {
             throw new Error(payload.message || 'Synthesis failed');
+          }
+
+          if (isTimelineEvent(payload.event) && payload.stage && payload.state) {
+            applyTimelineUpdate(payload.stage, payload.state, payload.meta, payload.timestamp);
           }
 
           if (payload.event === 'contradiction_matrix_built') {
@@ -219,7 +304,11 @@ export function HybridWorkbenchV2() {
 
           if (payload.event === 'complete' && payload.synthesis) {
             const normalized = normalizeRunPayload(payload.synthesis);
-            setResult(normalized);
+            if (!normalized) {
+              throw new Error('Unable to parse synthesis payload');
+            }
+            setResult(normalized.result);
+            setTimelineReceipt((current) => normalized.timelineReceipt || current);
             setLatestEvent('Synthesis completed.');
             setStage('stabilizing');
             setTimeout(() => setStage('results'), 650);
@@ -230,10 +319,28 @@ export function HybridWorkbenchV2() {
         }
       }
     } catch (runError) {
+      if (runError instanceof DOMException && runError.name === 'AbortError') {
+        applyTimelineUpdate('completed', 'blocked', { reason: 'client_cancelled', signal: 'Run stopped by user' });
+        setLatestEvent('Synthesis run stopped.');
+        setStage('input');
+        setError(null);
+        return;
+      }
       const message = runError instanceof Error ? runError.message : 'Unable to run synthesis';
       setError(message);
       setStage('input');
+    } finally {
+      if (activeRunAbortRef.current === abortController) {
+        activeRunAbortRef.current = null;
+      }
     }
+  };
+
+  const cancelSynthesis = () => {
+    if (!activeRunAbortRef.current) {
+      return;
+    }
+    activeRunAbortRef.current.abort();
   };
 
   const loadHistoricalRun = async (id: string) => {
@@ -248,14 +355,15 @@ export function HybridWorkbenchV2() {
       const normalized = normalizeRunPayload(payload.run);
       if (!normalized) throw new Error('Run payload malformed');
 
-      setResult(normalized);
+      setResult(normalized.result);
+      setTimelineReceipt(normalized.timelineReceipt);
       setLatestEvent('Historical run loaded.');
       setMatrixStats({
-        rows: normalized.contradictionMatrix?.length || 0,
-        highConfidenceRows: (normalized.contradictionMatrix || []).filter((row) => row.highConfidence).length,
+        rows: normalized.result.contradictionMatrix?.length || 0,
+        highConfidenceRows: (normalized.result.contradictionMatrix || []).filter((row) => row.highConfidence).length,
       });
-      setProofCount(normalized.noveltyProof?.length || 0);
-      setGatePreview(normalized.noveltyGate || null);
+      setProofCount(normalized.result.noveltyProof?.length || 0);
+      setGatePreview(normalized.result.noveltyGate || null);
       setStage('results');
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : 'Unable to load run';
@@ -311,6 +419,7 @@ export function HybridWorkbenchV2() {
             onRemoveCompany={(company) => setCompanies((prev) => prev.filter((entry) => entry !== company))}
             onRemoveFile={(name) => setFiles((prev) => prev.filter((file) => file.name !== name))}
             onRun={runSynthesis}
+            onCancelRun={cancelSynthesis}
           />
 
           {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
@@ -338,17 +447,18 @@ export function HybridWorkbenchV2() {
               </div>
             </div>
 
-            {stage === 'processing' ? (
-              <div className="lab-empty-state flex-1">
-                <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Processing synthesis run...</p>
-                <p className="mt-2 text-sm">Latest event: {latestEvent}</p>
-              </div>
-            ) : stage === 'stabilizing' ? (
-              <div className="lab-empty-state flex-1">
-                <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Stabilizing proof bundle...</p>
-              </div>
+            {(stage === 'processing' || stage === 'stabilizing') ? (
+              <HybridProcessingTimelineV2
+                stages={timelineReceipt?.stages || createInitialTimelineReceipt().stages}
+                latestSignal={latestEvent}
+                startedAt={timelineReceipt?.startedAt}
+                nowIso={timelineNow}
+                passCount={passingIdeas}
+                blockedCount={blockedIdeas || Math.max(0, proofCount - passingIdeas)}
+              />
             ) : (
               <div className="lab-scroll-region flex-1">
+                <HybridTimelineSummaryStripV2 receipt={timelineReceipt} gateDecision={result?.noveltyGate?.decision || gatePreview?.decision || null} />
                 <HybridResultPanelV2 result={result} stage={stage} />
               </div>
             )}

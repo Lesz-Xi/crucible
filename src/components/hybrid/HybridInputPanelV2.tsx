@@ -17,6 +17,7 @@ export interface HybridInputPanelV2Props {
   onRemoveCompany: (company: string) => void;
   onRemoveFile: (name: string) => void;
   onRun: () => void;
+  onCancelRun: () => void;
 }
 
 export function HybridInputPanelV2({
@@ -33,6 +34,7 @@ export function HybridInputPanelV2({
   onRemoveCompany,
   onRemoveFile,
   onRun,
+  onCancelRun,
 }: HybridInputPanelV2Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -130,6 +132,11 @@ export function HybridInputPanelV2({
         <button type="button" className="lab-button-primary mt-3 w-full" disabled={!canRun || isRunning} onClick={onRun}>
           {isRunning ? 'Running synthesis...' : 'Start synthesis run'}
         </button>
+        {isRunning ? (
+          <button type="button" className="lab-button-secondary mt-2 w-full" onClick={onCancelRun}>
+            Stop run
+          </button>
+        ) : null}
       </section>
     </div>
   );

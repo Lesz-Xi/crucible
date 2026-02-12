@@ -520,6 +520,90 @@
   border-radius: 999px;
 }
 
+.lab-timeline-shell {
+  border-radius: 18px;
+  border: 1px solid var(--lab-border);
+  background:
+    radial-gradient(circle at 96% 10%, rgba(95, 117, 85, 0.08) 0%, transparent 34%),
+    radial-gradient(circle at 6% 88%, rgba(158, 126, 107, 0.10) 0%, transparent 38%),
+    rgba(255, 255, 255, 0.8);
+  box-shadow: var(--lab-shadow-soft);
+  padding: 20px;
+}
+
+.lab-timeline-spine {
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.lab-timeline-node {
+  display: flex;
+  gap: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(42, 38, 33, 0.08);
+  background: rgba(255, 255, 255, 0.58);
+  padding: 14px;
+}
+
+.lab-timeline-node + .lab-timeline-node {
+  margin-top: 10px;
+}
+
+.lab-timeline-node-marker {
+  display: flex;
+  min-width: 26px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.lab-timeline-node-line {
+  min-height: 34px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(139, 94, 60, 0.38) 0%,
+    rgba(42, 38, 33, 0.12) 100%
+  );
+}
+
+.lab-timeline-node-active {
+  border-color: rgba(139, 94, 60, 0.32);
+  box-shadow: 0 10px 26px rgba(139, 94, 60, 0.15);
+}
+
+.lab-timeline-node-done {
+  border-color: rgba(95, 117, 85, 0.3);
+}
+
+.lab-timeline-node-skipped {
+  border-style: dashed;
+  background: rgba(250, 250, 249, 0.7);
+}
+
+.lab-timeline-telemetry-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(42, 38, 33, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--lab-text-secondary);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 5px 9px;
+}
+
+.lab-timeline-receipt-strip {
+  border-radius: 14px;
+  border: 1px solid rgba(42, 38, 33, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 250, 249, 0.84) 100%);
+  box-shadow: 0 8px 20px rgba(42, 38, 33, 0.08);
+  padding: 12px 14px;
+}
+
 /* ========================================
    PHASE 4: WABI-SABI REDESIGN UTILITIES
    ======================================== */

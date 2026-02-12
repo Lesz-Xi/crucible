@@ -569,3 +569,11 @@ export type {
   RecoveryPlan,
   NoveltyGateResult,
 } from './hybrid-novelty';
+
+export type {
+  HybridTimelineStageKey,
+  HybridTimelineStageState,
+  HybridTimelineStageTelemetry,
+  HybridTimelineStageRecord,
+  HybridTimelineReceipt,
+} from './hybrid-timeline';

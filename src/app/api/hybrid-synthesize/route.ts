@@ -13,6 +13,8 @@ import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
 import { StreamingEventEmitter } from "@/lib/streaming-event-emitter";
 import { validateProtocol } from "@/lib/services/protocol-validator";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createInitialTimelineReceipt, updateTimelineStage } from "@/lib/hybrid/timeline";
+import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
 
 // Synthesis limits configuration
 const MAX_PDF_FILES = 6;
@@ -56,18 +58,94 @@ export async function POST(request: NextRequest) {
       // Keep header fallback for environments where auth is unavailable.
     }
 
-    const encoder = new TextEncoder();
+    let clientAborted = false;
+    request.signal.addEventListener("abort", () => {
+      clientAborted = true;
+    });
+
+    const throwIfAborted = () => {
+      if (clientAborted || request.signal.aborted) {
+        throw new Error("Client disconnected. Synthesis aborted.");
+      }
+    };
+
     const stream = new ReadableStream({
       async start(controller) {
-        const emitter = new StreamingEventEmitter(controller);
+        const coreEmitter = new StreamingEventEmitter(controller);
+        let timelineReceipt: HybridTimelineReceipt = createInitialTimelineReceipt();
+        let latestSignal = "Synthesis run initialized.";
+
+        const recordTimeline = (
+          stage: HybridTimelineStageKey,
+          state: HybridTimelineStageState,
+          telemetry?: HybridTimelineStageTelemetry,
+          timestamp?: string,
+        ) => {
+          timelineReceipt = updateTimelineStage(timelineReceipt, {
+            stage,
+            state,
+            telemetry,
+            timestamp,
+          });
+        };
+
+        const emitter = {
+          emit: (data: Record<string, unknown>) => {
+            const event = typeof data.event === "string" ? data.event : "";
+            const timestamp = typeof data.timestamp === "string" ? data.timestamp : new Date().toISOString();
+            if (typeof data.message === "string") {
+              latestSignal = data.message;
+            } else if (event) {
+              latestSignal = event.replaceAll("_", " ");
+            }
+
+            if (
+              event === "timeline_stage_started" ||
+              event === "timeline_stage_progress" ||
+              event === "timeline_stage_completed" ||
+              event === "timeline_stage_skipped"
+            ) {
+              const stage = data.stage as HybridTimelineStageKey;
+              const state = data.state as HybridTimelineStageState;
+              const meta = (data.meta || {}) as HybridTimelineStageTelemetry;
+              recordTimeline(stage, state, meta, timestamp);
+            }
+
+            coreEmitter.emit(data as never);
+          },
+          close: () => coreEmitter.close(),
+        };
 
         try {
+          throwIfAborted();
+          emitter.emit({
+            event: "timeline_stage_started",
+            stage: "ingestion",
+            state: "active",
+            timestamp: new Date().toISOString(),
+            meta: { totalFiles: files.length, companyCount: companies.length },
+          });
           emitter.emit({ event: 'ingestion_start', files: files.length });
+          emitter.emit({
+            event: "timeline_stage_completed",
+            stage: "ingestion",
+            state: "done",
+            timestamp: new Date().toISOString(),
+            meta: { totalFiles: files.length, companyCount: companies.length },
+          });
 
           // Step 1: Process PDFs to text
           const pdfResults: PDFExtractionResult[] = [];
+          emitter.emit({
+            event: "timeline_stage_started",
+            stage: "pdf_parsing",
+            state: "active",
+            timestamp: new Date().toISOString(),
+            meta: { processedFiles: 0, totalFiles: files.length },
+          });
 
           for (const file of files) {
+            throwIfAborted();
             const buffer = await file.arrayBuffer();
             // We'll process one by one to stream updates if needed, 
             // but for now keeping batch process for efficiency unless we split it
@@ -76,16 +154,41 @@ export async function POST(request: NextRequest) {
             if (successful.length > 0) {
               pdfResults.push(successful[0]);
               emitter.emit({ event: 'pdf_processed', filename: file.name });
+              emitter.emit({
+                event: "timeline_stage_progress",
+                stage: "pdf_parsing",
+                state: "active",
+                timestamp: new Date().toISOString(),
+                meta: { processedFiles: pdfResults.length, totalFiles: files.length, signal: file.name },
+              });
             } else {
               emitter.emit({ event: 'pdf_error', filename: file.name, error: "Extraction failed" });
             }
           }
+          emitter.emit({
+            event: "timeline_stage_completed",
+            stage: "pdf_parsing",
+            state: "done",
+            timestamp: new Date().toISOString(),
+            meta: { processedFiles: pdfResults.length, totalFiles: files.length },
+          });
 
           // Step 2: Process Companies
           const companyResults: PDFExtractionResult[] = [];
           if (companies.length > 0) {
+            emitter.emit({
+              event: "timeline_stage_started",
+              stage: "entity_harvest",
+              state: "active",
+              timestamp: new Date().toISOString(),
+              meta: { companyCount: companies.length, resolvedEntities: 0 },
+            });
+            throwIfAborted();
             const { successful } = await processMultipleCompanies(companies);
+            let resolvedEntities = 0;
             for (const company of successful) {
+              throwIfAborted();
+              resolvedEntities += company.extractedConcepts?.entities?.length ?? 0;
               companyResults.push({
                 fileName: company.companyName,
                 fullText: JSON.stringify(company.extractedConcepts),
@@ -94,7 +197,29 @@ export async function POST(request: NextRequest) {
                 sourceType: 'company'
               } as PDFExtractionResult);
               emitter.emit({ event: 'pdf_processed', filename: `Company: ${company.companyName}` });
+              emitter.emit({
+                event: "timeline_stage_progress",
+                stage: "entity_harvest",
+                state: "active",
+                timestamp: new Date().toISOString(),
+                meta: { companyCount: companies.length, resolvedEntities, signal: company.companyName },
+              });
             }
+            emitter.emit({
+              event: "timeline_stage_completed",
+              stage: "entity_harvest",
+              state: "done",
+              timestamp: new Date().toISOString(),
+              meta: { companyCount: companies.length, resolvedEntities },
+            });
+          } else {
+            emitter.emit({
+              event: "timeline_stage_skipped",
+              stage: "entity_harvest",
+              state: "skipped",
+              timestamp: new Date().toISOString(),
+              meta: { reason: "no_companies" },
+            });
           }
 
           // Step 3: Run Pipeline with Emitter
@@ -112,15 +237,64 @@ export async function POST(request: NextRequest) {
             parallelConcurrency: concurrency,
             userId: userId, // Add explicitly to config
             noveltyProofEnabled: process.env.HYBRID_NOVELTY_PROOF_V1 !== "false",
+            abortSignal: request.signal,
           } as unknown as EnhancedSynthesisConfig;
 
+          throwIfAborted();
           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, config);
+          throwIfAborted();
+          emitter.emit({
+            event: "timeline_stage_started",
+            stage: "completed",
+            state: "active",
+            timestamp: new Date().toISOString(),
+            meta: { signal: "persisting_run" },
+          });
+
+          // Make sure optional recovery stage is explicit even when not emitted upstream.
+          if (result.noveltyGate?.decision === "pass") {
+            emitter.emit({
+              event: "timeline_stage_skipped",
+              stage: "recovery_plan",
+              state: "skipped",
+              timestamp: new Date().toISOString(),
+              meta: { reason: "gate_passed" },
+            });
+          }
+
+          if (!result.noveltyGate) {
+            emitter.emit({
+              event: "timeline_stage_skipped",
+              stage: "novelty_gate",
+              state: "skipped",
+              timestamp: new Date().toISOString(),
+              meta: { reason: "novelty_gate_unavailable" },
+            });
+          }
 
           // Step 4: Persist
-          const saveStatus = await persistence.saveSynthesis(result, userId);
+          const resultWithTimeline: SynthesisResult = {
+            ...result,
+            timelineReceipt: {
+              ...timelineReceipt,
+              latestSignal,
+            },
+          };
+          const saveStatus = await persistence.saveSynthesis(resultWithTimeline, userId);
+          emitter.emit({
+            event: "timeline_stage_completed",
+            stage: "completed",
+            state: "done",
+            timestamp: new Date().toISOString(),
+            meta: { signal: "persisted_and_streaming_complete" },
+          });
 
           const finalResult = {
-            ...result,
+            ...resultWithTimeline,
+            timelineReceipt: {
+              ...timelineReceipt,
+              latestSignal: "Synthesis completed.",
+            },
             runId: saveStatus?.runId
           };
 
@@ -131,11 +305,25 @@ export async function POST(request: NextRequest) {
 
         } catch (error) {
           console.error("Streaming synthesis error:", error);
-          emitter.emit({ event: 'error', message: error instanceof Error ? error.message : "Synthesis failed" });
+          if (!clientAborted && !request.signal.aborted) {
+            emitter.emit({
+              event: "timeline_stage_completed",
+              stage: "completed",
+              state: "blocked",
+              timestamp: new Date().toISOString(),
+              meta: { signal: error instanceof Error ? error.message : "runtime_error" },
+            });
+          }
+          if (!clientAborted && !request.signal.aborted) {
+            emitter.emit({ event: 'error', message: error instanceof Error ? error.message : "Synthesis failed" });
+          }
         } finally {
           emitter.close();
         }
-      }
+      },
+      cancel() {
+        clientAborted = true;
+      },
     });
 
     return new Response(stream, {

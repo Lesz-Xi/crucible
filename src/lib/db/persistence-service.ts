@@ -42,6 +42,7 @@ export class PersistenceService {
         __noveltyGate: result.noveltyGate || null,
         __recoveryPlan: result.recoveryPlan || null,
         __contradictionMatrix: result.contradictionMatrix || [],
+        __timelineReceipt: result.timelineReceipt || null,
       };
 
       const { data: run, error: runError } = await supabase
@@ -225,6 +226,7 @@ export class PersistenceService {
           : [],
         noveltyGate: toJsonRecord(run.structured_approach).__noveltyGate || null,
         recoveryPlan: toJsonRecord(run.structured_approach).__recoveryPlan || null,
+        timelineReceipt: toJsonRecord(run.structured_approach).__timelineReceipt || null,
         novelIdeas: (ideas || []).map(idea => ({
           ...idea,
           priorArt: idea.prior_art,
