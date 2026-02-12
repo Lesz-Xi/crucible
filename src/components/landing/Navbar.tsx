@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Loader2, MessageSquare, Scale, Sparkles, GraduationCap } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 
@@ -40,10 +41,10 @@ export function Navbar() {
 
   const ctaLabel = useMemo(() => {
     if (isLoadingAuthState) return "Loading...";
-    return isSignedIn ? "Open Crucible" : "Try Crucible";
+    return isSignedIn ? "Open Wu-Wei" : "Try Wu-Wei";
   }, [isLoadingAuthState, isSignedIn]);
 
-  const handleTryCrucible = async () => {
+  const handleTryWuWei = async () => {
     setAuthError(null);
 
     if (isLoadingAuthState || isBusy) return;
@@ -72,9 +73,11 @@ export function Navbar() {
     <header className="absolute top-0 left-0 right-0 z-20 px-8 py-8 md:py-12">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-2.5 h-2.5 rounded-full bg-[var(--foreground)] transition-colors duration-500"></div>
+          <div className="relative h-7 w-7 overflow-hidden rounded-md ring-1 ring-[var(--border-subtle)]/70">
+            <Image src="/wu-wei-logo.png" alt="Wu-Wei logo" fill sizes="28px" className="object-cover" priority />
+          </div>
           <span className="font-serif text-lg tracking-widest text-[var(--foreground)] uppercase transition-colors duration-500">
-            Crucible
+            Wu-Wei
           </span>
         </Link>
         
@@ -121,7 +124,7 @@ export function Navbar() {
             </Link>
             <button
               type="button"
-              onClick={handleTryCrucible}
+              onClick={handleTryWuWei}
               disabled={isLoadingAuthState || isBusy}
               className="inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] px-4 py-2 text-sm font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70 normal-case tracking-normal"
             >
@@ -158,7 +161,7 @@ export function Navbar() {
           </Link>
           <button
             type="button"
-            onClick={handleTryCrucible}
+            onClick={handleTryWuWei}
             disabled={isLoadingAuthState || isBusy}
             className="inline-flex items-center justify-center gap-1 rounded-md bg-[var(--text-primary)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70"
           >

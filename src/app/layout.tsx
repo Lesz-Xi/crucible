@@ -25,7 +25,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Crucible | Wabi-Sabi Synthesis Engine",
+  title: "Wu-Wei | Wabi-Sabi Synthesis Engine",
   description: "Synthesize ideas with a cinematic Wabi-Sabi interface.",
 };
 
@@ -47,7 +47,7 @@ export default function RootLayout({
             attribute="class"
             defaultTheme="light"
             enableSystem={false}
-            storageKey="crucible-theme"
+            storageKey="wu-wei-theme"
             disableTransitionOnChange
           >
             {children}

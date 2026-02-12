@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { Clock3, Loader2, MessageSquare, Plus, Scale, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AuthButton } from '@/components/auth/AuthButton';
@@ -70,9 +71,14 @@ export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSi
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--lab-border)] p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <div>
-            <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Crucible</p>
+          <div className="flex items-center gap-3">
+            <div className="relative h-9 w-9 overflow-hidden rounded-md ring-1 ring-[var(--lab-border)]">
+              <Image src="/wu-wei-logo.png" alt="Wu-Wei logo" fill sizes="36px" className="object-cover" />
+            </div>
+            <div>
+            <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Wei</p>
             <p className="text-xs text-[var(--lab-text-secondary)]">Automated Scientist Workbench</p>
+            </div>
           </div>
           <AuthButton compact />
         </div>
