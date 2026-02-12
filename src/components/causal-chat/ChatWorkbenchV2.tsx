@@ -1,20 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FlaskConical, Microscope, Network, ShieldCheck, Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
-import { readLastHistorySyncStatus } from '@/lib/migration/history-import-bootstrap';
-import type { HistorySyncStatus } from '@/types/history-import';
 import { ChatSidebarV2 } from '@/components/causal-chat/ChatSidebarV2';
 import { ChatComposerV2 } from '@/components/causal-chat/ChatComposerV2';
 import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
-import { StatusStrip } from '@/components/workbench/StatusStrip';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 
 interface ChatWorkbenchV2Props {
@@ -42,6 +39,20 @@ interface AssistantEventPayload {
   finished?: boolean;
 }
 
+interface SessionHistoryMessage {
+  id: string;
+  role: string;
+  content: string;
+  created_at: string;
+  domain_classified?: string | null;
+  model_key?: string | null;
+  causal_density?: {
+    score?: number;
+    label?: string;
+    confidence?: number;
+  } | null;
+}
+
 export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Props) {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
@@ -49,24 +60,11 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dbSessionId, setDbSessionId] = useState<string | null>(null);
-  const [syncStatus, setSyncStatus] = useState<HistorySyncStatus | null>(null);
   const [currentDomain, setCurrentDomain] = useState<string>('unclassified');
   const [currentModelKey, setCurrentModelKey] = useState<string>('default');
   const [lastDensity, setLastDensity] = useState<{ score: number; label: string; confidence: number } | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
-
-  useEffect(() => {
-    setSyncStatus(readLastHistorySyncStatus());
-
-    const handleSyncStatus = (event: Event) => {
-      const customEvent = event as CustomEvent<HistorySyncStatus>;
-      if (customEvent.detail) setSyncStatus(customEvent.detail);
-    };
-
-    window.addEventListener('historySyncStatus', handleSyncStatus);
-    return () => window.removeEventListener('historySyncStatus', handleSyncStatus);
-  }, []);
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -90,11 +88,14 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         }
 
         const payload = (await response.json()) as {
-          messages?: Array<{ id: string; role: string; content: string; created_at: string }>;
+          messages?: SessionHistoryMessage[];
         };
-
-        const loadedMessages: WorkbenchMessage[] = (payload.messages || [])
+        const historyMessages = payload.messages || [];
+        const filteredMessages = historyMessages
           .filter((message) => message.role === 'user' || message.role === 'assistant')
+          .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+        const loadedMessages: WorkbenchMessage[] = filteredMessages
           .map((message) => ({
             id: message.id,
             role: message.role as 'user' | 'assistant',
@@ -102,7 +103,38 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
             createdAt: new Date(message.created_at),
           }));
 
+        const latestAssistantWithEvidence = [...filteredMessages]
+          .reverse()
+          .find((message) => {
+            if (message.role !== 'assistant') return false;
+            const hasDomain = typeof message.domain_classified === 'string' && message.domain_classified.length > 0;
+            const hasModel = typeof message.model_key === 'string' && message.model_key.length > 0;
+            const density = message.causal_density;
+            const hasDensity =
+              !!density &&
+              typeof density.score === 'number' &&
+              Number.isFinite(density.score) &&
+              typeof density.confidence === 'number' &&
+              Number.isFinite(density.confidence);
+            return hasDomain || hasModel || hasDensity;
+          });
+
         setMessages(loadedMessages);
+        setCurrentDomain(latestAssistantWithEvidence?.domain_classified || 'unclassified');
+        setCurrentModelKey(latestAssistantWithEvidence?.model_key || 'default');
+        if (
+          latestAssistantWithEvidence?.causal_density &&
+          typeof latestAssistantWithEvidence.causal_density.score === 'number' &&
+          typeof latestAssistantWithEvidence.causal_density.confidence === 'number'
+        ) {
+          setLastDensity({
+            score: latestAssistantWithEvidence.causal_density.score,
+            label: latestAssistantWithEvidence.causal_density.label || 'Unknown',
+            confidence: latestAssistantWithEvidence.causal_density.confidence,
+          });
+        } else {
+          setLastDensity(null);
+        }
         setDbSessionId(sessionId);
         onLoadSession?.(sessionId);
       } catch (loadError) {
@@ -305,32 +337,14 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
   return (
     <WorkbenchShell
-      statusStrip={
-        <StatusStrip
-          left={
-            <div className="flex items-center gap-3">
-              <span className="lab-chip-mono">Automated Scientist Console</span>
-              <p className="text-sm text-[var(--lab-text-secondary)]">Deterministic causal dialogue with intervention-aware traces</p>
-            </div>
-          }
-          right={<span className="lab-chip-mono">Mode: supervised hypothesis refinement</span>}
-        />
-      }
       contextRail={
         <ContextRail title="Command Rail" subtitle="Thread control and feature routing">
-          <ChatSidebarV2 onLoadSession={loadSession} onNewThread={resetThread} syncStatus={syncStatus} />
+          <ChatSidebarV2 onLoadSession={loadSession} onNewThread={resetThread} />
         </ContextRail>
       }
       primary={
         <PrimaryCanvas>
           <div className="flex h-full flex-col">
-            <div className="border-b border-[var(--lab-border)] p-5">
-              <h1 className="lab-panel-heading">Automated Scientist Dialogue</h1>
-              <p className="mt-2 text-sm text-[var(--lab-text-secondary)]">
-                Specify intervention targets, expected outcomes, and constraints. The system returns evidence-grounded causal responses.
-              </p>
-            </div>
-
             <div className="lab-scroll-region flex-1 space-y-3 px-5 py-4">
               {messages.length === 0 ? (
                 <div className="lab-empty-state">

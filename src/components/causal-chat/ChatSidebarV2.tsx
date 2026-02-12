@@ -7,7 +7,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { AuthButton } from '@/components/auth/AuthButton';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { cn } from '@/lib/utils';
-import type { HistorySyncStatus } from '@/types/history-import';
 
 export interface ChatSidebarSession {
   id: string;
@@ -18,10 +17,9 @@ export interface ChatSidebarSession {
 export interface ChatSidebarV2Props {
   onNewThread: () => void;
   onLoadSession: (sessionId: string) => void;
-  syncStatus: HistorySyncStatus | null;
 }
 
-export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSidebarV2Props) {
+export function ChatSidebarV2({ onNewThread, onLoadSession }: ChatSidebarV2Props) {
   const pathname = usePathname();
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const [sessions, setSessions] = useState<ChatSidebarSession[]>([]);
@@ -69,9 +67,8 @@ export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSi
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--lab-border)] p-4">
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="mb-4 flex items-center gap-3">
           <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Weism</p>
-          <AuthButton compact />
         </div>
 
         <button type="button" className="lab-button-primary w-full" onClick={onNewThread}>
@@ -131,8 +128,7 @@ export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSi
       </div>
 
       <div className="border-t border-[var(--lab-border)] p-4">
-        <p className="lab-section-title">History Sync</p>
-        <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">{syncStatus?.message || 'Sync status unavailable.'}</p>
+        <AuthButton compact />
       </div>
     </div>
   );
