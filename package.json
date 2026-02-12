@@ -24,7 +24,8 @@
     "governance:causal-method-eval": "npm run governance:causal-method --",
     "governance:uncertainty-cal": "npx --yes tsx scripts/evaluate-uncertainty-calibration.ts",
     "governance:uncertainty-calibration": "npm run governance:uncertainty-cal --",
-    "governance:law-falsification": "npx --yes tsx scripts/evaluate-law-falsification.ts"
+    "governance:law-falsification": "npx --yes tsx scripts/evaluate-law-falsification.ts",
+    "governance:hybrid-novelty-proof": "npx --yes tsx scripts/evaluate-hybrid-novelty-proof.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",

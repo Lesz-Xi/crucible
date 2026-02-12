@@ -13,6 +13,10 @@ export type StreamEvent =
   | { event: 'agent_switch', agent: AgentPersona }
   | { event: 'thinking_step', content: string }
   | { event: 'step_update', step: string }
+  | { event: 'contradiction_matrix_built', rows: number, highConfidenceRows: number }
+  | { event: 'novelty_proof_computed', proofCount: number }
+  | { event: 'novelty_gate_decision', decision: 'pass' | 'recover' | 'fail', passingIdeas: number, blockedIdeas: number, reasons: string[] }
+  | { event: 'recovery_plan_generated', diagnosisCount: number }
   | { event: 'statistical_validation', pValue: number, bayesFactor: number, interpretation: string }
   | { event: 'protocol_validated', ideaId: string, success: boolean, pValue?: number }
   | { event: 'spectral_gap_analysis', spectralGap: { lambda_min: number, lambda_max: number, spectralGap: number, conditionNumber: number, threshold: number }, lipschitzConstant: number, expansionTriggered?: boolean }

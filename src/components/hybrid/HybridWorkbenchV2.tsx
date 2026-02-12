@@ -2,7 +2,17 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { Activity, BookOpen, Clock3, FlaskConical, Scale, Sparkles } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  BookOpen,
+  CheckCircle2,
+  Clock3,
+  FlaskConical,
+  Scale,
+  Sparkles,
+  TrendingUp,
+} from 'lucide-react';
 import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
@@ -20,6 +30,57 @@ interface HistoryEntry {
 
 type Stage = 'input' | 'processing' | 'stabilizing' | 'results';
 
+type StreamPayload = {
+  event?: string;
+  message?: string;
+  synthesis?: HybridResultData;
+  rows?: number;
+  highConfidenceRows?: number;
+  proofCount?: number;
+  decision?: 'pass' | 'recover' | 'fail';
+  passingIdeas?: number;
+  blockedIdeas?: number;
+  reasons?: string[];
+};
+
+function normalizeRunPayload(raw: unknown): HybridResultData | null {
+  if (!raw || typeof raw !== 'object') {
+    return null;
+  }
+
+  const row = raw as Record<string, unknown>;
+  const noveltyProof = Array.isArray(row.noveltyProof) ? row.noveltyProof : [];
+  const contradictions = Array.isArray(row.contradictionMatrix)
+    ? row.contradictionMatrix
+    : Array.isArray(row.contradictions)
+      ? row.contradictions
+      : [];
+
+  const rawStructured = (row.structuredApproach || row.structured_approach || {}) as Record<string, unknown>;
+  const structuredApproach = {
+    objective: typeof rawStructured.objective === 'string' ? rawStructured.objective : undefined,
+    phases: Array.isArray(rawStructured.phases) ? (rawStructured.phases as string[]) : undefined,
+    risks: Array.isArray(rawStructured.risks) ? (rawStructured.risks as string[]) : undefined,
+  };
+
+  return {
+    sources: Array.isArray(row.sources) ? (row.sources as HybridResultData['sources']) : [],
+    contradictions: contradictions as HybridResultData['contradictions'],
+    contradictionMatrix: contradictions as HybridResultData['contradictionMatrix'],
+    novelIdeas: Array.isArray(row.novelIdeas) ? (row.novelIdeas as HybridResultData['novelIdeas']) : [],
+    noveltyProof: noveltyProof as HybridResultData['noveltyProof'],
+    noveltyGate:
+      row.noveltyGate && typeof row.noveltyGate === 'object'
+        ? (row.noveltyGate as HybridResultData['noveltyGate'])
+        : null,
+    recoveryPlan:
+      row.recoveryPlan && typeof row.recoveryPlan === 'object'
+        ? (row.recoveryPlan as HybridResultData['recoveryPlan'])
+        : null,
+    structuredApproach,
+  };
+}
+
 export function HybridWorkbenchV2() {
   const [files, setFiles] = useState<File[]>([]);
   const [companies, setCompanies] = useState<string[]>([]);
@@ -31,12 +92,19 @@ export function HybridWorkbenchV2() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [matrixStats, setMatrixStats] = useState({ rows: 0, highConfidenceRows: 0 });
+  const [proofCount, setProofCount] = useState(0);
+  const [gatePreview, setGatePreview] = useState<HybridResultData['noveltyGate']>(null);
 
   const totalSources = files.length + companies.length;
   const canRun = totalSources >= 2 && totalSources <= 12;
 
-  const contradictionCount = useMemo(() => result?.contradictions.length || 0, [result]);
-  const ideaCount = useMemo(() => result?.novelIdeas.length || 0, [result]);
+  const contradictionCount = useMemo(
+    () => result?.contradictionMatrix?.length || result?.contradictions.length || matrixStats.rows,
+    [result, matrixStats.rows],
+  );
+  const passingIdeas = useMemo(() => result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0, [result, gatePreview]);
+  const blockedIdeas = useMemo(() => result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0, [result, gatePreview]);
 
   const fetchHistory = async () => {
     setHistoryLoading(true);
@@ -80,6 +148,10 @@ export function HybridWorkbenchV2() {
     setError(null);
     setStage('processing');
     setLatestEvent('Starting ingestion...');
+    setResult(null);
+    setProofCount(0);
+    setGatePreview(null);
+    setMatrixStats({ rows: 0, highConfidenceRows: 0 });
 
     try {
       const formData = new FormData();
@@ -110,14 +182,44 @@ export function HybridWorkbenchV2() {
 
         for (const part of parts) {
           if (!part.startsWith('data: ')) continue;
-          const payload = JSON.parse(part.slice(6)) as { event?: string; message?: string; synthesis?: HybridResultData };
+          const payload = JSON.parse(part.slice(6)) as StreamPayload;
 
           if (payload.event === 'error') {
             throw new Error(payload.message || 'Synthesis failed');
           }
 
+          if (payload.event === 'contradiction_matrix_built') {
+            setMatrixStats({ rows: payload.rows || 0, highConfidenceRows: payload.highConfidenceRows || 0 });
+            setLatestEvent('Contradiction matrix built');
+            continue;
+          }
+
+          if (payload.event === 'novelty_proof_computed') {
+            setProofCount(payload.proofCount || 0);
+            setLatestEvent('Novelty proof computed');
+            continue;
+          }
+
+          if (payload.event === 'novelty_gate_decision') {
+            setGatePreview({
+              decision: payload.decision || 'recover',
+              threshold: 0.3,
+              passingIdeas: payload.passingIdeas || 0,
+              blockedIdeas: payload.blockedIdeas || 0,
+              reasons: payload.reasons || [],
+            });
+            setLatestEvent(`Novelty gate: ${payload.decision || 'recover'}`);
+            continue;
+          }
+
+          if (payload.event === 'recovery_plan_generated') {
+            setLatestEvent('Recovery plan generated');
+            continue;
+          }
+
           if (payload.event === 'complete' && payload.synthesis) {
-            setResult(payload.synthesis);
+            const normalized = normalizeRunPayload(payload.synthesis);
+            setResult(normalized);
             setLatestEvent('Synthesis completed.');
             setStage('stabilizing');
             setTimeout(() => setStage('results'), 650);
@@ -140,10 +242,20 @@ export function HybridWorkbenchV2() {
     try {
       const response = await fetch(`/api/synthesis-history?id=${id}`);
       if (!response.ok) throw new Error('Failed to load run details');
-      const payload = (await response.json()) as { run?: HybridResultData; success?: boolean };
+      const payload = (await response.json()) as { run?: unknown; success?: boolean };
       if (!payload.success || !payload.run) throw new Error('Run missing');
-      setResult(payload.run);
+
+      const normalized = normalizeRunPayload(payload.run);
+      if (!normalized) throw new Error('Run payload malformed');
+
+      setResult(normalized);
       setLatestEvent('Historical run loaded.');
+      setMatrixStats({
+        rows: normalized.contradictionMatrix?.length || 0,
+        highConfidenceRows: (normalized.contradictionMatrix || []).filter((row) => row.highConfidence).length,
+      });
+      setProofCount(normalized.noveltyProof?.length || 0);
+      setGatePreview(normalized.noveltyGate || null);
       setStage('results');
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : 'Unable to load run';
@@ -152,6 +264,18 @@ export function HybridWorkbenchV2() {
     }
   };
 
+  const topOverlaps = useMemo(() => {
+    const all = (result?.noveltyProof || []).flatMap((proof) => proof.closestPriorArt || []);
+    return all
+      .slice()
+      .sort((left, right) => {
+        const leftScore = left.similarity > 1 ? left.similarity : left.similarity * 100;
+        const rightScore = right.similarity > 1 ? right.similarity : right.similarity * 100;
+        return rightScore - leftScore;
+      })
+      .slice(0, 3);
+  }, [result?.noveltyProof]);
+
   return (
     <WorkbenchShell
       statusStrip={
@@ -159,7 +283,7 @@ export function HybridWorkbenchV2() {
           left={
             <div className="flex items-center gap-3">
               <span className="lab-chip-mono">Hybrid Discovery Engine</span>
-              <p className="text-sm text-[var(--lab-text-secondary)]">Ingest → contradict → synthesize → structure</p>
+              <p className="text-sm text-[var(--lab-text-secondary)]">Ingest → contradict → synthesize → prove novelty</p>
             </div>
           }
           right={<span className="lab-chip-mono">Phase: deterministic synthesis routing</span>}
@@ -195,18 +319,22 @@ export function HybridWorkbenchV2() {
       primary={
         <PrimaryCanvas>
           <div className="flex h-full flex-col p-4">
-            <div className="mb-4 grid grid-cols-3 gap-3">
+            <div className="mb-4 grid grid-cols-4 gap-3">
               <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Total Sources</p>
+                <p className="lab-section-title !mb-1">Sources</p>
                 <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{totalSources}</p>
               </div>
               <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Contradictions</p>
-                <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{contradictionCount}</p>
+                <p className="lab-section-title !mb-1">Validated Contradictions</p>
+                <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{matrixStats.highConfidenceRows || contradictionCount}</p>
               </div>
               <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Ideas</p>
-                <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{ideaCount}</p>
+                <p className="lab-section-title !mb-1">Novelty Pass</p>
+                <p className="text-2xl font-semibold text-[var(--lab-accent-moss)]">{passingIdeas}</p>
+              </div>
+              <div className="lab-metric-tile">
+                <p className="lab-section-title !mb-1">Blocked Candidates</p>
+                <p className="text-2xl font-semibold text-[var(--lab-accent-earth)]">{blockedIdeas || Math.max(0, proofCount - passingIdeas)}</p>
               </div>
             </div>
 
@@ -217,7 +345,7 @@ export function HybridWorkbenchV2() {
               </div>
             ) : stage === 'stabilizing' ? (
               <div className="lab-empty-state flex-1">
-                <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Stabilizing output...</p>
+                <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Stabilizing proof bundle...</p>
               </div>
             ) : (
               <div className="lab-scroll-region flex-1">
@@ -236,11 +364,43 @@ export function HybridWorkbenchV2() {
                 <p className="lab-section-title !mb-0">Runtime Signal</p>
               </div>
               <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
+              <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Proof cards: {result?.noveltyProof?.length || proofCount}</p>
+            </div>
+
+            <div className="lab-metric-tile">
+              <div className="mb-2 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                <p className="lab-section-title !mb-0">Gate State</p>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-[var(--lab-text-secondary)]">
+                {result?.noveltyGate?.decision === 'pass' ? <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" /> : <AlertTriangle className="h-4 w-4 text-[var(--lab-accent-earth)]" />}
+                <span>{result?.noveltyGate?.decision || gatePreview?.decision || 'pending'}</span>
+              </div>
+              <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">
+                pass={result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0} · blocked={result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0}
+              </p>
             </div>
 
             <div className="lab-metric-tile">
               <div className="mb-2 flex items-center gap-2">
                 <BookOpen className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                <p className="lab-section-title !mb-0">Top Prior-Art Overlaps</p>
+              </div>
+              {topOverlaps.length === 0 ? (
+                <p className="text-sm text-[var(--lab-text-tertiary)]">No overlap data yet.</p>
+              ) : (
+                <ul className="space-y-1 text-xs text-[var(--lab-text-secondary)]">
+                  {topOverlaps.map((item, index) => {
+                    const overlap = Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100);
+                    return <li key={`${item.title}-${index}`}>{item.title} ({overlap}%)</li>;
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="lab-metric-tile">
+              <div className="mb-2 flex items-center gap-2">
+                <Clock3 className="h-4 w-4 text-[var(--lab-accent-earth)]" />
                 <p className="lab-section-title !mb-0">Historical Runs</p>
               </div>
               {historyLoading ? (

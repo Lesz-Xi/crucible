@@ -20,6 +20,13 @@ interface NovelIdeaExtended extends NovelIdea {
 
 type JsonRecord = Record<string, unknown>;
 
+function toJsonRecord(value: unknown): JsonRecord {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  return value as JsonRecord;
+}
+
 export class PersistenceService {
   /**
    * Saves a full synthesis run and its results to Supabase
@@ -29,6 +36,14 @@ export class PersistenceService {
       const supabase = await createServerSupabaseClient();
 
       // 1. Create Synthesis Run
+      const structuredApproachPayload = {
+        ...(result.structuredApproach || {}),
+        __noveltyProof: result.noveltyProof || [],
+        __noveltyGate: result.noveltyGate || null,
+        __recoveryPlan: result.recoveryPlan || null,
+        __contradictionMatrix: result.contradictionMatrix || [],
+      };
+
       const { data: run, error: runError } = await supabase
         .from("synthesis_runs")
         .insert({
@@ -36,8 +51,10 @@ export class PersistenceService {
           sources: result.sources.map(s => ({ name: s.name, thesis: s.concepts.mainThesis })),
           total_ideas: result.novelIdeas.length,
           status: "completed",
-          structured_approach: result.structuredApproach,
-          contradictions: result.contradictions
+          structured_approach: structuredApproachPayload,
+          contradictions: result.contradictionMatrix && result.contradictionMatrix.length > 0
+            ? result.contradictionMatrix
+            : result.contradictions
         })
         .select()
         .single();
@@ -198,8 +215,16 @@ export class PersistenceService {
 
       return {
         ...run,
-        structuredApproach: run.structured_approach,
-        contradictions: run.contradictions || [],
+        structuredApproach: toJsonRecord(run.structured_approach),
+        contradictions: Array.isArray(run.contradictions) ? run.contradictions : [],
+        contradictionMatrix: Array.isArray(toJsonRecord(run.structured_approach).__contradictionMatrix)
+          ? toJsonRecord(run.structured_approach).__contradictionMatrix
+          : [],
+        noveltyProof: Array.isArray(toJsonRecord(run.structured_approach).__noveltyProof)
+          ? toJsonRecord(run.structured_approach).__noveltyProof
+          : [],
+        noveltyGate: toJsonRecord(run.structured_approach).__noveltyGate || null,
+        recoveryPlan: toJsonRecord(run.structured_approach).__recoveryPlan || null,
         novelIdeas: (ideas || []).map(idea => ({
           ...idea,
           priorArt: idea.prior_art,

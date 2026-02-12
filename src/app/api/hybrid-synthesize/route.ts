@@ -110,7 +110,8 @@ export async function POST(request: NextRequest) {
             researchFocus: researchFocus || undefined,
             enableParallelRefinement: enableParallel,
             parallelConcurrency: concurrency,
-            userId: userId // Add explicitly to config
+            userId: userId, // Add explicitly to config
+            noveltyProofEnabled: process.env.HYBRID_NOVELTY_PROOF_V1 !== "false",
           } as unknown as EnhancedSynthesisConfig;
 
           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, config);

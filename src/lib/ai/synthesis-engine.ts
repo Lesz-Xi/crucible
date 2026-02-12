@@ -15,9 +15,24 @@ import {
   PriorArt,
   CriticalAnalysis,
 } from "@/types";
+import type {
+  ContradictionEvidence,
+  NoveltyGateResult,
+  NoveltyProof,
+  RecoveryPlan,
+} from "@/types/hybrid-novelty";
 import { evaluateCriticalThinking } from "./novelty-evaluator";
 import { StatisticalValidator } from "./statistical-validator";
 import { linkSnippetsToPDF } from "./citation-linker";
+import {
+  buildContradictionMatrix,
+  hasHighConfidenceContradictions,
+} from "@/lib/services/contradiction-matrix";
+import {
+  computeNoveltyGate,
+  computeNoveltyProofs,
+} from "@/lib/services/novelty-proof-engine";
+import { buildNoveltyRecoveryPlan } from "@/lib/services/novelty-recovery-planner";
 
 // ===== CONCEPT EXTRACTION =====
 
@@ -439,13 +454,18 @@ export async function generateStructuredApproach(
 export interface SynthesisResult {
   sources: { name: string; concepts: ExtractedConcepts }[];
   contradictions: Contradiction[];
+  contradictionMatrix?: ContradictionEvidence[];
   novelIdeas: NovelIdea[];
   selectedIdea?: NovelIdea;
   structuredApproach?: StructuredApproach;
+  noveltyProof?: NoveltyProof[];
+  noveltyGate?: NoveltyGateResult;
+  recoveryPlan?: RecoveryPlan;
   // Tier 1: Pipeline metadata
   metadata?: {
     refinementIterations: number;
     calibrationApplied: boolean;
+    noveltyProofApplied?: boolean;
   };
 }
 
@@ -516,6 +536,7 @@ export interface EnhancedSynthesisConfig {
   parallelConcurrency?: number;
   userId?: string;
   eventEmitter?: { emit: (data: unknown) => void };
+  noveltyProofEnabled?: boolean;
 }
 
 export async function runEnhancedSynthesisPipeline(
@@ -527,6 +548,7 @@ export async function runEnhancedSynthesisPipeline(
     maxNovelIdeas,
     noveltyThreshold = 0.30,
     eventEmitter,
+    noveltyProofEnabled = process.env.HYBRID_NOVELTY_PROOF_V1 === "true",
   } = config;
 
   // Step 1: Extract concepts from each source
@@ -545,6 +567,12 @@ export async function runEnhancedSynthesisPipeline(
       arguments: s.concepts.keyArguments,
     }))
   );
+  const contradictionMatrix = buildContradictionMatrix(contradictions, sourcesWithConcepts);
+  eventEmitter?.emit({
+    event: "contradiction_matrix_built",
+    rows: contradictionMatrix.length,
+    highConfidenceRows: contradictionMatrix.filter((row) => row.highConfidence).length,
+  });
 
   // Step 3: Generate novel ideas
   let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
@@ -552,6 +580,9 @@ export async function runEnhancedSynthesisPipeline(
     novelIdeas = novelIdeas.slice(0, maxNovelIdeas);
   }
   let totalRefinements = 0;
+  let noveltyProof: NoveltyProof[] = [];
+  let noveltyGate: NoveltyGateResult | undefined;
+  let recoveryPlan: RecoveryPlan | undefined;
 
   const statValidator = process.env.ENABLE_STATISTICAL_VALIDATION === "true"
     ? new StatisticalValidator()
@@ -717,10 +748,62 @@ export async function runEnhancedSynthesisPipeline(
     })
   );
 
-  // Step 6: Generate structured approach for top idea
+  let gatedIdeas = novelIdeas;
+  if (noveltyProofEnabled) {
+    // Step 6: Novelty Proof Engine + hard gate policy
+    noveltyProof = await computeNoveltyProofs(novelIdeas, contradictionMatrix, {
+      noveltyThreshold,
+      falsifiabilityThreshold: 0.55,
+      contradictionThreshold: 0.45,
+      priorArtSearchFn: config.priorArtSearchFn,
+    });
+    eventEmitter?.emit({
+      event: "novelty_proof_computed",
+      proofCount: noveltyProof.length,
+    });
+
+    noveltyGate = computeNoveltyGate(noveltyProof, { noveltyThreshold });
+
+    if (!hasHighConfidenceContradictions(contradictionMatrix)) {
+      noveltyGate = {
+        ...noveltyGate,
+        decision: "recover",
+        reasons: [...new Set([...(noveltyGate.reasons || []), "no_high_confidence_contradictions"])],
+      };
+    }
+
+    eventEmitter?.emit({
+      event: "novelty_gate_decision",
+      decision: noveltyGate.decision,
+      passingIdeas: noveltyGate.passingIdeas,
+      blockedIdeas: noveltyGate.blockedIdeas,
+      reasons: noveltyGate.reasons,
+    });
+
+    if (noveltyGate.decision !== "pass") {
+      recoveryPlan = buildNoveltyRecoveryPlan({
+        gate: noveltyGate,
+        proofs: noveltyProof,
+        contradictionMatrix,
+      });
+      eventEmitter?.emit({
+        event: "recovery_plan_generated",
+        diagnosisCount: recoveryPlan.diagnosis.length,
+      });
+    }
+
+    const passingIdeaIds = new Set(
+      noveltyProof.filter((proof) => proof.proofStatus === "pass").map((proof) => proof.ideaId),
+    );
+    gatedIdeas = noveltyGate.decision === "pass"
+      ? novelIdeas.filter((idea) => passingIdeaIds.has(idea.id))
+      : [];
+  }
+
+  // Step 7: Generate structured approach for top idea
   let structuredApproach: StructuredApproach | undefined;
-  if (novelIdeas.length > 0) {
-    const topIdea = novelIdeas.reduce((prev, curr) =>
+  if (gatedIdeas.length > 0) {
+    const topIdea = gatedIdeas.reduce((prev, curr) =>
       curr.confidence > prev.confidence ? curr : prev
     );
     structuredApproach = await generateStructuredApproach(topIdea);
@@ -729,12 +812,17 @@ export async function runEnhancedSynthesisPipeline(
   return {
     sources: sourcesWithConcepts,
     contradictions,
-    novelIdeas,
-    selectedIdea: novelIdeas[0],
+    contradictionMatrix,
+    novelIdeas: gatedIdeas,
+    selectedIdea: gatedIdeas[0],
     structuredApproach,
+    noveltyProof,
+    noveltyGate,
+    recoveryPlan,
     metadata: {
       refinementIterations: totalRefinements,
       calibrationApplied: true,
+      noveltyProofApplied: noveltyProofEnabled,
     },
   };
 }

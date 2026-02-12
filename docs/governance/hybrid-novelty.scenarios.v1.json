@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-02-12T00:00:00Z",
+  "scenarios": [
+    {
+      "scenarioId": "hybrid-novelty-pass-001",
+      "description": "Strong contradiction bridge with explicit falsifier should pass novelty gate",
+      "idea": {
+        "id": "idea-pass-001",
+        "thesis": "Counterfactual channeling improves anomaly robustness under intervention shift",
+        "description": "Use a causal intervention channel to separate confounded correlations from mechanism-consistent anomaly signatures.",
+        "mechanism": "The intervention channel blocks confounded pathways and surfaces stable residual effects.",
+        "prediction": "If intervention channel is removed, precision@k falls by at least 10%.",
+        "falsifier": "Ablate intervention channel and compare precision@k under same dataset split.",
+        "bridgedConcepts": ["anomaly detection", "causal intervention", "domain shift"],
+        "confidence": 80,
+        "noveltyAssessment": "Bridges conflicting assumptions in prior art.",
+        "doPlan": "do(remove_intervention_channel)"
+      },
+      "contradictionMatrix": [
+        {
+          "id": "CMX-1",
+          "concept": "intervention channel",
+          "claimA": "Intervention channel stabilizes anomaly boundaries.",
+          "claimB": "Intervention channel causes overfit under shift.",
+          "sourceA": "paper-a",
+          "sourceB": "paper-b",
+          "semanticConflictScore": 0.72,
+          "mechanismConflictTag": "mechanism",
+          "evidenceRefs": ["paper-a:thesis", "paper-b:arg-1"],
+          "highConfidence": true
+        }
+      ],
+      "priorArt": [
+        {
+          "source": "web",
+          "title": "Robust anomaly filtering",
+          "similarity": 0.25,
+          "differentiator": "No intervention channel"
+        }
+      ],
+      "expectedDecision": "pass"
+    },
+    {
+      "scenarioId": "hybrid-novelty-recover-001",
+      "description": "High overlap and weak falsifier should be blocked and recovered",
+      "idea": {
+        "id": "idea-recover-001",
+        "thesis": "Classic anomaly scoring with threshold retuning",
+        "description": "Tune threshold to improve anomaly detection on same dataset.",
+        "mechanism": "Adjust threshold and retrain.",
+        "prediction": "Maybe metrics improve.",
+        "falsifier": "None",
+        "bridgedConcepts": ["anomaly detection"],
+        "confidence": 62,
+        "noveltyAssessment": "Small variation of prior approaches"
+      },
+      "contradictionMatrix": [
+        {
+          "id": "CMX-2",
+          "concept": "thresholding",
+          "claimA": "Threshold tuning increases recall.",
+          "claimB": "Threshold tuning collapses precision.",
+          "sourceA": "paper-c",
+          "sourceB": "paper-d",
+          "semanticConflictScore": 0.58,
+          "mechanismConflictTag": "outcome",
+          "evidenceRefs": ["paper-c:arg-1", "paper-d:arg-1"],
+          "highConfidence": true
+        }
+      ],
+      "priorArt": [
+        {
+          "source": "web",
+          "title": "Threshold retuning for anomaly detection",
+          "similarity": 0.9,
+          "differentiator": "Nearly identical procedure"
+        }
+      ],
+      "expectedDecision": "recover"
+    }
+  ]
+}

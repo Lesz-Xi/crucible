@@ -1,4 +1,10 @@
 // TypeScript Type Definitions for Sovereign Synthesis Engine
+import type {
+  ContradictionEvidence,
+  NoveltyGateResult,
+  NoveltyProof,
+  RecoveryPlan,
+} from "./hybrid-novelty";
 
 // Source Types
 export type SourceType = "pdf" | "company";
@@ -363,9 +369,14 @@ export interface SynthesisResult {
   novelIdeas: NovelIdea[];
   selectedIdea?: NovelIdea;
   structuredApproach?: StructuredApproach;
+  contradictionMatrix?: ContradictionEvidence[];
+  noveltyProof?: NoveltyProof[];
+  noveltyGate?: NoveltyGateResult;
+  recoveryPlan?: RecoveryPlan;
   metadata?: {
     refinementIterations?: number;
     calibrationApplied?: boolean;
+    noveltyProofApplied?: boolean;
   };
 }
 
@@ -549,3 +560,12 @@ export type {
   LegacyAdoptionSummary,
   HistorySyncStatus,
 } from './history-import';
+
+export type {
+  NoveltyGateDecision,
+  ContradictionEvidence,
+  FalsificationPlan,
+  NoveltyProof,
+  RecoveryPlan,
+  NoveltyGateResult,
+} from './hybrid-novelty';
