@@ -15,6 +15,9 @@ import { selectLatestAlignmentAuditReport } from "@/lib/services/alignment-audit
 import type { AlignmentAuditReportRow } from "@/lib/services/alignment-audit";
 import { buildConversationContext, normalizeChatTurns, type ChatTurn } from "@/lib/services/conversation-context";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { evaluateFactTrigger } from "@/lib/services/chat-fact-trigger";
+import { assessFactualConfidence, searchChatGrounding } from "@/lib/services/chat-web-grounding";
+import type { FactualConfidenceResult, GroundingSource } from "@/types/chat-grounding";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -170,6 +173,12 @@ export async function POST(req: NextRequest) {
       const densityDistribution: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
       let lastDensityScore: 1 | 2 | 3 | null = null;
       let oracleActivations = 0;
+      let groundingSources: GroundingSource[] = [];
+      let factualConfidence: FactualConfidenceResult = {
+        level: "insufficient",
+        score: 0,
+        rationale: "Grounding not evaluated.",
+      };
 
       try {
         const resolveDomainOverride = (key?: string | null): string | null => {
@@ -248,6 +257,53 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
         }
 
         // FULL CAUSAL PATH: For scientific questions
+        const factTrigger = evaluateFactTrigger(userQuestion);
+        const groundingEnabled = process.env.CHAT_WEB_GROUNDING_V1 !== "false";
+
+        sendEvent("fact_trigger_evaluated", {
+          ...factTrigger,
+          enabled: groundingEnabled,
+        });
+
+        if (factTrigger.shouldSearch) {
+          if (!groundingEnabled) {
+            sendEvent("web_grounding_failed", {
+              reason: "feature_disabled",
+              message: "Web grounding feature is disabled via CHAT_WEB_GROUNDING_V1=false.",
+            });
+          } else if (!process.env.SERPER_API_KEY) {
+            sendEvent("web_grounding_failed", {
+              reason: "missing_serper_api_key",
+              message: "SERPER_API_KEY is not configured. Running strict uncertain mode.",
+            });
+          } else {
+            sendEvent("web_grounding_started", {
+              entities: factTrigger.normalizedEntities,
+              confidence: factTrigger.confidence,
+            });
+            try {
+              groundingSources = await searchChatGrounding(userQuestion, factTrigger.normalizedEntities, {
+                topK: 5,
+                timeoutMs: 5000,
+              });
+              sendEvent("web_grounding_completed", {
+                sourceCount: groundingSources.length,
+                topDomains: Array.from(new Set(groundingSources.map((source) => source.domain))).slice(0, 5),
+                sources: groundingSources,
+              });
+            } catch (groundingError) {
+              console.error("[CausalChat] Web grounding failed:", groundingError);
+              sendEvent("web_grounding_failed", {
+                reason: "search_error",
+                message: groundingError instanceof Error ? groundingError.message : "Grounding search failed.",
+              });
+            }
+          }
+
+          factualConfidence = assessFactualConfidence(userQuestion, groundingSources);
+          sendEvent("factual_confidence_assessed", factualConfidence);
+        }
+
         // 1. Domain Classification
         sendEvent("thinking", { message: "Identifying causal domain..." });
         const domainOverride = resolveDomainOverride(modelKey);
@@ -347,6 +403,36 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
           ambiguousReference: contextResult.ambiguousReference,
         });
 
+        let finalPrompt = systemPrompt;
+        if (factTrigger.shouldSearch) {
+          const sourceList =
+            groundingSources.length > 0
+              ? groundingSources
+                  .map(
+                    (source) =>
+                      `[${source.rank}] ${source.title}\nURL: ${source.link}\nSnippet: ${source.snippet || "N/A"}`
+                  )
+                  .join("\n\n")
+              : "No reliable sources retrieved.";
+
+          finalPrompt = `${systemPrompt}
+
+FACTUAL GROUNDING POLICY (MANDATORY):
+- This answer must be strictly evidence-grounded for named factual claims.
+- For any factual claim, either cite a source inline as [n] or explicitly state uncertainty.
+- Never fabricate creators, ownership, launch dates, or affiliations.
+- If evidence is weak/conflicting, say so and provide one deterministic verification step.
+- Keep tone direct and avoid narrative padding.
+
+GROUNDING SIGNAL:
+- Trigger confidence: ${factTrigger.confidence.toFixed(2)}
+- Factual confidence level: ${factualConfidence.level}
+- Factual confidence rationale: ${factualConfidence.rationale}
+
+SOURCES:
+${sourceList}`;
+        }
+
         // 4. LLM Generation (True Streaming)
         const model = getClaudeModel();
 
@@ -356,9 +442,24 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
         let chunkCount = 0;
 
         // TODO: Implement true streaming when Claude SDK supports it
-        const result = await model.generateContent(systemPrompt);
+        const result = await model.generateContent(finalPrompt);
         fullText = result.response.text();
         chunkCount = 1;
+
+        if (factTrigger.shouldSearch && groundingSources.length > 0 && !/\[\d+\]/.test(fullText)) {
+          const sourcesFooter = groundingSources
+            .map((source) => `[${source.rank}] ${source.title} — ${source.link}`)
+            .join("\n");
+          fullText = `${fullText}\n\nSources:\n${sourcesFooter}`;
+        }
+
+        if (
+          factTrigger.shouldSearch &&
+          factualConfidence.level === "insufficient" &&
+          !/(cannot verify|unable to verify|insufficient evidence|could not verify)/i.test(fullText)
+        ) {
+          fullText = `I cannot verify this claim with high confidence from available sources right now.\n\n${fullText}`;
+        }
 
         // Send the full response as a single chunk
         sendEvent("answer_chunk", { text: fullText });

@@ -13,6 +13,7 @@ import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
+import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 
 interface ChatWorkbenchV2Props {
   onLoadSession?: (sessionId: string) => void;
@@ -37,6 +38,11 @@ interface AssistantEventPayload {
   primary?: string;
   message?: string;
   finished?: boolean;
+  sources?: GroundingSource[];
+  sourceCount?: number;
+  topDomains?: string[];
+  level?: FactualConfidenceResult["level"];
+  rationale?: string;
 }
 
 interface SessionHistoryMessage {
@@ -63,6 +69,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [currentDomain, setCurrentDomain] = useState<string>('unclassified');
   const [currentModelKey, setCurrentModelKey] = useState<string>('default');
   const [lastDensity, setLastDensity] = useState<{ score: number; label: string; confidence: number } | null>(null);
+  const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
+  const [groundingStatus, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
+  const [groundingError, setGroundingError] = useState<string | null>(null);
+  const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
 
@@ -74,6 +84,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setCurrentDomain('unclassified');
     setCurrentModelKey('default');
     setLastDensity(null);
+    setGroundingSources([]);
+    setGroundingStatus('idle');
+    setGroundingError(null);
+    setFactualConfidence(null);
     onNewChat?.();
   }, [onNewChat]);
 
@@ -135,6 +149,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         } else {
           setLastDensity(null);
         }
+        setGroundingSources([]);
+        setGroundingStatus('idle');
+        setGroundingError(null);
+        setFactualConfidence(null);
         setDbSessionId(sessionId);
         onLoadSession?.(sessionId);
       } catch (loadError) {
@@ -158,6 +176,37 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
       if (eventName === 'provenance' && payload.model_key) {
         setCurrentModelKey(payload.model_key);
+        return;
+      }
+
+      if (eventName === 'web_grounding_started') {
+        setGroundingStatus('searching');
+        setGroundingError(null);
+        return;
+      }
+
+      if (eventName === 'web_grounding_completed') {
+        setGroundingStatus('ready');
+        setGroundingSources(Array.isArray(payload.sources) ? payload.sources : []);
+        setGroundingError(null);
+        return;
+      }
+
+      if (eventName === 'web_grounding_failed') {
+        setGroundingStatus('failed');
+        setGroundingSources([]);
+        setGroundingError(payload.message || 'Grounding failed.');
+        return;
+      }
+
+      if (eventName === 'factual_confidence_assessed') {
+        if (typeof payload.level === 'string' && typeof payload.score === 'number') {
+          setFactualConfidence({
+            level: payload.level,
+            score: payload.score,
+            rationale: payload.rationale || 'No rationale provided.',
+          });
+        }
         return;
       }
 
@@ -203,6 +252,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
     setError(null);
     setIsLoading(true);
+    setGroundingSources([]);
+    setGroundingStatus('idle');
+    setGroundingError(null);
+    setFactualConfidence(null);
 
     const userMessage: WorkbenchMessage = {
       id: `user-${Date.now()}`,
@@ -418,6 +471,42 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               </div>
               <p className="text-sm text-[var(--lab-text-secondary)]">No unaudited intervention claims without identifiability gates.</p>
             </div>
+
+            {(groundingStatus !== 'idle' || groundingSources.length > 0 || factualConfidence) ? (
+              <div className="lab-metric-tile">
+                <div className="mb-2 flex items-center gap-2">
+                  <Network className="h-4 w-4 text-[var(--lab-accent-earth)]" />
+                  <p className="lab-section-title !mb-0">Grounding Sources</p>
+                </div>
+                <p className="text-xs text-[var(--lab-text-secondary)]">
+                  {groundingStatus === 'searching' && 'Searching web sources...'}
+                  {groundingStatus === 'ready' && `${groundingSources.length} sources linked.`}
+                  {groundingStatus === 'failed' && (groundingError || 'Verification incomplete.')}
+                  {groundingStatus === 'idle' && 'No factual web-grounding triggered.'}
+                </p>
+                {factualConfidence ? (
+                  <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
+                    Confidence: <span className="font-semibold text-[var(--lab-text-primary)]">{factualConfidence.level}</span>
+                  </p>
+                ) : null}
+                {groundingSources.length > 0 ? (
+                  <div className="mt-3 space-y-2">
+                    {groundingSources.slice(0, 5).map((source) => (
+                      <a
+                        key={`${source.rank}-${source.link}`}
+                        href={source.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block rounded-md border border-[var(--lab-border)] p-2 transition hover:bg-[var(--lab-bg-elevated)]"
+                      >
+                        <p className="text-xs font-semibold text-[var(--lab-text-primary)]">[{source.rank}] {source.title}</p>
+                        <p className="mt-1 line-clamp-2 text-[11px] text-[var(--lab-text-secondary)]">{source.snippet || source.domain}</p>
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             <button type="button" className="lab-button-secondary w-full" onClick={resetThread}>
               <FlaskConical className="h-4 w-4" />
