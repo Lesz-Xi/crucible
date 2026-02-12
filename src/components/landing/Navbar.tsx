@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MessageSquare, Scale, Sparkles, GraduationCap } from "lucide-react";
@@ -71,14 +72,18 @@ export function Navbar() {
   return (
     <header className="absolute top-0 left-0 right-0 z-20 px-8 py-8 md:py-12">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <span
-            aria-hidden="true"
-            className="text-xl leading-none text-[var(--wabi-clay)] transition-colors duration-500"
-          >
-            ✶
+        <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-black p-2.5 shadow-sm">
+            <Image
+              src="/wu-wei-mark.png"
+              alt="Wu-Wei mark"
+              width={26}
+              height={26}
+              className="h-6 w-6 object-contain"
+              priority
+            />
           </span>
-          <span className="font-serif text-[2rem] leading-none text-[var(--foreground)] transition-colors duration-500">
+          <span className="font-serif text-[2rem] leading-none tracking-[0.12em] text-[var(--foreground)] transition-colors duration-500">
             Wu-Wei
           </span>
         </Link>
