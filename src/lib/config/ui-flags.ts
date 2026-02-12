@@ -13,7 +13,7 @@ function parseBoolean(value: string | null | undefined, fallback: boolean): bool
 }
 
 export function resolveUiFlags(searchParams?: URLSearchParams): UiFlags {
-  const envDefault = parseBoolean(process.env.NEXT_PUBLIC_AUTOSCI_LAYOUT_V2 ?? 'false', false);
+  const envDefault = parseBoolean(process.env.NEXT_PUBLIC_AUTOSCI_LAYOUT_V2 ?? 'true', true);
 
   if (typeof window === 'undefined') {
     return { autoSciLayoutV2: envDefault };
