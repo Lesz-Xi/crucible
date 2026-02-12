@@ -77,8 +77,8 @@ export default function EpistemicPage() {
           </Link>
           <div>
             <h1 className="font-semibold text-sm text-gray-800 flex items-center gap-2">
-              <div className="w-12 h-12 relative">
-                <img src="/wu-wei-logo.png" alt="Wu-Wei Logo" className="w-full h-full object-contain drop-shadow-md" />
+              <div className="w-14 h-14 relative rounded-lg bg-black p-1.5">
+                <img src="/wu-wei-mark.png" alt="Wu-Wei Logo" className="w-full h-full object-contain invert" />
               </div>
               Epistemic Audit
               <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] uppercase tracking-wider font-bold">

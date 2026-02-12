@@ -72,8 +72,8 @@ export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSi
       <div className="border-b border-[var(--lab-border)] p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-md ring-1 ring-[var(--lab-border)]">
-              <Image src="/wu-wei-logo.png" alt="Wu-Wei logo" fill sizes="36px" className="object-cover" />
+            <div className="relative h-12 w-12 overflow-hidden rounded-lg bg-black p-1.5 ring-1 ring-black/80">
+              <Image src="/wu-wei-mark.png" alt="Wu-Wei logo" fill sizes="48px" className="object-contain object-center invert" />
             </div>
             <div>
             <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Wei</p>
