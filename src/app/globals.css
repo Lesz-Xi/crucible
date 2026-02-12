@@ -350,6 +350,176 @@
   box-shadow: 0 0 0 2px rgba(139, 94, 60, 0.30);
 }
 
+.lab-card,
+.lab-card-interactive {
+  border-radius: 16px;
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--lab-shadow-soft);
+}
+
+.lab-card {
+  padding: 16px;
+}
+
+.lab-card-interactive {
+  padding: 16px;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.lab-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--lab-shadow-lift);
+  border-color: rgba(139, 94, 60, 0.32);
+}
+
+.lab-button-primary,
+.lab-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease, background-color 180ms ease;
+}
+
+.lab-button-primary {
+  color: #f8f7f4;
+  border: 1px solid rgba(139, 94, 60, 0.6);
+  background: linear-gradient(180deg, var(--lab-accent-clay) 0%, var(--lab-accent-earth) 100%);
+  box-shadow: 0 8px 18px rgba(139, 94, 60, 0.22);
+}
+
+.lab-button-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(139, 94, 60, 0.28);
+}
+
+.lab-button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lab-button-secondary {
+  color: var(--lab-text-primary);
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.lab-button-secondary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--lab-shadow-soft);
+}
+
+.lab-button-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.lab-input,
+.lab-select,
+.lab-textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--lab-text-primary);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.lab-input,
+.lab-select {
+  min-height: 42px;
+  padding: 10px 12px;
+}
+
+.lab-textarea {
+  min-height: 96px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.lab-input:focus,
+.lab-select:focus,
+.lab-textarea:focus {
+  outline: none;
+  border-color: rgba(139, 94, 60, 0.5);
+  box-shadow: 0 0 0 2px rgba(139, 94, 60, 0.16);
+}
+
+.lab-input::placeholder,
+.lab-textarea::placeholder {
+  color: var(--lab-text-tertiary);
+}
+
+.lab-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid var(--lab-border);
+  color: var(--lab-text-secondary);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.lab-nav-pill[data-active="true"] {
+  color: var(--lab-accent-earth);
+  border-color: rgba(139, 94, 60, 0.36);
+  background: rgba(158, 126, 107, 0.12);
+}
+
+.lab-metric-tile {
+  border-radius: 14px;
+  border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.74);
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(42, 38, 33, 0.05);
+}
+
+.lab-panel-heading {
+  font-family: var(--font-playfair), serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--lab-text-primary);
+}
+
+.lab-empty-state {
+  border-radius: 16px;
+  border: 1px dashed rgba(42, 38, 33, 0.24);
+  background: rgba(255, 255, 255, 0.52);
+  padding: 20px;
+  text-align: center;
+  color: var(--lab-text-secondary);
+}
+
+.lab-scroll-region {
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 94, 60, 0.45) transparent;
+}
+
+.lab-scroll-region::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.lab-scroll-region::-webkit-scrollbar-thumb {
+  background: rgba(139, 94, 60, 0.35);
+  border-radius: 999px;
+}
+
 /* ========================================
    PHASE 4: WABI-SABI REDESIGN UTILITIES
    ======================================== */
