@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlaskConical, Microscope, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
@@ -345,7 +347,15 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                       <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Crucible'}</span>
                       <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
                     </div>
-                    <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
+                    {message.role === 'assistant' ? (
+                      <div className="lab-chat-prose">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {message.content || '...'}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
+                    )}
                     {message.isStreaming ? (
                       <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">Streaming response...</p>
                     ) : null}
