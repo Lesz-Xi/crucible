@@ -73,13 +73,14 @@ export function Navbar() {
     <header className="absolute top-0 left-0 right-0 z-20 px-8 py-8 md:py-12">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black shadow-sm">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center">
             <Image
-              src="/wu-wei-mark.png"
+              src="/wu-wei-logo-trim-transparent.png"
               alt="Wu-Wei mark"
-              width={48}
-              height={48}
-              className="h-12 w-12 object-cover object-center"
+              width={64}
+              height={64}
+              className="h-16 w-16 object-contain object-center"
+              unoptimized
               priority
             />
           </span>
