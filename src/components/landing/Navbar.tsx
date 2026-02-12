@@ -75,11 +75,11 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-black shadow-sm">
             <Image
-              src="/wu-wei-logo.png"
+              src="/wu-wei-logo-black.png"
               alt="Wu-Wei mark"
-              width={40}
-              height={40}
-              className="h-10 w-10 object-contain object-center"
+              width={48}
+              height={48}
+              className="h-12 w-12 object-cover object-center"
               priority
             />
           </span>
