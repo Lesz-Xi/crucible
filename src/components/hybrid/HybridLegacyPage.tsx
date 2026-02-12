@@ -358,11 +358,11 @@ export default function HybridSynthesisPage() {
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 relative rounded-lg bg-black p-1.5">
-<img src="/wu-wei-mark.png" alt="Wu-Wei Logo" className="w-full h-full object-contain invert" />
+<img src="/wu-wei-mark.png" alt="Wu-Weism logo" className="w-full h-full object-contain invert" />
                 </div>
                 <div>
                   <h1 className="text-xl font-mono font-bold text-[var(--text-primary)] tracking-wider">
-                    Wu-Wei
+                    Wu-Weism
                   </h1>
                 </div>
               </div>

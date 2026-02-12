@@ -41,10 +41,10 @@ export function Navbar() {
 
   const ctaLabel = useMemo(() => {
     if (isLoadingAuthState) return "Loading...";
-    return isSignedIn ? "Open Wu-Wei" : "Try Wu-Wei";
+    return isSignedIn ? "Open Wu-Weism" : "Try Wu-Weism";
   }, [isLoadingAuthState, isSignedIn]);
 
-  const handleTryWuWei = async () => {
+  const handleTryWuWeism = async () => {
     setAuthError(null);
 
     if (isLoadingAuthState || isBusy) return;
@@ -76,7 +76,7 @@ export function Navbar() {
           <span className="flex h-16 w-16 shrink-0 items-center justify-center">
             <Image
               src="/wu-wei-logo-trim-transparent.png"
-              alt="Wu-Wei mark"
+              alt="Wu-Weism mark"
               width={64}
               height={64}
               className="h-16 w-16 object-contain object-center"
@@ -85,7 +85,7 @@ export function Navbar() {
             />
           </span>
           <span className="font-serif text-[2rem] leading-none tracking-[0.12em] text-[var(--foreground)] transition-colors duration-500">
-            Wu-Wei
+            Wu-Weism
           </span>
         </Link>
         
@@ -132,7 +132,7 @@ export function Navbar() {
             </Link>
             <button
               type="button"
-              onClick={handleTryWuWei}
+              onClick={handleTryWuWeism}
               disabled={isLoadingAuthState || isBusy}
               className="inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] px-4 py-2 text-sm font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70 normal-case tracking-normal"
             >
@@ -169,7 +169,7 @@ export function Navbar() {
           </Link>
           <button
             type="button"
-            onClick={handleTryWuWei}
+            onClick={handleTryWuWeism}
             disabled={isLoadingAuthState || isBusy}
             className="inline-flex items-center justify-center gap-1 rounded-md bg-[var(--text-primary)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70"
           >

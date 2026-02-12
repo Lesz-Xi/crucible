@@ -70,7 +70,7 @@ export function ChatSidebarV2({ onNewThread, onLoadSession, syncStatus }: ChatSi
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--lab-border)] p-4">
         <div className="mb-4 flex items-center justify-between gap-3">
-          <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Wei</p>
+          <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Weism</p>
           <AuthButton compact />
         </div>
 

@@ -344,7 +344,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                     className={message.role === 'user' ? 'lab-card-interactive ml-14' : 'lab-card mr-14'}
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Wei'}</span>
+                      <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
                       <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
                     </div>
                     {message.role === 'assistant' ? (

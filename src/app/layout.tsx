@@ -25,7 +25,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Wu-Wei | Wabi-Sabi Synthesis Engine",
+  title: "Wu-Weism | Wabi-Sabi Synthesis Engine",
   description: "Synthesize ideas with a cinematic Wabi-Sabi interface.",
 };
 
@@ -47,7 +47,7 @@ export default function RootLayout({
             attribute="class"
             defaultTheme="light"
             enableSystem={false}
-            storageKey="wu-wei-theme"
+            storageKey="wu-weism-theme"
             disableTransitionOnChange
           >
             {children}
