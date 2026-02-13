@@ -137,6 +137,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
 
   const openThread = (sessionId: string) => {
     router.push(`/chat?sessionId=${sessionId}`);
+    window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
   };
 
   const removeFromResearch = (sessionId: string) => {

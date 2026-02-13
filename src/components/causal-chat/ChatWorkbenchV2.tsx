@@ -538,6 +538,15 @@ export function ChatWorkbenchV2() {
         setDbSessionId(sessionForSave);
       }
 
+      if (sessionForSave) {
+        const params = new URLSearchParams(window.location.search);
+        const currentUrlSessionId = params.get('sessionId');
+        if (currentUrlSessionId !== sessionForSave) {
+          const next = `${window.location.pathname}?sessionId=${encodeURIComponent(sessionForSave)}`;
+          window.history.replaceState({}, '', next);
+        }
+      }
+
       const shouldPersistClientSide = !!sessionForSave && sessionForSave.startsWith('local-');
 
       if (shouldPersistClientSide && sessionForSave) {
