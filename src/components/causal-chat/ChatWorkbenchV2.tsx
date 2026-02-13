@@ -1,12 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   FlaskConical,
   Microscope,
   Network,
-  PanelLeftClose,
-  PanelLeftOpen,
   PanelRightClose,
   PanelRightOpen,
   ShieldCheck,
@@ -17,9 +16,7 @@ import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
-import { ChatSidebarV2 } from '@/components/causal-chat/ChatSidebarV2';
 import { ChatComposerV2 } from '@/components/causal-chat/ChatComposerV2';
-import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
@@ -102,10 +99,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
-  const [contextRailOpen, setContextRailOpen] = useState(true);
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
+  const searchParams = useSearchParams();
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -130,23 +127,12 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
 
   useEffect(() => {
-    const savedContextRail = window.localStorage.getItem('chat-v3-context-rail');
     const savedEvidenceRail = window.localStorage.getItem('chat-v3-evidence-rail');
-    if (savedContextRail === 'closed') setContextRailOpen(false);
     if (savedEvidenceRail === 'closed') setEvidenceRailOpen(false);
 
     const onKeyDown = (event: KeyboardEvent) => {
       const isMetaToggle = (event.metaKey || event.ctrlKey) && !event.altKey;
       if (!isMetaToggle) return;
-
-      if (event.key.toLowerCase() === 'b') {
-        event.preventDefault();
-        setContextRailOpen((current) => {
-          const next = !current;
-          window.localStorage.setItem('chat-v3-context-rail', next ? 'open' : 'closed');
-          return next;
-        });
-      }
 
       if (event.key === ']') {
         event.preventDefault();
@@ -269,6 +255,39 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     },
     [onLoadSession]
   );
+
+  useEffect(() => {
+    const urlSessionId = searchParams.get('sessionId');
+    const isNew = searchParams.get('new') === '1';
+
+    if (isNew) {
+      resetThread();
+      return;
+    }
+
+    if (urlSessionId && urlSessionId !== dbSessionId) {
+      void loadSession(urlSessionId);
+    }
+  }, [dbSessionId, loadSession, resetThread, searchParams]);
+
+  useEffect(() => {
+    const onLoadSessionEvent = (event: Event) => {
+      const custom = event as CustomEvent<{ sessionId?: string }>;
+      const sessionId = custom.detail?.sessionId;
+      if (typeof sessionId === 'string' && sessionId.length > 0) {
+        void loadSession(sessionId);
+      }
+    };
+
+    const onNewChatEvent = () => resetThread();
+
+    window.addEventListener('loadSession', onLoadSessionEvent as EventListener);
+    window.addEventListener('newChat', onNewChatEvent);
+    return () => {
+      window.removeEventListener('loadSession', onLoadSessionEvent as EventListener);
+      window.removeEventListener('newChat', onNewChatEvent);
+    };
+  }, [loadSession, resetThread]);
 
   const handleStreamEvent = useCallback(
     (eventName: string, data: unknown, assistantMessageId: string) => {
@@ -546,14 +565,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     });
   }, []);
 
-  const toggleContextRail = useCallback(() => {
-    setContextRailOpen((current) => {
-      const next = !current;
-      window.localStorage.setItem('chat-v3-context-rail', next ? 'open' : 'closed');
-      return next;
-    });
-  }, []);
-
   const toggleEvidenceRail = useCallback(() => {
     setEvidenceRailOpen((current) => {
       const next = !current;
@@ -564,44 +575,21 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
   return (
     <WorkbenchShell
-      contextRailOpen={contextRailOpen}
+      contextRailOpen={false}
       evidenceRailOpen={evidenceRailOpen}
       statusStrip={
         <StatusStrip
-          left={
-            <div className="flex items-center gap-3">
-              <span className="lab-chip-mono">Automated Scientist · Chat v3</span>
-              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · theme-aware UI · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
-            </div>
-          }
+          left={<div />}
           right={
             <div className="flex items-center gap-2">
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('explore')} data-active={operatorMode === 'explore'}>
-                Explore
-              </button>
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('intervene')} data-active={operatorMode === 'intervene'}>
-                Intervene
-              </button>
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('audit')} data-active={operatorMode === 'audit'}>
-                Audit
-              </button>
-              <div className="mx-1 h-5 w-px bg-[var(--lab-border)]" />
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={toggleContextRail} title="Toggle command rail">
-                {contextRailOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
-              </button>
               <button type="button" className="lab-button-secondary !py-1.5" onClick={toggleEvidenceRail} title="Toggle evidence rail">
                 {evidenceRailOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
               </button>
-              <div className="mx-1 h-5 w-px bg-[var(--lab-border)]" />
             </div>
           }
         />
       }
-      contextRail={
-        <ContextRail title="Command Rail" subtitle="Thread control and feature routing">
-          <ChatSidebarV2 onLoadSession={loadSession} onNewThread={resetThread} />
-        </ContextRail>
-      }
+      contextRail={<div />}
       primary={
         <PrimaryCanvas>
           <div className="flex h-full flex-col">
@@ -653,6 +641,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               onSend={handleSend}
               onStop={handleStop}
               isLoading={isLoading}
+              operatorMode={operatorMode}
+              onOperatorModeChange={setOperatorMode}
               placeholder={
                 operatorMode === 'intervene'
                   ? 'Specify do(X)=..., expected Y delta, and required controls...'

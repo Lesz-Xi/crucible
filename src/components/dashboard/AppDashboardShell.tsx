@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   BookOpen,
   Bot,
+  Clock3,
   Gavel,
   GraduationCap,
   Home,
@@ -15,6 +16,7 @@ import {
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
   Sun,
   UserCircle2,
 } from 'lucide-react';
@@ -24,6 +26,12 @@ import { cn } from '@/lib/utils';
 
 interface AppDashboardShellProps {
   children: ReactNode;
+}
+
+interface ChatSidebarSession {
+  id: string;
+  title: string;
+  updated_at: string;
 }
 
 const NAV_ITEMS = [
@@ -40,6 +48,8 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
+  const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -55,6 +65,28 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
       setUserEmail(data.user?.email ?? null);
     });
   }, []);
+
+  useEffect(() => {
+    if (!isChatRoute) return;
+
+    const loadHistory = async () => {
+      try {
+        const response = await fetch('/api/causal-chat/history');
+        if (!response.ok) {
+          setRecentThreads([]);
+          return;
+        }
+        const payload = (await response.json()) as { history?: ChatSidebarSession[] };
+        setRecentThreads(Array.isArray(payload.history) ? payload.history : []);
+      } catch {
+        setRecentThreads([]);
+      }
+    };
+
+    void loadHistory();
+    window.addEventListener('historyImported', loadHistory);
+    return () => window.removeEventListener('historyImported', loadHistory);
+  }, [isChatRoute]);
 
   const initials = useMemo(() => {
     if (!userEmail) return 'WW';
@@ -116,6 +148,46 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                 );
               })}
             </nav>
+
+            {isChatRoute && !collapsed ? (
+              <section className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-3">
+                <button
+                  type="button"
+                  className="lab-button-primary mb-3 w-full"
+                  onClick={() => {
+                    router.push('/chat?new=1');
+                    window.dispatchEvent(new Event('newChat'));
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  New Thread
+                </button>
+                <p className="lab-section-title mb-2 text-[11px]">Recent Threads</p>
+                <div className="lab-scroll-region h-[34vh] space-y-2 pr-1">
+                  {recentThreads.length === 0 ? (
+                    <div className="lab-empty-state text-xs">No recent history for this account.</div>
+                  ) : (
+                    recentThreads.slice(0, 12).map((session) => (
+                      <button
+                        key={session.id}
+                        type="button"
+                        className="lab-card-interactive w-full !p-2.5 text-left"
+                        onClick={() => {
+                          router.push(`/chat?sessionId=${session.id}`);
+                          window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId: session.id } }));
+                        }}
+                      >
+                        <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
+                        <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
+                          <Clock3 className="h-3.5 w-3.5" />
+                          {new Date(session.updated_at).toLocaleString()}
+                        </p>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </section>
+            ) : null}
 
             <div className="mt-auto space-y-2">
               <button

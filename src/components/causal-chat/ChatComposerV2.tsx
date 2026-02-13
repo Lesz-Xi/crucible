@@ -10,9 +10,21 @@ export interface ChatComposerV2Props {
   disabled?: boolean;
   isLoading?: boolean;
   placeholder?: string;
+  operatorMode: 'explore' | 'intervene' | 'audit';
+  onOperatorModeChange: (mode: 'explore' | 'intervene' | 'audit') => void;
 }
 
-export function ChatComposerV2({ value, onChange, onSend, onStop, disabled = false, isLoading = false, placeholder }: ChatComposerV2Props) {
+export function ChatComposerV2({
+  value,
+  onChange,
+  onSend,
+  onStop,
+  disabled = false,
+  isLoading = false,
+  placeholder,
+  operatorMode,
+  onOperatorModeChange,
+}: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
 
   return (
@@ -36,11 +48,40 @@ export function ChatComposerV2({ value, onChange, onSend, onStop, disabled = fal
         }}
       />
 
-      <div className="mt-3 flex items-center justify-between">
-        <button type="button" className="lab-button-secondary" disabled>
-          <Paperclip className="h-4 w-4" />
-          Attach
-        </button>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <button type="button" className="lab-button-secondary" disabled>
+            <Paperclip className="h-4 w-4" />
+            Attach
+          </button>
+
+          <div className="flex items-center gap-1 rounded-full border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] px-1 py-1">
+            <button
+              type="button"
+              className="lab-nav-pill !px-3 !py-1.5"
+              data-active={operatorMode === 'explore'}
+              onClick={() => onOperatorModeChange('explore')}
+            >
+              Explore
+            </button>
+            <button
+              type="button"
+              className="lab-nav-pill !px-3 !py-1.5"
+              data-active={operatorMode === 'intervene'}
+              onClick={() => onOperatorModeChange('intervene')}
+            >
+              Intervene
+            </button>
+            <button
+              type="button"
+              className="lab-nav-pill !px-3 !py-1.5"
+              data-active={operatorMode === 'audit'}
+              onClick={() => onOperatorModeChange('audit')}
+            >
+              Audit
+            </button>
+          </div>
+        </div>
 
         {isLoading ? (
           <button type="button" className="lab-button-secondary" onClick={onStop}>

@@ -53,15 +53,19 @@ export function WorkbenchShell({
           </div>
 
           <div className="md:hidden">
-            <div className="mb-3 grid grid-cols-3 gap-2">
-              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
+            <div className={cn('mb-3 grid gap-2', contextRailOpen && evidenceRailOpen ? 'grid-cols-3' : contextRailOpen || evidenceRailOpen ? 'grid-cols-2' : 'grid-cols-1')}>
+              {contextRailOpen ? (
+                <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
+              ) : null}
               <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
-              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
+              {evidenceRailOpen ? (
+                <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
+              ) : null}
             </div>
 
-            {mobileTab === 'context' ? <section className="lab-panel-elevated">{contextRail}</section> : null}
+            {contextRailOpen && mobileTab === 'context' ? <section className="lab-panel-elevated">{contextRail}</section> : null}
             {mobileTab === 'primary' ? <section className="lab-panel-elevated">{primary}</section> : null}
-            {mobileTab === 'evidence' ? <section className="lab-panel-elevated">{evidenceRail}</section> : null}
+            {evidenceRailOpen && mobileTab === 'evidence' ? <section className="lab-panel-elevated">{evidenceRail}</section> : null}
           </div>
         </div>
       </div>
