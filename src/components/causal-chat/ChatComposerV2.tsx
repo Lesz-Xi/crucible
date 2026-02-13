@@ -19,7 +19,7 @@ export interface ChatComposerV2Props {
   placeholder?: string;
   operatorMode: 'explore' | 'intervene' | 'audit';
   onOperatorModeChange: (mode: 'explore' | 'intervene' | 'audit') => void;
-  quickPrompts?: QuickPromptOption[];
+  quickPrompts?: readonly QuickPromptOption[];
   selectedQuickPromptId?: string;
   onQuickPromptSelect?: (id: string, snippet: string) => void;
 }
