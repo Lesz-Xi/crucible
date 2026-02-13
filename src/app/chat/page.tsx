@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { CausalChatInterface } from "@/components/causal-chat/CausalChatInterface";
 import { ChatLayout } from "@/components/causal-chat/ChatLayout";
 import { ChatWorkbenchV2 } from "@/components/causal-chat/ChatWorkbenchV2";
@@ -47,7 +47,11 @@ export default function ChatPage() {
   };
 
   if (useV2) {
-    return <ChatWorkbenchV2 onLoadSession={handleLoadSession} onNewChat={handleNewChat} />;
+    return (
+      <Suspense fallback={<div className="lab-shell min-h-screen" />}>
+        <ChatWorkbenchV2 onLoadSession={handleLoadSession} onNewChat={handleNewChat} />
+      </Suspense>
+    );
   }
 
   return <ChatLegacyView />;
