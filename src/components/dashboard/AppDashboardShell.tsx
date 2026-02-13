@@ -203,26 +203,24 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
               </button>
             </div>
 
-            {isChatRoute ? null : (
-              <nav className="space-y-1">
-                {NAV_ITEMS.map((item) => {
-                  const Icon = item.icon;
-                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="lab-nav-pill"
-                      data-active={active ? 'true' : 'false'}
-                      title={collapsed ? item.label : undefined}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {collapsed ? null : <span>{item.label}</span>}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
+            <nav className="space-y-1">
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="lab-nav-pill"
+                    data-active={active ? 'true' : 'false'}
+                    title={collapsed ? item.label : undefined}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {collapsed ? null : <span>{item.label}</span>}
+                  </Link>
+                );
+              })}
+            </nav>
 
             {isChatRoute && !collapsed ? (
               <section className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-3">
