@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
 
 export interface WorkbenchShellProps {
   contextRail: ReactNode;
@@ -35,33 +36,35 @@ export function WorkbenchShell({
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
   return (
-    <div className={cn('lab-shell min-h-screen w-full', className)}>
-      {statusStrip}
+    <AppDashboardShell>
+      <div className={cn('lab-shell min-h-screen w-full', className)}>
+        {statusStrip}
 
-      <div className="mx-auto max-w-[1760px] px-4 pb-6 pt-4 md:px-6 lg:px-8">
-        <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
-          {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
-          <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
-          {evidenceRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{evidenceRail}</aside> : null}
-        </div>
-
-        <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
-          {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
-          <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
-        </div>
-
-        <div className="md:hidden">
-          <div className="mb-3 grid grid-cols-3 gap-2">
-            <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
-            <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
-            <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
+        <div className="mx-auto max-w-[1760px] px-4 pb-6 pt-4 md:px-6 lg:px-8">
+          <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
+            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
+            <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
+            {evidenceRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{evidenceRail}</aside> : null}
           </div>
 
-          {mobileTab === 'context' ? <section className="lab-panel-elevated">{contextRail}</section> : null}
-          {mobileTab === 'primary' ? <section className="lab-panel-elevated">{primary}</section> : null}
-          {mobileTab === 'evidence' ? <section className="lab-panel-elevated">{evidenceRail}</section> : null}
+          <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
+            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
+            <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
+          </div>
+
+          <div className="md:hidden">
+            <div className="mb-3 grid grid-cols-3 gap-2">
+              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
+              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
+              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
+            </div>
+
+            {mobileTab === 'context' ? <section className="lab-panel-elevated">{contextRail}</section> : null}
+            {mobileTab === 'primary' ? <section className="lab-panel-elevated">{primary}</section> : null}
+            {mobileTab === 'evidence' ? <section className="lab-panel-elevated">{evidenceRail}</section> : null}
+          </div>
         </div>
       </div>
-    </div>
+    </AppDashboardShell>
   );
 }

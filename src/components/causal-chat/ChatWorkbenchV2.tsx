@@ -24,7 +24,6 @@ import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { StatusStrip } from '@/components/workbench/StatusStrip';
-import { useTheme } from 'next-themes';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 
 interface ChatWorkbenchV2Props {
@@ -107,7 +106,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
-  const { setTheme } = useTheme();
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -130,9 +128,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     onNewChat?.();
   }, [onNewChat]);
 
-  useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
 
   useEffect(() => {
     const savedContextRail = window.localStorage.getItem('chat-v3-context-rail');
@@ -576,7 +571,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           left={
             <div className="flex items-center gap-3">
               <span className="lab-chip-mono">Automated Scientist · Chat v3</span>
-              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · light-only UI · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
+              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · theme-aware UI · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
             </div>
           }
           right={

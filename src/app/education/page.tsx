@@ -56,6 +56,7 @@ import { IntakeFormProgress, DEFAULT_INTAKE_STEPS } from '@/components/education
 import { ProfilePresets, applyPresetProfile, StudentProfile } from '@/components/education/ProfilePresets';
 import { ApprenticeshipPanel } from '@/components/education/apprenticeship/ApprenticeshipPanel';
 import { LabSessionModal } from '@/components/education/apprenticeship/LabSessionModal';
+import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
 
 interface AnalysisState {
   stage: 'intake' | 'analyzing' | 'results' | 'error';
@@ -643,7 +644,8 @@ export default function EducationPage() {
   };
   
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500">
+    <AppDashboardShell>
+      <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500">
       {/* Header */}
       <header className="px-8 py-8 border-b border-[var(--border-subtle)]">
         <div className="max-w-6xl mx-auto">
@@ -1526,7 +1528,8 @@ export default function EducationPage() {
           </div>
         )}
       </div>
-    </main>
+      </main>
+    </AppDashboardShell>
   );
 }
 

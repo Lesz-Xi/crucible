@@ -3,13 +3,12 @@
 import { useEffect, useState } from "react";
 import HybridLegacyPage from "@/components/hybrid/HybridLegacyPage";
 import { HybridWorkbenchV2 } from "@/components/hybrid/HybridWorkbenchV2";
-import { resolveUiFlags } from "@/lib/config/ui-flags";
 
 export default function HybridPage() {
-  const [useV2, setUseV2] = useState(false);
+  const [useV2, setUseV2] = useState(true);
 
   useEffect(() => {
-    setUseV2(resolveUiFlags().autoSciLayoutV2);
+    setUseV2(true);
   }, []);
 
   if (useV2) {
