@@ -535,6 +535,7 @@ FACTUAL GROUNDING POLICY (MANDATORY):
 - Never fabricate creators, ownership, launch dates, or affiliations.
 - If evidence is weak/conflicting, say so and provide one deterministic verification step.
 - Keep tone direct and avoid narrative padding.
+- Do NOT claim you cannot browse/search the web; use the provided grounding results and state tooling/source limitations plainly if retrieval is weak.
 
 GROUNDING SIGNAL:
 - Trigger confidence: ${factTrigger.confidence.toFixed(2)}

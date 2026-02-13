@@ -7,6 +7,9 @@ const FACT_PATTERNS: RegExp[] = [
   /\bwhen\s+(launched|founded|started|created)\b/i,
   /\bofficial\s+site\b/i,
   /\bcompany\b/i,
+  /\b(latest|current|recent|today|this week|breaking)\b/i,
+  /\b(news|update|updates|frontier|breakthrough)\b/i,
+  /\b(web\s*search|search\s+the\s+web|look\s+up)\b/i,
 ];
 
 const ENTITY_CANDIDATE = /\b([A-Z][a-zA-Z0-9]+(?:[.-][A-Za-z0-9]+)*)\b/g;
@@ -58,10 +61,13 @@ export function evaluateFactTrigger(input: string): FactTriggerResult {
   const hasFactPattern = FACT_PATTERNS.some((pattern) => pattern.test(text));
   const hasEntitySignal = normalizedEntities.length > 0;
 
+  const hasRealtimeIntent = /\b(latest|current|recent|today|breaking|web\s*search|search\s+the\s+web|look\s+up)\b/i.test(text);
+
   let confidence = 0;
-  if (hasFactPattern) confidence += 0.6;
-  if (hasEntitySignal) confidence += 0.3;
+  if (hasFactPattern) confidence += 0.55;
+  if (hasEntitySignal) confidence += 0.25;
   if (domainMatches.length > 0) confidence += 0.1;
+  if (hasRealtimeIntent) confidence += 0.25;
 
   const boundedConfidence = Math.max(0, Math.min(1, confidence));
   const shouldSearch = boundedConfidence >= 0.55;
