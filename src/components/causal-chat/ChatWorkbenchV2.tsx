@@ -54,6 +54,42 @@ interface AssistantEventPayload {
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
 
+const inferOperatorMode = (input: string): OperatorMode => {
+  const text = input.toLowerCase();
+
+  const auditSignals = [
+    'audit',
+    'verify',
+    'validation',
+    'fact check',
+    'citation',
+    'source',
+    'uncertainty',
+    'falsifier',
+    'evidence quality',
+    'confidence score',
+  ];
+
+  const interveneSignals = [
+    'do(',
+    'intervention',
+    'intervene',
+    'treatment',
+    'counterfactual',
+    'what if we change',
+    'what happens if',
+    'manipulate',
+    'policy change',
+    'expected delta',
+    'controlled',
+    'ab test',
+  ];
+
+  if (auditSignals.some((signal) => text.includes(signal))) return 'audit';
+  if (interveneSignals.some((signal) => text.includes(signal))) return 'intervene';
+  return 'explore';
+};
+
 interface SessionHistoryMessage {
   id: string;
   role: string;
@@ -413,6 +449,11 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     const cleanPrompt = prompt.trim();
     if (!cleanPrompt || isLoading) return;
 
+    const inferredMode = inferOperatorMode(cleanPrompt);
+    if (inferredMode !== operatorMode) {
+      setOperatorMode(inferredMode);
+    }
+
     setError(null);
     setIsLoading(true);
     setGroundingSources([]);
@@ -479,7 +520,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         body: JSON.stringify({
           messages: conversation,
           sessionId: sessionForSave,
-          operatorMode,
+          operatorMode: inferredMode,
         }),
         signal: abortControllerRef.current.signal,
       });
