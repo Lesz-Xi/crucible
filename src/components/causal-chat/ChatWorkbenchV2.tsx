@@ -164,6 +164,7 @@ export function ChatWorkbenchV2() {
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('claim');
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
+  const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -209,92 +210,103 @@ export function ChatWorkbenchV2() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
+  const applySessionHistory = useCallback((sessionId: string, historyMessages: SessionHistoryMessage[]) => {
+    const filteredMessages = historyMessages
+      .filter((message) => message.role === 'user' || message.role === 'assistant')
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    const loadedMessages: WorkbenchMessage[] = filteredMessages.map((message) => ({
+      id: message.id,
+      role: message.role as 'user' | 'assistant',
+      content: message.content,
+      createdAt: new Date(message.created_at),
+    }));
+
+    const latestAssistantWithDensity = [...filteredMessages]
+      .reverse()
+      .find((message) => {
+        if (message.role !== 'assistant') return false;
+        const density = message.causal_density;
+        return (
+          !!density &&
+          typeof density.score === 'number' &&
+          Number.isFinite(density.score) &&
+          typeof density.confidence === 'number' &&
+          Number.isFinite(density.confidence)
+        );
+      });
+
+    const latestAssistantWithEvidence = latestAssistantWithDensity || [...filteredMessages]
+      .reverse()
+      .find((message) => {
+        if (message.role !== 'assistant') return false;
+        return isRealDomain(message.domain_classified) || isRealModelKey(message.model_key);
+      });
+
+    const restoredDomain = isRealDomain(latestAssistantWithEvidence?.domain_classified)
+      ? latestAssistantWithEvidence.domain_classified
+      : 'unclassified';
+    const restoredModelKey = isRealModelKey(latestAssistantWithEvidence?.model_key)
+      ? latestAssistantWithEvidence.model_key
+      : 'default';
+
+    setMessages(loadedMessages);
+    setCurrentDomain(restoredDomain);
+    currentDomainRef.current = restoredDomain;
+    setCurrentModelKey(restoredModelKey);
+    currentModelKeyRef.current = restoredModelKey;
+
+    if (
+      latestAssistantWithDensity?.causal_density &&
+      typeof latestAssistantWithDensity.causal_density.score === 'number' &&
+      typeof latestAssistantWithDensity.causal_density.confidence === 'number'
+    ) {
+      const restoredDensity = {
+        score: latestAssistantWithDensity.causal_density.score,
+        label: latestAssistantWithDensity.causal_density.label || 'Unknown',
+        confidence: latestAssistantWithDensity.causal_density.confidence,
+      };
+      setLastDensity(restoredDensity);
+      lastDensityRef.current = restoredDensity;
+    } else {
+      setLastDensity(null);
+      lastDensityRef.current = null;
+    }
+
+    const latestAssistantText = [...loadedMessages].reverse().find((m) => m.role === 'assistant')?.content || '';
+    const restoredSources = extractSourcesFromText(latestAssistantText);
+    setGroundingSources(restoredSources);
+    setGroundingStatus(restoredSources.length > 0 ? 'ready' : 'idle');
+    setGroundingError(null);
+    setUsedGroundingFallback(restoredSources.length > 0);
+    setFactualConfidence(null);
+    setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
+    setLatestClaimId(null);
+    setClaimCopied(false);
+    setDbSessionId(sessionId);
+  }, []);
+
   const loadSession = useCallback(
     async (sessionId: string) => {
       setError(null);
-      setIsLoading(true);
+
+      const cached = sessionCacheRef.current.get(sessionId);
+      if (cached) {
+        applySessionHistory(sessionId, cached);
+      } else {
+        setIsLoading(true);
+      }
+
       try {
         const response = await fetch(`/api/causal-chat/history?id=${sessionId}`);
         if (!response.ok) {
           throw new Error('Failed to load session.');
         }
 
-        const payload = (await response.json()) as {
-          messages?: SessionHistoryMessage[];
-        };
+        const payload = (await response.json()) as { messages?: SessionHistoryMessage[] };
         const historyMessages = payload.messages || [];
-        const filteredMessages = historyMessages
-          .filter((message) => message.role === 'user' || message.role === 'assistant')
-          .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-
-        const loadedMessages: WorkbenchMessage[] = filteredMessages
-          .map((message) => ({
-            id: message.id,
-            role: message.role as 'user' | 'assistant',
-            content: message.content,
-            createdAt: new Date(message.created_at),
-          }));
-
-        const latestAssistantWithDensity = [...filteredMessages]
-          .reverse()
-          .find((message) => {
-            if (message.role !== 'assistant') return false;
-            const density = message.causal_density;
-            return (
-              !!density &&
-              typeof density.score === 'number' &&
-              Number.isFinite(density.score) &&
-              typeof density.confidence === 'number' &&
-              Number.isFinite(density.confidence)
-            );
-          });
-
-        const latestAssistantWithEvidence = latestAssistantWithDensity || [...filteredMessages]
-          .reverse()
-          .find((message) => {
-            if (message.role !== 'assistant') return false;
-            return isRealDomain(message.domain_classified) || isRealModelKey(message.model_key);
-          });
-
-        const restoredDomain = isRealDomain(latestAssistantWithEvidence?.domain_classified)
-          ? latestAssistantWithEvidence.domain_classified
-          : 'unclassified';
-        const restoredModelKey = isRealModelKey(latestAssistantWithEvidence?.model_key)
-          ? latestAssistantWithEvidence.model_key
-          : 'default';
-
-        setMessages(loadedMessages);
-        setCurrentDomain(restoredDomain);
-        currentDomainRef.current = restoredDomain;
-        setCurrentModelKey(restoredModelKey);
-        currentModelKeyRef.current = restoredModelKey;
-        if (
-          latestAssistantWithDensity?.causal_density &&
-          typeof latestAssistantWithDensity.causal_density.score === 'number' &&
-          typeof latestAssistantWithDensity.causal_density.confidence === 'number'
-        ) {
-          const restoredDensity = {
-            score: latestAssistantWithDensity.causal_density.score,
-            label: latestAssistantWithDensity.causal_density.label || 'Unknown',
-            confidence: latestAssistantWithDensity.causal_density.confidence,
-          };
-          setLastDensity(restoredDensity);
-          lastDensityRef.current = restoredDensity;
-        } else {
-          setLastDensity(null);
-          lastDensityRef.current = null;
-        }
-        const latestAssistantText = [...loadedMessages].reverse().find((m) => m.role === 'assistant')?.content || '';
-        const restoredSources = extractSourcesFromText(latestAssistantText);
-        setGroundingSources(restoredSources);
-        setGroundingStatus(restoredSources.length > 0 ? 'ready' : 'idle');
-        setGroundingError(null);
-        setUsedGroundingFallback(restoredSources.length > 0);
-        setFactualConfidence(null);
-        setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
-        setLatestClaimId(null);
-        setClaimCopied(false);
-        setDbSessionId(sessionId);
+        sessionCacheRef.current.set(sessionId, historyMessages);
+        applySessionHistory(sessionId, historyMessages);
 
         void (async () => {
           try {
@@ -304,13 +316,54 @@ export function ChatWorkbenchV2() {
               const firstClaimId = claimPayload.claims?.[0]?.id;
               if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
                 setLatestClaimId(firstClaimId);
+
+                if (groundingSources.length === 0) {
+                  const reconstructionRes = await fetch(`/api/claims/${firstClaimId}`);
+                  if (reconstructionRes.ok) {
+                    const reconstructionPayload = (await reconstructionRes.json()) as {
+                      reconstruction?: {
+                        evidenceLinks?: Array<{
+                          evidenceRef?: string;
+                          snippet?: string | null;
+                          metadata?: { title?: string; domain?: string; rank?: number };
+                        }>;
+                      };
+                    };
+
+                    const fromClaim = (reconstructionPayload.reconstruction?.evidenceLinks || [])
+                      .map((evidence, index) => {
+                        const link = evidence.evidenceRef || '';
+                        if (!/^https?:\/\//.test(link)) return null;
+                        return {
+                          rank: evidence.metadata?.rank ?? index + 1,
+                          title: evidence.metadata?.title || evidence.snippet || `Source ${index + 1}`,
+                          link,
+                          domain: evidence.metadata?.domain || (() => {
+                            try {
+                              return new URL(link).hostname.replace(/^www\./, '');
+                            } catch {
+                              return 'unknown';
+                            }
+                          })(),
+                          snippet: evidence.snippet || evidence.metadata?.domain || '',
+                        } as GroundingSource;
+                      })
+                      .filter((item): item is GroundingSource => item !== null)
+                      .slice(0, 5);
+
+                    if (fromClaim.length > 0) {
+                      setGroundingSources((prev) => (prev.length > 0 ? prev : fromClaim));
+                      setGroundingStatus((prev) => (prev === 'ready' ? prev : 'ready'));
+                      setUsedGroundingFallback(true);
+                    }
+                  }
+                }
               }
             }
           } catch {
             // non-fatal: claim lineage may not exist for historical session
           }
         })();
-
       } catch (loadError) {
         const message = loadError instanceof Error ? loadError.message : 'Unable to load session';
         setError(message);
@@ -318,7 +371,7 @@ export function ChatWorkbenchV2() {
         setIsLoading(false);
       }
     },
-    []
+    [applySessionHistory, groundingSources.length]
   );
 
   useEffect(() => {
