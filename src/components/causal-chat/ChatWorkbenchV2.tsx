@@ -634,7 +634,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           <div className="flex h-full min-h-0 flex-col">
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
-                <div className="lab-empty-state">
+                <div className="lab-empty-state !border-0 !bg-transparent p-3 shadow-none">
                   <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Good day, Chief.</p>
                   <p className="mt-2 text-sm">Start with a hypothesis, then pressure-test it with causal structure.</p>
                 </div>

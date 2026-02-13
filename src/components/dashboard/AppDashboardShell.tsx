@@ -55,6 +55,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
   const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
   const [researchExpanded, setResearchExpanded] = useState(true);
+  const [researchThreadIds, setResearchThreadIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
@@ -91,9 +92,23 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
     };
 
     void loadHistory();
+    try {
+      const savedResearch = window.localStorage.getItem('chat-research-thread-ids');
+      if (savedResearch) {
+        const parsed = JSON.parse(savedResearch) as string[];
+        if (Array.isArray(parsed)) setResearchThreadIds(parsed);
+      }
+    } catch {
+      setResearchThreadIds([]);
+    }
     window.addEventListener('historyImported', loadHistory);
     return () => window.removeEventListener('historyImported', loadHistory);
   }, [isChatRoute]);
+
+  useEffect(() => {
+    if (!isChatRoute) return;
+    window.localStorage.setItem('chat-research-thread-ids', JSON.stringify(researchThreadIds));
+  }, [isChatRoute, researchThreadIds]);
 
   const initials = useMemo(() => {
     if (!userEmail) return 'WW';
@@ -127,6 +142,14 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
     const q = searchQuery.toLowerCase();
     return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
   }, [recentThreads, searchQuery]);
+
+  const filteredResearchThreads = useMemo(() => {
+    const idSet = new Set(researchThreadIds);
+    const inResearch = recentThreads.filter((session) => idSet.has(session.id));
+    if (!searchQuery.trim()) return inResearch;
+    const q = searchQuery.toLowerCase();
+    return inResearch.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
+  }, [recentThreads, researchThreadIds, searchQuery]);
 
   return (
     <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
@@ -205,7 +228,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                     <Folder className="h-4 w-4" />
                     <span>Research</span>
                     <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
-                      {filteredThreads.length}
+                      {filteredResearchThreads.length}
                     </span>
                   </button>
                 </div>
@@ -213,7 +236,19 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                 <div className="lab-scroll-region mt-4 h-[44vh] space-y-3 pr-1">
                   {sidebarMode === 'research' ? (
                     <div>
-                      <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Research ({filteredThreads.length})</p>
+                      <p className="mb-2 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Research ({filteredResearchThreads.length})</p>
+                      <button
+                        type="button"
+                        className="lab-button-secondary mb-2 w-full justify-start !py-2 text-xs"
+                        onClick={() => {
+                          setSidebarMode('threads');
+                          router.push('/chat?new=1&context=research');
+                          window.dispatchEvent(new Event('newChat'));
+                        }}
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        New research query
+                      </button>
                       <div className="mb-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
                         <button
                           type="button"
@@ -226,12 +261,12 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                         </button>
                         {researchExpanded ? (
                           <div className="mt-1 space-y-1">
-                            {filteredThreads.slice(0, 24).map((session) => (
+                            {filteredResearchThreads.slice(0, 24).map((session) => (
                               <button key={session.id} type="button" className="w-full truncate px-2 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
                                 {session.title || 'Untitled thread'}
                               </button>
                             ))}
-                            {filteredThreads.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No research prompts found.</p> : null}
+                            {filteredResearchThreads.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No research queries yet. Add from Threads or start a new research query.</p> : null}
                           </div>
                         ) : null}
                       </div>
@@ -249,6 +284,20 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                                 {new Date(session.updated_at).toLocaleString()}
                               </p>
                             </button>
+                            <button
+                              type="button"
+                              className="lab-button-secondary mt-2 w-full !py-1.5 text-xs"
+                              onClick={() =>
+                                setResearchThreadIds((current) =>
+                                  current.includes(session.id)
+                                    ? current.filter((id) => id !== session.id)
+                                    : [session.id, ...current]
+                                )
+                              }
+                            >
+                              <Folder className="h-3.5 w-3.5" />
+                              {researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -259,7 +308,8 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
               </section>
             ) : null}
 
-            <div className="mt-auto space-y-2">
+            <div className={cn('mt-auto space-y-2', isChatRoute && !collapsed ? 'pt-8' : '')}>
+              {isChatRoute && !collapsed ? <div className="lab-divider-gradient mb-2" /> : null}
               <button
                 type="button"
                 className="lab-nav-pill w-full"

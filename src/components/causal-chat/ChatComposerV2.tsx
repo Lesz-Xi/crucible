@@ -47,9 +47,9 @@ export function ChatComposerV2({
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
 
   return (
-    <div className="lab-card !rounded-t-none border-0 border-t border-[var(--lab-border)] !bg-transparent px-6 pb-1 pt-2 shadow-none">
+    <div className="lab-card !rounded-t-none border-0 !bg-transparent px-6 pb-0 pt-1 shadow-none">
       <textarea
-        className="lab-textarea min-h-[112px]"
+        className="lab-textarea min-h-[92px]"
         placeholder={placeholder || 'State your hypothesis, mechanism, and desired intervention...'}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -62,17 +62,17 @@ export function ChatComposerV2({
         }}
       />
 
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <button type="button" className="lab-button-secondary" disabled>
-            <Paperclip className="h-4 w-4" />
+          <button type="button" className="lab-button-secondary !px-2.5 !py-1 text-[11px]" disabled>
+            <Paperclip className="h-3.5 w-3.5" />
             Attach
           </button>
 
           <div className="relative">
             <button
               type="button"
-              className="lab-button-secondary !px-3 !py-1.5 text-xs"
+              className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
               onClick={() => setModeMenuOpen((current) => !current)}
               title="Response mode"
             >
@@ -104,7 +104,7 @@ export function ChatComposerV2({
             <div className="relative">
               <button
                 type="button"
-                className="lab-button-secondary !px-3 !py-1.5 text-xs"
+                className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
                 onClick={() => setShortcutMenuOpen((current) => !current)}
               >
                 <FlaskConical className="h-3.5 w-3.5" />
@@ -135,7 +135,7 @@ export function ChatComposerV2({
 
           <button
             type="button"
-            className="lab-button-secondary !px-3 !py-1.5 text-xs"
+            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
             onClick={onToggleEvidenceRail}
             title={evidenceRailOpen ? 'Hide evidence rail' : 'Show evidence rail'}
           >
@@ -144,7 +144,7 @@ export function ChatComposerV2({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px] text-[var(--lab-text-tertiary)]">Enter to send</span>
+          <span className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">Enter to send</span>
           {isLoading ? (
             <button type="button" className="lab-button-secondary" onClick={onStop}>
               <Square className="h-4 w-4" />
