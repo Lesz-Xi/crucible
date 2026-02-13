@@ -55,6 +55,7 @@ type StreamPayload = {
   state?: HybridTimelineStageState;
   timestamp?: string;
   meta?: HybridTimelineStageTelemetry;
+  claimId?: string;
 };
 
 interface NormalizedRunPayload {
@@ -134,6 +135,8 @@ export function HybridWorkbenchV2() {
   const [gatePreview, setGatePreview] = useState<HybridResultData['noveltyGate']>(null);
   const [timelineReceipt, setTimelineReceipt] = useState<HybridTimelineReceipt | null>(null);
   const [timelineNow, setTimelineNow] = useState<string>(new Date().toISOString());
+  const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
+  const [claimCopied, setClaimCopied] = useState(false);
   const activeRunAbortRef = useRef<AbortController | null>(null);
 
   const totalSources = files.length + companies.length;
@@ -228,6 +231,8 @@ export function HybridWorkbenchV2() {
     setMatrixStats({ rows: 0, highConfidenceRows: 0 });
     setTimelineReceipt(createInitialTimelineReceipt());
     setTimelineNow(new Date().toISOString());
+    setLatestClaimId(null);
+    setClaimCopied(false);
 
     activeRunAbortRef.current?.abort();
     const abortController = new AbortController();
@@ -302,6 +307,12 @@ export function HybridWorkbenchV2() {
             continue;
           }
 
+          if (payload.event === 'claim_recorded' && payload.claimId) {
+            setLatestClaimId(payload.claimId);
+            setLatestEvent('Claim lineage receipt written.');
+            continue;
+          }
+
           if (payload.event === 'complete' && payload.synthesis) {
             const normalized = normalizeRunPayload(payload.synthesis);
             if (!normalized) {
@@ -364,6 +375,21 @@ export function HybridWorkbenchV2() {
       });
       setProofCount(normalized.result.noveltyProof?.length || 0);
       setGatePreview(normalized.result.noveltyGate || null);
+      setLatestClaimId(null);
+
+      try {
+        const claimResponse = await fetch(`/api/claims?sourceFeature=hybrid&traceId=${id}&limit=1`);
+        if (claimResponse.ok) {
+          const claimPayload = (await claimResponse.json()) as { claims?: Array<{ id?: string }> };
+          const firstClaimId = claimPayload.claims?.[0]?.id;
+          if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
+            setLatestClaimId(firstClaimId);
+          }
+        }
+      } catch {
+        // non-fatal: historical run may predate claim ledger
+      }
+
       setStage('results');
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : 'Unable to load run';
@@ -383,6 +409,16 @@ export function HybridWorkbenchV2() {
       })
       .slice(0, 3);
   }, [result?.noveltyProof]);
+
+  const handleCopyClaimId = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setClaimCopied(true);
+      window.setTimeout(() => setClaimCopied(false), 1400);
+    } catch {
+      setClaimCopied(false);
+    }
+  };
 
   return (
     <WorkbenchShell
@@ -490,6 +526,32 @@ export function HybridWorkbenchV2() {
                 pass={result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0} · blocked={result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0}
               </p>
             </div>
+
+            {latestClaimId ? (
+              <div className="lab-metric-tile">
+                <div className="mb-2 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                  <p className="lab-section-title !mb-0">Claim Lineage</p>
+                </div>
+                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
+                    Open pretty view
+                  </a>
+                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
+                    Open JSON
+                  </a>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--lab-text-secondary)] underline"
+                    onClick={() => void handleCopyClaimId(latestClaimId)}
+                  >
+                    Copy Claim ID
+                  </button>
+                </div>
+                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
+              </div>
+            ) : null}
 
             <div className="lab-metric-tile">
               <div className="mb-2 flex items-center gap-2">

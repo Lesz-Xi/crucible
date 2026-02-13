@@ -577,3 +577,32 @@ export type {
   HybridTimelineStageRecord,
   HybridTimelineReceipt,
 } from './hybrid-timeline';
+
+export type {
+  CausalRung,
+  CausalMemoryEntry,
+  CompactionReceipt,
+  CacheTtlState,
+  PruningDecision,
+  RetrievalFusionScoredItem,
+  RetrievalFusionResult,
+  CrossSessionAxiomEvent,
+  LatticeBroadcastGateResult,
+} from './persistent-memory';
+
+export type {
+  ClaimSourceFeature,
+  ClaimKind,
+  ClaimStatus,
+  ClaimUncertaintyLabel,
+  ClaimRecord,
+  ClaimEvidenceType,
+  ClaimEvidenceLink,
+  ClaimGateDecisionLabel,
+  ClaimGateDecision,
+  ClaimCounterfactualResultLabel,
+  ClaimCounterfactualTest,
+  ClaimReceiptType,
+  ClaimReceipt,
+  ClaimReconstruction,
+} from './claim-ledger';

@@ -349,5 +349,7 @@ export type LegalStreamEvent =
     }
   | { event: 'legal_masa_audit_start'; agentCount: number }
   | { event: 'legal_verdict_ready'; verdict: LegalVerdict }
+  | { event: 'claim_recorded'; claimId: string }
+  | { event: 'claim_record_failed'; message: string }
   | { event: 'legal_analysis_complete'; case: LegalCase }
   | { event: 'legal_error'; message: string };

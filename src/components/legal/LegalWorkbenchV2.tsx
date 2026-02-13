@@ -32,6 +32,8 @@ export function LegalWorkbenchV2() {
   });
   const [result, setResult] = useState<LegalCase | null>(null);
   const [gateState, setGateState] = useState<LegalGateSummary | null>(null);
+  const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
+  const [claimCopied, setClaimCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<LegalHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -54,6 +56,8 @@ export function LegalWorkbenchV2() {
     setJurisdiction('');
     setResult(null);
     setGateState(null);
+    setLatestClaimId(null);
+    setClaimCopied(false);
     setError(null);
     setAnalysisStatus({
       stage: 'idle',
@@ -64,6 +68,12 @@ export function LegalWorkbenchV2() {
 
   const handleStreamEvent = (event: Record<string, unknown>) => {
     const eventType = event.event;
+
+    if (eventType === 'claim_recorded') {
+      const claimId = typeof event.claimId === 'string' ? event.claimId : null;
+      setLatestClaimId(claimId);
+      return;
+    }
 
     if (eventType === 'intervention_gate') {
       setGateState({
@@ -163,10 +173,22 @@ export function LegalWorkbenchV2() {
     if (!loaded) return;
 
     setResult(loaded);
+    setLatestClaimId(null);
+    setClaimCopied(false);
     setCaseTitle(loaded.title);
     setJurisdiction(loaded.jurisdiction || '');
     setCaseType((loaded.caseType as 'criminal' | 'tort' | 'contract' | 'administrative') || 'tort');
     setAnalysisStatus({ stage: 'complete', message: 'Loaded historical analysis.', progress: 100 });
+  };
+
+  const handleCopyClaimId = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setClaimCopied(true);
+      window.setTimeout(() => setClaimCopied(false), 1400);
+    } catch {
+      setClaimCopied(false);
+    }
   };
 
   return (
@@ -229,6 +251,29 @@ export function LegalWorkbenchV2() {
               <p className="lab-section-title !mb-1">Intervention Gate</p>
               <p className="text-sm text-[var(--lab-text-secondary)]">{gateState?.rationale || 'Pending gate evaluation.'}</p>
             </section>
+
+            {latestClaimId ? (
+              <section className="lab-metric-tile">
+                <p className="lab-section-title !mb-1">Claim Lineage</p>
+                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
+                    Open pretty view
+                  </a>
+                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
+                    Open JSON
+                  </a>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--lab-text-secondary)] underline"
+                    onClick={() => void handleCopyClaimId(latestClaimId)}
+                  >
+                    Copy Claim ID
+                  </button>
+                </div>
+                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
+              </section>
+            ) : null}
 
             <section className="lab-metric-tile">
               <p className="lab-section-title !mb-1">Historical Analyses</p>

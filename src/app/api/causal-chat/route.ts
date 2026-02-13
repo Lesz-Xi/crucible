@@ -18,6 +18,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { evaluateFactTrigger } from "@/lib/services/chat-fact-trigger";
 import { assessFactualConfidence, searchChatGrounding } from "@/lib/services/chat-web-grounding";
 import type { FactualConfidenceResult, GroundingSource } from "@/types/chat-grounding";
+import { FEATURE_FLAGS } from "@/lib/config/feature-flags";
+import { evaluateCausalPruning, type PrunableChatMessage } from "@/lib/services/causal-pruning-policy";
+import { CompactionOrchestrator } from "@/lib/services/compaction-orchestrator";
+import { CausalLatticeService } from "@/lib/services/causal-lattice";
+import type { CacheTtlState, CompactionReceipt, LatticeBroadcastGateResult, RetrievalFusionResult } from "@/types/persistent-memory";
+import { SessionService } from "@/lib/services/session-service";
+import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -92,14 +99,27 @@ function sanitizeStringArray(values: unknown): string[] {
   );
 }
 
+function mapMessageToPrunable(message: ChatTurn, index: number): PrunableChatMessage {
+  return {
+    id: `turn-${index}`,
+    role: message.role,
+    content: message.content,
+    hasToolEvidence: /\[(tool|source|evidence|citation)\]/i.test(message.content),
+    isInterventionTrace: /do\(|counterfactual|intervention/i.test(message.content),
+    causalDensity: null,
+  };
+}
+
 export async function POST(req: NextRequest) {
   let supabase: SupabaseClient | null = null;
   let user: { id: string } | null = null;
+  let sessionService: SessionService | null = null;
 
   try {
     supabase = await createServerSupabaseClient();
     const { data } = await supabase.auth.getUser();
     user = data.user?.id ? { id: data.user.id } : null;
+    sessionService = new SessionService();
   } catch (error) {
     console.warn("[CausalChat] Supabase initialization failed (Persistence disabled):", error);
   }
@@ -121,6 +141,8 @@ export async function POST(req: NextRequest) {
     sessionId,
     intervention,
     modelKey,
+    traceId,
+    latticeTargetSessionId,
   } = requestBody;
 
   // Support both single question and message history
@@ -137,10 +159,35 @@ export async function POST(req: NextRequest) {
   }
 
   const normalizedIncomingMessages = normalizeChatTurns(messages);
-  const contextResult = buildConversationContext(normalizedIncomingMessages, userQuestion, {
+  const cacheTtlState: CacheTtlState = (() => {
+    const header = req.headers.get("x-cache-ttl-state")?.toLowerCase();
+    if (header === "cache_ttl_fresh") return "cache_ttl_fresh";
+    if (header === "cache_ttl_expired") return "cache_ttl_expired";
+    return "unknown";
+  })();
+
+  const pruningEnabled = FEATURE_FLAGS.MASA_CAUSAL_PRUNING_V1;
+  const pruningResult = pruningEnabled
+    ? evaluateCausalPruning(
+        normalizedIncomingMessages.map((message, idx) => mapMessageToPrunable(message, idx)),
+        {
+          maxMessages: 10,
+          cacheTtlState,
+        },
+      )
+    : null;
+
+  const messagesForContext = pruningResult
+    ? pruningResult.retainedMessages.map((message) => ({
+        role: message.role,
+        content: message.content,
+      }))
+    : normalizedIncomingMessages;
+
+  const contextResult = buildConversationContext(messagesForContext, userQuestion, {
     maxContextChars: 60000,
   });
-  const domainClassificationInput = buildDomainClassificationInput(normalizedIncomingMessages, userQuestion);
+  const domainClassificationInput = buildDomainClassificationInput(messagesForContext, userQuestion);
   console.log(
     `[CausalChat] Context telemetry: included=${contextResult.includedTurns}, truncated=${contextResult.truncatedTurns}, chars=${contextResult.promptContext.length}, prior=${contextResult.hasPriorContext}, ambiguous=${contextResult.ambiguousReference}`
   );
@@ -179,6 +226,10 @@ export async function POST(req: NextRequest) {
         score: 0,
         rationale: "Grounding not evaluated.",
       };
+      let compactionReceipt: CompactionReceipt | null = null;
+      let retrievalFusionDebug: RetrievalFusionResult | null = null;
+      let latticeBroadcastSummary: LatticeBroadcastGateResult | null = null;
+      let interventionGateSummary: { allowed: boolean; allowedOutputClass: string; rationale: string } | null = null;
 
       try {
         const resolveDomainOverride = (key?: string | null): string | null => {
@@ -217,6 +268,26 @@ export async function POST(req: NextRequest) {
 
           return explicitDomains.has(normalized) ? normalized : null;
         };
+
+        if (pruningResult) {
+          sendEvent("causal_pruning_started", {
+            cacheTtlState,
+            incomingMessages: normalizedIncomingMessages.length,
+            targetRetained: 10,
+          });
+
+          sendEvent("causal_pruning_completed", {
+            retainedCount: pruningResult.retainedMessages.length,
+            prunedCount: pruningResult.prunedMessages.length,
+            decisions: pruningResult.decisions,
+          });
+
+          if (sessionId && user && supabase && sessionService) {
+            void sessionService
+              .persistPruningDecisions(sessionId, pruningResult.decisions)
+              .catch((error) => console.warn("[CausalChat] Failed to persist pruning decisions:", error));
+          }
+        }
 
         // FAST-PATH: Detect simple conversational queries (greetings, identity, pleasantries)
         // Matches common greetings and "who/what are you" questions
@@ -325,6 +396,11 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
           model: scmContext.model,
         });
 
+        if (FEATURE_FLAGS.MASA_MEMORY_FUSION_V1) {
+          retrievalFusionDebug = scmRetriever.fuseConstraintRetrieval(userQuestion, scmContext, 6);
+          sendEvent("retrieval_fusion_debug", retrievalFusionDebug);
+        }
+
         // 3. Constraint Injection
         sendEvent("thinking", { message: "Grounding LLM in causal laws..." });
 
@@ -361,6 +437,11 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
             rationale: gate.rationale,
             identifiability: gate.identifiability,
           });
+          interventionGateSummary = {
+            allowed: gate.allowed,
+            allowedOutputClass: gate.allowedOutputClass,
+            rationale: gate.rationale,
+          };
 
           if (!gate.allowed) {
             sendEvent("intervention_blocked", {
@@ -615,6 +696,17 @@ ${sourceList}`;
 
             // Save Assistant Message with causal density
             const finalDensity = analyzer.getCurrentAnalysis();
+            const persistedGraphPayload =
+              graphPayload && typeof graphPayload === "object"
+                ? {
+                    ...(graphPayload as Record<string, unknown>),
+                    persistent_memory_meta: {
+                      compactionReceipt,
+                      retrievalFusionDebug,
+                      latticeBroadcastSummary,
+                    },
+                  }
+                : graphPayload;
             const assistantPayload: Record<string, unknown> = {
               session_id: sessionId,
               role: "assistant",
@@ -623,7 +715,7 @@ ${sourceList}`;
               scm_tier1_used: scmContext.primaryScm.getConstraints(),
               scm_tier2_used: scmContext.tier2?.getConstraints(),
               confidence_score: classification.confidence,
-              causal_graph: graphPayload,
+              causal_graph: persistedGraphPayload,
             };
             if (canPersistDensity) {
               assistantPayload.causal_density = finalDensity;
@@ -651,7 +743,167 @@ ${sourceList}`;
           }
         }
 
-        sendEvent("complete", { finished: true });
+        if (sessionId && user && supabase && sessionService && FEATURE_FLAGS.MASA_COMPACTION_AXIOM_V1) {
+          try {
+            const compactionWindow = await sessionService.loadRecentMessagesForCompaction(sessionId, 14);
+            if (compactionWindow.length >= 6) {
+              sendEvent("compaction_window_opened", {
+                sessionId,
+                messageCount: compactionWindow.length,
+                traceId: traceId || null,
+              });
+              const orchestrator = new CompactionOrchestrator();
+              const compactionResult = await orchestrator.compactSessionWindow(supabase, sessionId, compactionWindow);
+              compactionReceipt = compactionResult.receipt;
+
+              sendEvent("axiom_extraction_completed", {
+                entriesExtracted: compactionResult.entries.length,
+                summaryFallbackUsed: compactionResult.receipt.summaryFallbackUsed,
+              });
+              sendEvent("compaction_receipt_written", compactionResult.receipt);
+              if (compactionResult.receipt.summaryFallbackUsed) {
+                sendEvent("compaction_summary_fallback", {
+                  reason: "axiom_threshold_not_met",
+                });
+              }
+            }
+          } catch (error) {
+            console.warn("[CausalChat] Compaction orchestration failed:", error);
+            sendEvent("compaction_summary_fallback", {
+              reason: "compaction_runtime_error",
+            });
+          }
+        }
+
+        if (
+          sessionId &&
+          user &&
+          supabase &&
+          FEATURE_FLAGS.MASA_CAUSAL_LATTICE_V1 &&
+          typeof latticeTargetSessionId === "string" &&
+          latticeTargetSessionId.trim().length > 0
+        ) {
+          try {
+            const lattice = new CausalLatticeService();
+            sendEvent("lattice_broadcast_started", {
+              originSessionId: sessionId,
+              targetSessionId: latticeTargetSessionId,
+            });
+            latticeBroadcastSummary = await lattice.broadcastValidatedAxioms(supabase, {
+              originSessionId: sessionId,
+              targetSessionId: latticeTargetSessionId,
+              userId: user.id,
+              domain: classification.primary,
+              confidenceThreshold: 0.75,
+            });
+
+            sendEvent(
+              latticeBroadcastSummary.accepted ? "lattice_broadcast_applied" : "lattice_broadcast_rejected",
+              latticeBroadcastSummary,
+            );
+          } catch (error) {
+            console.warn("[CausalChat] Lattice broadcast failed:", error);
+            latticeBroadcastSummary = {
+              accepted: false,
+              reason: "broadcast_runtime_error",
+              event: {
+                originSessionId: sessionId,
+                targetSessionId: latticeTargetSessionId,
+                axiomIds: [],
+                policy: "runtime_error",
+                timestamp: new Date().toISOString(),
+              },
+            };
+            sendEvent("lattice_broadcast_rejected", latticeBroadcastSummary);
+          }
+        }
+
+        if (user && supabase) {
+          try {
+            const claimLedger = new ClaimLedgerService(supabase);
+            const claimId = await claimLedger.recordClaim({
+              userId: user.id,
+              sessionId: sessionId || undefined,
+              traceId: typeof traceId === "string" ? traceId : undefined,
+              sourceFeature: "chat",
+              claimText: fullText,
+              claimKind: interventionApplied ? "hypothesis" : "assertion",
+              confidenceScore: factualConfidence.score,
+              uncertaintyLabel:
+                factualConfidence.level === "high"
+                  ? "low"
+                  : factualConfidence.level === "medium"
+                    ? "medium"
+                    : "high",
+              modelKey: scmContext.model?.modelKey,
+              modelVersion: scmContext.model?.version,
+              evidenceLinks: groundingSources.map((source) => ({
+                evidenceType: "citation",
+                evidenceRef: source.link,
+                snippet: source.snippet || source.title,
+                metadata: {
+                  rank: source.rank,
+                  domain: source.domain,
+                  title: source.title,
+                },
+              })),
+              gateDecisions: [
+                {
+                  gateName: "factual_confidence",
+                  decision:
+                    factualConfidence.level === "high"
+                      ? "pass"
+                      : factualConfidence.level === "medium"
+                        ? "warn"
+                        : "fail",
+                  rationale: factualConfidence.rationale,
+                  score: factualConfidence.score,
+                  metadata: {
+                    triggerConfidence: factTrigger.confidence,
+                    shouldSearch: factTrigger.shouldSearch,
+                  },
+                },
+                ...(interventionGateSummary
+                  ? [
+                      {
+                        gateName: "intervention_gate",
+                        decision: interventionGateSummary.allowed ? ("pass" as const) : ("fail" as const),
+                        rationale: interventionGateSummary.rationale,
+                        metadata: {
+                          allowedOutputClass: interventionGateSummary.allowedOutputClass,
+                        },
+                      },
+                    ]
+                  : []),
+              ],
+              receipts: [
+                {
+                  receiptType: "emission",
+                  actor: "causal-chat-api",
+                  receiptJson: {
+                    sessionId: sessionId || null,
+                    traceId: typeof traceId === "string" ? traceId : null,
+                    classification: classification.primary,
+                  },
+                },
+              ],
+            });
+
+            sendEvent("claim_recorded", { claimId });
+          } catch (claimError) {
+            console.warn("[CausalChat] Failed to record claim ledger entry:", claimError);
+            sendEvent("claim_record_failed", {
+              reason: claimError instanceof Error ? claimError.message : "unknown_error",
+            });
+          }
+        }
+
+        sendEvent("complete", {
+          finished: true,
+          compactionReceipt,
+          retrievalFusionDebug,
+          latticeBroadcastSummary,
+        });
         if (!isControllerClosed) {
           isControllerClosed = true;
           controller.close();

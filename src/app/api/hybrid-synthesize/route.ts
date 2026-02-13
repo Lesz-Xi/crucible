@@ -15,6 +15,7 @@ import { validateProtocol } from "@/lib/services/protocol-validator";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createInitialTimelineReceipt, updateTimelineStage } from "@/lib/hybrid/timeline";
 import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
+import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
 
 // Synthesis limits configuration
 const MAX_PDF_FILES = 6;
@@ -297,6 +298,73 @@ export async function POST(request: NextRequest) {
             },
             runId: saveStatus?.runId
           };
+
+          if (userId) {
+            try {
+              const supabase = await createServerSupabaseClient();
+              const claimLedger = new ClaimLedgerService(supabase);
+              const topClaimText =
+                result.selectedIdea?.thesis ||
+                result.selectedIdea?.description ||
+                result.novelIdeas?.[0]?.thesis ||
+                result.structuredApproach?.proposedSolution ||
+                `Hybrid synthesis run ${saveStatus?.runId || 'unknown'} completed.`;
+
+              const claimId = await claimLedger.recordClaim({
+                userId,
+                traceId: saveStatus?.runId,
+                sourceFeature: 'hybrid',
+                claimText: topClaimText,
+                claimKind: 'hypothesis',
+                confidenceScore: typeof result.selectedIdea?.confidence === 'number' ? result.selectedIdea.confidence : undefined,
+                uncertaintyLabel: result.noveltyGate?.decision === 'pass' ? 'low' : 'medium',
+                modelKey: 'hybrid_synthesis_pipeline',
+                modelVersion: 'v2',
+                evidenceLinks: combinedSources.slice(0, 12).map((source) => ({
+                  evidenceType: 'source',
+                  evidenceRef: source.fileName,
+                  snippet: source.fullText?.slice(0, 240),
+                  metadata: { sourceType: source.sourceType || 'pdf' },
+                })),
+                gateDecisions: result.noveltyGate
+                  ? [
+                      {
+                        gateName: 'novelty_gate',
+                        decision:
+                          result.noveltyGate.decision === 'pass'
+                            ? 'pass'
+                            : result.noveltyGate.decision === 'recover'
+                              ? 'warn'
+                              : 'fail',
+                        rationale: result.noveltyGate.reasons.join(' | ') || `Novelty gate: ${result.noveltyGate.decision}`,
+                        score: result.noveltyGate.threshold,
+                        metadata: {
+                          proofCount: result.noveltyProof?.length || 0,
+                        },
+                      },
+                    ]
+                  : [],
+                receipts: [
+                  {
+                    receiptType: 'emission',
+                    actor: 'hybrid-synthesize-api',
+                    receiptJson: {
+                      runId: saveStatus?.runId || null,
+                      sourceCount: combinedSources.length,
+                    },
+                  },
+                ],
+              });
+
+              emitter.emit({ event: 'claim_recorded', claimId });
+            } catch (claimError) {
+              console.warn('[Hybrid] Failed to record claim ledger entry:', claimError);
+              emitter.emit({
+                event: 'claim_record_failed',
+                reason: claimError instanceof Error ? claimError.message : 'unknown_error',
+              });
+            }
+          }
 
           emitter.emit({
             event: 'complete',

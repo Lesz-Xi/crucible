@@ -31,6 +31,7 @@ import {
   LegalStreamEvent,
   HarmSeverity,
 } from '@/types/legal';
+import { ClaimLedgerService } from '@/lib/services/claim-ledger-service';
 
 // Severity ranking for deduplication (higher = more severe)
 const SEVERITY_RANK: Record<HarmSeverity, number> = {
@@ -681,6 +682,90 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
 
         // Persist
         await persistCase(legalCase);
+
+        // Claim ledger emission
+        if (userId) {
+          try {
+            const supabase = await createServerSupabaseClient();
+            const claimLedger = new ClaimLedgerService(supabase);
+            const claimText = verdict.reasoning || `Legal verdict for ${legalCase.title}`;
+
+            const claimId = await claimLedger.recordClaim({
+              userId,
+              sourceFeature: 'legal',
+              claimText,
+              claimKind: 'verdict',
+              confidenceScore: verdict.confidence,
+              uncertaintyLabel: verdict.confidence >= 0.75 ? 'low' : verdict.confidence >= 0.5 ? 'medium' : 'high',
+              modelKey: 'legal_intent_action_harm',
+              modelVersion: 'legal-template-v1',
+              evidenceLinks: [
+                ...legalCase.precedents.slice(0, 8).map((precedent) => ({
+                  evidenceType: 'source' as const,
+                  evidenceRef: precedent.caseName || precedent.citation || 'precedent',
+                  snippet: precedent.holdingText,
+                  metadata: {
+                    jurisdiction: precedent.jurisdiction,
+                    similarity: precedent.similarity,
+                  },
+                })),
+                ...traced.traceIds.map((traceId) => ({
+                  evidenceType: 'counterfactual_trace' as const,
+                  evidenceRef: traceId,
+                  metadata: { feature: 'legal' },
+                })),
+              ],
+              gateDecisions: [
+                {
+                  gateName: 'legal_causal_gate',
+                  decision: legalGate.allowed ? 'pass' : 'fail',
+                  rationale: legalGate.rationale,
+                  metadata: {
+                    allowedOutputClass: legalGate.allowedOutputClass,
+                    blockedChains: legalGate.blockedChains,
+                    missingConfounders: legalGate.missingConfounders,
+                  },
+                },
+              ],
+              counterfactualTests: traced.chains.map((chain, idx) => ({
+                counterfactualTraceId: traced.traceIds[idx],
+                necessitySupported:
+                  chain.butForAnalysis.result === 'necessary' || chain.butForAnalysis.result === 'both',
+                sufficiencySupported: chain.butForAnalysis.result === 'sufficient' || chain.butForAnalysis.result === 'both',
+                method: 'deterministic_graph_diff',
+                assumptionsJson: [chain.butForAnalysis.reasoning],
+                resultLabel:
+                  chain.butForAnalysis.result === 'neither'
+                    ? 'rejected'
+                    : chain.proximateCauseEstablished
+                      ? 'supported'
+                      : 'inconclusive',
+              })),
+              receipts: [
+                {
+                  receiptType: 'emission',
+                  actor: 'legal-reasoning-api',
+                  receiptJson: {
+                    caseId: legalCase.id,
+                    title: legalCase.title,
+                    liable: verdict.liable,
+                  },
+                },
+              ],
+            });
+
+            console.log('[LegalReasoning] Claim recorded:', claimId);
+            if (claimId) {
+              sendEvent({ event: 'claim_recorded', claimId });
+            }
+          } catch (claimError) {
+            console.warn('[LegalReasoning] Failed to record claim ledger entry:', claimError);
+            sendEvent({
+              event: 'claim_record_failed',
+              message: claimError instanceof Error ? claimError.message : 'unknown_error',
+            });
+          }
+        }
 
         // Final event
         sendEvent({ event: 'legal_analysis_complete', case: legalCase });

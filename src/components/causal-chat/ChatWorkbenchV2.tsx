@@ -43,6 +43,7 @@ interface AssistantEventPayload {
   topDomains?: string[];
   level?: FactualConfidenceResult["level"];
   rationale?: string;
+  claimId?: string;
 }
 
 interface SessionHistoryMessage {
@@ -73,6 +74,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [groundingStatus, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
   const [groundingError, setGroundingError] = useState<string | null>(null);
   const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
+  const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
+  const [claimCopied, setClaimCopied] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
 
@@ -88,6 +91,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setGroundingStatus('idle');
     setGroundingError(null);
     setFactualConfidence(null);
+    setLatestClaimId(null);
+    setClaimCopied(false);
     onNewChat?.();
   }, [onNewChat]);
 
@@ -153,7 +158,23 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         setGroundingStatus('idle');
         setGroundingError(null);
         setFactualConfidence(null);
+        setLatestClaimId(null);
+        setClaimCopied(false);
         setDbSessionId(sessionId);
+
+        try {
+          const claimResponse = await fetch(`/api/claims?sourceFeature=chat&sessionId=${sessionId}&limit=1`);
+          if (claimResponse.ok) {
+            const claimPayload = (await claimResponse.json()) as { claims?: Array<{ id?: string }> };
+            const firstClaimId = claimPayload.claims?.[0]?.id;
+            if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
+              setLatestClaimId(firstClaimId);
+            }
+          }
+        } catch {
+          // non-fatal: claim lineage may not exist for historical session
+        }
+
         onLoadSession?.(sessionId);
       } catch (loadError) {
         const message = loadError instanceof Error ? loadError.message : 'Unable to load session';
@@ -231,6 +252,11 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         );
       }
 
+      if (eventName === 'claim_recorded' && payload.claimId) {
+        setLatestClaimId(payload.claimId);
+        return;
+      }
+
       if (eventName === 'error' && payload.message) {
         setError(payload.message);
       }
@@ -256,6 +282,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setGroundingStatus('idle');
     setGroundingError(null);
     setFactualConfidence(null);
+    setLatestClaimId(null);
+    setClaimCopied(false);
 
     const userMessage: WorkbenchMessage = {
       id: `user-${Date.now()}`,
@@ -388,6 +416,16 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setIsLoading(false);
   }, []);
 
+  const handleCopyClaimId = useCallback(async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setClaimCopied(true);
+      window.setTimeout(() => setClaimCopied(false), 1400);
+    } catch {
+      setClaimCopied(false);
+    }
+  }, []);
+
   return (
     <WorkbenchShell
       contextRail={
@@ -471,6 +509,42 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               </div>
               <p className="text-sm text-[var(--lab-text-secondary)]">No unaudited intervention claims without identifiability gates.</p>
             </div>
+
+            {latestClaimId ? (
+              <div className="lab-metric-tile">
+                <div className="mb-2 flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                  <p className="lab-section-title !mb-0">Claim Lineage</p>
+                </div>
+                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
+                    href={`/claims/${latestClaimId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open pretty view
+                  </a>
+                  <a
+                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
+                    href={`/api/claims/${latestClaimId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open JSON
+                  </a>
+                  <button
+                    type="button"
+                    className="text-xs text-[var(--lab-text-secondary)] underline"
+                    onClick={() => void handleCopyClaimId(latestClaimId)}
+                  >
+                    Copy Claim ID
+                  </button>
+                </div>
+                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
+              </div>
+            ) : null}
 
             {(groundingStatus !== 'idle' || groundingSources.length > 0 || factualConfidence) ? (
               <div className="lab-metric-tile">
