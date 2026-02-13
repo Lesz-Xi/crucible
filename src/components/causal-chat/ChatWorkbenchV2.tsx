@@ -4,8 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   FlaskConical,
   Microscope,
-  Moon,
-  Monitor,
   Network,
   PanelLeftClose,
   PanelLeftOpen,
@@ -13,7 +11,6 @@ import {
   PanelRightOpen,
   ShieldCheck,
   Sparkles,
-  Sun,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -98,7 +95,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
-  const { theme, setTheme } = useTheme();
+  const { setTheme } = useTheme();
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -116,6 +113,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setClaimCopied(false);
     onNewChat?.();
   }, [onNewChat]);
+
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   useEffect(() => {
     const savedContextRail = window.localStorage.getItem('chat-v3-context-rail');
@@ -513,7 +514,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           left={
             <div className="flex items-center gap-3">
               <span className="lab-chip-mono">Automated Scientist · Chat v3</span>
-              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · theme {theme || 'light'} · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
+              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · light-only UI · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
             </div>
           }
           right={
@@ -535,15 +536,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                 {evidenceRailOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
               </button>
               <div className="mx-1 h-5 w-px bg-[var(--lab-border)]" />
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('light')} title="Light mode">
-                <Sun className="h-4 w-4" />
-              </button>
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('dark')} title="Dark mode">
-                <Moon className="h-4 w-4" />
-              </button>
-              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('system')} title="System theme">
-                <Monitor className="h-4 w-4" />
-              </button>
             </div>
           }
         />

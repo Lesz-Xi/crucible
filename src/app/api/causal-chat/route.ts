@@ -110,6 +110,32 @@ function mapMessageToPrunable(message: ChatTurn, index: number): PrunableChatMes
   };
 }
 
+function inferExpectedRungHint(
+  prompt: string,
+  mode: unknown,
+  interventionPayload: unknown,
+): 1 | 2 | 3 {
+  const question = typeof prompt === "string" ? prompt.toLowerCase() : "";
+  const normalizedMode = typeof mode === "string" ? mode.toLowerCase() : "";
+
+  if (interventionPayload && typeof interventionPayload === "object") {
+    return 2;
+  }
+
+  if (/counterfactual|but[- ]for|necessity|sufficiency|pn\b|ps\b|what if/i.test(question)) {
+    return 3;
+  }
+
+  if (/do\(|intervention|confounder|mediator|treatment|identifiability/i.test(question)) {
+    return 2;
+  }
+
+  if (normalizedMode === "intervene") return 2;
+  if (normalizedMode === "audit") return 2;
+
+  return 1;
+}
+
 export async function POST(req: NextRequest) {
   let supabase: SupabaseClient | null = null;
   let user: { id: string } | null = null;
@@ -143,6 +169,7 @@ export async function POST(req: NextRequest) {
     modelKey,
     traceId,
     latticeTargetSessionId,
+    operatorMode,
   } = requestBody;
 
   // Support both single question and message history
@@ -214,6 +241,10 @@ export async function POST(req: NextRequest) {
 
       // Initialize streaming analyzer for real-time density updates
       const analyzer = new StreamingCausalAnalyzer();
+      analyzer.setContextHint({
+        expectedRung: inferExpectedRungHint(userQuestion, operatorMode, intervention),
+        operatorMode: typeof operatorMode === "string" ? operatorMode : undefined,
+      });
 
       // Initialize Bayesian Oracle Mode Service
       const oracleService = createOracleModeService(sessionId || null);

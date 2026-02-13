@@ -12,6 +12,11 @@ export interface CausalDensityResult {
   };
 }
 
+export interface CausalDensityContext {
+  expectedRung?: 1 | 2 | 3;
+  operatorMode?: 'explore' | 'intervene' | 'audit' | string;
+}
+
 export class CausalIntegrityService {
   private static L1_KEYWORDS = [
     /associated with/i, /linked to/i, /correlation/i, /usually/i, /tends to/i,
@@ -19,15 +24,18 @@ export class CausalIntegrityService {
   ];
 
   private static L2_OPERATOR_PATTERNS = [
-    /do\(/i, /\bintervene\b/i, /\bintervention\b/i, /if we change/i, /\bmanipulat(e|ion|ing)\b/i,
+    /do\(/i, /\bdo-calculus\b/i, /\bintervene\b/i, /\bintervention\b/i, /if we change/i, /\bmanipulat(e|ion|ing)\b/i,
     /\bcontrolled experiment\b/i, /\bholding .* constant\b/i, /\bfix(ed|ing)?\b/i, /\bremove\b/i,
-    /\bclamp(ed|ing)?\b/i, /\bdirect effect\b/i, /\bmediator\b/i, /\bconfounder\b/i
+    /\bclamp(ed|ing)?\b/i, /\bdirect effect\b/i, /\bmediator\b/i, /\bconfounder\b/i,
+    /\btreatment\b/i, /\badjustment set\b/i
   ];
 
   private static L3_COUNTERFACTUAL_PATTERNS = [
-    /had .* been/i, /would have/i, /necessary cause/i, /sufficient cause/i, 
-    /probability of necessity/i, /P\(y_x\)/i, /Y_\{x\}/i, /counterfactual/i,
-    /imagined state/i, /what if we had/i, /but for/i, /without .* (would|could)/i,
+    /had .* been/i, /would have/i, /necessary cause/i, /sufficient cause/i,
+    /\bnecessity\b/i, /\bsufficiency\b/i, /\bnecessary\b/i, /\bsufficient\b/i,
+    /probability of necessity/i, /\bPN\b/i, /\bPS\b/i,
+    /P\(y_x\)/i, /Y_\{x\}/i, /counterfactual/i, /counterfactual test/i,
+    /imagined state/i, /what if we had/i, /but[- ]for/i, /without .* (would|could)/i,
     /necessary condition/i, /alternative world/i, /what would happen if/i
   ];
 
@@ -48,9 +56,9 @@ export class CausalIntegrityService {
 
   /**
    * Evaluates the causal density of a given text.
-   * Returns a score (1-3) and confidence based on keyword density.
+   * Returns a score (1-3) and confidence based on lexical+structural evidence.
    */
-  public evaluate(text: string): CausalDensityResult {
+  public evaluate(text: string, context?: CausalDensityContext): CausalDensityResult {
     const sanitized = text || "";
     const l1Evidence = this.collectMatches(CausalIntegrityService.L1_KEYWORDS, sanitized);
     const operatorEvidence = this.collectMatches(CausalIntegrityService.L2_OPERATOR_PATTERNS, sanitized);
@@ -69,41 +77,62 @@ export class CausalIntegrityService {
     let label: 'Association' | 'Intervention' | 'Counterfactual' = 'Association';
     let confidence = 0.4;
 
-    if (hasCounterfactual && hasStructure && hasCausalChain && !hasPenalty) {
+    const counterfactualQualified = hasCounterfactual && (hasStructure || hasCausalChain || hasOperator);
+    const interventionQualified = hasOperator && (hasStructure || hasCausalChain);
+
+    if (counterfactualQualified && !hasPenalty) {
       score = 3;
       label = 'Counterfactual';
       confidence = this.clamp(
-        0.62
-          + Math.min(counterfactualEvidence.length, 3) * 0.09
-          + Math.min(structureEvidence.length, 3) * 0.05
-          + Math.min(causalChainEvidence.length, 2) * 0.05
+        0.58
+          + Math.min(counterfactualEvidence.length, 4) * 0.08
+          + Math.min(structureEvidence.length, 3) * 0.04
+          + Math.min(causalChainEvidence.length, 2) * 0.04
+          + (hasOperator ? 0.04 : 0)
           - penalties.length * 0.1,
-        0.45,
-        0.95
+        0.5,
+        0.95,
       );
-    } else if (hasOperator && hasStructure && !hasPenalty) {
+    } else if (interventionQualified && !hasPenalty) {
       score = 2;
       label = 'Intervention';
       confidence = this.clamp(
-        0.56
-          + Math.min(operatorEvidence.length, 3) * 0.08
-          + Math.min(structureEvidence.length, 3) * 0.05
+        0.54
+          + Math.min(operatorEvidence.length, 4) * 0.07
+          + Math.min(structureEvidence.length, 3) * 0.04
           + Math.min(causalChainEvidence.length, 2) * 0.04
           - penalties.length * 0.08,
-        0.4,
-        0.9
+        0.42,
+        0.9,
       );
     } else {
       score = 1;
       label = 'Association';
-      // Demote ambiguous keyword-heavy text without required causal structure.
+      // Demote ambiguous keyword-heavy text without required structure.
       const demotionPenalty =
-        ((hasOperator || hasCounterfactual) && (!hasStructure || !hasCausalChain)) ? 0.12 : 0;
+        ((hasOperator || hasCounterfactual) && (!hasStructure && !hasCausalChain)) ? 0.1 : 0;
       confidence = this.clamp(
         0.38 + Math.min(l1Evidence.length, 3) * 0.06 - demotionPenalty - penalties.length * 0.06,
         0.2,
-        0.8
+        0.8,
       );
+    }
+
+    // Contextual prior: gently bias toward expected rung without overriding hard penalties.
+    if (!hasPenalty && context?.expectedRung) {
+      if (context.expectedRung >= 3 && hasCounterfactual) {
+        if (score < 3 && (hasStructure || hasOperator || hasCausalChain)) {
+          score = 3;
+          label = 'Counterfactual';
+          confidence = this.clamp(confidence + 0.08, 0.45, 0.86);
+        } else {
+          confidence = this.clamp(confidence + 0.05, 0.2, 0.95);
+        }
+      } else if (context.expectedRung >= 2 && hasOperator && score < 2) {
+        score = 2;
+        label = 'Intervention';
+        confidence = this.clamp(confidence + 0.06, 0.4, 0.84);
+      }
     }
 
     const mechanisms = this.extractMechanisms(sanitized);
@@ -126,8 +155,8 @@ export class CausalIntegrityService {
   /**
    * Backward-compatible alias retained for older tests and callers.
    */
-  public scoreEvidence(text: string): CausalDensityResult {
-    return this.evaluate(text);
+  public scoreEvidence(text: string, context?: CausalDensityContext): CausalDensityResult {
+    return this.evaluate(text, context);
   }
 
   private collectMatches(patterns: RegExp[], text: string): string[] {

@@ -13,7 +13,11 @@
  */
 
 
-import { CausalIntegrityService, CausalDensityResult } from "@/lib/ai/causal-integrity-service";
+import {
+  CausalIntegrityService,
+  CausalDensityResult,
+  type CausalDensityContext,
+} from "@/lib/ai/causal-integrity-service";
 
 export interface StreamingDensityUpdate extends CausalDensityResult {
   /** Progress through the stream (0-100) */
@@ -35,14 +39,16 @@ export class StreamingCausalAnalyzer {
   private lastSignificantResult: CausalDensityResult | null = null;
   private lastUpdateTime: number = 0;
   private totalExpectedChunks: number = 0;
+  private contextHint: CausalDensityContext | undefined;
   
   // Throttling configuration
   private readonly MIN_UPDATE_INTERVAL_MS = 500; // Max 2 updates per second
   private readonly SIGNIFICANCE_THRESHOLD = 0.15; // 15% confidence change
 
-  constructor(expectedLength?: number) {
+  constructor(expectedLength?: number, contextHint?: CausalDensityContext) {
     this.service = new CausalIntegrityService();
     this.totalExpectedChunks = expectedLength ? Math.ceil(expectedLength / 5) : 0;
+    this.contextHint = contextHint;
   }
 
   /**
@@ -57,7 +63,7 @@ export class StreamingCausalAnalyzer {
     this.chunksProcessed++;
 
     // Evaluate current density
-    const currentResult = this.service.evaluate(this.buffer);
+    const currentResult = this.service.evaluate(this.buffer, this.contextHint);
     const now = Date.now();
     const timeSinceLastUpdate = now - this.lastUpdateTime;
 
@@ -95,7 +101,7 @@ export class StreamingCausalAnalyzer {
    * Use this for final evaluation after streaming completes.
    */
   getCurrentAnalysis(): CausalDensityResult {
-    return this.service.evaluate(this.buffer);
+    return this.service.evaluate(this.buffer, this.contextHint);
   }
 
   /**
@@ -103,6 +109,13 @@ export class StreamingCausalAnalyzer {
    */
   getBuffer(): string {
     return this.buffer;
+  }
+
+  /**
+   * Update contextual hint (expected rung/operator mode) for this stream.
+   */
+  setContextHint(contextHint?: CausalDensityContext): void {
+    this.contextHint = contextHint;
   }
 
   /**
