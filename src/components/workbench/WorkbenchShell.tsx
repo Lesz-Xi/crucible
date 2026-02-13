@@ -40,16 +40,16 @@ export function WorkbenchShell({
       <div className={cn('lab-shell min-h-screen w-full', className)}>
         {statusStrip}
 
-        <div className="mx-auto max-w-[1760px] px-4 pb-6 pt-4 md:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1760px] px-4 pb-5 pt-2 md:px-6 lg:px-8">
           <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
-            <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
-            {evidenceRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{evidenceRail}</aside> : null}
+            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{contextRail}</aside> : null}
+            <main className="lab-panel-elevated h-[calc(100vh-112px)] overflow-hidden">{primary}</main>
+            {evidenceRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{evidenceRail}</aside> : null}
           </div>
 
           <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-132px)] overflow-hidden">{contextRail}</aside> : null}
-            <main className="lab-panel-elevated h-[calc(100vh-132px)] overflow-hidden">{primary}</main>
+            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{contextRail}</aside> : null}
+            <main className="lab-panel-elevated h-[calc(100vh-112px)] overflow-hidden">{primary}</main>
           </div>
 
           <div className="md:hidden">

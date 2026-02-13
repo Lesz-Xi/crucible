@@ -193,6 +193,7 @@ export function LegalWorkbenchV2() {
 
   return (
     <WorkbenchShell
+      className="feature-legal"
       statusStrip={
         <StatusStrip
           left={

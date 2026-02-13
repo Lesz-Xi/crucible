@@ -25,7 +25,9 @@
     "governance:uncertainty-cal": "npx --yes tsx scripts/evaluate-uncertainty-calibration.ts",
     "governance:uncertainty-calibration": "npm run governance:uncertainty-cal --",
     "governance:law-falsification": "npx --yes tsx scripts/evaluate-law-falsification.ts",
-    "governance:hybrid-novelty-proof": "npx --yes tsx scripts/evaluate-hybrid-novelty-proof.ts"
+    "governance:hybrid-novelty-proof": "npx --yes tsx scripts/evaluate-hybrid-novelty-proof.ts",
+    "governance:persistent-memory-integrity": "npx --yes tsx scripts/evaluate-persistent-memory-integrity.ts",
+    "agent:bootstrap": "bash ../.agent/scripts/agent-bootstrap.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
@@ -75,6 +77,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.4.3",
     "eslint-plugin-react": "^7.37.0",
+    "globals": "^17.3.0",
     "jest": "^30.2.0",
     "jsx-ast-utils": "^2.4.1",
     "postcss": "^8.5.6",

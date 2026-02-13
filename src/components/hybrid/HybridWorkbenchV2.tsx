@@ -422,6 +422,7 @@ export function HybridWorkbenchV2() {
 
   return (
     <WorkbenchShell
+      className="feature-hybrid"
       statusStrip={
         <StatusStrip
           left={

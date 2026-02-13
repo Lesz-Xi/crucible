@@ -645,9 +645,9 @@ export default function EducationPage() {
   
   return (
     <AppDashboardShell>
-      <main className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500">
+      <main className="edu-page min-h-screen transition-colors duration-500">
       {/* Header */}
-      <header className="px-8 py-8 border-b border-[var(--border-subtle)]">
+      <header className="edu-header px-8 py-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
             <GraduationCap className="w-6 h-6 text-wabi-moss" />
@@ -659,7 +659,7 @@ export default function EducationPage() {
         </div>
       </header>
       
-      <div className="max-w-6xl mx-auto px-8 py-12">
+      <div className="max-w-6xl mx-auto px-8 py-10">
         {/* Status Banner */}
         <div className="mb-8">
           <div className="edu-status">
@@ -693,7 +693,7 @@ export default function EducationPage() {
               </div>
               
               {/* Quick Presets */}
-              <div className="p-5 rounded-2xl bg-[var(--bg-card)]/70 border border-[var(--border-subtle)] shadow-wabi">
+              <div className="edu-card p-5">
                 <button
                   onClick={() => setShowPresets(!showPresets)}
                   className="w-full flex items-center justify-between mb-3 group"
@@ -755,7 +755,7 @@ export default function EducationPage() {
                         setDemographics({ ...demographics, academicLevel: e.target.value as any });
                         setCurrentStep(1);
                       }}
-                      className="w-full p-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] font-mono text-sm focus:outline-none focus:border-wabi-clay"
+                      className="lab-select"
                     >
                       <option value="Freshman">Freshman</option>
                       <option value="Sophomore">Sophomore</option>
@@ -777,7 +777,7 @@ export default function EducationPage() {
                       value={demographics.priorGPA || ''}
                       onChange={(e) => setDemographics({ ...demographics, priorGPA: parseFloat(e.target.value) || undefined })}
                       placeholder="0.0 - 4.0"
-                      className="w-full p-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] font-mono text-sm focus:outline-none focus:border-wabi-clay"
+                      className="lab-input"
                     />
                   </div>
                 </div>
@@ -911,7 +911,7 @@ export default function EducationPage() {
                         setLearningStyle(e.target.value as LearningStyle);
                         setCurrentStep(4);
                       }}
-                      className="w-full p-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] font-mono text-sm focus:outline-none focus:border-wabi-clay"
+                      className="lab-select"
                     >
                       <option value="Visual">Visual (diagrams, charts)</option>
                       <option value="Auditory">Auditory (lectures, discussions)</option>
@@ -942,7 +942,7 @@ export default function EducationPage() {
               {/* Submit Button */}
               <button
                 onClick={handleAnalyze}
-                className="w-full p-4 rounded-lg bg-[var(--text-primary)] text-[var(--bg-primary)] font-mono text-xs uppercase tracking-[0.2em] transition-colors flex items-center justify-center gap-2 hover:opacity-90"
+                className="lab-button-primary w-full"
               >
                 <Sparkles className="w-4 h-4" />
                 Discover My Causal Fingerprint
@@ -984,7 +984,7 @@ export default function EducationPage() {
                   </p>
                   <a
                     href="#action-plan"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-mono uppercase tracking-[0.2em] hover:opacity-90"
+                    className="lab-button-primary"
                   >
                     Build This Week
                     <ChevronRight className="w-3 h-3" />
@@ -1219,7 +1219,7 @@ export default function EducationPage() {
                             document.getElementById('apprenticeship-lab')?.scrollIntoView({ behavior: 'smooth' });
                           }
                         }}
-                        className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-mono uppercase tracking-[0.2em] hover:opacity-90"
+                        className="lab-button-primary"
                       >
                         {apprenticeshipLoading ? 'Starting...' : 'Start Apprenticeship Lab'}
                       </button>
@@ -1293,13 +1293,13 @@ export default function EducationPage() {
               <div className="mt-4 flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => persistPlan('draft')}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs font-mono uppercase tracking-[0.2em] hover:opacity-90"
+                  className="lab-button-primary"
                 >
                   {planSaving ? 'Saving...' : 'Save This Plan'}
                 </button>
                 <button
                   onClick={handleReset}
-                  className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-[var(--border-subtle)] text-xs font-mono uppercase tracking-[0.2em] hover:bg-[var(--bg-secondary)]"
+                  className="lab-button-secondary"
                 >
                   Start New Analysis
                 </button>
@@ -1351,7 +1351,7 @@ export default function EducationPage() {
                         setReminderDay(next);
                         syncReminder(reminderEnabled, next, reminderTime);
                       }}
-                      className="w-full sm:w-auto p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-xs font-mono"
+                      className="lab-select w-full sm:w-auto"
                     >
                       {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day) => (
                         <option key={day} value={day}>{day}</option>
@@ -1365,7 +1365,7 @@ export default function EducationPage() {
                         setReminderTime(next);
                         syncReminder(reminderEnabled, reminderDay, next);
                       }}
-                      className="w-full sm:w-auto p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-xs font-mono"
+                      className="lab-input w-full sm:w-auto"
                     />
                   </div>
                 )}
@@ -1521,7 +1521,7 @@ export default function EducationPage() {
             <p className="text-[var(--text-secondary)] mb-6">{error}</p>
             <button
               onClick={handleReset}
-              className="px-6 py-3 rounded-lg bg-[var(--bg-secondary)] hover:bg-[var(--bg-primary)] font-mono text-sm transition-colors"
+              className="lab-button-secondary"
             >
               Try Again
             </button>
@@ -1600,7 +1600,7 @@ function InterventionCard({ result, rank }: { result: InterventionResult; rank: 
         </span>
         <a
           href="#action-plan"
-          className="px-3 py-1 rounded-full border border-[var(--border-subtle)] text-[10px] font-mono uppercase tracking-[0.2em] hover:bg-[var(--bg-secondary)]"
+          className="lab-button-secondary !px-3 !py-1 text-[10px]"
         >
           Apply
         </a>

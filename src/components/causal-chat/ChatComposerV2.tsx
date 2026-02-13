@@ -28,14 +28,14 @@ export function ChatComposerV2({
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
 
   return (
-    <div className="lab-card border-t border-[var(--lab-border)] !rounded-b-2xl !rounded-t-none">
-      <div className="mb-2 flex items-center justify-between">
+    <div className="lab-card !rounded-t-none border-0 border-t border-[var(--lab-border)] !bg-transparent px-6 pb-5 pt-4 shadow-none">
+      <div className="mb-3 flex items-center justify-between">
         <span className="lab-section-title">Prompt</span>
         <span className="font-mono text-[11px] text-[var(--lab-text-tertiary)]">Enter to send</span>
       </div>
 
       <textarea
-        className="lab-textarea min-h-[110px]"
+        className="lab-textarea min-h-[134px]"
         placeholder={placeholder || "State your hypothesis, mechanism, and desired intervention..."}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -48,7 +48,7 @@ export function ChatComposerV2({
         }}
       />
 
-      <div className="mt-3 flex items-center justify-between gap-3">
+      <div className="mt-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button type="button" className="lab-button-secondary" disabled>
             <Paperclip className="h-4 w-4" />
