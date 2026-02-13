@@ -49,6 +49,17 @@ interface AssistantEventPayload {
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
 
+const quantizeConfidence = (value: number): number => {
+  const bounded = Math.max(0, Math.min(1, value));
+  const percent = bounded * 100;
+  if (percent < 50) return 0.45;
+  if (percent < 60) return 0.55;
+  if (percent < 70) return 0.65;
+  if (percent < 80) return 0.75;
+  if (percent < 90) return 0.85;
+  return 0.95;
+};
+
 const inferOperatorMode = (input: string): OperatorMode => {
   const text = input.toLowerCase();
 
@@ -485,12 +496,20 @@ export function ChatWorkbenchV2() {
         return;
       }
 
-      const isDensityEvent = eventName === 'causal_density_update' || eventName === 'causal_density_final';
-      if (isDensityEvent && typeof payload.score === 'number') {
+      if (eventName === 'causal_density_update' && typeof payload.score === 'number') {
+        const streamingDensity = {
+          score: payload.score,
+          label: payload.label || 'Unknown',
+          confidence: quantizeConfidence(typeof payload.confidence === 'number' ? payload.confidence : 0),
+        };
+        lastDensityRef.current = streamingDensity;
+      }
+
+      if (eventName === 'causal_density_final' && typeof payload.score === 'number') {
         const nextDensity = {
           score: payload.score,
           label: payload.label || 'Unknown',
-          confidence: typeof payload.confidence === 'number' ? payload.confidence : 0,
+          confidence: quantizeConfidence(typeof payload.confidence === 'number' ? payload.confidence : 0),
         };
         setLastDensity(nextDensity);
         lastDensityRef.current = nextDensity;
@@ -806,7 +825,7 @@ export function ChatWorkbenchV2() {
                 <p className="lab-section-title !mb-0">Causal Density</p>
               </div>
               <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{lastDensity ? `L${lastDensity.score}` : 'N/A'}</p>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{lastDensity ? `${lastDensity.label} (${Math.round(lastDensity.confidence * 100)}%)` : 'Awaiting scored output'}</p>
+              <p className="text-sm text-[var(--lab-text-secondary)]">{lastDensity ? `${lastDensity.label} (${Math.round(lastDensity.confidence * 100)}% · estimated)` : 'Awaiting scored output'}</p>
             </div>
 
             <div className="lab-metric-tile">
