@@ -297,6 +297,8 @@ export function ChatWorkbenchV2() {
 
       if (isNew) {
         resetThread();
+        const cleanPath = window.location.pathname;
+        window.history.replaceState({}, '', cleanPath);
         return;
       }
 
