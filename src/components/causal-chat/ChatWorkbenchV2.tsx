@@ -154,6 +154,7 @@ export function ChatWorkbenchV2() {
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
   const [groundingStatus, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
   const [groundingError, setGroundingError] = useState<string | null>(null);
+  const [usedGroundingFallback, setUsedGroundingFallback] = useState(false);
   const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
   const [alignmentPosture, setAlignmentPosture] = useState<string>('No unaudited intervention claims without identifiability gates.');
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
@@ -178,6 +179,7 @@ export function ChatWorkbenchV2() {
     setGroundingSources([]);
     setGroundingStatus('idle');
     setGroundingError(null);
+    setUsedGroundingFallback(false);
     setFactualConfidence(null);
     setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setLatestClaimId(null);
@@ -375,6 +377,7 @@ export function ChatWorkbenchV2() {
       if (eventName === 'web_grounding_started') {
         setGroundingStatus('searching');
         setGroundingError(null);
+        setUsedGroundingFallback(false);
         return;
       }
 
@@ -382,6 +385,7 @@ export function ChatWorkbenchV2() {
         setGroundingStatus('ready');
         setGroundingSources(Array.isArray(payload.sources) ? payload.sources : []);
         setGroundingError(null);
+        setUsedGroundingFallback(false);
         return;
       }
 
@@ -389,6 +393,7 @@ export function ChatWorkbenchV2() {
         setGroundingStatus('failed');
         setGroundingSources([]);
         setGroundingError(payload.message || 'Grounding failed.');
+        setUsedGroundingFallback(false);
         return;
       }
 
@@ -467,6 +472,7 @@ export function ChatWorkbenchV2() {
           if (parsed.length > 0) {
             setGroundingStatus('ready');
             setGroundingError(null);
+            setUsedGroundingFallback(true);
             return parsed;
           }
           return previous;
@@ -490,6 +496,7 @@ export function ChatWorkbenchV2() {
     setGroundingSources([]);
     setGroundingStatus('idle');
     setGroundingError(null);
+    setUsedGroundingFallback(false);
     setFactualConfidence(null);
     setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setClaimCopied(false);
@@ -810,6 +817,11 @@ export function ChatWorkbenchV2() {
                 {factualConfidence ? (
                   <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
                     Confidence: <span className="font-semibold text-[var(--lab-text-primary)]">{factualConfidence.level}</span>
+                  </p>
+                ) : null}
+                {usedGroundingFallback ? (
+                  <p className="mt-2 inline-flex rounded-full border border-[var(--lab-border)] px-2 py-1 text-[10px] font-mono uppercase tracking-wide text-[var(--lab-text-tertiary)]">
+                    Grounding source sync fallback used
                   </p>
                 ) : null}
                 {groundingSources.length > 0 ? (
