@@ -34,22 +34,10 @@ export default function ChatPage() {
     setUseV2(true);
   }, []);
 
-  const handleLoadSession = async (sessionId: string) => {
-    window.dispatchEvent(
-      new CustomEvent("loadSession", {
-        detail: { sessionId },
-      })
-    );
-  };
-
-  const handleNewChat = () => {
-    window.dispatchEvent(new Event("newChat"));
-  };
-
   if (useV2) {
     return (
       <Suspense fallback={<div className="lab-shell min-h-screen" />}>
-        <ChatWorkbenchV2 onLoadSession={handleLoadSession} onNewChat={handleNewChat} />
+        <ChatWorkbenchV2 />
       </Suspense>
     );
   }

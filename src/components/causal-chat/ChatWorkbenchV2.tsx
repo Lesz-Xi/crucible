@@ -19,11 +19,6 @@ import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 
-interface ChatWorkbenchV2Props {
-  onLoadSession?: (sessionId: string) => void;
-  onNewChat?: () => void;
-}
-
 interface WorkbenchMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -118,7 +113,7 @@ const QUICK_PROMPTS = [
 
 type QuickPromptId = (typeof QUICK_PROMPTS)[number]['id'];
 
-export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Props) {
+export function ChatWorkbenchV2() {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [prompt, setPrompt] = useState('');
@@ -162,8 +157,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setLatestClaimId(null);
     setClaimCopied(false);
-    onNewChat?.();
-  }, [onNewChat]);
+  }, []);
 
 
   useEffect(() => {
@@ -285,7 +279,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           // non-fatal: claim lineage may not exist for historical session
         }
 
-        onLoadSession?.(sessionId);
       } catch (loadError) {
         const message = loadError instanceof Error ? loadError.message : 'Unable to load session';
         setError(message);
@@ -293,7 +286,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         setIsLoading(false);
       }
     },
-    [onLoadSession]
+    []
   );
 
   useEffect(() => {
