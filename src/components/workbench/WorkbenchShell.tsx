@@ -40,7 +40,7 @@ export function WorkbenchShell({
       <div className={cn('lab-shell min-h-screen w-full', className)}>
         {statusStrip}
 
-        <div className="mx-auto max-w-[1760px] px-4 pb-5 pt-2 md:px-6 lg:px-8">
+        <div className={cn('mx-auto max-w-[1760px] px-4 pt-2 md:px-6 lg:px-8', className?.includes('feature-chat') ? 'pb-0' : 'pb-5')}>
           <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
             {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{contextRail}</aside> : null}
             <main className="lab-panel-elevated h-[calc(100vh-112px)] overflow-hidden">{primary}</main>

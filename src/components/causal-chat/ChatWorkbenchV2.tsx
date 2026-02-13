@@ -575,6 +575,14 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setPrompt(snippet);
   }, []);
 
+  const toggleEvidenceRail = useCallback(() => {
+    setEvidenceRailOpen((current) => {
+      const next = !current;
+      window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
+      return next;
+    });
+  }, []);
+
   return (
     <WorkbenchShell
       className="feature-chat"
@@ -643,6 +651,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               quickPrompts={QUICK_PROMPTS}
               selectedQuickPromptId={selectedQuickPrompt}
               onQuickPromptSelect={handleQuickPrompt}
+              evidenceRailOpen={evidenceRailOpen}
+              onToggleEvidenceRail={toggleEvidenceRail}
               placeholder={
                 operatorMode === 'intervene'
                   ? 'Specify do(X)=..., expected Y delta, and required controls...'
