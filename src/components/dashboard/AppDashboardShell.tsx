@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Clock3,
   FolderCheck,
+  FolderMinus,
   Folder,
   FolderPlus,
   Gavel,
@@ -23,6 +24,7 @@ import {
   PanelLeftOpen,
   Plus,
   Sun,
+  Trash2,
   UserCircle2,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -57,6 +59,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
   const [researchExpanded, setResearchExpanded] = useState(true);
   const [researchThreadIds, setResearchThreadIds] = useState<string[]>([]);
+  const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -134,6 +137,40 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
 
   const openThread = (sessionId: string) => {
     router.push(`/chat?sessionId=${sessionId}`);
+  };
+
+  const removeFromResearch = (sessionId: string) => {
+    setResearchThreadIds((current) => current.filter((id) => id !== sessionId));
+  };
+
+  const handleDeleteThread = async (sessionId: string) => {
+    if (deletingThreadId === sessionId) return;
+    setDeletingThreadId(sessionId);
+
+    const previousThreads = recentThreads;
+    const previousResearch = researchThreadIds;
+
+    setRecentThreads((current) => current.filter((session) => session.id !== sessionId));
+    setResearchThreadIds((current) => current.filter((id) => id !== sessionId));
+
+    try {
+      const response = await fetch(`/api/causal-chat/sessions/${sessionId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Failed to delete thread');
+      }
+      if (pathname?.startsWith('/chat')) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('sessionId') === sessionId) {
+          router.push('/chat?new=1');
+          window.dispatchEvent(new Event('newChat'));
+        }
+      }
+    } catch {
+      setRecentThreads(previousThreads);
+      setResearchThreadIds(previousResearch);
+    } finally {
+      setDeletingThreadId(null);
+    }
   };
 
   const filteredThreads = useMemo(() => {
@@ -246,9 +283,30 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                         {researchExpanded ? (
                           <div className="mt-1 space-y-1">
                             {filteredResearchThreads.slice(0, 24).map((session) => (
-                              <button key={session.id} type="button" className="w-full truncate px-2 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
-                                {session.title || 'Untitled thread'}
-                              </button>
+                              <div key={session.id} className="flex items-center gap-1 px-1 py-0.5">
+                                <button type="button" className="min-w-0 flex-1 truncate px-1 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
+                                  {session.title || 'Untitled thread'}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="lab-button-secondary !px-1.5 !py-1"
+                                  onClick={() => removeFromResearch(session.id)}
+                                  aria-label="Remove from Research"
+                                  title="Remove from Research"
+                                >
+                                  <FolderMinus className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  className="lab-button-secondary !px-1.5 !py-1"
+                                  onClick={() => void handleDeleteThread(session.id)}
+                                  aria-label="Delete thread"
+                                  title="Delete thread"
+                                  disabled={deletingThreadId === session.id}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             ))}
                             {filteredResearchThreads.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No research queries yet. Add from Threads or start a new research query.</p> : null}
                           </div>
@@ -283,7 +341,16 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                                 title={researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
                               >
                                 {researchThreadIds.includes(session.id) ? <FolderCheck className="h-3.5 w-3.5" /> : <FolderPlus className="h-3.5 w-3.5" />}
-                                {researchThreadIds.includes(session.id) ? 'Remove' : 'Add'}
+                              </button>
+                              <button
+                                type="button"
+                                className="lab-button-secondary !px-2 !py-1 text-[11px]"
+                                onClick={() => void handleDeleteThread(session.id)}
+                                aria-label="Delete thread"
+                                title="Delete thread"
+                                disabled={deletingThreadId === session.id}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
                               </button>
                             </div>
                           </div>

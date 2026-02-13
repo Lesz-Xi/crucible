@@ -106,16 +106,16 @@
   --wabi-stone: #8f96a3;
 
   /* Automated Scientist dark tokens */
-  --lab-bg: #0e1117;
-  --lab-bg-elevated: #141924;
-  --lab-panel: rgba(18, 23, 32, 0.88);
-  --lab-border: rgba(148, 163, 184, 0.2);
-  --lab-text-primary: #e5e7eb;
-  --lab-text-secondary: #a8b1c0;
-  --lab-text-tertiary: #7b8494;
-  --lab-accent-clay: #74a7ff;
-  --lab-accent-earth: #5f93f2;
-  --lab-accent-moss: #8db4ff;
+  --lab-bg: #111316;
+  --lab-bg-elevated: #171a1f;
+  --lab-panel: rgba(20, 22, 27, 0.9);
+  --lab-border: rgba(255, 255, 255, 0.12);
+  --lab-text-primary: #e7e9ee;
+  --lab-text-secondary: #b1b6c0;
+  --lab-text-tertiary: #828894;
+  --lab-accent-clay: #a4acb8;
+  --lab-accent-earth: #c7ccd6;
+  --lab-accent-moss: #96a0ad;
   --lab-shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.36);
   --lab-shadow-lift: 0 20px 42px rgba(0, 0, 0, 0.44);
   
@@ -869,90 +869,90 @@
 /* --- Dashboard/Workbench dark refinements (v2) --- */
 .dark .lab-shell {
   background:
-    radial-gradient(circle at 12% 4%, rgba(95, 147, 242, 0.16) 0%, transparent 42%),
-    radial-gradient(circle at 88% 10%, rgba(93, 127, 188, 0.12) 0%, transparent 46%),
-    linear-gradient(180deg, #0d1016 0%, #0c0f14 100%);
+    radial-gradient(circle at 12% 4%, rgba(255, 255, 255, 0.04) 0%, transparent 42%),
+    radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 46%),
+    linear-gradient(180deg, #101216 0%, #0f1115 100%);
 }
 
 .dark .feature-chat .lab-panel-elevated {
-  border-color: rgba(124, 156, 222, 0.22);
+  border-color: rgba(255, 255, 255, 0.14);
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.46);
 }
 
 .dark .feature-hybrid .lab-panel-elevated {
-  border-color: rgba(124, 149, 195, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.42);
 }
 
 .dark .feature-legal .lab-panel-elevated {
-  border-color: rgba(148, 163, 184, 0.2);
+  border-color: rgba(255, 255, 255, 0.11);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.38);
 }
 
 .dark .lab-panel,
 .dark .lab-panel-elevated {
-  background: rgba(17, 22, 31, 0.9);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(21, 24, 30, 0.9);
+  border-color: rgba(255, 255, 255, 0.11);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
 }
 
 .dark .lab-panel-elevated {
-  background: linear-gradient(180deg, rgba(20, 26, 38, 0.95) 0%, rgba(15, 20, 31, 0.9) 100%);
+  background: linear-gradient(180deg, rgba(24, 27, 34, 0.95) 0%, rgba(18, 21, 27, 0.9) 100%);
 }
 
 .dark .lab-card,
 .dark .lab-card-interactive,
 .dark .lab-metric-tile,
 .dark .lab-kpi-card {
-  background: rgba(20, 25, 36, 0.88);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(24, 27, 34, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark .lab-button-secondary {
-  background: rgba(24, 30, 43, 0.9);
-  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(27, 30, 38, 0.9);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .dark .lab-button-secondary[data-active="true"] {
-  color: #d3e3ff;
-  border-color: rgba(124, 156, 222, 0.44);
-  background: rgba(124, 156, 222, 0.14);
+  color: #f0f2f6;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .dark .lab-button-secondary:hover:not(:disabled),
 .dark .lab-card-interactive:hover {
-  border-color: rgba(124, 156, 222, 0.34);
+  border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
 }
 
 .dark .lab-input,
 .dark .lab-select,
 .dark .lab-textarea {
-  background: rgba(13, 18, 27, 0.94);
-  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(18, 21, 27, 0.94);
+  border-color: rgba(255, 255, 255, 0.13);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .dark .lab-nav-pill {
-  background: rgba(16, 21, 31, 0.82);
-  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(20, 23, 30, 0.82);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .dark .lab-nav-pill[data-active="true"] {
-  color: #d3e3ff;
-  border-color: rgba(124, 156, 222, 0.44);
-  background: rgba(124, 156, 222, 0.12);
+  color: #f0f2f6;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .dark .lab-chip-mono {
-  background: rgba(12, 17, 26, 0.72);
-  border-color: rgba(148, 163, 184, 0.25);
-  color: #bcd3ff;
+  background: rgba(16, 19, 24, 0.72);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #c7ccd6;
 }
 
 .dark .lab-empty-state {
-  background: rgba(12, 17, 26, 0.52);
-  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(16, 19, 24, 0.52);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 body {
