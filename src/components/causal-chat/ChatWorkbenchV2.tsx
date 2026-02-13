@@ -105,6 +105,31 @@ const isRealDomain = (value: string | null | undefined): value is string =>
 const isRealModelKey = (value: string | null | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0 && value !== 'default';
 
+const extractSourcesFromText = (text: string): GroundingSource[] => {
+  const lines = text.split('\n');
+  const sources: GroundingSource[] = [];
+  const regex = /^\[(\d+)\]\s+(.+?)\s+—\s+(https?:\/\/\S+)$/;
+
+  for (const line of lines) {
+    const match = line.trim().match(regex);
+    if (!match) continue;
+
+    const rank = Number(match[1]) || sources.length + 1;
+    const title = match[2].trim();
+    const link = match[3].trim();
+    let domain = 'unknown';
+    try {
+      domain = new URL(link).hostname.replace(/^www\./, '');
+    } catch {
+      domain = 'unknown';
+    }
+
+    sources.push({ rank, title, link, domain, snippet: domain });
+  }
+
+  return sources.slice(0, 5);
+};
+
 const QUICK_PROMPTS = [
   { id: 'claim', label: 'Claim template', snippet: 'Define the causal claim, mechanism, confounders, and one falsifier.' },
   { id: 'intervention', label: 'Add intervention', snippet: 'Run intervention framing: do(X)=..., expected delta on Y, and identifiability assumptions.' },
@@ -435,6 +460,17 @@ export function ChatWorkbenchV2() {
             message.id === assistantMessageId ? { ...message, isStreaming: false } : message
           )
         );
+
+        setGroundingSources((previous) => {
+          if (previous.length > 0) return previous;
+          const parsed = extractSourcesFromText(assistantContentRef.current || '');
+          if (parsed.length > 0) {
+            setGroundingStatus('ready');
+            setGroundingError(null);
+            return parsed;
+          }
+          return previous;
+        });
       }
     },
     []
