@@ -174,14 +174,14 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
       <div className="flex min-h-screen">
         <aside className={cn(
           'relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
-          collapsed ? 'w-[74px]' : 'w-[272px]',
+          collapsed ? 'w-[74px]' : 'w-[286px]',
         )}>
           <div className="flex h-full flex-col p-3">
             <div className="mb-3 flex items-center justify-between gap-2">
               {collapsed ? null : (
                 <div>
-                  <p className="font-serif text-[30px] leading-none tracking-tight">Wu-Weism</p>
-                  <p className="text-xs text-[var(--lab-text-secondary)]">Dashboard</p>
+                  <p className="font-serif text-[28px] leading-none tracking-tight">Wu-Weism</p>
+                  <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--lab-text-secondary)]">Workspace</p>
                 </div>
               )}
               <button type="button" className="lab-button-secondary !px-2.5 !py-2" onClick={toggleSidebar} aria-label="Toggle sidebar">
@@ -212,10 +212,10 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
 
             {isChatRoute && !collapsed ? (
               <section className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-3">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <button
                     type="button"
-                    className="lab-nav-pill w-full justify-start"
+                    className="lab-nav-pill w-full justify-start !py-2.5"
                     onClick={() => {
                       router.push('/chat?new=1');
                       window.dispatchEvent(new Event('newChat'));
@@ -235,19 +235,19 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                     />
                   </div>
 
-                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/chat')}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/chat')}>
                     <MessageSquare className="h-4 w-4" />
                     <span>Chats</span>
                   </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => setCreatingFolder((v) => !v)}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setCreatingFolder((v) => !v)}>
                     <Folder className="h-4 w-4" />
                     <span>Projects</span>
                   </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/legal')}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/legal')}>
                     <Boxes className="h-4 w-4" />
                     <span>Artifacts</span>
                   </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/hybrid')}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/hybrid')}>
                     <Code2 className="h-4 w-4" />
                     <span>Code</span>
                   </button>
@@ -281,7 +281,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
 
                 <div className="lab-scroll-region mt-4 h-[44vh] space-y-3 pr-1">
                   <div>
-                    <p className="mb-1 text-xs text-[var(--lab-text-tertiary)]">Starred</p>
+                    <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Starred</p>
                     {folders.length === 0 ? <p className="text-xs text-[var(--lab-text-tertiary)]">No projects yet.</p> : null}
                     {folders.slice(0, 4).map((folder) => {
                       const items = folderedThreads.groups[folder] || [];
@@ -313,10 +313,10 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                   </div>
 
                   <div>
-                    <p className="mb-1 text-xs text-[var(--lab-text-tertiary)]">Recents</p>
+                    <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Recents</p>
                     <div className="space-y-2">
                       {filteredUnfiledThreads.slice(0, 18).map((session) => (
-                        <div key={session.id} className="lab-card-interactive w-full !p-2.5 text-left">
+                        <div key={session.id} className="lab-card-interactive w-full !p-2 text-left">
                           <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
                             <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
                             <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
