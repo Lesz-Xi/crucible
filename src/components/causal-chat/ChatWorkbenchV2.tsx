@@ -1,7 +1,20 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
-import { FlaskConical, Microscope, Network, ShieldCheck, Sparkles } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FlaskConical,
+  Microscope,
+  Moon,
+  Monitor,
+  Network,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  ShieldCheck,
+  Sparkles,
+  Sun,
+} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -13,6 +26,8 @@ import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
+import { StatusStrip } from '@/components/workbench/StatusStrip';
+import { useTheme } from 'next-themes';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 
 interface ChatWorkbenchV2Props {
@@ -46,6 +61,8 @@ interface AssistantEventPayload {
   claimId?: string;
 }
 
+type OperatorMode = 'explore' | 'intervene' | 'audit';
+
 interface SessionHistoryMessage {
   id: string;
   role: string;
@@ -76,8 +93,12 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
   const [claimCopied, setClaimCopied] = useState(false);
+  const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
+  const [contextRailOpen, setContextRailOpen] = useState(true);
+  const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
+  const { theme, setTheme } = useTheme();
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -95,6 +116,39 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setClaimCopied(false);
     onNewChat?.();
   }, [onNewChat]);
+
+  useEffect(() => {
+    const savedContextRail = window.localStorage.getItem('chat-v3-context-rail');
+    const savedEvidenceRail = window.localStorage.getItem('chat-v3-evidence-rail');
+    if (savedContextRail === 'closed') setContextRailOpen(false);
+    if (savedEvidenceRail === 'closed') setEvidenceRailOpen(false);
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const isMetaToggle = (event.metaKey || event.ctrlKey) && !event.altKey;
+      if (!isMetaToggle) return;
+
+      if (event.key.toLowerCase() === 'b') {
+        event.preventDefault();
+        setContextRailOpen((current) => {
+          const next = !current;
+          window.localStorage.setItem('chat-v3-context-rail', next ? 'open' : 'closed');
+          return next;
+        });
+      }
+
+      if (event.key === ']') {
+        event.preventDefault();
+        setEvidenceRailOpen((current) => {
+          const next = !current;
+          window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
+          return next;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const loadSession = useCallback(
     async (sessionId: string) => {
@@ -340,6 +394,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         body: JSON.stringify({
           messages: conversation,
           sessionId: sessionForSave,
+          operatorMode,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -409,7 +464,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [chatPersistence, currentDomain, dbSessionId, handleStreamEvent, isLoading, lastDensity, messages, prompt]);
+  }, [chatPersistence, currentDomain, dbSessionId, handleStreamEvent, isLoading, lastDensity, messages, operatorMode, prompt]);
 
   const handleStop = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -426,8 +481,73 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     }
   }, []);
 
+  const handleQuickPrompt = useCallback((snippet: string) => {
+    setPrompt((current) => {
+      if (!current.trim()) return snippet;
+      return `${current.trim()}\n\n${snippet}`;
+    });
+  }, []);
+
+  const toggleContextRail = useCallback(() => {
+    setContextRailOpen((current) => {
+      const next = !current;
+      window.localStorage.setItem('chat-v3-context-rail', next ? 'open' : 'closed');
+      return next;
+    });
+  }, []);
+
+  const toggleEvidenceRail = useCallback(() => {
+    setEvidenceRailOpen((current) => {
+      const next = !current;
+      window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
+      return next;
+    });
+  }, []);
+
   return (
     <WorkbenchShell
+      contextRailOpen={contextRailOpen}
+      evidenceRailOpen={evidenceRailOpen}
+      statusStrip={
+        <StatusStrip
+          left={
+            <div className="flex items-center gap-3">
+              <span className="lab-chip-mono">Automated Scientist · Chat v3</span>
+              <p className="text-xs text-[var(--lab-text-secondary)]">{operatorMode} mode · theme {theme || 'light'} · ⌘/Ctrl+B sidebar · ⌘/Ctrl+] evidence</p>
+            </div>
+          }
+          right={
+            <div className="flex items-center gap-2">
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('explore')} data-active={operatorMode === 'explore'}>
+                Explore
+              </button>
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('intervene')} data-active={operatorMode === 'intervene'}>
+                Intervene
+              </button>
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setOperatorMode('audit')} data-active={operatorMode === 'audit'}>
+                Audit
+              </button>
+              <div className="mx-1 h-5 w-px bg-[var(--lab-border)]" />
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={toggleContextRail} title="Toggle command rail">
+                {contextRailOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+              </button>
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={toggleEvidenceRail} title="Toggle evidence rail">
+                {evidenceRailOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+              </button>
+              <div className="mx-1 h-5 w-px bg-[var(--lab-border)]" />
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('light')} title="Light mode">
+                <Sun className="h-4 w-4" />
+              </button>
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('dark')} title="Dark mode">
+                <Moon className="h-4 w-4" />
+              </button>
+              <button type="button" className="lab-button-secondary !py-1.5" onClick={() => setTheme('system')} title="System theme">
+                <Monitor className="h-4 w-4" />
+              </button>
+            </div>
+          }
+        />
+      }
       contextRail={
         <ContextRail title="Command Rail" subtitle="Thread control and feature routing">
           <ChatSidebarV2 onLoadSession={loadSession} onNewThread={resetThread} />
@@ -469,7 +589,29 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               )}
             </div>
 
-            <ChatComposerV2 value={prompt} onChange={setPrompt} onSend={handleSend} onStop={handleStop} isLoading={isLoading} />
+            <div className="border-t border-[var(--lab-border)] px-5 pt-3">
+              <p className="mb-2 text-[11px] font-mono uppercase tracking-wide text-[var(--lab-text-tertiary)]">Scientific shortcuts</p>
+              <div className="mb-3 flex flex-wrap gap-2">
+                <button type="button" className="lab-button-secondary !py-1.5 text-xs" onClick={() => handleQuickPrompt('Define the causal claim, mechanism, confounders, and one falsifier.')}>Claim template</button>
+                <button type="button" className="lab-button-secondary !py-1.5 text-xs" onClick={() => handleQuickPrompt('Run intervention framing: do(X)=..., expected delta on Y, and identifiability assumptions.')}>Add intervention</button>
+                <button type="button" className="lab-button-secondary !py-1.5 text-xs" onClick={() => handleQuickPrompt('Generate one counterfactual test and explain necessity vs sufficiency.')}>Ask counterfactual</button>
+              </div>
+            </div>
+
+            <ChatComposerV2
+              value={prompt}
+              onChange={setPrompt}
+              onSend={handleSend}
+              onStop={handleStop}
+              isLoading={isLoading}
+              placeholder={
+                operatorMode === 'intervene'
+                  ? 'Specify do(X)=..., expected Y delta, and required controls...'
+                  : operatorMode === 'audit'
+                    ? 'Request citation-grounded claim audit with uncertainty and falsifier...'
+                    : 'State your hypothesis, mechanism, and desired intervention...'
+              }
+            />
             {error ? <div className="px-5 pb-4 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>

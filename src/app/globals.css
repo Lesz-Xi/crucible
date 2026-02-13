@@ -102,6 +102,20 @@
   --wabi-moss: #6fb08f;
   --wabi-rust: #d18f67;
   --wabi-stone: #8f96a3;
+
+  /* Automated Scientist dark tokens */
+  --lab-bg: #111317;
+  --lab-bg-elevated: #171A20;
+  --lab-panel: rgba(24, 28, 34, 0.86);
+  --lab-border: rgba(243, 244, 246, 0.10);
+  --lab-text-primary: #F3F4F6;
+  --lab-text-secondary: #B7BEC9;
+  --lab-text-tertiary: #8892A2;
+  --lab-accent-clay: #C89A7D;
+  --lab-accent-earth: #D18F67;
+  --lab-accent-moss: #78AF8F;
+  --lab-shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --lab-shadow-lift: 0 16px 36px rgba(0, 0, 0, 0.36);
   
   /* Shadow adjustments for dark */
   --shadow-ambient: 0 8px 24px rgba(0, 0, 0, 0.24);

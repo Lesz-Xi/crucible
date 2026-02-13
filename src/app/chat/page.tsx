@@ -5,7 +5,6 @@ import { CausalChatInterface } from "@/components/causal-chat/CausalChatInterfac
 import { ChatLayout } from "@/components/causal-chat/ChatLayout";
 import { ChatWorkbenchV2 } from "@/components/causal-chat/ChatWorkbenchV2";
 import { bootstrapHistoryRecovery } from "@/lib/migration/history-import-bootstrap";
-import { resolveUiFlags } from "@/lib/config/ui-flags";
 
 function ChatLegacyView() {
   const handleLoadSession = async (sessionId: string) => {
@@ -28,11 +27,11 @@ function ChatLegacyView() {
 }
 
 export default function ChatPage() {
-  const [useV2, setUseV2] = useState(false);
+  const [useV2, setUseV2] = useState(true);
 
   useEffect(() => {
     void bootstrapHistoryRecovery();
-    setUseV2(resolveUiFlags().autoSciLayoutV2);
+    setUseV2(true);
   }, []);
 
   const handleLoadSession = async (sessionId: string) => {

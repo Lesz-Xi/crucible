@@ -9,9 +9,10 @@ export interface ChatComposerV2Props {
   onStop: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  placeholder?: string;
 }
 
-export function ChatComposerV2({ value, onChange, onSend, onStop, disabled = false, isLoading = false }: ChatComposerV2Props) {
+export function ChatComposerV2({ value, onChange, onSend, onStop, disabled = false, isLoading = false, placeholder }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
 
   return (
@@ -23,7 +24,7 @@ export function ChatComposerV2({ value, onChange, onSend, onStop, disabled = fal
 
       <textarea
         className="lab-textarea min-h-[110px]"
-        placeholder="State your hypothesis, mechanism, and desired intervention..."
+        placeholder={placeholder || "State your hypothesis, mechanism, and desired intervention..."}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
