@@ -47,7 +47,7 @@ export function ChatComposerV2({
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
 
   return (
-    <div className="lab-card !rounded-t-none border-0 border-t border-[var(--lab-border)] !bg-transparent px-6 pb-2 pt-3 shadow-none">
+    <div className="lab-card !rounded-t-none border-0 border-t border-[var(--lab-border)] !bg-transparent px-6 pb-1 pt-2 shadow-none">
       <div className="mb-3 flex items-center justify-end gap-2">
         <div className="relative">
           <button
@@ -126,7 +126,7 @@ export function ChatComposerV2({
       </div>
 
       <textarea
-        className="lab-textarea min-h-[134px]"
+        className="lab-textarea min-h-[112px]"
         placeholder={placeholder || "State your hypothesis, mechanism, and desired intervention..."}
         value={value}
         onChange={(event) => onChange(event.target.value)}

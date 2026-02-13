@@ -591,8 +591,8 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
       contextRail={<div />}
       primary={
         <PrimaryCanvas>
-          <div className="flex h-full flex-col">
-            <div className="lab-scroll-region flex-1 space-y-4 px-6 py-5">
+          <div className="flex h-full min-h-0 flex-col">
+            <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
                 <div className="space-y-4">
                   <div className="lab-empty-state">
@@ -661,7 +661,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                     : 'State your hypothesis, mechanism, and desired intervention...'
               }
             />
-            {error ? <div className="px-6 pb-5 text-sm text-red-700">{error}</div> : null}
+            {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>
       }
