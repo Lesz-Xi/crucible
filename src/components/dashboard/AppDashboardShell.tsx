@@ -8,7 +8,10 @@ import {
   Bot,
   ChevronDown,
   ChevronRight,
+  Boxes,
   Clock3,
+  Code2,
+  Folder,
   FolderPlus,
   FolderTree,
   Gavel,
@@ -21,6 +24,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
+  Search,
   Sun,
   UserCircle2,
 } from 'lucide-react';
@@ -58,6 +62,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState('');
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -158,6 +163,12 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
     window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
   };
 
+  const filteredUnfiledThreads = useMemo(() => {
+    if (!searchQuery.trim()) return folderedThreads.unfiled;
+    const q = searchQuery.toLowerCase();
+    return folderedThreads.unfiled.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
+  }, [folderedThreads.unfiled, searchQuery]);
+
   return (
     <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
       <div className="flex min-h-screen">
@@ -178,56 +189,76 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
               </button>
             </div>
 
-            <nav className="space-y-1">
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="lab-nav-pill"
-                    data-active={active ? 'true' : 'false'}
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {collapsed ? null : <span>{item.label}</span>}
-                  </Link>
-                );
-              })}
-            </nav>
+            {isChatRoute ? null : (
+              <nav className="space-y-1">
+                {NAV_ITEMS.map((item) => {
+                  const Icon = item.icon;
+                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="lab-nav-pill"
+                      data-active={active ? 'true' : 'false'}
+                      title={collapsed ? item.label : undefined}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {collapsed ? null : <span>{item.label}</span>}
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
 
             {isChatRoute && !collapsed ? (
               <section className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-3">
-                <button
-                  type="button"
-                  className="lab-button-primary mb-2 w-full"
-                  onClick={() => {
-                    router.push('/chat?new=1');
-                    window.dispatchEvent(new Event('newChat'));
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                  New Thread
-                </button>
-
-                <div className="mb-3 flex items-center gap-2">
+                <div className="space-y-2">
                   <button
                     type="button"
-                    className="lab-button-secondary flex-1 !py-2 text-xs"
-                    onClick={() => setCreatingFolder((v) => !v)}
+                    className="lab-nav-pill w-full justify-start"
+                    onClick={() => {
+                      router.push('/chat?new=1');
+                      window.dispatchEvent(new Event('newChat'));
+                    }}
                   >
-                    <FolderPlus className="h-4 w-4" />
-                    New Folder
+                    <Plus className="h-4 w-4" />
+                    <span>New chat</span>
+                  </button>
+
+                  <div className="flex items-center gap-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] px-3 py-2">
+                    <Search className="h-4 w-4 text-[var(--lab-text-secondary)]" />
+                    <input
+                      className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--lab-text-tertiary)]"
+                      placeholder="Search"
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                    />
+                  </div>
+
+                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/chat')}>
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Chats</span>
+                  </button>
+                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => setCreatingFolder((v) => !v)}>
+                    <Folder className="h-4 w-4" />
+                    <span>Projects</span>
+                  </button>
+                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/legal')}>
+                    <Boxes className="h-4 w-4" />
+                    <span>Artifacts</span>
+                  </button>
+                  <button type="button" className="lab-nav-pill w-full justify-start" onClick={() => router.push('/hybrid')}>
+                    <Code2 className="h-4 w-4" />
+                    <span>Code</span>
                   </button>
                 </div>
 
                 {creatingFolder ? (
-                  <div className="mb-3 flex items-center gap-2">
+                  <div className="mb-3 mt-3 flex items-center gap-2">
                     <input
                       className="lab-input !min-h-[36px] text-sm"
                       value={newFolderName}
-                      placeholder="Folder name"
+                      placeholder="Project folder name"
                       onChange={(event) => setNewFolderName(event.target.value)}
                     />
                     <button
@@ -242,57 +273,58 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                         setCreatingFolder(false);
                       }}
                     >
+                      <FolderPlus className="h-3.5 w-3.5" />
                       Add
                     </button>
                   </div>
                 ) : null}
 
-                <p className="lab-section-title mb-2 text-[11px]">Research Threads</p>
-                <div className="lab-scroll-region h-[46vh] space-y-2 pr-1">
-                  {folders.map((folder) => {
-                    const items = folderedThreads.groups[folder] || [];
-                    const expanded = expandedFolders[folder] ?? true;
-                    return (
-                      <div key={folder} className="rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
-                        <div className="mb-1 flex items-center justify-between gap-2">
+                <div className="lab-scroll-region mt-4 h-[44vh] space-y-3 pr-1">
+                  <div>
+                    <p className="mb-1 text-xs text-[var(--lab-text-tertiary)]">Starred</p>
+                    {folders.length === 0 ? <p className="text-xs text-[var(--lab-text-tertiary)]">No projects yet.</p> : null}
+                    {folders.slice(0, 4).map((folder) => {
+                      const items = folderedThreads.groups[folder] || [];
+                      const expanded = expandedFolders[folder] ?? true;
+                      return (
+                        <div key={folder} className="mb-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
                           <button
                             type="button"
-                            className="lab-nav-pill !px-2 !py-1 text-xs"
+                            className="lab-nav-pill w-full justify-start !px-2 !py-1 text-xs"
                             onClick={() => setExpandedFolders((prev) => ({ ...prev, [folder]: !expanded }))}
                           >
                             {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                             <FolderTree className="h-3.5 w-3.5" />
-                            <span>{folder}</span>
+                            <span className="truncate">{folder}</span>
                           </button>
-                          <span className="text-[11px] text-[var(--lab-text-tertiary)]">{items.length}</span>
+                          {expanded ? (
+                            <div className="mt-1 space-y-1">
+                              {items.slice(0, 3).map((session) => (
+                                <button key={session.id} type="button" className="w-full truncate px-2 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
+                                  {session.title || 'Untitled thread'}
+                                </button>
+                              ))}
+                              {items.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No threads yet.</p> : null}
+                            </div>
+                          ) : null}
                         </div>
-                        {expanded ? (
-                          <div className="space-y-1">
-                            {items.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No threads yet.</p> : null}
-                            {items.map((session) => (
-                              <button key={session.id} type="button" className="lab-card-interactive w-full !p-2 text-left" onClick={() => openThread(session.id)}>
-                                <p className="truncate text-xs font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
-                              </button>
-                            ))}
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
 
-                  {folderedThreads.unfiled.length > 0 ? (
-                    <div>
-                      <p className="mb-1 px-1 text-[11px] text-[var(--lab-text-tertiary)]">Unfiled</p>
-                      <div className="space-y-2">
-                        {folderedThreads.unfiled.slice(0, 16).map((session) => (
-                          <div key={session.id} className="lab-card-interactive w-full !p-2.5 text-left">
-                            <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
-                              <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
-                              <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                                <Clock3 className="h-3.5 w-3.5" />
-                                {new Date(session.updated_at).toLocaleString()}
-                              </p>
-                            </button>
+                  <div>
+                    <p className="mb-1 text-xs text-[var(--lab-text-tertiary)]">Recents</p>
+                    <div className="space-y-2">
+                      {filteredUnfiledThreads.slice(0, 18).map((session) => (
+                        <div key={session.id} className="lab-card-interactive w-full !p-2.5 text-left">
+                          <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
+                            <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
+                            <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
+                              <Clock3 className="h-3.5 w-3.5" />
+                              {new Date(session.updated_at).toLocaleString()}
+                            </p>
+                          </button>
+                          {folders.length > 0 ? (
                             <select
                               className="lab-select mt-2 !min-h-[34px] text-xs"
                               value={threadFolderMap[session.id] || ''}
@@ -301,18 +333,17 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                                 setThreadFolderMap((prev) => ({ ...prev, [session.id]: value }));
                               }}
                             >
-                              <option value="">Move to folder…</option>
+                              <option value="">Move to project…</option>
                               {folders.map((folder) => (
                                 <option key={folder} value={folder}>{folder}</option>
                               ))}
                             </select>
-                          </div>
-                        ))}
-                      </div>
+                          ) : null}
+                        </div>
+                      ))}
                     </div>
-                  ) : null}
-
-                  {recentThreads.length === 0 ? <div className="lab-empty-state text-xs">No recent history for this account.</div> : null}
+                    {recentThreads.length === 0 ? <div className="lab-empty-state mt-2 text-xs">No recent history for this account.</div> : null}
+                  </div>
                 </div>
               </section>
             ) : null}
