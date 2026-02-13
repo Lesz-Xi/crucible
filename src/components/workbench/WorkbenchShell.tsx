@@ -35,6 +35,8 @@ export function WorkbenchShell({
 
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
+  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 92px)' : 'calc(100svh - 112px)';
+
   return (
     <AppDashboardShell>
       <div className={cn('lab-shell min-h-screen w-full', className)}>
@@ -42,14 +44,14 @@ export function WorkbenchShell({
 
         <div className={cn('mx-auto max-w-[1760px] px-4 pt-2 md:px-6 lg:px-8', className?.includes('feature-chat') ? 'pb-0' : 'pb-5')}>
           <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{contextRail}</aside> : null}
-            <main className="lab-panel-elevated h-[calc(100vh-112px)] overflow-hidden">{primary}</main>
-            {evidenceRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{evidenceRail}</aside> : null}
+            {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className="lab-panel-elevated overflow-hidden" style={{ height: panelHeight }}>{primary}</main>
+            {evidenceRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
           </div>
 
           <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel h-[calc(100vh-112px)] overflow-hidden">{contextRail}</aside> : null}
-            <main className="lab-panel-elevated h-[calc(100vh-112px)] overflow-hidden">{primary}</main>
+            {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className="lab-panel-elevated overflow-hidden" style={{ height: panelHeight }}>{primary}</main>
           </div>
 
           <div className="md:hidden">
