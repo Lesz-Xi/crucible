@@ -116,9 +116,9 @@ HR-2: No Schema Versioning
 Issue: claim-ledger.schema.json will evolve. How are schema migrations handled?
 Required: Add schema_version field and migration strategy.
 
-HR-3: Claim Ownership Assignment Deferred to USER
-Issue: Plan says "USER ACTION REQUIRED: designate claim owners" but provides no template or guide.
-Required: Include a claim ownership matrix template in the spec.
+HR-3: Claim Ownership Assignment Deferred to User (Resolved)
+Issue (historical): Earlier drafts deferred ownership designation without a template or guide.
+Resolution: Ownership matrix template and seeded assignments are now available at `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/docs/governance/claim-ownership-matrix.md` (mirrored in `crucible/docs/governance/claim-ownership-matrix.md`).
 
 HR-4: No False Positive Mitigation
 Issue: Static analysis is brittle. What if a claim is satisfied but the scanner can't detect it?

@@ -320,9 +320,9 @@
             <h1>MASA: Methods of Automated Scientific Analysis</h1>
             <p class="subtitle">A Self-Improving AI Architecture for Autonomous Scientific Discovery</p>
             <p class="meta">
-                <span>Version 1.0</span>
+                <span>Version 1.1</span>
                 <span>•</span>
-                <span>January 2026</span>
+                <span>February 2026</span>
                 <span>•</span>
                 <span>Rhine Lesther Tague</span>
             </p>
@@ -330,7 +330,11 @@
 
         <div class="abstract">
             <h3>Abstract</h3>
-            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture designed to automate the scientific discovery process. Unlike conventional LLM applications that generate text, MASA implements a closed-loop system capable of: (1) generating novel scientific hypotheses from heterogeneous data sources, (2) critically evaluating these hypotheses through multi-agent dialectical reasoning, (3) storing evaluation outcomes in a vector database for persistent learning, and (4) executing simulation protocols to validate predictions against physical ground truth. Recent breakthroughs include the full implementation of <strong>Pearl's Causal Blueprint (Phases 28-31, January 2026)</strong>—a three-layer causal validation system that gates epistemic reasoning with Structural Causal Models, do-calculus interventional testing, and counterfactual robustness evaluation, augmented by a <strong>Truth Cartridge Library</strong> of four domain-specific templates enabling <strong>multi-scale validation</strong> across gene-level (Dawkins' Selfish Gene), individual cognition (Kahneman's Prospect Theory), population dynamics (biological ecology), and complex systems physics (West's Scaling Laws). Additional innovations include <strong>Psycho-Cybernetics</strong> servo-mechanisms for goal-directed self-correction. This paper presents the complete technical architecture from foundational components through current implementations and future enhancements.</p>
+            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture designed to automate scientific discovery with causal discipline. Unlike conventional LLM applications that generate plausible text, MASA implements a closed-loop system spanning: (1) hypothesis generation from heterogeneous evidence, (2) multi-agent critique under explicit causal constraints, (3) durable memory of evaluations and traces, and (4) validation protocols that move outputs toward falsifiable science. Core breakthroughs include the implementation of <strong>Pearl's Causal Blueprint</strong> (observation, intervention, counterfactual layers), a domain registry of constraint templates, and a governance stack that measures drift between architectural claims and code reality. This paper presents the architecture as implemented and identifies remaining gaps required to reach fully autonomous, high-integrity scientific operation.</p>
+            <div class="callout callout-info" style="margin-top: 20px;">
+                <strong>Code-Reality Update (February 2026)</strong><br>
+                MASA now includes an additive persistent-memory v1.1 path in production code (causal pruning policy, compaction receipts, hybrid retrieval fusion, and cross-session lattice events) behind feature flags for controlled rollout. Governance sentinels for claim drift and memory integrity are operational in report-first mode.
+            </div>
         </div>
 
         <section>
@@ -1312,23 +1316,23 @@ flowchart TD
                     <tr>
                         <td><strong>Fisher Service</strong></td>
                         <td><span class="badge badge-foundation">Deferred</span></td>
-                        <td>Requires persistent memory infrastructure</td>
+                        <td>Requires domain-level audit corpus and orthogonality optimizer specification</td>
                     </tr>
                     <tr>
                         <td><strong>MASA Integration</strong></td>
                         <td><span class="badge badge-foundation">Deferred</span></td>
-                        <td>Need 100+ audits per domain for Fisher computation</td>
+                        <td>Need 100+ audits per domain and validated interference benchmarks</td>
                     </tr>
                 </tbody>
             </table>
             
             <div class="callout callout-warning">
                 <strong>Current Limitation (Phase 3)</strong><br>
-                Vector-Space Orthogonality requires MASA to transition from a <em>stateless tool</em> to a <em>stateful learning system</em>. Implementation is deferred pending:
+                Vector-Space Orthogonality now builds on a stateful memory substrate, but remains deferred as a higher-order learning layer pending:
                 <ul>
                     <li>Accumulation of 100+ audits across 3+ domains</li>
-                    <li>Definition of "evaluation parameters" for LLM-based auditor</li>
-                    <li>Persistent memory infrastructure (4-6 week development cycle)</li>
+                    <li>Definition of stable "evaluation parameters" for API-model auditors</li>
+                    <li>Interference benchmark thresholds and promotion governance</li>
                 </ul>
                 See Section 7.2 for detailed requirements and roadmap.
             </div>
@@ -1425,24 +1429,23 @@ flowchart LR
 
         <section>
             <h2>6. Sovereign Memory</h2>
-            <span class="badge badge-foundation">Foundation</span>
+            <span class="badge badge-foundation">Foundation + Operational v1.1 (Flag-Gated)</span>
             
             <h3>6.1 The Closed-Loop Problem</h3>
-            <p>Traditional LLM applications suffer from "runtime amnesia"—they improve within a session but forget everything on restart. Sovereign Memory <strong>mitigates</strong> this by persisting evaluation outcomes as vector embeddings—providing <em>rejection caching</em> rather than true closed-loop learning.</p>
+            <p>Traditional LLM applications suffer from runtime amnesia: context improves within a session, then collapses on restart. MASA's Sovereign Memory now provides two layers: (1) durable rejection and trace storage, and (2) additive causal memory operations (pruning, compaction receipts, retrieval fusion, and lattice broadcast) that are controlled by feature flags for safe rollout.</p>
             
             <h3>6.2 Architecture</h3>
             <div class="mermaid">
 flowchart TD
-    A["Novel Idea Generated"] --> B["generateEmbedding()"]
-    B --> C{"checkRejection()"}
-    C -->|"Similarity > 90%"| D["Skip Idea"]
-    C -->|"No Match"| E["MASA Audit"]
-    E -->|"Approved"| F["Store: is_rejected=false"]
-    E -->|"Rejected"| G["Store: is_rejected=true"]
-    F --> H["idea_embeddings"]
-    G --> H
-    H --> I["ivfflat Index"]
-    I --> C
+    A["Session Messages + Trace Events"] --> B["Causal Pruning Policy (context assembly only)"]
+    B --> C["Compaction Orchestrator"]
+    C --> D{"Axiom Extraction Passes?"}
+    D -->|"Yes"| E["Write CausalMemoryEntry + CompactionReceipt"]
+    D -->|"No"| F["Summary Fallback + Receipt Marker"]
+    E --> G["Memory Retrieval Fusion (vector + lexical + causal re-rank)"]
+    F --> G
+    G --> H["Chat/Hybrid Reasoning Context"]
+    H --> I["Cross-Session Lattice Event (policy-gated)"]
             </div>
             
             <h3>6.3 Implementation</h3>
@@ -1456,36 +1459,41 @@ flowchart TD
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Embedding Model</td>
-                        <td>text-embedding-004 (768d)</td>
-                        <td>Convert thesis+mechanism to vector</td>
+                        <td>Causal Pruning Policy</td>
+                        <td>Deterministic keep/drop scoring with TTL states</td>
+                        <td>Reduce prompt payload under token pressure without deleting stored history</td>
                     </tr>
                     <tr>
-                        <td>Vector Store</td>
-                        <td>Supabase + pgvector</td>
-                        <td>Store and query embeddings</td>
+                        <td>Compaction Orchestrator</td>
+                        <td>Axiom-first compaction with explicit fallback receipt</td>
+                        <td>Preserve causal signal across long sessions</td>
                     </tr>
                     <tr>
-                        <td>Index</td>
-                        <td>ivfflat (100 lists)</td>
-                        <td>Fast approximate nearest neighbor</td>
+                        <td>Retrieval Fusion</td>
+                        <td>Vector + lexical + causal-priority re-ranking</td>
+                        <td>Improve factual/counterfactual recall quality for active reasoning</td>
                     </tr>
                     <tr>
-                        <td>RPC</td>
-                        <td>match_idea_embeddings</td>
-                        <td>Cosine similarity search</td>
+                        <td>Cross-Session Lattice</td>
+                        <td>Policy-gated axiom event broadcast</td>
+                        <td>Share validated axioms across user-owned sessions without leakage</td>
+                    </tr>
+                    <tr>
+                        <td>Governance Sentinel</td>
+                        <td>Report-first evaluator + CI workflow</td>
+                        <td>Track memory integrity, faithfulness, and drift over time</td>
                     </tr>
                 </tbody>
             </table>
             
             <div class="callout callout-info">
                 <strong>Current Capability</strong>
-                The system accumulates a proprietary knowledge base of valid scientific heuristics. Ideas similar to previously rejected patterns are automatically filtered, preventing repeated mistakes.
+                MASA stores and reuses causal artifacts, not only semantic summaries. The system can emit pruning/compaction/fusion/lattice telemetry events and attach compaction and retrieval debug metadata to responses for auditability.
             </div>
             
             <div class="callout callout-warning">
                 <strong>Honest Scope</strong>
-                This is <em>pattern avoidance</em> (filtering known-bad ideas), not <em>adaptive learning</em> (improving the generator). The LLM's weights remain unchanged—we filter its output rather than improve its reasoning. True closed-loop learning (weight updates, RLHF, meta-learning) remains a future milestone.
+                MASA remains an external-memory and policy-governed architecture: model weights are not updated online. Persistent memory improves context selection, recall, and trace continuity; it does not yet constitute autonomous parameter learning. Production enablement still requires operator steps for migrations, feature flags, and threshold governance.
             </div>
         </section>
 
@@ -1624,7 +1632,7 @@ flowchart LR
             <h2>9. Results & Conclusion</h2>
             
             <h3>8.1 Achievement Summary</h3>
-            <p>MASA implements the three pillars required for a closed-loop scientific discovery system. <strong>Note:</strong> The Update Mechanism currently provides <em>rejection caching</em> (Foundation), with true closed-loop learning (RLHF, meta-learning) as a future milestone:</p>
+            <p>MASA implements the three pillars required for a causal scientific-discovery engine. <strong>Code-reality note (February 2026):</strong> the Update Mechanism now includes operational persistent-memory primitives (flag-gated) beyond pure rejection caching, while true online parameter learning remains future work.</p>
             
             <table>
                 <thead>
@@ -1648,7 +1656,7 @@ flowchart LR
                     <tr>
                         <td>Update Mechanism</td>
                         <td><span class="badge badge-foundation">Foundation</span></td>
-                        <td>Sovereign Memory (pgvector) + RAG filtering. <em>Rejection caching only; true learning not yet implemented.</em></td>
+                        <td>Sovereign Memory + causal pruning + compaction receipts + retrieval fusion + lattice events (feature-flag rollout). <em>No online weight updates yet.</em></td>
                     </tr>
                     <tr>
                         <td>Physical Validation</td>
@@ -1671,9 +1679,9 @@ flowchart LR
             <h3>8.2 Key Innovations</h3>
             <ul>
                 <li><strong>Dialectical Synthesis:</strong> Novel ideas emerge from contradictions between sources, not just summarization</li>
-                <li><strong>Persistent Rejection Memory:</strong> Vector-based storage enables cross-session avoidance of past failures</li>
+                <li><strong>Causal Persistent Memory:</strong> Rejection memory expanded to pruning policy, compaction receipts, retrieval fusion, and cross-session lattice events</li>
                 <li><strong>Empirical Grounding:</strong> Generated protocols execute in secure sandbox for validation</li>
-                <li><strong>Real-Time Transparency:</strong> SSE streaming provides visibility into MASA's reasoning</li>
+                <li><strong>Real-Time Transparency:</strong> SSE streaming now includes memory and grounding telemetry for auditable reasoning</li>
             </ul>
             
             <h3>8.3 Empirical Audit Response (January 2026)</h3>
@@ -1701,26 +1709,24 @@ flowchart LR
                 <li>Multi-modal inputs (experimental images, spectroscopy data)</li>
                 <li>Collaborative human-AI hypothesis refinement interface</li>
             </ul>
-            
-            </ul>
 
             <h3>10. Limitations and Roadmap</h3>
             
             <div class="callout callout-info" style="margin-bottom: 20px;">
-                <strong>Implementation Status Update (January 2026)</strong><br>
-                Phases 28-31 (Pearl's Causal Blueprint + Truth Cartridge Library with 4 domain-specific templates) are <strong>complete</strong>. The system now implements full 3-layer causal validation with multi-scale domain coverage. The following describes remaining Phase 3 engineering work and architectural constraints identified during meta-synthesis.
+                <strong>Implementation Status Update (February 2026)</strong><br>
+                Pearl's Causal Blueprint and domain registry foundations are complete, and persistent-memory v1.1 services are integrated in code with report-first governance. Remaining work is rollout hardening: migration application, feature-flag activation, benchmark baselines, and enforcement thresholds.
             </div>
             
-            <p>While MASA has demonstrated capability in hypothesis generation and rejection filtering, the transition to a fully self-improving system requires addressing key architectural constraints identified during the January 2026 meta-synthesis.</p>
+            <p>While MASA now supports causal trace persistence and policy-gated cross-session continuity, transition to a fully autonomous self-improving scientist still requires proving stability under long-horizon workloads and enforcing governance thresholds in CI.</p>
             
             <h4>9.1 Vector-Space Orthogonality (Phase 3)</h4>
-            <p><strong>Constraint:</strong> The current system is <em>stateless</em> between sessions regarding domain expertise. Since we use API-based models (Claude/OpenAI), we cannot perform weight-level Fisher-Hessian regularization. This is an inherent limitation of black-box model architectures.</p>
+            <p><strong>Constraint:</strong> Memory is now stateful, but orthogonality learning still lacks a validated optimizer and enough per-domain audit data. Since the base models are API-hosted, weight-level Fisher-Hessian control remains inaccessible.</p>
             
             <p><strong>Planned Implementation:</strong></p>
             <ul>
                 <li><strong>Objective:</strong> Enable cumulative learning via embedding-space partitioning.</li>
                 <li><strong>Mechanism:</strong> Geometric partitioning of the retrieval manifold into orthogonal domain subspaces.</li>
-                <li><strong>Timeline:</strong> Phase 3 Engineering (Q2 2026).</li>
+                <li><strong>Timeline:</strong> Phase 3 Engineering hardening (Q2 2026), pending benchmark dataset readiness.</li>
             </ul>
             
             <h4>9.2 Chemical Entity Validation & Epistemological Caveats</h4>
@@ -1730,15 +1736,20 @@ flowchart LR
 
             <p><strong>Roadmap:</strong> Integration with open-source robotic platforms (e.g., Opentrons) and standardized "Lab-as-Code" interfaces for vendor-agnostic physical protocol execution.</p>
             
+            <div class="callout callout-warning">
+                <strong>Operator Dependencies (Human Follow-Up Required)</strong><br>
+                Production-grade memory rollout depends on: (1) applying additive Supabase migrations, (2) enabling memory feature flags in deployment environments, and (3) approving governance thresholds for sentinel enforcement.
+            </div>
+            
             <div class="callout callout-success">
                 <strong>Conclusion</strong>
-                MASA represents a significant step toward autonomous scientific discovery. By implementing <strong>Thermodynamic Basis Expansion</strong> to escape local optima and utilizing <strong>Vector-Space Orthogonality</strong> to mitigate domain interference, the system has transcended the "Armchair Philosopher" critique. While bound by the constraints of API-based latent representations, MASA provides a robust engineering framework for generating and validating syntactically valid scientific hypotheses.
+                MASA represents a significant step toward autonomous scientific discovery. The architecture has moved from narrative-only claims to auditable, code-level causal operations: deterministic gating, persistent causal memory artifacts, retrieval fusion, and governance sentinels. While still constrained by API-model boundaries and pending rollout gates, MASA now operates as a measurable scientific system rather than a purely semantic assistant.
             </div>
         </section>
 
         <footer class="footer">
             <p><strong>MASA: Methods of Automated Scientific Analysis</strong></p>
-            <p>Synthetic Mind Labs • January 2026</p>
+            <p>Synthetic Mind Labs • February 2026</p>
             <p style="margin-top: 12px; font-size: 11px; color: #9ca3af;">Made with Google Antigravity</p>
         </footer>
     </div>

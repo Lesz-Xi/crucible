@@ -281,29 +281,35 @@ Current gaps:
 | Novelty-engine failure mode | High | High | Medium | Some intervention ranking | Regression benchmark + gate policy | Hybrid + governance |
 | Overclaim governance drift | Critical | Medium | Low | None formal | Claim-to-code diff audit in CI | Product governance |
 
-### 8.3 USER ACTION REQUIRED (runtime verification blockers)
+### 8.3 Runtime Verification Prerequisites (Manual Operator Checklist)
 
-1. **Apply required migrations in Supabase SQL Editor**
-- Minimum set for audited capabilities:
-  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260129_add_axiom_compression_trigger.sql`
-  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260206_canonical_scm_registry.sql`
-  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260206_causal_disagreement_engine.sql`
-  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260206_causal_autopsy_mode.sql`
-  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260207_expand_benchmark_suites.sql`
-- Migration evidence for manual step requirement: `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260129_add_axiom_compression_trigger.sql:3`
+1. **Apply latest governance migrations in Supabase SQL Editor**
+- Minimum set for current audited capabilities:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260213_counterfactual_traces.sql`
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260214_hypothesis_lifecycle_governance.sql`
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260215_expand_benchmark_suites_m4.sql`
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260216_scm_promotion_governance.sql`
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260217_scientific_integrity_signoffs.sql`
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260218_fix_hot_rosenthal_candidate_confounder.sql`
+- Also apply seed data migration when bootstrapping a fresh project:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/seed_causal_models.sql`
 
-2. **Configure environment variables not documented in `.env.example`**
-- Must include at least:
-  - `ANTHROPIC_API_KEY` (required by chat/legal/hybrid generation paths)
-  - `BENCHMARK_ENABLED=true` (required to run benchmark API)
-  - `BENCHMARK_MAX_COST` (recommended guardrail)
-- Evidence: `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/api/causal-chat/route.ts:105`, `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/api/run-benchmark/route.ts:33`
+2. **Confirm required environment keys exist in runtime**
+- Minimum keys for audited pathways:
+  - `ANTHROPIC_API_KEY`
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - `SUPABASE_SERVICE_ROLE_KEY`
+  - `TRACE_SIGN_KEY`
+  - `BENCHMARK_CI_GATE`
+  - `BENCHMARK_MAX_COST`
+  - `SCIENTIFIC_INTEGRITY_GATE_ENABLED`
 
-3. **Ensure valid authenticated user context for autopsy persistence or patch route**
-- Current route uses `user_id = "system"` (`/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/api/scm/autopsy/route.ts:21`, `:77`) while table requires FK to `auth.users` (`/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260206_causal_autopsy_mode.sql:5`).
+3. **Confirm authenticated user identity for persistence-backed writes**
+- Verify write paths do not fallback to placeholder user IDs and are backed by valid `auth.users` principals before verification runs.
 
-4. **Enable network access for external grounding checks**
-- External grounding uses PubChem HTTP calls (`/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/external-grounding-service.ts:45`).
+4. **Enable outbound network access for grounding-backed checks**
+- Ensure deployments running verification can reach required external APIs used by grounding/search providers.
 
 ---
 

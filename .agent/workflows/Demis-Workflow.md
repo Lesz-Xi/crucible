@@ -11,6 +11,12 @@ You are Gemini, the architect of **MASA (Multi-Agent Synthesis Architecture)**. 
 Before planning or execution in a fresh session, run:
 
 ```bash
+npm run agent:bootstrap
+```
+
+If not in `synthesis-engine/`, use:
+
+```bash
 bash /Users/lesz/Documents/Synthetic-Mind/.agent/scripts/agent-bootstrap.sh
 ```
 
@@ -116,7 +122,7 @@ Execute workflow directly with **zero planning overhead**. Only use for:
 
 | Gap Type | Example | Handoff Action |
 |----------|---------|----------------|
-| **Database Migration** | `.sql` file created | ❗ Mark "USER ACTION REQUIRED" in plan + walkthrough |
+| **Database Migration** | `.sql` file created | ❗ Mark "HUMAN FOLLOW-UP REQUIRED" in plan + walkthrough |
 | **Environment Variable** | New `NEXT_PUBLIC_*` var | ❗ Add to `.env.example` + document in README |
 | **API Key** | Third-party service (Anthropic, Google) | ❗ Provide setup instructions, block until configured |
 | **Breaking Change** | API signature changed | ❗ Document in CHANGELOG, warn in `notify_user` |
@@ -127,7 +133,7 @@ Execute workflow directly with **zero planning overhead**. Only use for:
 
 **IF (created migration file) THEN:**
 ```
-→ Mark as "USER ACTION REQUIRED" in implementation plan (IMPORTANT alert)
+→ Mark as "HUMAN FOLLOW-UP REQUIRED" in implementation plan (IMPORTANT alert)
 → Add to "Next Steps for You" section in walkthrough
 → Include exact SQL Editor instructions
 → Do NOT proceed to verification without user confirmation

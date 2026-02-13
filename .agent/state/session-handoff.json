@@ -1,66 +1,31 @@
 {
-  "version": "1.0.0",
-  "generated_at": "2026-02-13T02:27:42Z",
+  "schema_version": "1.1.0",
+  "version": "1.1.0",
+  "run_id": "20260213T082016Z-e85bf26-be8a0e9e",
+  "generated_at": "2026-02-13T08:20:16Z",
   "workspace_root": "/Users/lesz/Documents/Synthetic-Mind",
+  "cwd_detected": "/Users/lesz/Documents/Synthetic-Mind",
+  "npm_script_available_here": false,
   "git": {
-    "branch": "main",
+    "root": "/Users/lesz/Documents/Synthetic-Mind",
+    "branch": "master",
     "dirty_summary": {
-      "modified": 0,
-      "untracked": 25,
+      "modified": 10,
+      "untracked": 6,
       "staged": 0
     },
     "recent_commits": [
       {
-        "hash": "1a221f5c80158ddbc7822c05bbb31b34ae198a18",
-        "date": "2026-02-13T02:25:36+08:00",
-        "message": "feat(chat): add factual web grounding with verify-or-uncertain policy"
-      },
-      {
-        "hash": "82be6bd2ebc2bae7ae1a42836e3afaea84baad4a",
-        "date": "2026-02-13T01:19:45+08:00",
-        "message": "feat(chat-v2): simplify layout and restore evidence rail from session history"
-      },
-      {
-        "hash": "c2a377c69908e518056ffd756054a34c713e971d",
-        "date": "2026-02-12T23:41:37+08:00",
-        "message": "chore(brand): rename product surfaces from Wu-Wei to Wu-Weism"
-      },
-      {
-        "hash": "7ba743189e49c0cadfc64fcd617eb61857308a97",
-        "date": "2026-02-12T22:55:08+08:00",
-        "message": "fix(brand): use transparent Wu-Wei logo mark in landing navbar"
-      },
-      {
-        "hash": "4758adde799900cd3cd0557450021462225bef17",
-        "date": "2026-02-12T21:33:25+08:00",
-        "message": "fix(brand): use tracked Wu-Wei mark asset in navbar"
-      },
-      {
-        "hash": "1f44b4e01d5e04987c64f887cd89eb2349893909",
-        "date": "2026-02-12T21:27:59+08:00",
-        "message": "fix(brand): switch navbar mark to dark Wu-Wei logo variant"
-      },
-      {
-        "hash": "341841f30338dbb34ec8c1958593f06ff8fc4191",
-        "date": "2026-02-12T21:00:23+08:00",
-        "message": "fix(brand): use wu-wei-logo asset with centered dark tile"
-      },
-      {
-        "hash": "b4e336f32f0e96d20952e7d3744a117be1c9b2c0",
-        "date": "2026-02-12T20:41:47+08:00",
-        "message": "fix(brand): normalize Wu-Wei navbar logo layout"
-      },
-      {
-        "hash": "fa96473e5bf4b1d1b2a1569539387b0c2517ebb1",
-        "date": "2026-02-12T20:18:22+08:00",
-        "message": "style(brand): simplify Wu-Wei wordmark and clean chat sidebar header"
-      },
-      {
-        "hash": "af8ff797363528cf92393b8348b9a3e24af246f7",
-        "date": "2026-02-12T19:59:16+08:00",
-        "message": "feat(brand): refine Wu-Wei logo centering, scale, and black background"
+        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
+        "date": "2026-02-13T10:28:27+08:00",
+        "message": "Create MASA session bootstrap plan"
       }
     ]
+  },
+  "scan_confidence": {
+    "user_action_required": "medium",
+    "pending_migrations": "low",
+    "required_env_keys": "low"
   },
   "architecture_state": {
     "workflows_present": [
@@ -87,52 +52,43 @@
     ],
     "feature_surfaces": [
       {
-        "path": "synthesis-engine/src/app/api/synthesis-history/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/validate-protocol/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/hybrid-synthesize/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/synthesize/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/verify-db/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/optimize-intervention/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/analyze-student/route.ts"
+        "path": "synthesis-engine/src/app/api/benchmark-cost/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/benchmark-runs/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/epistemic/session/[id]/route.ts"
+        "path": "synthesis-engine/src/app/api/causal-chat/adopt-legacy/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/epistemic/session/route.ts"
+        "path": "synthesis-engine/src/app/api/causal-chat/history/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/openclaw/test/route.ts"
+        "path": "synthesis-engine/src/app/api/causal-chat/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/active/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/epistemic/chat/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/plans/route.ts"
+        "path": "synthesis-engine/src/app/api/causal-chat/sessions/[id]/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/education/__tests__/optimize-intervention.route.test.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/openclaw/status/route.ts"
+        "path": "synthesis-engine/src/app/api/education/analyze-student/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/active/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/sessions/[id]/complete/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/start/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/optimize-intervention/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/plans/activate/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/education/plans/reflection/route.ts"
@@ -141,82 +97,122 @@
         "path": "synthesis-engine/src/app/api/education/plans/reminder/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/education/plans/activate/route.ts"
+        "path": "synthesis-engine/src/app/api/education/plans/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/chat/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/session/[id]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/session/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/history/import/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/legal-reasoning/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/sessions/[id]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/adopt-legacy/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/sessions/[id]/complete/route.ts"
+        "path": "synthesis-engine/src/app/api/hybrid-synthesize/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/legal-reasoning/__tests__/route.test.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/scm/disagreement/compare/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/history/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/benchmark-cost/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/autopsy/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/intervention/validate/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/start/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/__tests__/route.test.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/promote/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/alignment-audit/latest/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/current/route.ts"
+        "path": "synthesis-engine/src/app/api/legal-reasoning/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/openclaw/search/route.ts"
       },
       {
-        "path": "synthesis-engine/src/app/api/scm/integrity/signoff/route.ts"
+        "path": "synthesis-engine/src/app/api/openclaw/status/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/openclaw/test/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/alignment-audit/latest/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/autopsy/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/__tests__/route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/disagreement/compare/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/scm/integrity/dashboard/route.ts"
       },
       {
+        "path": "synthesis-engine/src/app/api/scm/integrity/signoff/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/intervention/validate/route.ts"
+      },
+      {
         "path": "synthesis-engine/src/app/api/scm/literacy/explain/route.ts"
       },
       {
+        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/current/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/promote/route.ts"
+      },
+      {
         "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/versions/[version]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/synthesis-history/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/synthesize/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/validate-protocol/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/verify-db/route.ts"
       }
     ],
-    "latest_area_commits": [],
+    "latest_area_commits": [
+      {
+        "area": ".agent/workflows/",
+        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
+        "date": "2026-02-13T10:28:27+08:00",
+        "message": "Create MASA session bootstrap plan"
+      },
+      {
+        "area": "MASA-Theoretical-Foundation/",
+        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
+        "date": "2026-02-13T10:28:27+08:00",
+        "message": "Create MASA session bootstrap plan"
+      },
+      {
+        "area": "Codex-Audit/",
+        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
+        "date": "2026-02-13T10:28:27+08:00",
+        "message": "Create MASA session bootstrap plan"
+      },
+      {
+        "area": "synthesis-engine/src/app/api/",
+        "hash": "none",
+        "date": "none",
+        "message": "no commits found"
+      },
+      {
+        "area": "synthesis-engine/.github/workflows/",
+        "hash": "none",
+        "date": "none",
+        "message": "no commits found"
+      }
+    ],
     "latest_docs": [
       {
         "group": "MASA-Theoretical-Foundation",
@@ -245,6 +241,16 @@
       },
       {
         "group": "Codex-Audit",
+        "mtime_epoch": 1770953416,
+        "path": "Codex-Audit/Automated-Scientist-Audit-2026-02-05.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770953399,
+        "path": "Codex-Audit/Novel_Plan_Audit_v1.md"
+      },
+      {
+        "group": "Codex-Audit",
         "mtime_epoch": 1770441984,
         "path": "Codex-Audit/Automated-Scientist_Implementation_Summary_2026-02-07.md"
       },
@@ -257,16 +263,6 @@
         "group": "Codex-Audit",
         "mtime_epoch": 1770392364,
         "path": "Codex-Audit/Codex_M6.2_Spec_v2.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770392165,
-        "path": "Codex-Audit/Claude_Audit_M6.2_v2.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770391735,
-        "path": "Codex-Audit/Codex_M6.2_Spec_v1.md"
       }
     ]
   },
@@ -305,142 +301,139 @@
       "synthesis-engine/supabase/migrations/seed_causal_models.sql"
     ],
     "required_env_keys": [
-      "  --auto-hybrid-regex             (DEPRECATED) Use PCRE2 if appropriate.",
-      "  --binary                        Search binary files.",
-      "  --block-buffered                Force block buffering.",
-      "  --color=WHEN                    When to use color.",
-      "  --colors=COLOR_SPEC             Configure color settings and styles.",
-      "  --column                        Show column numbers.",
-      "  --context-separator=SEP         Set the separator for contextual chunks.",
-      "  --count-matches                 Show count of every match for each file.",
-      "  --crlf                          Use CRLF line terminators (nice for Windows).",
-      "  --debug                         Show debug messages.",
-      "  --dfa-size-limit=NUM            The upper size limit of the regex DFA.",
-      "  --engine=ENGINE                 Specify which regex engine to use.",
-      "  --field-context-separator=SEP   Set the field context separator.",
-      "  --field-match-separator=SEP     Set the field match separator.",
-      "  --files                         Print each file that would be searched.",
-      "  --files-without-match           Print the paths that contain zero matches.",
-      "  --generate=KIND                 Generate man pages and completion scripts.",
-      "  --glob-case-insensitive         Process all glob patterns case insensitively.",
-      "  --heading                       Print matches grouped by each file.",
-      "  --hostname-bin=COMMAND          Run a program to get this system's hostname.",
-      "  --hyperlink-format=FORMAT       Set the format of hyperlinks.",
-      "  --iglob=GLOB                    Include/exclude paths case insensitively.",
-      "  --ignore-file-case-insensitive  Process ignore files case insensitively.",
-      "  --ignore-file=PATH              Specify additional ignore files.",
-      "  --include-zero                  Include zero matches in summary output.",
-      "  --json                          Show search results in a JSON Lines format.",
-      "  --line-buffered                 Force line buffering.",
-      "  --max-columns-preview           Show preview for lines exceeding the limit.",
-      "  --max-filesize=NUM              Ignore files larger than NUM in size.",
-      "  --mmap                          Search with memory maps when possible.",
-      "  --multiline-dotall              Make '.' match line terminators.",
-      "  --no-config                     Never read configuration files.",
-      "  --no-ignore                     Don't use ignore files.",
-      "  --no-ignore-dot                 Don't use .ignore or .rgignore files.",
-      "  --no-ignore-exclude             Don't use local exclusion files.",
-      "  --no-ignore-files               Don't use --ignore-file arguments.",
-      "  --no-ignore-global              Don't use global ignore files.",
-      "  --no-ignore-messages            Suppress gitignore parse error messages.",
-      "  --no-ignore-parent              Don't use ignore files in parent directories.",
-      "  --no-ignore-vcs                 Don't use ignore files from source control.",
-      "  --no-messages                   Suppress some error messages.",
-      "  --no-pcre2-unicode              (DEPRECATED) Disable Unicode mode for PCRE2.",
-      "  --no-require-git                Use .gitignore outside of git repositories.",
-      "  --no-unicode                    Disable Unicode mode.",
-      "  --null-data                     Use NUL as a line terminator.",
-      "  --one-file-system               Skip directories on other file systems.",
-      "  --passthru                      Print both matching and non-matching lines.",
-      "  --path-separator=SEP            Set the path separator for printing paths.",
-      "  --pcre2-version                 Print the version of PCRE2 that ripgrep uses.",
-      "  --pre-glob=GLOB                 Include or exclude files from a preprocessor.",
-      "  --pre=COMMAND                   Search output of COMMAND for each PATH.",
-      "  --regex-size-limit=NUM          The size limit of the compiled regex.",
-      "  --sort-files                    (DEPRECATED) Sort results by file path.",
-      "  --sort=SORTBY                   Sort results in ascending order.",
-      "  --sortr=SORTBY                  Sort results in descending order.",
-      "  --stats                         Print statistics about the search.",
-      "  --stop-on-nonmatch              Stop searching after a non-match.",
-      "  --trace                         Show trace messages.",
-      "  --trim                          Trim prefix whitespace from matches.",
-      "  --type-add=TYPESPEC             Add a new glob for a file type.",
-      "  --type-clear=TYPE               Clear globs for a file type.",
-      "  --type-list                     Show all supported file types.",
-      "  --vimgrep                       Print results in a vim compatible format.",
-      "  -., --hidden                    Search hidden files and directories.",
-      "  -0, --null                      Print a NUL byte after file paths.",
-      "  -A, --after-context=NUM         Show NUM lines after each match.",
-      "  -B, --before-context=NUM        Show NUM lines before each match.",
-      "  -C, --context=NUM               Show NUM lines before and after each match.",
-      "  -E, --encoding=ENCODING         Specify the text encoding of files to search.",
-      "  -F, --fixed-strings             Treat all patterns as literals.",
-      "  -H, --with-filename             Print the file path with each matching line.",
-      "  -I, --no-filename               Never print the path with each matching line.",
-      "  -L, --follow                    Follow symbolic links.",
-      "  -M, --max-columns=NUM           Omit lines longer than this limit.",
-      "  -N, --no-line-number            Suppress line numbers.",
-      "  -P, --pcre2                     Enable PCRE2 matching.",
-      "  -S, --smart-case                Smart case search.",
-      "  -T, --type-not=TYPE             Do not search files matching TYPE.",
-      "  -U, --multiline                 Enable searching across multiple lines.",
-      "  -V, --version                   Print ripgrep's version.",
-      "  -a, --text                      Search binary files as if they were text.",
-      "  -b, --byte-offset               Print the byte offset for each matching line.",
-      "  -c, --count                     Show count of matching lines for each file.",
-      "  -d, --max-depth=NUM             Descend at most NUM directories.",
-      "  -e, --regexp=PATTERN            A pattern to search for.",
-      "  -f, --file=PATTERNFILE          Search for patterns from the given file.",
-      "  -g, --glob=GLOB                 Include or exclude file paths.",
-      "  -h, --help                      Show help output.",
-      "  -i, --ignore-case               Case insensitive search.",
-      "  -j, --threads=NUM               Set the approximate number of threads to use.",
-      "  -l, --files-with-matches        Print the paths with at least one match.",
-      "  -m, --max-count=NUM             Limit the number of matching lines.",
-      "  -n, --line-number               Show line numbers.",
-      "  -o, --only-matching             Print only matched parts of a line.",
-      "  -p, --pretty                    Alias for colors, headings and line numbers.",
-      "  -q, --quiet                     Do not print anything to stdout.",
-      "  -r, --replace=TEXT              Replace matches with the given text.",
-      "  -s, --case-sensitive            Search case sensitively (default).",
-      "  -t, --type=TYPE                 Only search files matching TYPE.",
-      "  -u, --unrestricted              Reduce the level of \"smart\" filtering.",
-      "  -v, --invert-match              Invert matching.",
-      "  -w, --word-regexp               Show matches surrounded by word boundaries.",
-      "  -x, --line-regexp               Show matches surrounded by line boundaries.",
-      "  -z, --search-zip                Search in compressed files.",
-      "  <PATH>...   A file or directory to search.",
-      "  <PATTERN>   A regular expression used for searching.",
-      "  rg [OPTIONS] PATTERN [PATH ...]",
-      "Andrew Gallant <jamslam@gmail.com>",
-      "FILTER OPTIONS:",
-      "INPUT OPTIONS:",
-      "LOGGING OPTIONS:",
-      "OTHER BEHAVIORS:",
-      "OUTPUT MODES:",
-      "OUTPUT OPTIONS:",
-      "POSITIONAL ARGUMENTS:",
-      "Project home page: https://github.com/BurntSushi/ripgrep",
-      "SEARCH OPTIONS:",
-      "USAGE:",
-      "Use -h for short descriptions and --help for more details.",
-      "a regex pattern. By default, ripgrep will respect gitignore rules and",
-      "automatically skip hidden files/directories and binary files.",
-      "ripgrep (rg) recursively searches the current directory for lines matching",
-      "ripgrep 15.1.0 (rev af60c2de9d)"
+      "AI_DEBUG",
+      "ANTHROPIC_API_KEY",
+      "AUTOPSY_MODE_ENABLED",
+      "BENCHMARK_CI_GATE",
+      "BENCHMARK_MAX_COST",
+      "CAUSAL_LITERACY_ENABLED",
+      "CHAT_WEB_GROUNDING_V1",
+      "DISAGREEMENT_ENGINE_ENABLED",
+      "ENABLE_STATISTICAL_VALIDATION",
+      "FORCE_PROVIDER",
+      "HYBRID_NOVELTY_PROOF_V1",
+      "NEXT_PUBLIC_AUTOSCI_LAYOUT_V2",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NODE_ENV",
+      "OPENCLAW_WS_URL",
+      "PHENOMENAL_LAYER_ENABLED",
+      "PROMOTION_ACTOR_USER_ID",
+      "PUBLICATION_YEAR_FALLBACK",
+      "SCIENTIFIC_INTEGRITY_GATE_ENABLED",
+      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_COVERAGE",
+      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_TRACES",
+      "SCIENTIFIC_INTEGRITY_REQUIRED_FULL_SUITE_RUNS",
+      "SCIENTIFIC_INTEGRITY_WINDOW_DAYS",
+      "SCM_HYPOTHESIS_ENABLED",
+      "SCM_PROMOTION_GUARD_ENABLED",
+      "SCM_REGISTRY_ENABLED",
+      "SEMANTIC_SCHOLAR_API_KEY",
+      "SERPER_API_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "TRACE_SIGN_KEY"
     ],
     "user_action_required": [
-      ".agent/workflows/Demis-Workflow.md:119:| **Database Migration** | `.sql` file created | \u2757 Mark \"USER ACTION REQUIRED\" in plan + walkthrough |",
-      ".agent/workflows/Demis-Workflow.md:130:\u2192 Mark as \"USER ACTION REQUIRED\" in implementation plan (IMPORTANT alert)",
-      "Codex-Audit/Novel_Plan_Audit_v1.md:120:Issue: Plan says \"USER ACTION REQUIRED: designate claim owners\" but provides no template or guide.",
-      "Codex-Audit/Automated-Scientist-Audit-2026-02-05.md:284:### 8.3 USER ACTION REQUIRED (runtime verification blockers)"
+      ".agent/workflows/Demis-Workflow.md:125",
+      ".agent/workflows/Demis-Workflow.md:136"
+    ],
+    "classified_user_actions": [
+      {
+        "path": ".agent/workflows/Demis-Workflow.md",
+        "line": 125,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "| **Database Migration** | `.sql` file created | \u2757 Mark \"HUMAN FOLLOW-UP REQUIRED\" in plan + walkthrough |",
+        "match_hash": "a316875c7fe7e0c0042d951743dc332d0546977fa3c54ae4c2daf3e4d12730fd"
+      },
+      {
+        "path": ".agent/workflows/Demis-Workflow.md",
+        "line": 136,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "\u2192 Mark as \"HUMAN FOLLOW-UP REQUIRED\" in implementation plan (IMPORTANT alert)",
+        "match_hash": "b50e653814d257b7f2a7724f91d5d384f4833ca3aa490fa2aa1f7e424d52cd0a"
+      }
+    ]
+  },
+  "reference_evidence": [
+    {
+      "path": ".agent/workflows/Demis-Workflow.md",
+      "line": 125,
+      "matched_text_excerpt": "| **Database Migration** | `.sql` file created | \u2757 Mark \"HUMAN FOLLOW-UP REQUIRED\" in plan + walkthrough |",
+      "match_hash": "a316875c7fe7e0c0042d951743dc332d0546977fa3c54ae4c2daf3e4d12730fd"
+    },
+    {
+      "path": ".agent/workflows/Demis-Workflow.md",
+      "line": 136,
+      "matched_text_excerpt": "\u2192 Mark as \"HUMAN FOLLOW-UP REQUIRED\" in implementation plan (IMPORTANT alert)",
+      "match_hash": "b50e653814d257b7f2a7724f91d5d384f4833ca3aa490fa2aa1f7e424d52cd0a"
+    }
+  ],
+  "provenance": {
+    "commands": [
+      {
+        "label": "git_branch",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --abbrev-ref HEAD"
+      },
+      {
+        "label": "git_head_short",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --short HEAD"
+      },
+      {
+        "label": "git_status",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind status --short"
+      },
+      {
+        "label": "recent_commits",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind log -n 10 --date=iso-strict --pretty=format:%H|%ad|%s"
+      },
+      {
+        "label": "latest_area_commits",
+        "status": "ok",
+        "command": "git log latest area scans"
+      },
+      {
+        "label": "workflow_presence",
+        "status": "ok",
+        "command": "filesystem workflow checks"
+      },
+      {
+        "label": "feature_surfaces",
+        "status": "ok",
+        "command": "rg --files synthesis-engine/src/app/api"
+      },
+      {
+        "label": "pending_migrations",
+        "status": "ok",
+        "command": "find synthesis-engine/supabase/migrations/*.sql"
+      },
+      {
+        "label": "required_env_keys",
+        "status": "ok",
+        "command": "rg process.env.*"
+      },
+      {
+        "label": "critical_markers",
+        "status": "ok",
+        "command": "rg marker scan"
+      },
+      {
+        "label": "latest_docs",
+        "status": "ok",
+        "command": "latest docs scan"
+      }
     ]
   },
   "next_tasks": [
     {
       "id": "N1",
-      "task": "Resolve explicit USER ACTION REQUIRED items first.",
-      "reason": "4 unresolved marker(s) detected in docs.",
+      "task": "Resolve explicit blocking markers before execution.",
+      "reason": "2 blocking marker(s) detected.",
       "priority": "high"
     },
     {
@@ -452,13 +445,14 @@
     {
       "id": "N3",
       "task": "Verify required environment keys exist in deployment and local envs.",
-      "reason": "123 unique process.env key(s) detected.",
+      "reason": "31 unique process.env key(s) detected.",
       "priority": "medium"
     }
   ],
   "assumptions": [
     "Migration runtime apply status is not auto-detectable from repo scan alone.",
-    "Environment key presence is inferred from code references, not secret value inspection."
+    "Environment key presence is inferred from code references, not secret value inspection.",
+    "Marker references are stabilized with excerpt hash and line for operator convenience."
   ],
   "errors": []
 }

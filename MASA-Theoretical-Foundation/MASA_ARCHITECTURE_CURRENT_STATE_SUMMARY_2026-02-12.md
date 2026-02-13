@@ -1,5 +1,5 @@
 # MASA Architecture and Current-State Implementation Summary
-**Date Anchor:** 2026-02-12  
+**Date Anchor:** 2026-02-13 (updated for current implementation slice)  
 **Program:** MASA (Methods of Automated Scientific Analysis) / Wu-Weism Product Stack  
 **System Under Active Build:** `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine`  
 **Primary White-Paper Reference:** `/Users/lesz/Documents/Synthetic-Mind/MASA_White_Paper.html`
@@ -70,7 +70,7 @@ The implementation is converging on a layered model:
 
 ## 4. Current-State Implementation (Code Reality)
 
-This section summarizes what is materially implemented in code as of 2026-02-12.
+This section summarizes what is materially implemented in code as of 2026-02-13.
 
 ### 4.1 Core API Surface
 Under `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/api`, the system already exposes substantial capability, including:
@@ -149,6 +149,7 @@ Implemented governance infrastructure includes:
 - Claim drift sentinel workflow
 - M6 health and closeout trackers
 - Hybrid novelty proof sentinel workflow
+- Persistent memory integrity sentinel workflow (report-first rollout)
 - Governance scripts and contracts (S1 foundational layer)
 
 Relevant files:
@@ -156,10 +157,56 @@ Relevant files:
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml`
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-closeout-tracker.yml`
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/hybrid-novelty-proof-sentinel.yml`
+- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/persistent-memory-sentinel.yml`
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/scan-claim-drift.ts`
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/evaluate-hybrid-novelty-proof.ts`
+- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/evaluate-persistent-memory-integrity.ts`
+- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/docs/governance/persistent-memory.scenarios.v1.json`
 
-### 4.6 Identity and Behavioral Doctrine: Current Reality
+### 4.6 Persistent Memory (MASA × OpenClaw-Style): Current Reality
+Implemented (additive, flag-gated, report-first):
+
+- Canonical persistent-memory contract types:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/types/persistent-memory.ts`
+- Cache-TTL-aware causal pruning policy for prompt assembly (not transcript deletion):
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/causal-pruning-policy.ts`
+- Axiom-first compaction orchestrator with explicit fallback receipt semantics:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/compaction-orchestrator.ts`
+- Hybrid retrieval fusion (vector + lexical + causal priority):
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/memory-retrieval-fusion.ts`
+- Cross-session causal lattice broadcast service (policy-gated):
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/causal-lattice.ts`
+- Chat route integration for additive SSE and metadata emission:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/api/causal-chat/route.ts`
+- Feature flags added (default-off):
+  - `MASA_CAUSAL_PRUNING_V1`
+  - `MASA_COMPACTION_AXIOM_V1`
+  - `MASA_MEMORY_FUSION_V1`
+  - `MASA_MEMORY_RRF_V1`
+  - `MASA_CAUSAL_LATTICE_V1`
+  - defined in `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/config/feature-flags.ts`
+  - documented in `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.env.example`
+- Additive migration authored:
+  - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/supabase/migrations/20260213_persistent_memory_v1.sql`
+
+Additive SSE/event surface now includes:
+- `causal_pruning_started`
+- `causal_pruning_completed`
+- `compaction_window_opened`
+- `axiom_extraction_completed`
+- `compaction_receipt_written`
+- `compaction_summary_fallback`
+- `retrieval_fusion_debug`
+- `lattice_broadcast_started`
+- `lattice_broadcast_applied`
+- `lattice_broadcast_rejected`
+
+Validation status for this slice:
+- `npm run governance:persistent-memory-integrity ...` passed (0 hard-gate failures)
+- Targeted tests passed for pruning/fusion/lattice
+- Typecheck passed (`npx tsc --noEmit`)
+
+### 4.7 Identity and Behavioral Doctrine: Current Reality
 Chat behavioral standard has been formalized as a canonical manifesto:
 
 - `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/openclaw-skills/CHAT_FUNDAMENTALS.md`
@@ -170,7 +217,7 @@ This document anchors:
 - Refusal/recovery behavior
 - Runtime crosswalk to chat route reality
 
-### 4.7 Auth and Persistence Continuity: Current Reality
+### 4.8 Auth and Persistence Continuity: Current Reality
 Implemented:
 
 - Google/Supabase auth-enabled model
@@ -232,6 +279,8 @@ Strategically, this is aligned with MASA’s “scientific operating system” d
 
 5. **Closed-loop experimental execution remains partially simulated**
 - Full lab-grade execution and falsification loop depth is still evolving.
+6. **Persistent-memory slice requires operator activation**
+- The new migration and feature flags are authored but require manual environment + DB rollout before full production behavior is active.
 
 ---
 
@@ -253,16 +302,19 @@ This distinction is healthy and expected in a long-horizon architecture program,
 1. **Tighten factual grounding coverage in Chat**
 - Expand trigger quality and source reliability scoring.
 
-2. **Finish governance enforce-mode ramps**
+2. **Activate persistent-memory rollout gates**
+- Apply migration `20260213_persistent_memory_v1.sql`, enable flags gradually, and monitor `persistent-memory-sentinel.yml` in report mode before enforce.
+
+3. **Finish governance enforce-mode ramps**
 - Move key report-mode streams to controlled enforce mode with low false positives.
 
-3. **Deepen trace persistence and replayability**
+4. **Deepen trace persistence and replayability**
 - Make every high-impact claim reconstructible from stored causal artifacts.
 
-4. **Continue Hybrid as flagship scientific engine**
+5. **Continue Hybrid as flagship scientific engine**
 - Keep novelty proof + falsification + recovery as mandatory, not optional.
 
-5. **Harden OpenClaw operational integration**
+6. **Harden OpenClaw operational integration**
 - Ensure session tooling cleanly reflects and supports MASA traceability goals.
 
 ---

@@ -1,6 +1,6 @@
 ---
 name: "masa-session-bootstrap"
-description: "Internal agent-only skill to generate deterministic MASA session handoff context (json+md) before planning/execution."
+description: "Internal agent-only skill to generate deterministic MASA session handoff context (json+md+summary) before planning/execution."
 planning_mode: lite
 ---
 
@@ -15,20 +15,28 @@ Use this skill at the start of:
 This skill is internal and agent-only. It is designed to reduce cold-start time by generating deterministic session state artifacts.
 
 ## Canonical command
-Run:
+Universal (works from anywhere):
 
 ```bash
-bash /Users/lesz/Documents/Synthetic-Mind/.agent/scripts/agent-bootstrap.sh
+bash /Users/lesz/Documents/Synthetic-Mind/scripts/agent-bootstrap.sh
+```
+
+Local shortcut (from `synthesis-engine/`):
+
+```bash
+npm run agent:bootstrap
 ```
 
 ## Required outputs
 The command must produce or refresh:
 - `/Users/lesz/Documents/Synthetic-Mind/.agent/state/session-handoff.json`
 - `/Users/lesz/Documents/Synthetic-Mind/.agent/state/session-handoff.md`
+- `/Users/lesz/Documents/Synthetic-Mind/.agent/state/session-handoff.summary.md`
 
 Interpretation:
-- `session-handoff.json` is machine-authoritative.
-- `session-handoff.md` is human-digest summary.
+- `session-handoff.json` is machine-authoritative (schema `1.1.0`).
+- `session-handoff.md` is compatibility human digest.
+- `session-handoff.summary.md` is precision-focused operator summary.
 
 ## Redaction and safety policy
 Hard rules:
@@ -41,5 +49,10 @@ Hard rules:
 ## Operating checklist
 1. Run bootstrap command.
 2. Read `critical_gaps.user_action_required` first.
-3. If non-empty, surface those items before proceeding.
+3. If non-empty, surface blocking markers before continuing.
 4. Use `next_tasks` as default execution queue unless the user overrides.
+5. Run validator:
+
+```bash
+bash /Users/lesz/Documents/Synthetic-Mind/.agent/scripts/validate-session-handoff.sh
+```
