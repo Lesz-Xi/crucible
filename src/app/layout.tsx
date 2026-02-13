@@ -45,8 +45,9 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased`}>
         <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem={true}
+            defaultTheme="light"
+            enableSystem={false}
+            forcedTheme="light"
             storageKey="wu-weism-theme"
             disableTransitionOnChange
           >
