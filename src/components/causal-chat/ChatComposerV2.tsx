@@ -1,6 +1,13 @@
 'use client';
 
-import { Loader2, Paperclip, Send, Square } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, FlaskConical, Loader2, Paperclip, Send, Square } from 'lucide-react';
+
+interface QuickPromptOption {
+  id: string;
+  label: string;
+  snippet: string;
+}
 
 export interface ChatComposerV2Props {
   value: string;
@@ -12,6 +19,9 @@ export interface ChatComposerV2Props {
   placeholder?: string;
   operatorMode: 'explore' | 'intervene' | 'audit';
   onOperatorModeChange: (mode: 'explore' | 'intervene' | 'audit') => void;
+  quickPrompts?: QuickPromptOption[];
+  selectedQuickPromptId?: string;
+  onQuickPromptSelect?: (id: string, snippet: string) => void;
 }
 
 export function ChatComposerV2({
@@ -24,14 +34,52 @@ export function ChatComposerV2({
   placeholder,
   operatorMode,
   onOperatorModeChange,
+  quickPrompts = [],
+  selectedQuickPromptId,
+  onQuickPromptSelect,
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
+  const [shortcutMenuOpen, setShortcutMenuOpen] = useState(false);
 
   return (
     <div className="lab-card !rounded-t-none border-0 border-t border-[var(--lab-border)] !bg-transparent px-6 pb-5 pt-4 shadow-none">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between gap-3">
         <span className="lab-section-title">Prompt</span>
-        <span className="font-mono text-[11px] text-[var(--lab-text-tertiary)]">Enter to send</span>
+        <div className="relative flex items-center gap-2">
+          {quickPrompts.length > 0 ? (
+            <div className="relative">
+              <button
+                type="button"
+                className="lab-button-secondary !px-3 !py-1.5 text-xs"
+                onClick={() => setShortcutMenuOpen((current) => !current)}
+              >
+                <FlaskConical className="h-3.5 w-3.5" />
+                Scientific shortcuts
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+              {shortcutMenuOpen ? (
+                <div className="absolute right-0 z-20 mt-2 w-72 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-lg">
+                  {quickPrompts.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className="lab-card-interactive mb-1 w-full !p-2.5 text-left"
+                      data-active={selectedQuickPromptId === item.id ? 'true' : 'false'}
+                      onClick={() => {
+                        onQuickPromptSelect?.(item.id, item.snippet);
+                        setShortcutMenuOpen(false);
+                      }}
+                    >
+                      <p className="text-sm font-medium text-[var(--lab-text-primary)]">{item.label}</p>
+                      <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{item.snippet}</p>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+          <span className="font-mono text-[11px] text-[var(--lab-text-tertiary)]">Enter to send</span>
+        </div>
       </div>
 
       <textarea

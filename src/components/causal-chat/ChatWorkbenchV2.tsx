@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Eye,
-  EyeOff,
   FlaskConical,
   Microscope,
   Network,
@@ -571,17 +569,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     }
   }, []);
 
-  const handleQuickPrompt = useCallback((id: QuickPromptId, snippet: string) => {
-    setSelectedQuickPrompt(id);
+  const handleQuickPrompt = useCallback((id: string, snippet: string) => {
+    const matched = QUICK_PROMPTS.find((item) => item.id === id);
+    if (matched) setSelectedQuickPrompt(matched.id);
     setPrompt(snippet);
-  }, []);
-
-  const toggleEvidenceRail = useCallback(() => {
-    setEvidenceRailOpen((current) => {
-      const next = !current;
-      window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
-      return next;
-    });
   }, []);
 
   return (
@@ -595,15 +586,30 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           <div className="flex h-full flex-col">
             <div className="lab-scroll-region flex-1 space-y-4 px-6 py-5">
               {messages.length === 0 ? (
-                <div className="lab-empty-state">
-                  <p className="font-serif text-xl text-[var(--lab-text-primary)]">Start a New Scientific Thread</p>
-                  <p className="mt-2 text-sm">Ask for mechanism analysis, counterfactual reasoning, or intervention planning.</p>
+                <div className="space-y-4">
+                  <div className="lab-empty-state">
+                    <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Good day, Chief.</p>
+                    <p className="mt-2 text-sm">Start with a hypothesis, then pressure-test it with causal structure.</p>
+                  </div>
+                  <div className="grid gap-2 md:grid-cols-3">
+                    {QUICK_PROMPTS.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className="lab-card-interactive w-full !p-3 text-left"
+                        onClick={() => handleQuickPrompt(item.id, item.snippet)}
+                      >
+                        <p className="text-sm font-medium text-[var(--lab-text-primary)]">{item.label}</p>
+                        <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{item.snippet}</p>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 messages.map((message) => (
                   <article
                     key={message.id}
-                    className={message.role === 'user' ? 'lab-card-interactive ml-14' : 'lab-card mr-14'}
+                    className={message.role === 'user' ? 'lab-card-interactive ml-auto max-w-[88%]' : 'lab-card mr-auto max-w-[92%]'}
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
@@ -626,34 +632,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               )}
             </div>
 
-            <div className="border-t border-[var(--lab-border)] px-6 pt-4">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <p className="text-[11px] font-mono uppercase tracking-wide text-[var(--lab-text-tertiary)]">Scientific shortcuts</p>
-                <button
-                  type="button"
-                  className="lab-button-secondary !px-3 !py-1.5 text-xs"
-                  onClick={toggleEvidenceRail}
-                  title={evidenceRailOpen ? 'Hide evidence rail' : 'Show evidence rail'}
-                >
-                  {evidenceRailOpen ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-                  {evidenceRailOpen ? 'Hide evidence' : 'Show evidence'}
-                </button>
-              </div>
-              <div className="mb-4 flex flex-wrap gap-2">
-                {QUICK_PROMPTS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="lab-button-secondary !py-2 text-xs"
-                    data-active={selectedQuickPrompt === item.id ? 'true' : 'false'}
-                    onClick={() => handleQuickPrompt(item.id, item.snippet)}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <ChatComposerV2
               value={prompt}
               onChange={setPrompt}
@@ -662,6 +640,9 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               isLoading={isLoading}
               operatorMode={operatorMode}
               onOperatorModeChange={setOperatorMode}
+              quickPrompts={QUICK_PROMPTS}
+              selectedQuickPromptId={selectedQuickPrompt}
+              onQuickPromptSelect={handleQuickPrompt}
               placeholder={
                 operatorMode === 'intervene'
                   ? 'Specify do(X)=..., expected Y delta, and required controls...'
