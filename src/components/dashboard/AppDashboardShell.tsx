@@ -8,12 +8,8 @@ import {
   Bot,
   ChevronDown,
   ChevronRight,
-  Boxes,
   Clock3,
-  Code2,
   Folder,
-  FolderPlus,
-  FolderTree,
   Gavel,
   GraduationCap,
   Home,
@@ -57,11 +53,8 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
-  const [folders, setFolders] = useState<string[]>([]);
-  const [threadFolderMap, setThreadFolderMap] = useState<Record<string, string>>({});
-  const [creatingFolder, setCreatingFolder] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
+  const [researchExpanded, setResearchExpanded] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
@@ -97,30 +90,10 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
       }
     };
 
-    try {
-      const savedFolders = window.localStorage.getItem('chat-thread-folders');
-      const savedMap = window.localStorage.getItem('chat-thread-folder-map');
-      if (savedFolders) setFolders(JSON.parse(savedFolders) as string[]);
-      if (savedMap) setThreadFolderMap(JSON.parse(savedMap) as Record<string, string>);
-    } catch {
-      setFolders([]);
-      setThreadFolderMap({});
-    }
-
     void loadHistory();
     window.addEventListener('historyImported', loadHistory);
     return () => window.removeEventListener('historyImported', loadHistory);
   }, [isChatRoute]);
-
-  useEffect(() => {
-    if (!isChatRoute) return;
-    window.localStorage.setItem('chat-thread-folders', JSON.stringify(folders));
-  }, [folders, isChatRoute]);
-
-  useEffect(() => {
-    if (!isChatRoute) return;
-    window.localStorage.setItem('chat-thread-folder-map', JSON.stringify(threadFolderMap));
-  }, [threadFolderMap, isChatRoute]);
 
   const initials = useMemo(() => {
     if (!userEmail) return 'WW';
@@ -144,30 +117,16 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
     router.refresh();
   };
 
-  const folderedThreads = useMemo(() => {
-    const groups: Record<string, ChatSidebarSession[]> = {};
-    for (const folder of folders) groups[folder] = [];
-
-    const unfiled: ChatSidebarSession[] = [];
-    for (const thread of recentThreads) {
-      const folder = threadFolderMap[thread.id];
-      if (folder && groups[folder]) groups[folder].push(thread);
-      else unfiled.push(thread);
-    }
-
-    return { groups, unfiled };
-  }, [folders, recentThreads, threadFolderMap]);
-
   const openThread = (sessionId: string) => {
     router.push(`/chat?sessionId=${sessionId}`);
     window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
   };
 
-  const filteredUnfiledThreads = useMemo(() => {
-    if (!searchQuery.trim()) return folderedThreads.unfiled;
+  const filteredThreads = useMemo(() => {
+    if (!searchQuery.trim()) return recentThreads;
     const q = searchQuery.toLowerCase();
-    return folderedThreads.unfiled.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
-  }, [folderedThreads.unfiled, searchQuery]);
+    return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
+  }, [recentThreads, searchQuery]);
 
   return (
     <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
@@ -235,115 +194,67 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                     />
                   </div>
 
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/chat')}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setSidebarMode('threads')} data-active={sidebarMode === 'threads' ? 'true' : 'false'}>
                     <MessageSquare className="h-4 w-4" />
-                    <span>Chats</span>
+                    <span>Threads</span>
+                    <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
+                      {filteredThreads.length}
+                    </span>
                   </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setCreatingFolder((v) => !v)}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setSidebarMode('research')} data-active={sidebarMode === 'research' ? 'true' : 'false'}>
                     <Folder className="h-4 w-4" />
-                    <span>Projects</span>
-                  </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/legal')}>
-                    <Boxes className="h-4 w-4" />
-                    <span>Artifacts</span>
-                  </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => router.push('/hybrid')}>
-                    <Code2 className="h-4 w-4" />
-                    <span>Code</span>
+                    <span>Research</span>
+                    <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
+                      {filteredThreads.length}
+                    </span>
                   </button>
                 </div>
 
-                {creatingFolder ? (
-                  <div className="mb-3 mt-3 flex items-center gap-2">
-                    <input
-                      className="lab-input !min-h-[36px] text-sm"
-                      value={newFolderName}
-                      placeholder="Project folder name"
-                      onChange={(event) => setNewFolderName(event.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="lab-button-primary !px-3 !py-2 text-xs"
-                      onClick={() => {
-                        const name = newFolderName.trim();
-                        if (!name || folders.includes(name)) return;
-                        setFolders((prev) => [...prev, name]);
-                        setExpandedFolders((prev) => ({ ...prev, [name]: true }));
-                        setNewFolderName('');
-                        setCreatingFolder(false);
-                      }}
-                    >
-                      <FolderPlus className="h-3.5 w-3.5" />
-                      Add
-                    </button>
-                  </div>
-                ) : null}
-
                 <div className="lab-scroll-region mt-4 h-[44vh] space-y-3 pr-1">
-                  <div>
-                    <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Starred</p>
-                    {folders.length === 0 ? <p className="text-xs text-[var(--lab-text-tertiary)]">No projects yet.</p> : null}
-                    {folders.slice(0, 4).map((folder) => {
-                      const items = folderedThreads.groups[folder] || [];
-                      const expanded = expandedFolders[folder] ?? true;
-                      return (
-                        <div key={folder} className="mb-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
-                          <button
-                            type="button"
-                            className="lab-nav-pill w-full justify-start !px-2 !py-1 text-xs"
-                            onClick={() => setExpandedFolders((prev) => ({ ...prev, [folder]: !expanded }))}
-                          >
-                            {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                            <FolderTree className="h-3.5 w-3.5" />
-                            <span className="truncate">{folder}</span>
-                          </button>
-                          {expanded ? (
-                            <div className="mt-1 space-y-1">
-                              {items.slice(0, 3).map((session) => (
-                                <button key={session.id} type="button" className="w-full truncate px-2 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
-                                  {session.title || 'Untitled thread'}
-                                </button>
-                              ))}
-                              {items.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No threads yet.</p> : null}
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div>
-                    <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Recents</p>
-                    <div className="space-y-2">
-                      {filteredUnfiledThreads.slice(0, 18).map((session) => (
-                        <div key={session.id} className="lab-card-interactive w-full !p-2 text-left">
-                          <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
-                            <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
-                            <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                              <Clock3 className="h-3.5 w-3.5" />
-                              {new Date(session.updated_at).toLocaleString()}
-                            </p>
-                          </button>
-                          {folders.length > 0 ? (
-                            <select
-                              className="lab-select mt-2 !min-h-[34px] text-xs"
-                              value={threadFolderMap[session.id] || ''}
-                              onChange={(event) => {
-                                const value = event.target.value;
-                                setThreadFolderMap((prev) => ({ ...prev, [session.id]: value }));
-                              }}
-                            >
-                              <option value="">Move to project…</option>
-                              {folders.map((folder) => (
-                                <option key={folder} value={folder}>{folder}</option>
-                              ))}
-                            </select>
-                          ) : null}
-                        </div>
-                      ))}
+                  {sidebarMode === 'research' ? (
+                    <div>
+                      <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Research ({filteredThreads.length})</p>
+                      <div className="mb-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
+                        <button
+                          type="button"
+                          className="lab-nav-pill w-full justify-start !px-2 !py-1 text-xs"
+                          onClick={() => setResearchExpanded((current) => !current)}
+                        >
+                          {researchExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                          <Folder className="h-3.5 w-3.5" />
+                          <span className="truncate">Research</span>
+                        </button>
+                        {researchExpanded ? (
+                          <div className="mt-1 space-y-1">
+                            {filteredThreads.slice(0, 24).map((session) => (
+                              <button key={session.id} type="button" className="w-full truncate px-2 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
+                                {session.title || 'Untitled thread'}
+                              </button>
+                            ))}
+                            {filteredThreads.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No research prompts found.</p> : null}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
-                    {recentThreads.length === 0 ? <div className="lab-empty-state mt-2 text-xs">No recent history for this account.</div> : null}
-                  </div>
+                  ) : (
+                    <div>
+                      <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Threads ({filteredThreads.length})</p>
+                      <div className="space-y-2">
+                        {filteredThreads.slice(0, 24).map((session) => (
+                          <div key={session.id} className="lab-card-interactive w-full !p-2 text-left">
+                            <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
+                              <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
+                              <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
+                                <Clock3 className="h-3.5 w-3.5" />
+                                {new Date(session.updated_at).toLocaleString()}
+                              </p>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      {recentThreads.length === 0 ? <div className="lab-empty-state mt-2 text-xs">No thread history for this account.</div> : null}
+                    </div>
+                  )}
                 </div>
               </section>
             ) : null}
