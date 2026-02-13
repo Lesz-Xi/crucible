@@ -420,7 +420,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setGroundingError(null);
     setFactualConfidence(null);
     setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
-    setLatestClaimId(null);
     setClaimCopied(false);
 
     const userMessage: WorkbenchMessage = {
@@ -594,24 +593,9 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           <div className="flex h-full min-h-0 flex-col">
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
-                <div className="space-y-4">
-                  <div className="lab-empty-state">
-                    <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Good day, Chief.</p>
-                    <p className="mt-2 text-sm">Start with a hypothesis, then pressure-test it with causal structure.</p>
-                  </div>
-                  <div className="grid gap-2 md:grid-cols-3">
-                    {QUICK_PROMPTS.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className="lab-card-interactive w-full !p-3 text-left"
-                        onClick={() => handleQuickPrompt(item.id, item.snippet)}
-                      >
-                        <p className="text-sm font-medium text-[var(--lab-text-primary)]">{item.label}</p>
-                        <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{item.snippet}</p>
-                      </button>
-                    ))}
-                  </div>
+                <div className="lab-empty-state">
+                  <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Good day, Chief.</p>
+                  <p className="mt-2 text-sm">Start with a hypothesis, then pressure-test it with causal structure.</p>
                 </div>
               ) : (
                 messages.map((message) => (
@@ -640,6 +624,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
               )}
             </div>
 
+            <div className="mt-auto">
             <ChatComposerV2
               value={prompt}
               onChange={setPrompt}
@@ -661,6 +646,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                     : 'State your hypothesis, mechanism, and desired intervention...'
               }
             />
+            </div>
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>
