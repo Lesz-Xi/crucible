@@ -9,7 +9,9 @@ import {
   ChevronDown,
   ChevronRight,
   Clock3,
+  FolderCheck,
   Folder,
+  FolderPlus,
   Gavel,
   GraduationCap,
   Home,
@@ -20,7 +22,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
-  Search,
   Sun,
   UserCircle2,
 } from 'lucide-react';
@@ -56,7 +57,6 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
   const [researchExpanded, setResearchExpanded] = useState(true);
   const [researchThreadIds, setResearchThreadIds] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -134,22 +134,16 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
 
   const openThread = (sessionId: string) => {
     router.push(`/chat?sessionId=${sessionId}`);
-    window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
   };
 
   const filteredThreads = useMemo(() => {
-    if (!searchQuery.trim()) return recentThreads;
-    const q = searchQuery.toLowerCase();
-    return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
-  }, [recentThreads, searchQuery]);
+    return recentThreads;
+  }, [recentThreads]);
 
   const filteredResearchThreads = useMemo(() => {
     const idSet = new Set(researchThreadIds);
-    const inResearch = recentThreads.filter((session) => idSet.has(session.id));
-    if (!searchQuery.trim()) return inResearch;
-    const q = searchQuery.toLowerCase();
-    return inResearch.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(q));
-  }, [recentThreads, researchThreadIds, searchQuery]);
+    return recentThreads.filter((session) => idSet.has(session.id));
+  }, [recentThreads, researchThreadIds]);
 
   return (
     <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
@@ -206,16 +200,6 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                     <Plus className="h-4 w-4" />
                     <span>New chat</span>
                   </button>
-
-                  <div className="flex items-center gap-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] px-3 py-2">
-                    <Search className="h-4 w-4 text-[var(--lab-text-secondary)]" />
-                    <input
-                      className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--lab-text-tertiary)]"
-                      placeholder="Search"
-                      value={searchQuery}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                    />
-                  </div>
 
                   <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setSidebarMode('threads')} data-active={sidebarMode === 'threads' ? 'true' : 'false'}>
                     <MessageSquare className="h-4 w-4" />
@@ -277,27 +261,31 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                       <div className="space-y-2">
                         {filteredThreads.slice(0, 24).map((session) => (
                           <div key={session.id} className="lab-card-interactive w-full !p-2 text-left">
-                            <button type="button" className="w-full text-left" onClick={() => openThread(session.id)}>
-                              <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
-                              <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                                <Clock3 className="h-3.5 w-3.5" />
-                                {new Date(session.updated_at).toLocaleString()}
-                              </p>
-                            </button>
-                            <button
-                              type="button"
-                              className="lab-button-secondary mt-2 w-full !py-1.5 text-xs"
-                              onClick={() =>
-                                setResearchThreadIds((current) =>
-                                  current.includes(session.id)
-                                    ? current.filter((id) => id !== session.id)
-                                    : [session.id, ...current]
-                                )
-                              }
-                            >
-                              <Folder className="h-3.5 w-3.5" />
-                              {researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
-                            </button>
+                            <div className="flex items-start justify-between gap-2">
+                              <button type="button" className="min-w-0 flex-1 text-left" onClick={() => openThread(session.id)}>
+                                <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
+                                <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
+                                  <Clock3 className="h-3.5 w-3.5" />
+                                  {new Date(session.updated_at).toLocaleString()}
+                                </p>
+                              </button>
+                              <button
+                                type="button"
+                                className="lab-button-secondary !px-2 !py-1 text-[11px]"
+                                onClick={() =>
+                                  setResearchThreadIds((current) =>
+                                    current.includes(session.id)
+                                      ? current.filter((id) => id !== session.id)
+                                      : [session.id, ...current]
+                                  )
+                                }
+                                aria-label={researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
+                                title={researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
+                              >
+                                {researchThreadIds.includes(session.id) ? <FolderCheck className="h-3.5 w-3.5" /> : <FolderPlus className="h-3.5 w-3.5" />}
+                                {researchThreadIds.includes(session.id) ? 'Remove' : 'Add'}
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>

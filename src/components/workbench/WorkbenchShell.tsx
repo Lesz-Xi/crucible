@@ -35,14 +35,14 @@ export function WorkbenchShell({
 
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
-  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 52px)' : 'calc(100svh - 112px)';
+  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 20px)' : 'calc(100svh - 112px)';
 
   return (
     <AppDashboardShell>
       <div className={cn('lab-shell min-h-screen w-full', className)}>
         {statusStrip}
 
-        <div className={cn('mx-auto max-w-[1760px] px-4 pt-2 md:px-6 lg:px-8', className?.includes('feature-chat') ? 'pb-0' : 'pb-5')}>
+        <div className={cn('mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8', className?.includes('feature-chat') ? 'pb-0 pt-1' : 'pb-5 pt-2')}>
           <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
             {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
             <main className="lab-panel-elevated overflow-hidden" style={{ height: panelHeight }}>{primary}</main>
