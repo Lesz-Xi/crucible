@@ -269,14 +269,14 @@ export function ChatWorkbenchV2() {
         setCurrentModelKey(restoredModelKey);
         currentModelKeyRef.current = restoredModelKey;
         if (
-          latestAssistantWithEvidence?.causal_density &&
-          typeof latestAssistantWithEvidence.causal_density.score === 'number' &&
-          typeof latestAssistantWithEvidence.causal_density.confidence === 'number'
+          latestAssistantWithDensity?.causal_density &&
+          typeof latestAssistantWithDensity.causal_density.score === 'number' &&
+          typeof latestAssistantWithDensity.causal_density.confidence === 'number'
         ) {
           const restoredDensity = {
-            score: latestAssistantWithEvidence.causal_density.score,
-            label: latestAssistantWithEvidence.causal_density.label || 'Unknown',
-            confidence: latestAssistantWithEvidence.causal_density.confidence,
+            score: latestAssistantWithDensity.causal_density.score,
+            label: latestAssistantWithDensity.causal_density.label || 'Unknown',
+            confidence: latestAssistantWithDensity.causal_density.confidence,
           };
           setLastDensity(restoredDensity);
           lastDensityRef.current = restoredDensity;
@@ -284,27 +284,32 @@ export function ChatWorkbenchV2() {
           setLastDensity(null);
           lastDensityRef.current = null;
         }
-        setGroundingSources([]);
-        setGroundingStatus('idle');
+        const latestAssistantText = [...loadedMessages].reverse().find((m) => m.role === 'assistant')?.content || '';
+        const restoredSources = extractSourcesFromText(latestAssistantText);
+        setGroundingSources(restoredSources);
+        setGroundingStatus(restoredSources.length > 0 ? 'ready' : 'idle');
         setGroundingError(null);
+        setUsedGroundingFallback(restoredSources.length > 0);
         setFactualConfidence(null);
         setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
         setLatestClaimId(null);
         setClaimCopied(false);
         setDbSessionId(sessionId);
 
-        try {
-          const claimResponse = await fetch(`/api/claims?sourceFeature=chat&sessionId=${sessionId}&limit=1`);
-          if (claimResponse.ok) {
-            const claimPayload = (await claimResponse.json()) as { claims?: Array<{ id?: string }> };
-            const firstClaimId = claimPayload.claims?.[0]?.id;
-            if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
-              setLatestClaimId(firstClaimId);
+        void (async () => {
+          try {
+            const claimResponse = await fetch(`/api/claims?sourceFeature=chat&sessionId=${sessionId}&limit=1`);
+            if (claimResponse.ok) {
+              const claimPayload = (await claimResponse.json()) as { claims?: Array<{ id?: string }> };
+              const firstClaimId = claimPayload.claims?.[0]?.id;
+              if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
+                setLatestClaimId(firstClaimId);
+              }
             }
+          } catch {
+            // non-fatal: claim lineage may not exist for historical session
           }
-        } catch {
-          // non-fatal: claim lineage may not exist for historical session
-        }
+        })();
 
       } catch (loadError) {
         const message = loadError instanceof Error ? loadError.message : 'Unable to load session';
