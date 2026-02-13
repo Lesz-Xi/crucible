@@ -15,4 +15,9 @@ export const FEATURE_FLAGS = {
   SCIENTIFIC_INTEGRITY_GATE_ENABLED: parseBoolean(process.env.SCIENTIFIC_INTEGRITY_GATE_ENABLED, true),
   AUTOPSY_MODE_ENABLED: parseBoolean(process.env.AUTOPSY_MODE_ENABLED, true),
   PHENOMENAL_LAYER_ENABLED: parseBoolean(process.env.PHENOMENAL_LAYER_ENABLED, true),
+  MASA_CAUSAL_PRUNING_V1: parseBoolean(process.env.MASA_CAUSAL_PRUNING_V1, false),
+  MASA_COMPACTION_AXIOM_V1: parseBoolean(process.env.MASA_COMPACTION_AXIOM_V1, false),
+  MASA_MEMORY_FUSION_V1: parseBoolean(process.env.MASA_MEMORY_FUSION_V1, false),
+  MASA_MEMORY_RRF_V1: parseBoolean(process.env.MASA_MEMORY_RRF_V1, false),
+  MASA_CAUSAL_LATTICE_V1: parseBoolean(process.env.MASA_CAUSAL_LATTICE_V1, false),
 };

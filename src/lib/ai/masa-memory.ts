@@ -8,6 +8,8 @@
  * Key Insight: "By vividly recalling past successes, one reactivates these specific
  * engrams and the accompanying 'winning feeling'."
  */
+import { fuseMemoryRetrieval } from "@/lib/services/memory-retrieval-fusion";
+import type { RetrievalFusionResult } from "@/types/persistent-memory";
 
 export interface Engram {
   id: string;
@@ -145,6 +147,20 @@ export class MasaMemory {
       domains,
       lenses
     };
+  }
+
+  /**
+   * Hybrid retrieval utility: score engrams with lexical + causal priority fusion.
+   */
+  retrieveRelevantEngrams(query: string, topK = 5): RetrievalFusionResult {
+    const candidates = this.engrams.map((engram) => ({
+      id: engram.id,
+      content: `${engram.domain} ${engram.lens} ${engram.critique_pattern}`,
+      causalLevel: engram.score >= 90 ? ("L3" as const) : engram.score >= 80 ? ("L2" as const) : ("L1" as const),
+      vectorScore: Math.max(0, Math.min(1, engram.score / 100)),
+    }));
+
+    return fuseMemoryRetrieval(query, candidates, { topK });
   }
 
   // ========== PRIVATE HELPERS ==========

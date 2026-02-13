@@ -13,6 +13,7 @@
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { CausalDensityResult } from "@/lib/ai/causal-integrity-service";
+import type { PruningDecision } from "@/types/persistent-memory";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -447,6 +448,59 @@ export class SessionService {
     if (error) {
       console.error("[SessionService] Batch save failed:", error);
       throw error;
+    }
+  }
+
+  async loadRecentMessagesForCompaction(sessionId: string, windowSize = 12): Promise<Array<{
+    id: string;
+    session_id: string;
+    role: "user" | "assistant";
+    content: string;
+    domain_classified?: string | null;
+    confidence_score?: number | null;
+    created_at: string;
+  }>> {
+    const { data, error } = await this.supabase
+      .from("causal_chat_messages")
+      .select("id, session_id, role, content, domain_classified, confidence_score, created_at")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: false })
+      .limit(windowSize);
+
+    if (error) {
+      console.error("[SessionService] Failed to load compaction window:", error);
+      return [];
+    }
+
+    return (data || []).reverse() as Array<{
+      id: string;
+      session_id: string;
+      role: "user" | "assistant";
+      content: string;
+      domain_classified?: string | null;
+      confidence_score?: number | null;
+      created_at: string;
+    }>;
+  }
+
+  async persistPruningDecisions(sessionId: string, decisions: PruningDecision[]): Promise<void> {
+    if (decisions.length === 0) return;
+
+    const { error } = await this.supabase.from("causal_pruning_decisions").insert(
+      decisions.map((decision) => ({
+        session_id: sessionId,
+        message_id: decision.messageId,
+        eligible: decision.eligible,
+        reason: decision.reason,
+        cache_ttl_state: decision.cacheTtlState,
+        keep_priority_score: decision.keepPriorityScore,
+        causal_level: decision.causalLevel,
+        created_at: new Date().toISOString(),
+      })),
+    );
+
+    if (error) {
+      console.error("[SessionService] Failed to persist pruning decisions:", error);
     }
   }
 }

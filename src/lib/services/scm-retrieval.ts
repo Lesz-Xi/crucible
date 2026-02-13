@@ -7,6 +7,8 @@ import { EducationalSCM } from "../ai/educational-scm";
 import { SCMRegistryService } from "./scm-registry";
 import { FEATURE_FLAGS } from "@/lib/config/feature-flags";
 import { PhenomenalBridge, EpistemicQualia } from "./phenomenal-bridge";
+import { fuseMemoryRetrieval } from "./memory-retrieval-fusion";
+import type { RetrievalFusionResult } from "@/types/persistent-memory";
 
 import { SupabaseClient } from "@supabase/supabase-js";
 import type { CausalEdge, CausalNode } from "../ai/causal-blueprint";
@@ -364,6 +366,24 @@ export class SCMRetriever {
     }
     
     return context;
+  }
+
+  /**
+   * Deterministic lexical+causal retrieval over SCM constraint text for memory fusion diagnostics.
+   */
+  fuseConstraintRetrieval(query: string, context: SCMContext, topK = 6): RetrievalFusionResult {
+    const structure = (context.tier2 || context.primaryScm).getFullStructure();
+    const candidates = structure.nodes.map((node) => ({
+      id: `${context.domain}:${node.name}`,
+      content: `${node.name} ${node.description ?? ""} ${node.measurement_method ?? ""}`,
+      causalLevel: node.type === "intervention" ? ("L3" as const) : node.type === "latent" ? ("L2" as const) : ("L1" as const),
+      vectorScore: node.type === "intervention" ? 0.85 : node.type === "latent" ? 0.65 : 0.45,
+    }));
+
+    return fuseMemoryRetrieval(query, candidates, {
+      topK,
+      useRrf: FEATURE_FLAGS.MASA_MEMORY_RRF_V1,
+    });
   }
 }
 
