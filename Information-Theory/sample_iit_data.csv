@@ -1,0 +1,13 @@
+system_id,topology,num_units,connectivity,bidirectional,Phi,Phi_distinctions,Phi_relations,intrinsic_entity,conscious,biological_correlate
+iit_001,grid,16,0.28,TRUE,84.6,49.068,35.532,TRUE,TRUE,Posterior cortex
+iit_002,grid,24,0.25,TRUE,78.2,45.356,32.844,TRUE,TRUE,Posterior cortex
+iit_003,grid,36,0.21,TRUE,69.4,40.252,29.148,TRUE,TRUE,Posterior cortex
+iit_004,modular,24,0.19,TRUE,11.8,6.844,4.956,TRUE,TRUE,Thalamocortical fragment
+iit_005,modular,30,0.16,TRUE,7.1,4.118,2.982,TRUE,FALSE,Cerebellum
+iit_006,modular,48,0.12,TRUE,3.6,2.088,1.512,TRUE,FALSE,Cerebellum
+iit_007,feedforward,24,0.33,FALSE,0.0,0.0,0.0,FALSE,FALSE,Cerebellum
+iit_008,feedforward,96,0.21,FALSE,0.0,0.0,0.0,FALSE,FALSE,Von Neumann computer
+iit_009,feedforward,128,0.14,FALSE,0.0,0.0,0.0,FALSE,FALSE,Digital signal pipeline
+iit_010,random,20,0.27,FALSE,24.5,14.21,10.29,TRUE,TRUE,Thalamus
+iit_011,random,40,0.15,FALSE,14.2,8.236,5.964,TRUE,TRUE,Associative network
+iit_012,random,64,0.11,FALSE,9.4,5.452,3.948,TRUE,FALSE,Hippocampal-like sparse network

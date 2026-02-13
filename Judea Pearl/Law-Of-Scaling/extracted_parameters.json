@@ -1,0 +1,158 @@
+{
+  "metadata": {
+    "source_document": "Universal Scaling Laws of Life, Cities, and Companies.pdf",
+    "extraction_date": "2026-01-24",
+    "description": "Extracted physical parameters for Grand Unified Scaling Equation"
+  },
+  "scaling_exponents": {
+    "beta": {
+      "description": "Scaling exponents governing power-law relationships Y ∝ N^β",
+      "regime_A_biology_companies": {
+        "biology_metabolic": {
+          "symbol": "β_bio",
+          "value": 0.75,
+          "fraction": "3/4",
+          "source_quote": "metabolic rate (B) scales with body mass (M) to the power of 3/4 (B ∝ M^{3/4})",
+          "interpretation": "Sublinear scaling - efficiency increases with size, bounded growth",
+          "chapter": 3,
+          "refs": [8, 9, 10]
+        },
+        "company_scaling": {
+          "symbol": "β_corp",
+          "value": 0.9,
+          "source_quote": "companies, unlike cities, scale sublinearly (N^{0.9})",
+          "interpretation": "Sublinear - emphasis on efficiency over innovation, thermodynamically destined to stop growing",
+          "chapter": 9,
+          "refs": [29, 30, 31]
+        },
+        "company_halflife": {
+          "value_years": 10,
+          "source_quote": "mortality of publicly traded companies follows an exponential decay (half-life ~10 years)",
+          "chapter": 9
+        }
+      },
+      "regime_B_cities": {
+        "infrastructure_sublinear": {
+          "symbol": "β_infra",
+          "value": 0.85,
+          "source_quote": "Infrastructure scales Sublinearly (N^{0.85}): Like biology, cities exhibit economies of scale. Doubling a city requires only 85% more roads, pipes, and wires",
+          "interpretation": "Economies of scale in physical infrastructure",
+          "chapter": 7,
+          "refs": [22, 23]
+        },
+        "socioeconomic_superlinear": {
+          "symbol": "β_socio",
+          "value": 1.15,
+          "source_quote": "Socioeconomic Outputs scale Superlinearly (N^{1.15}): Wages, patents, crime, and GDP increase by ~15% per capita with every doubling of size",
+          "interpretation": "Increasing returns to scale driven by social network topology",
+          "chapter": 7,
+          "refs": [22, 24]
+        }
+      }
+    }
+  },
+  "froude_number": {
+    "Fr": {
+      "symbol": "Fr",
+      "definition": "Dimensionless quantity used for dynamic similarity in scaling models",
+      "source_quote": "He introduces Froude numbers and dimensionless quantities as the tools for modeling—proving that we can predict the dynamics of a massive system (like a ship or a city) based on a small-scale model if the dimensionless ratios are preserved",
+      "application": "Allows prediction of large system dynamics from small-scale models when dimensionless ratios are preserved",
+      "related_principle": "Galileo's Square-Cube Law - volume (mass) increases by power of 3, while strength (cross-sectional area) increases by power of 2",
+      "chapter": 2,
+      "refs": [6, 7]
+    }
+  },
+  "marchetti_constant": {
+    "C_mar": {
+      "symbol": "C_mar",
+      "value_hours": 1.0,
+      "value_description": "approximately one hour of travel per day",
+      "source_quote": "He also introduces Marchetti's Constant, which suggests that human mobility is constrained by a time budget (approx. one hour of travel per day), dictating the spatial spread of cities as transport technology evolves",
+      "application": "Constrains urban spatial spread as transport technology changes",
+      "chapter": 8,
+      "refs": [28]
+    }
+  },
+  "temporal_relations": {
+    "T_pace": {
+      "symbol": "T_pace",
+      "exponent": -0.15,
+      "scaling_law": "t ∝ N^{-0.15}",
+      "source_quote": "As a city grows, the pace of life accelerates (t ∝ N^{-0.15}); people walk faster, and diseases spread more rapidly",
+      "interpretation": "Superlinear scaling forces time contraction - pace of life accelerates with city size",
+      "validation": "Validated with cell phone data showing social connectivity scales with 1.15 exponent",
+      "chapter": 8,
+      "refs": [25, 26, 27]
+    },
+    "biological_time": {
+      "description": "Larger animals have slower cellular metabolic rates due to network constraints",
+      "consequence": "Larger animals accumulate entropic damage slower and live longer",
+      "boltzmann_factor": "e^{-E/kT}",
+      "source_quote": "Temperature dependence is governed by the Boltzmann factor (e^{-E/kT}), linking biological time to thermodynamics",
+      "chapter": 4,
+      "refs": [14]
+    }
+  },
+  "singularity_parameters": {
+    "t_sing": {
+      "symbol": "t_sing",
+      "full_name": "Finite Time Singularity",
+      "definition": "Point where superlinear growth (N^{>1}) mathematically demands infinite energy in finite time",
+      "source_quote": "Superlinear growth (N^{>1}) mathematically results in a Finite Time Singularity, where the system demands infinite energy in a finite amount of time",
+      "trigger_condition": "β > 1 (superlinear scaling regime)",
+      "chapter": 10,
+      "refs": [32, 33]
+    },
+    "R_inn": {
+      "symbol": "R_inn",
+      "full_name": "Innovation Reset",
+      "definition": "Reset cycles of innovation required to avoid singularity collapse",
+      "source_quote": "To avoid collapse, the system requires 'reset' cycles of innovation. However, the theory predicts that the time interval between these innovations must accelerate (Δt → 0)",
+      "dynamics": {
+        "interval_behavior": "Δt → 0 (accelerating innovation cycles)",
+        "interpretation": "Accelerating treadmill requiring ever-faster innovation rates to stave off entropic collapse"
+      },
+      "sustainability_warning": "Dynamic is likely unsustainable long-term",
+      "chapter": 10,
+      "refs": [34, 35, 36]
+    }
+  },
+  "additional_constants": {
+    "magic_number_4": {
+      "description": "The 1/4 power appearing in biological scaling",
+      "origin": "Fractal networks effectively add a fourth dimension to 3D organisms, optimizing metabolic capacity",
+      "chapter": 3,
+      "refs": [8, 9, 10]
+    },
+    "human_power_scales": {
+      "biological_power_watts": 90,
+      "social_power_us_citizen_watts": 11000,
+      "ratio": 122.2,
+      "source_quote": "phase transition of the human species from a biological energy scale (~90 watts) to a social energy scale (~11,000 watts for a U.S. citizen)",
+      "chapter": 5,
+      "refs": [15, 16]
+    },
+    "growth_equation": {
+      "description": "Growth = metabolic energy input - maintenance energy",
+      "maintenance_scaling": "linear (proportional to cell count)",
+      "metabolism_scaling": "sublinear (M^{3/4})",
+      "equilibrium_condition": "dB/dt → 0 when maintenance costs equal energy supply",
+      "chapter": 4,
+      "refs": [11, 12]
+    }
+  },
+  "regime_summary": {
+    "regime_A": {
+      "name": "Biology/Companies (Sublinear)",
+      "characteristic": "β < 1",
+      "dynamics": "Bounded growth, efficiency-driven, eventually stops growing",
+      "examples": ["Organisms (β = 0.75)", "Companies (β = 0.9)"]
+    },
+    "regime_B": {
+      "name": "Cities (Superlinear for socioeconomic outputs)",
+      "characteristic": "β > 1 for social outputs, β < 1 for infrastructure",
+      "dynamics": "Open-ended growth, increasing returns, time contraction, singularity risk",
+      "examples": ["Socioeconomic outputs (β = 1.15)", "Infrastructure (β = 0.85)"]
+    }
+  }
+}

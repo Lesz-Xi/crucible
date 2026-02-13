@@ -1,0 +1,4510 @@
+diff --git a/eslint.config.mjs b/eslint.config.mjs
+index 05e726d..a8c287d 100644
+--- a/eslint.config.mjs
++++ b/eslint.config.mjs
+@@ -1,18 +1,19 @@
+-import { defineConfig, globalIgnores } from "eslint/config";
+-import nextVitals from "eslint-config-next/core-web-vitals";
+-import nextTs from "eslint-config-next/typescript";
++import { FlatCompat } from "@eslint/eslintrc";
++import path from "path";
++import { fileURLToPath } from "url";
+ 
+-const eslintConfig = defineConfig([
+-  ...nextVitals,
+-  ...nextTs,
+-  // Override default ignores of eslint-config-next.
+-  globalIgnores([
+-    // Default ignores of eslint-config-next:
+-    ".next/**",
+-    "out/**",
+-    "build/**",
+-    "next-env.d.ts",
+-  ]),
+-]);
++const __filename = fileURLToPath(import.meta.url);
++const __dirname = path.dirname(__filename);
++
++const compat = new FlatCompat({
++  baseDirectory: __dirname,
++});
++
++const eslintConfig = [
++  ...compat.extends("next/core-web-vitals", "next/typescript"),
++  {
++    ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"],
++  },
++];
+ 
+ export default eslintConfig;
+diff --git a/next.config.mjs b/next.config.mjs
+index 4678774..812f0b6 100644
+--- a/next.config.mjs
++++ b/next.config.mjs
+@@ -1,4 +1,16 @@
+ /** @type {import('next').NextConfig} */
+-const nextConfig = {};
++const nextConfig = {
++  // Externalize native Node.js packages (Next.js 15+)
++  serverExternalPackages: ['ws'],
++  
++  webpack: (config, { isServer }) => {
++    // Externalize 'ws' package for server-side (prevents bundling issues)
++    if (isServer) {
++      config.externals = config.externals || [];
++      config.externals.push('ws');
++    }
++    return config;
++  },
++};
+ 
+ export default nextConfig;
+diff --git a/package-lock.json b/package-lock.json
+index 446c2a4..1e03aa5 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -23,10 +23,13 @@
+         "date-fns": "^4.1.0",
+         "dotenv": "^17.2.3",
+         "framer-motion": "^12.29.2",
++        "jstat": "^1.9.6",
+         "lucide-react": "^0.562.0",
+         "mathjs": "^15.1.0",
+         "next": "^15.4.3",
+         "next-themes": "^0.4.6",
++        "pdf2json": "^4.0.2",
++        "pdfjs-dist": "^5.4.624",
+         "pyodide": "^0.29.1",
+         "react": "19.2.3",
+         "react-dom": "19.2.3",
+@@ -37,18 +40,23 @@
+         "tailwind-merge": "^3.4.0",
+         "three": "^0.182.0",
+         "unpdf": "^1.4.0",
+-        "uuid": "^13.0.0"
++        "uuid": "^13.0.0",
++        "ws": "^8.18.0"
+       },
+       "devDependencies": {
++        "@next/eslint-plugin-next": "^15.4.3",
+         "@types/jest": "^30.0.0",
+         "@types/node": "^20",
+         "@types/react": "^19",
+         "@types/react-dom": "^19",
+         "@types/uuid": "^10.0.0",
++        "@typescript-eslint/scope-manager": "^8.53.1",
+         "autoprefixer": "^10.4.23",
+         "eslint": "^9",
+-        "eslint-config-next": "^15.5.9",
++        "eslint-config-next": "^15.4.3",
++        "eslint-plugin-react": "^7.37.0",
+         "jest": "^30.2.0",
++        "jsx-ast-utils": "^2.4.1",
+         "postcss": "^8.5.6",
+         "tailwindcss": "^3.4.19",
+         "ts-jest": "^29.4.6",
+@@ -640,6 +648,7 @@
+       "cpu": [
+         "ppc64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -656,6 +665,7 @@
+       "cpu": [
+         "arm"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -672,6 +682,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -688,6 +699,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -704,6 +716,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -720,6 +733,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -736,6 +750,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -752,6 +767,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -768,6 +784,7 @@
+       "cpu": [
+         "arm"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -784,6 +801,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -800,6 +818,7 @@
+       "cpu": [
+         "ia32"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -816,6 +835,7 @@
+       "cpu": [
+         "loong64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -832,6 +852,7 @@
+       "cpu": [
+         "mips64el"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -848,6 +869,7 @@
+       "cpu": [
+         "ppc64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -864,6 +886,7 @@
+       "cpu": [
+         "riscv64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -880,6 +903,7 @@
+       "cpu": [
+         "s390x"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -896,6 +920,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -912,6 +937,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -928,6 +954,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -944,6 +971,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -960,6 +988,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -976,6 +1005,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -992,6 +1022,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -1008,6 +1039,7 @@
+       "cpu": [
+         "arm64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -1024,6 +1056,7 @@
+       "cpu": [
+         "ia32"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -1040,6 +1073,7 @@
+       "cpu": [
+         "x64"
+       ],
++      "dev": true,
+       "license": "MIT",
+       "optional": true,
+       "os": [
+@@ -2313,6 +2347,267 @@
+         "three": ">= 0.159.0"
+       }
+     },
++    "node_modules/@napi-rs/canvas": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas/-/canvas-0.1.91.tgz",
++      "integrity": "sha512-eeIe1GoB74P1B0Nkw6pV8BCQ3hfCfvyYr4BntzlCsnFXzVJiPMDnLeIx3gVB0xQMblHYnjK/0nCLvirEhOjr5g==",
++      "license": "MIT",
++      "optional": true,
++      "workspaces": [
++        "e2e/*"
++      ],
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      },
++      "optionalDependencies": {
++        "@napi-rs/canvas-android-arm64": "0.1.91",
++        "@napi-rs/canvas-darwin-arm64": "0.1.91",
++        "@napi-rs/canvas-darwin-x64": "0.1.91",
++        "@napi-rs/canvas-linux-arm-gnueabihf": "0.1.91",
++        "@napi-rs/canvas-linux-arm64-gnu": "0.1.91",
++        "@napi-rs/canvas-linux-arm64-musl": "0.1.91",
++        "@napi-rs/canvas-linux-riscv64-gnu": "0.1.91",
++        "@napi-rs/canvas-linux-x64-gnu": "0.1.91",
++        "@napi-rs/canvas-linux-x64-musl": "0.1.91",
++        "@napi-rs/canvas-win32-arm64-msvc": "0.1.91",
++        "@napi-rs/canvas-win32-x64-msvc": "0.1.91"
++      }
++    },
++    "node_modules/@napi-rs/canvas-android-arm64": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-android-arm64/-/canvas-android-arm64-0.1.91.tgz",
++      "integrity": "sha512-SLLzXXgSnfct4zy/BVAfweZQkYkPJsNsJ2e5DOE8DFEHC6PufyUrwb12yqeu2So2IOIDpWJJaDAxKY/xpy6MYQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "android"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-darwin-arm64": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-darwin-arm64/-/canvas-darwin-arm64-0.1.91.tgz",
++      "integrity": "sha512-bzdbCjIjw3iRuVFL+uxdSoMra/l09ydGNX9gsBxO/zg+5nlppscIpj6gg+nL6VNG85zwUarDleIrUJ+FWHvmuA==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-darwin-x64": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-darwin-x64/-/canvas-darwin-x64-0.1.91.tgz",
++      "integrity": "sha512-q3qpkpw0IsG9fAS/dmcGIhCVoNxj8ojbexZKWwz3HwxlEWsLncEQRl4arnxrwbpLc2nTNTyj4WwDn7QR5NDAaA==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "darwin"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-arm-gnueabihf": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-arm-gnueabihf/-/canvas-linux-arm-gnueabihf-0.1.91.tgz",
++      "integrity": "sha512-Io3g8wJZVhK8G+Fpg1363BE90pIPqg+ZbeehYNxPWDSzbgwU3xV0l8r/JBzODwC7XHi1RpFEk+xyUTMa2POj6w==",
++      "cpu": [
++        "arm"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-arm64-gnu": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-arm64-gnu/-/canvas-linux-arm64-gnu-0.1.91.tgz",
++      "integrity": "sha512-HBnto+0rxx1bQSl8bCWA9PyBKtlk2z/AI32r3cu4kcNO+M/5SD4b0v1MWBWZyqMQyxFjWgy3ECyDjDKMC6tY1A==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-arm64-musl": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-arm64-musl/-/canvas-linux-arm64-musl-0.1.91.tgz",
++      "integrity": "sha512-/eJtVe2Xw9A86I4kwXpxxoNagdGclu12/NSMsfoL8q05QmeRCbfjhg1PJS7ENAuAvaiUiALGrbVfeY1KU1gztQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-riscv64-gnu": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-riscv64-gnu/-/canvas-linux-riscv64-gnu-0.1.91.tgz",
++      "integrity": "sha512-floNK9wQuRWevUhhXRcuis7h0zirdytVxPgkonWO+kQlbvxV7gEUHGUFQyq4n55UHYFwgck1SAfJ1HuXv/+ppQ==",
++      "cpu": [
++        "riscv64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-x64-gnu": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-x64-gnu/-/canvas-linux-x64-gnu-0.1.91.tgz",
++      "integrity": "sha512-c3YDqBdf7KETuZy2AxsHFMsBBX1dWT43yFfWUq+j1IELdgesWtxf/6N7csi3VPf6VA3PmnT9EhMyb+M1wfGtqw==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-linux-x64-musl": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-linux-x64-musl/-/canvas-linux-x64-musl-0.1.91.tgz",
++      "integrity": "sha512-RpZ3RPIwgEcNBHSHSX98adm+4VP8SMT5FN6250s5jQbWpX/XNUX5aLMfAVJS/YnDjS1QlsCgQxFOPU0aCCWgag==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "linux"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-win32-arm64-msvc": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-win32-arm64-msvc/-/canvas-win32-arm64-msvc-0.1.91.tgz",
++      "integrity": "sha512-gF8MBp4X134AgVurxqlCdDA2qO0WaDdi9o6Sd5rWRVXRhWhYQ6wkdEzXNLIrmmros0Tsp2J0hQzx4ej/9O8trQ==",
++      "cpu": [
++        "arm64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
++    "node_modules/@napi-rs/canvas-win32-x64-msvc": {
++      "version": "0.1.91",
++      "resolved": "https://registry.npmjs.org/@napi-rs/canvas-win32-x64-msvc/-/canvas-win32-x64-msvc-0.1.91.tgz",
++      "integrity": "sha512-++gtW9EV/neKI8TshD8WFxzBYALSPag2kFRahIJV+LYsyt5kBn21b1dBhEUDHf7O+wiZmuFCeUa7QKGHnYRZBA==",
++      "cpu": [
++        "x64"
++      ],
++      "license": "MIT",
++      "optional": true,
++      "os": [
++        "win32"
++      ],
++      "peer": true,
++      "engines": {
++        "node": ">= 10"
++      },
++      "funding": {
++        "type": "github",
++        "url": "https://github.com/sponsors/Brooooooklyn"
++      }
++    },
+     "node_modules/@napi-rs/wasm-runtime": {
+       "version": "0.2.12",
+       "resolved": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-0.2.12.tgz",
+@@ -2333,9 +2628,9 @@
+       "license": "MIT"
+     },
+     "node_modules/@next/eslint-plugin-next": {
+-      "version": "15.5.9",
+-      "resolved": "https://registry.npmjs.org/@next/eslint-plugin-next/-/eslint-plugin-next-15.5.9.tgz",
+-      "integrity": "sha512-kUzXx0iFiXw27cQAViE1yKWnz/nF8JzRmwgMRTMh8qMY90crNsdXJRh2e+R0vBpFR3kk1yvAR7wev7+fCCb79Q==",
++      "version": "15.4.3",
++      "resolved": "https://registry.npmjs.org/@next/eslint-plugin-next/-/eslint-plugin-next-15.4.3.tgz",
++      "integrity": "sha512-wYYbP29uZlm9lqD1C6HDgW9WNNt6AlTogYKYpDyATs0QrKYIv/rPueoIDRH6qttXGCe3zNrb7hxfQx4w8OSkLA==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+@@ -6911,13 +7206,13 @@
+       }
+     },
+     "node_modules/eslint-config-next": {
+-      "version": "15.5.9",
+-      "resolved": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-15.5.9.tgz",
+-      "integrity": "sha512-852JYI3NkFNzW8CqsMhI0K2CDRxTObdZ2jQJj5CtpEaOkYHn13107tHpNuD/h0WRpU4FAbCdUaxQsrfBtNK9Kw==",
++      "version": "15.4.3",
++      "resolved": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-15.4.3.tgz",
++      "integrity": "sha512-blytVMTpdqqlLBvYOvwT51m5eqRHNofKR/pfBSeeHiQMSY33kCph31hAK3DiAsL/RamVJRQzHwTRbbNr+7c/sw==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+-        "@next/eslint-plugin-next": "15.5.9",
++        "@next/eslint-plugin-next": "15.4.3",
+         "@rushstack/eslint-patch": "^1.10.3",
+         "@typescript-eslint/eslint-plugin": "^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0",
+         "@typescript-eslint/parser": "^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0",
+@@ -7097,30 +7392,46 @@
+         "eslint": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9"
+       }
+     },
++    "node_modules/eslint-plugin-jsx-a11y/node_modules/jsx-ast-utils": {
++      "version": "3.3.5",
++      "resolved": "https://registry.npmjs.org/jsx-ast-utils/-/jsx-ast-utils-3.3.5.tgz",
++      "integrity": "sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "array-includes": "^3.1.6",
++        "array.prototype.flat": "^1.3.1",
++        "object.assign": "^4.1.4",
++        "object.values": "^1.1.6"
++      },
++      "engines": {
++        "node": ">=4.0"
++      }
++    },
+     "node_modules/eslint-plugin-react": {
+-      "version": "7.37.5",
+-      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-7.37.5.tgz",
+-      "integrity": "sha512-Qteup0SqU15kdocexFNAJMvCJEfa2xUKNV4CC1xsVMrIIqEy3SQ/rqyxCWNzfrd3/ldy6HMlD2e0JDVpDg2qIA==",
++      "version": "7.37.0",
++      "resolved": "https://registry.npmjs.org/eslint-plugin-react/-/eslint-plugin-react-7.37.0.tgz",
++      "integrity": "sha512-IHBePmfWH5lKhJnJ7WB1V+v/GolbB0rjS8XYVCSQCZKaQCAUhMoVoOEn1Ef8Z8Wf0a7l8KTJvuZg5/e4qrZ6nA==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+         "array-includes": "^3.1.8",
+         "array.prototype.findlast": "^1.2.5",
+-        "array.prototype.flatmap": "^1.3.3",
++        "array.prototype.flatmap": "^1.3.2",
+         "array.prototype.tosorted": "^1.1.4",
+         "doctrine": "^2.1.0",
+-        "es-iterator-helpers": "^1.2.1",
++        "es-iterator-helpers": "^1.0.19",
+         "estraverse": "^5.3.0",
+         "hasown": "^2.0.2",
+         "jsx-ast-utils": "^2.4.1 || ^3.0.0",
+         "minimatch": "^3.1.2",
+-        "object.entries": "^1.1.9",
++        "object.entries": "^1.1.8",
+         "object.fromentries": "^2.0.8",
+-        "object.values": "^1.2.1",
++        "object.values": "^1.2.0",
+         "prop-types": "^15.8.1",
+         "resolve": "^2.0.0-next.5",
+         "semver": "^6.3.1",
+-        "string.prototype.matchall": "^4.0.12",
++        "string.prototype.matchall": "^4.0.11",
+         "string.prototype.repeat": "^1.0.0"
+       },
+       "engines": {
+@@ -7143,24 +7454,6 @@
+         "eslint": "^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0"
+       }
+     },
+-    "node_modules/eslint-plugin-react/node_modules/resolve": {
+-      "version": "2.0.0-next.5",
+-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-2.0.0-next.5.tgz",
+-      "integrity": "sha512-U7WjGVG9sH8tvjW5SmGbQuui75FiyjAX72HX15DwBBwF9dNiQZRQAg9nnPhYy+TUnE0+VcrttuvNI8oSxZcocA==",
+-      "dev": true,
+-      "license": "MIT",
+-      "dependencies": {
+-        "is-core-module": "^2.13.0",
+-        "path-parse": "^1.0.7",
+-        "supports-preserve-symlinks-flag": "^1.0.0"
+-      },
+-      "bin": {
+-        "resolve": "bin/resolve"
+-      },
+-      "funding": {
+-        "url": "https://github.com/sponsors/ljharb"
+-      }
+-    },
+     "node_modules/eslint-scope": {
+       "version": "8.4.0",
+       "resolved": "https://registry.npmjs.org/eslint-scope/-/eslint-scope-8.4.0.tgz",
+@@ -9620,17 +9913,20 @@
+         "node": ">=6"
+       }
+     },
++    "node_modules/jstat": {
++      "version": "1.9.6",
++      "resolved": "https://registry.npmjs.org/jstat/-/jstat-1.9.6.tgz",
++      "integrity": "sha512-rPBkJbK2TnA8pzs93QcDDPlKcrtZWuuCo2dVR0TFLOJSxhqfWOVCSp8aV3/oSbn+4uY4yw1URtLpHQedtmXfug=="
++    },
+     "node_modules/jsx-ast-utils": {
+-      "version": "3.3.5",
+-      "resolved": "https://registry.npmjs.org/jsx-ast-utils/-/jsx-ast-utils-3.3.5.tgz",
+-      "integrity": "sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==",
++      "version": "2.4.1",
++      "resolved": "https://registry.npmjs.org/jsx-ast-utils/-/jsx-ast-utils-2.4.1.tgz",
++      "integrity": "sha512-z1xSldJ6imESSzOjd3NNkieVJKRlKYSOtMG8SFyCj2FIrvSaSuli/WjpBkEzCBoR9bYYYFgqJw61Xhu7Lcgk+w==",
+       "dev": true,
+       "license": "MIT",
+       "dependencies": {
+-        "array-includes": "^3.1.6",
+-        "array.prototype.flat": "^1.3.1",
+-        "object.assign": "^4.1.4",
+-        "object.values": "^1.1.6"
++        "array-includes": "^3.1.1",
++        "object.assign": "^4.1.0"
+       },
+       "engines": {
+         "node": ">=4.0"
+@@ -11007,6 +11303,13 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/node-readable-to-web-readable-stream": {
++      "version": "0.4.2",
++      "resolved": "https://registry.npmjs.org/node-readable-to-web-readable-stream/-/node-readable-to-web-readable-stream-0.4.2.tgz",
++      "integrity": "sha512-/cMZNI34v//jUTrI+UIo4ieHAB5EZRY/+7OmXZgBxaWBMcW2tGdceIw06RFxWxrKZ5Jp3sI2i5TsRo+CBhtVLQ==",
++      "license": "MIT",
++      "optional": true
++    },
+     "node_modules/node-releases": {
+       "version": "2.0.27",
+       "resolved": "https://registry.npmjs.org/node-releases/-/node-releases-2.0.27.tgz",
+@@ -11412,6 +11715,31 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/pdf2json": {
++      "version": "4.0.2",
++      "resolved": "https://registry.npmjs.org/pdf2json/-/pdf2json-4.0.2.tgz",
++      "integrity": "sha512-iiRSuRmLihoEJ4YGkoqSq3/r4MR0OmkMTYDda0Pq7DAWqJwMylTilXu46T16gfS3DUp3fhiVuz7NtRMbk3uBhw==",
++      "license": "Apache-2.0",
++      "bin": {
++        "pdf2json": "bin/pdf2json.js"
++      },
++      "engines": {
++        "node": ">=20.18.0"
++      }
++    },
++    "node_modules/pdfjs-dist": {
++      "version": "5.4.624",
++      "resolved": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-5.4.624.tgz",
++      "integrity": "sha512-sm6TxKTtWv1Oh6n3C6J6a8odejb5uO4A4zo/2dgkHuC0iu8ZMAXOezEODkVaoVp8nX1Xzr+0WxFJJmUr45hQzg==",
++      "license": "Apache-2.0",
++      "engines": {
++        "node": ">=20.16.0 || >=22.3.0"
++      },
++      "optionalDependencies": {
++        "@napi-rs/canvas": "^0.1.88",
++        "node-readable-to-web-readable-stream": "^0.4.2"
++      }
++    },
+     "node_modules/picocolors": {
+       "version": "1.1.1",
+       "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+@@ -12143,12 +12471,12 @@
+       "license": "MIT"
+     },
+     "node_modules/resolve": {
+-      "version": "1.22.11",
+-      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.22.11.tgz",
+-      "integrity": "sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==",
++      "version": "1.22.10",
++      "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.22.10.tgz",
++      "integrity": "sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w==",
+       "license": "MIT",
+       "dependencies": {
+-        "is-core-module": "^2.16.1",
++        "is-core-module": "^2.16.0",
+         "path-parse": "^1.0.7",
+         "supports-preserve-symlinks-flag": "^1.0.0"
+       },
+diff --git a/package.json b/package.json
+index 197fdf8..8fe16c0 100644
+--- a/package.json
++++ b/package.json
+@@ -5,7 +5,7 @@
+   "scripts": {
+     "dev": "next dev --turbo",
+     "dev:webpack": "next dev",
+-    "build": "next build --turbo",
++    "build": "next build",
+     "start": "next start",
+     "lint": "eslint",
+     "test:benchmark-governance": "vitest run src/lib/services/__tests__/benchmark-governance.test.ts",
+@@ -36,10 +36,13 @@
+     "date-fns": "^4.1.0",
+     "dotenv": "^17.2.3",
+     "framer-motion": "^12.29.2",
++    "jstat": "^1.9.6",
+     "lucide-react": "^0.562.0",
+     "mathjs": "^15.1.0",
+     "next": "^15.4.3",
+     "next-themes": "^0.4.6",
++    "pdf2json": "^4.0.2",
++    "pdfjs-dist": "^5.4.624",
+     "pyodide": "^0.29.1",
+     "react": "19.2.3",
+     "react-dom": "19.2.3",
+@@ -50,23 +53,31 @@
+     "tailwind-merge": "^3.4.0",
+     "three": "^0.182.0",
+     "unpdf": "^1.4.0",
+-    "uuid": "^13.0.0"
++    "uuid": "^13.0.0",
++    "ws": "^8.18.0"
+   },
+   "devDependencies": {
++    "@next/eslint-plugin-next": "^15.4.3",
+     "@types/jest": "^30.0.0",
+     "@types/node": "^20",
+     "@types/react": "^19",
+     "@types/react-dom": "^19",
+     "@types/uuid": "^10.0.0",
++    "@typescript-eslint/scope-manager": "^8.53.1",
+     "autoprefixer": "^10.4.23",
+     "eslint": "^9",
+-    "eslint-config-next": "^15.5.9",
++    "eslint-config-next": "^15.4.3",
++    "eslint-plugin-react": "^7.37.0",
+     "jest": "^30.2.0",
++    "jsx-ast-utils": "^2.4.1",
+     "postcss": "^8.5.6",
+     "tailwindcss": "^3.4.19",
+     "ts-jest": "^29.4.6",
+     "tsx": "^4.21.0",
+     "typescript": "^5",
+     "vitest": "^4.0.18"
++  },
++  "overrides": {
++    "resolve": "1.22.10"
+   }
+ }
+diff --git a/scripts/promote-scm-model.ts b/scripts/promote-scm-model.ts
+index c0d6ad9..c5b5193 100644
+--- a/scripts/promote-scm-model.ts
++++ b/scripts/promote-scm-model.ts
+@@ -59,7 +59,7 @@ function resolveEnv() {
+   return { url, key };
+ }
+ 
+-async function resolveActorUserId(supabase: ReturnType<typeof createClient>): Promise<string> {
++async function resolveActorUserId(supabase: any): Promise<string> {
+   const explicit = process.env.PROMOTION_ACTOR_USER_ID?.trim();
+   if (explicit) return explicit;
+ 
+@@ -100,27 +100,22 @@ function emitResult(payload: Record<string, unknown>) {
+ }
+ 
+ interface PromotionDeps {
+-  SCMRegistryService: new (supabase: ReturnType<typeof createClient>) => {
++  SCMRegistryService: new (supabase: any) => {
+     getModelVersion: (modelKey: string, version?: string) => Promise<any>;
+   };
+-  CausalDisagreementEngine: new (registry: unknown) => {
+-    compare: (input: Record<string, unknown>) => Promise<any>;
+-  };
+-  evaluateSCMPromotionGate: (input: Record<string, unknown>) => {
+-    blocked: boolean;
+-    reason: string;
+-  };
+-  ScientificIntegrityService: new (supabase: ReturnType<typeof createClient>) => {
++  CausalDisagreementEngine: any;
++  evaluateSCMPromotionGate: any;
++  ScientificIntegrityService: new (supabase: any) => {
+     getStatus: () => Promise<{ freezePromotion: boolean }>;
+   };
+ }
+ 
+ async function loadPromotionDeps(): Promise<PromotionDeps> {
+   const [registryMod, disagreementMod, governanceMod, integrityMod] = await Promise.all([
+-    import("../src/lib/services/scm-registry.ts"),
+-    import("../src/lib/services/causal-disagreement-engine.ts"),
+-    import("../src/lib/services/scm-promotion-governance.ts"),
+-    import("../src/lib/services/scientific-integrity-service.ts"),
++    import("../src/lib/services/scm-registry"),
++    import("../src/lib/services/causal-disagreement-engine"),
++    import("../src/lib/services/scm-promotion-governance"),
++    import("../src/lib/services/scientific-integrity-service"),
+   ]);
+ 
+   return {
+@@ -245,7 +240,7 @@ async function main() {
+   }
+ 
+   if (report.atoms.length > 0) {
+-    const atomsPayload = report.atoms.map((atom) => ({
++    const atomsPayload = report.atoms.map((atom: any) => ({
+       report_id: persistedReport.id,
+       atom_type: atom.type,
+       severity: atom.severity,
+@@ -353,9 +348,9 @@ async function main() {
+       .update({ is_current: true })
+       .eq("model_id", modelId)
+       .eq("version", candidateVersion);
+-  if (promoteError) {
+-    throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
+-  }
++    if (promoteError) {
++      throw new Error(`Failed to set candidate as current: ${promoteError.message}`);
++    }
+   }
+ 
+   emitResult({
+diff --git a/src/app/api/causal-chat/history/route.ts b/src/app/api/causal-chat/history/route.ts
+index a93af63..78df98c 100644
+--- a/src/app/api/causal-chat/history/route.ts
++++ b/src/app/api/causal-chat/history/route.ts
+@@ -9,14 +9,14 @@ export async function GET(request: NextRequest) {
+ 
+     if (sessionId) {
+       // Fetch specific session details
+-      const details = await persistence.getCausalSessionDetails(sessionId);
++      const details = await persistence.getRunDetails(sessionId);
+       if (!details) {
+         return NextResponse.json({ error: "Session not found" }, { status: 404 });
+       }
+       return NextResponse.json({ success: true, session: details });
+     } else {
+       // Fetch list of sessions
+-      const history = await persistence.getCausalSessions(20);
++      const history = await persistence.getHistoricalRuns(20);
+       return NextResponse.json({ success: true, history });
+     }
+   } catch (error) {
+diff --git a/src/app/api/causal-chat/route.ts b/src/app/api/causal-chat/route.ts
+index 3ee0301..c3fec40 100644
+--- a/src/app/api/causal-chat/route.ts
++++ b/src/app/api/causal-chat/route.ts
+@@ -104,8 +104,8 @@ export async function POST(req: NextRequest) {
+   // Check for API Keys early
+   if (!process.env.ANTHROPIC_API_KEY) {
+     console.error("[CausalChat] ANTHROPIC_API_KEY is missing");
+-    return NextResponse.json({ 
+-      error: "Configuration Error: API Key missing. Please check your .env file." 
++    return NextResponse.json({
++      error: "Configuration Error: API Key missing. Please check your .env file."
+     }, { status: 500 });
+   }
+ 
+@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
+       : typeof fallbackQuestion === "string"
+         ? fallbackQuestion
+         : "";
+-  
++
+   if (!userQuestion) {
+     return NextResponse.json({ error: "Question is required" }, { status: 400 });
+   }
+@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
+   const stream = new ReadableStream({
+     async start(controller) {
+       let isControllerClosed = false;
+-      
++
+       const sendEvent = (event: string, data: any) => {
+         if (!isControllerClosed) {
+           try {
+@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
+ 
+       // Initialize streaming analyzer for real-time density updates
+       const analyzer = new StreamingCausalAnalyzer();
+-      
++
+       // Initialize Bayesian Oracle Mode Service
+       const oracleService = createOracleModeService(sessionId || null);
+       const densityDistribution: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
+@@ -210,33 +210,33 @@ export async function POST(req: NextRequest) {
+         // FAST-PATH: Detect simple conversational queries (greetings, identity, pleasantries)
+         // Matches common greetings and "who/what are you" questions
+         const lowerQ = userQuestion.trim().toLowerCase();
+-        const isConversational = 
++        const isConversational =
+           /^(hi|hello|hey|greetings|thanks|thank you|goodbye|bye)/i.test(lowerQ) ||
+           /(who|what|how).+(are|is).+(you|this)/i.test(lowerQ) &&
+           userQuestion.length < 150; // Ensure long prompts (like analysis requests) are never treated as fast-path conversation
+-        
++
+         console.log(`[CausalChat] Fast-path check: ${isConversational ? 'ACTIVE' : 'FULL PIPELINE'} for query: "${userQuestion}"`);
+-        
++
+         if (isConversational) {
+           sendEvent("thinking", { message: "Processing conversational query..." });
+-          
++
+           const model = getClaudeModel();
+           const simplePrompt = `You are the Sage of the Uncarved Block (Ψ_Tao), an AI assistant grounded in the Grand Unified Field Equation of the Tao.
+           
+ Respond with the humility of the Valley and the clarity of the Uncarved Block to this greeting/question: "${userQuestion}"
+ 
+ Keep your response brief (1-2 sentences) and mention that you adhere to the natural laws of Physics, Biology, and the Tao.`;
+-          
++
+           const response = await model.generateContent(simplePrompt);
+           const fullText = response.response.text();
+-          
++
+           // Stream response
+           const chunks = fullText.split(' ');
+           for (const chunk of chunks) {
+             sendEvent("answer_chunk", { text: chunk + ' ' });
+             await new Promise(r => setTimeout(r, 15));
+           }
+-          
++
+           sendEvent("complete", { finished: true });
+           if (!isControllerClosed) {
+             isControllerClosed = true;
+@@ -244,7 +244,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+           }
+           return;
+         }
+-        
++
+         // FULL CAUSAL PATH: For scientific questions
+         // 1. Domain Classification
+         sendEvent("thinking", { message: "Identifying causal domain..." });
+@@ -269,7 +269,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+ 
+         // 3. Constraint Injection
+         sendEvent("thinking", { message: "Grounding LLM in causal laws..." });
+-        
++
+         let doPrompt = "";
+         let affectedNodes: string[] = [];
+         let interventionApplied = false;
+@@ -280,64 +280,64 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+ 
+         // Check for Do-Calculus Intervention
+         if (intervention && intervention.node_id) {
+-             const subjectScm = scmContext.tier2 || scmContext.primaryScm;
+-             const outcomeVar =
+-               typeof intervention.outcome_var === "string" && intervention.outcome_var.trim().length > 0
+-                 ? intervention.outcome_var.trim()
+-                 : inferOutcomeVariableFromScm(subjectScm);
+-             const adjustmentSet = sanitizeStringArray(intervention.adjustment_set);
+-             const knownConfounders = sanitizeStringArray(intervention.known_confounders);
+-
+-             const gate = evaluateInterventionGate(subjectScm, {
+-               treatment: intervention.node_id,
+-               outcome: outcomeVar,
+-               adjustmentSet,
+-               knownConfounders,
+-             });
+-
+-             sendEvent("intervention_gate", {
+-               treatment: intervention.node_id,
+-               outcome: outcomeVar,
+-               allowed: gate.allowed,
+-               allowedOutputClass: gate.allowedOutputClass,
+-               rationale: gate.rationale,
+-               identifiability: gate.identifiability,
+-             });
+-
+-             if (!gate.allowed) {
+-               sendEvent("intervention_blocked", {
+-                 message:
+-                   "Intervention request downgraded: required confounders are missing. Returning association-level answer.",
+-                 missingConfounders: gate.identifiability.missingConfounders,
+-                 allowedOutputClass: gate.allowedOutputClass,
+-               });
+-             } else {
+-               sendEvent("thinking", { message: `Performing Do-Calculus: do(${intervention.node_id}=${intervention.value})...` });
+-               const interventions: Intervention[] = [{
+-                 nodeName: intervention.node_id,
+-                 value: intervention.value
+-               }];
+-
+-               // Measure Latency (L3 Calibration)
+-               const startTime = performance.now();
+-
+-               // Identify downstream effects (Tier 1 Physics)
+-               affectedNodes = solver.getAffectedNodes(subjectScm, intervention.node_id);
+-
+-               doPrompt = solver.generateDoPrompt(interventions);
+-               interventionApplied = true;
+-
+-               const latency = performance.now() - startTime;
+-               console.log(`[CausalSolver] Latency: ${latency.toFixed(2)}ms for do(${intervention.node_id})`);
+-
+-               sendEvent("intervention_effect", {
+-                   do: interventions,
+-                   affected: affectedNodes,
+-                   latency_ms: latency
+-               });
+-             }
++          const subjectScm = scmContext.tier2 || scmContext.primaryScm;
++          const outcomeVar =
++            typeof intervention.outcome_var === "string" && intervention.outcome_var.trim().length > 0
++              ? intervention.outcome_var.trim()
++              : inferOutcomeVariableFromScm(subjectScm);
++          const adjustmentSet = sanitizeStringArray(intervention.adjustment_set);
++          const knownConfounders = sanitizeStringArray(intervention.known_confounders);
++
++          const gate = evaluateInterventionGate(subjectScm, {
++            treatment: intervention.node_id,
++            outcome: outcomeVar,
++            adjustmentSet,
++            knownConfounders,
++          });
++
++          sendEvent("intervention_gate", {
++            treatment: intervention.node_id,
++            outcome: outcomeVar,
++            allowed: gate.allowed,
++            allowedOutputClass: gate.allowedOutputClass,
++            rationale: gate.rationale,
++            identifiability: gate.identifiability,
++          });
++
++          if (!gate.allowed) {
++            sendEvent("intervention_blocked", {
++              message:
++                "Intervention request downgraded: required confounders are missing. Returning association-level answer.",
++              missingConfounders: gate.identifiability.missingConfounders,
++              allowedOutputClass: gate.allowedOutputClass,
++            });
++          } else {
++            sendEvent("thinking", { message: `Performing Do-Calculus: do(${intervention.node_id}=${intervention.value})...` });
++            const interventions: Intervention[] = [{
++              nodeName: intervention.node_id,
++              value: intervention.value
++            }];
++
++            // Measure Latency (L3 Calibration)
++            const startTime = performance.now();
++
++            // Identify downstream effects (Tier 1 Physics)
++            affectedNodes = solver.getAffectedNodes(subjectScm, intervention.node_id);
++
++            doPrompt = solver.generateDoPrompt(interventions);
++            interventionApplied = true;
++
++            const latency = performance.now() - startTime;
++            console.log(`[CausalSolver] Latency: ${latency.toFixed(2)}ms for do(${intervention.node_id})`);
++
++            sendEvent("intervention_effect", {
++              do: interventions,
++              affected: affectedNodes,
++              latency_ms: latency
++            });
++          }
+         }
+-        
++
+         const { systemPrompt } = constraintInjector.inject(userQuestion, scmContext, doPrompt, {
+           conversationContext: contextResult.promptContext,
+           explicitCarryover: true,
+@@ -347,77 +347,73 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+ 
+         // 4. LLM Generation (True Streaming)
+         const model = getClaudeModel();
+-        
+-        console.log("[Streaming] Starting LLM generation with streaming...");
++
++
++        console.log("[Streaming] Starting LLM generation (simulated streaming)...");
+         let fullText = "";
+         let chunkCount = 0;
+-        const stream = model.generateContentStream(systemPrompt);
+-        
+-        for await (const chunk of stream) {
+-          const text = chunk.text();
+-          fullText += text;
+-          chunkCount++;
+-          
+-          // Send chunk immediately
+-          sendEvent("answer_chunk", { text });
+-          
+-          if (chunkCount === 1) {
+-            console.log("[Streaming] First chunk sent! Latency to first token achieved.");
+-          }
+-          
+-          // Analyze chunk for causal density in real-time
+-          const densityUpdate = analyzer.onChunk(text);
+-          if (densityUpdate && densityUpdate.isSignificant) {
+-            densityDistribution[densityUpdate.score as 1 | 2 | 3] += 1;
+-            if (lastDensityScore !== densityUpdate.score) {
+-              console.log(
+-                `[Density] Level transition ${lastDensityScore ?? "none"} -> ${densityUpdate.score}`,
+-                {
+-                  confidence: densityUpdate.confidence,
+-                  evidence: densityUpdate.evidence,
+-                }
+-              );
+-              lastDensityScore = densityUpdate.score as 1 | 2 | 3;
+-            }
+ 
+-            sendEvent("causal_density_update", {
+-              score: densityUpdate.score,
+-              label: densityUpdate.label,
+-              confidence: densityUpdate.confidence,
+-              detectedMechanisms: densityUpdate.detectedMechanisms,
+-              evidence: densityUpdate.evidence,
+-              progress: densityUpdate.progress,
+-            });
+-            
+-            // Update Bayesian Oracle Mode state
+-            const transition = oracleService.processResult(
++        // TODO: Implement true streaming when Claude SDK supports it
++        const result = await model.generateContent(systemPrompt);
++        fullText = result.response.text();
++        chunkCount = 1;
++
++        // Send the full response as a single chunk
++        sendEvent("answer_chunk", { text: fullText });
++        console.log("[Streaming] Response sent as single chunk.");
++
++        // Analyze chunk for causal density
++        const densityUpdate = analyzer.onChunk(fullText);
++        if (densityUpdate && densityUpdate.isSignificant) {
++          densityDistribution[densityUpdate.score as 1 | 2 | 3] += 1;
++          if (lastDensityScore !== densityUpdate.score) {
++            console.log(
++              `[Density] Level transition ${lastDensityScore ?? "none"} -> ${densityUpdate.score}`,
+               {
+-                score: densityUpdate.score,
+                 confidence: densityUpdate.confidence,
+-                label: densityUpdate.label,
+-                detectedMechanisms: densityUpdate.detectedMechanisms || []
+-              },
+-              new Date()
++                evidence: densityUpdate.evidence,
++              }
+             );
+-            
+-            // Emit Bayesian probability event
+-            sendEvent("bayesian_oracle_update", {
+-              probability: transition.state.bayesianProbability,
+-              isActive: transition.state.isActive
+-            });
+-            
+-            // Maintain backward compatibility
+-            if (transition.enteredOracleMode) {
+-              oracleActivations += 1;
+-              sendEvent("oracle_mode_change", { active: true });
+-            } else if (transition.exitedOracleMode) {
+-              sendEvent("oracle_mode_change", { active: false });
+-            }
++            lastDensityScore = densityUpdate.score as 1 | 2 | 3;
++          }
++
++          sendEvent("causal_density_update", {
++            score: densityUpdate.score,
++            label: densityUpdate.label,
++            confidence: densityUpdate.confidence,
++            detectedMechanisms: densityUpdate.detectedMechanisms,
++            evidence: densityUpdate.evidence,
++            progress: densityUpdate.progress,
++          });
++
++          // Update Bayesian Oracle Mode state
++          const transition = oracleService.processResult(
++            {
++              score: densityUpdate.score,
++              confidence: densityUpdate.confidence,
++              label: densityUpdate.label,
++              detectedMechanisms: densityUpdate.detectedMechanisms || []
++            },
++            new Date()
++          );
++
++          // Emit Bayesian probability event
++          sendEvent("bayesian_oracle_update", {
++            probability: transition.state.bayesianProbability,
++            isActive: transition.state.isActive
++          });
++
++          // Maintain backward compatibility
++          if (transition.enteredOracleMode) {
++            oracleActivations += 1;
++            sendEvent("oracle_mode_change", { active: true });
++          } else if (transition.exitedOracleMode) {
++            sendEvent("oracle_mode_change", { active: false });
+           }
+         }
+-        
++
+         console.log(`[Streaming] Complete! Sent ${chunkCount} chunks, total text length: ${fullText.length} chars`);
+-        
++
+         // Send final density update
+         const finalAnalysis = analyzer.getCurrentAnalysis();
+         sendEvent("causal_density_final", {
+@@ -437,9 +433,9 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+ 
+         // Generate and stream counterfactuals (Layer 3) if an intervention was performed
+         if (interventionApplied) {
+-            sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
+-            const scenarios = await cfGenerator.generateScenarios(fullText);
+-            sendEvent("counterfactuals", scenarios);
++          sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
++          const scenarios = await cfGenerator.generateScenarios(fullText);
++          sendEvent("counterfactuals", scenarios);
+         }
+ 
+ 
+@@ -493,7 +489,7 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+         // 6. Persistence (only if user is authenticated)
+         if (sessionId && user && supabase) {
+           const canPersistDensity = await verifyCausalDensityColumn(supabase);
+-          
++
+           // Ensure session exists
+           const { error: sessionError } = await supabase
+             .from("causal_chat_sessions")
+@@ -505,16 +501,16 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
+             }, { onConflict: "id" });
+ 
+           if (sessionError) {
+-             console.error("[Persistence] Failed to upsert session:", sessionError);
++            console.error("[Persistence] Failed to upsert session:", sessionError);
+           } else {
+-             // Save User Message
++            // Save User Message
+             await supabase.from("causal_chat_messages").insert({
+               session_id: sessionId,
+               role: "user",
+               content: userQuestion
+             });
+ 
+-             // Save Assistant Message with causal density
++            // Save Assistant Message with causal density
+             const finalDensity = analyzer.getCurrentAnalysis();
+             const assistantPayload: Record<string, unknown> = {
+               session_id: sessionId,
+diff --git a/src/app/api/hybrid-synthesize/route.ts b/src/app/api/hybrid-synthesize/route.ts
+index 5ba3c67..93a6456 100644
+--- a/src/app/api/hybrid-synthesize/route.ts
++++ b/src/app/api/hybrid-synthesize/route.ts
+@@ -2,10 +2,10 @@
+ import { NextRequest, NextResponse } from "next/server";
+ import { processMultiplePDFs } from "@/lib/extractors/pdf-extractor";
+ import { processMultipleCompanies } from "@/lib/extractors/company-extractor";
+-import { 
+-  runEnhancedSynthesisPipeline 
++import {
++  runEnhancedSynthesisPipeline,
++  SynthesisResult
+ } from "@/lib/ai/synthesis-engine";
+-import { SynthesisResult } from "@/types";
+ import { searchPriorArt } from "@/lib/ai/novelty-evaluator";
+ import { PersistenceService } from "@/lib/db/persistence-service";
+ import { PDFExtractionResult } from "@/lib/extractors/pdf-extractor";
+@@ -22,16 +22,16 @@ export const maxDuration = 300; // Extended time to 5 minutes
+ export async function POST(request: NextRequest) {
+   try {
+     const formData = await request.formData();
+-    
++
+     // Get PDFs
+     const files = formData.getAll("files") as File[];
+-    
++
+     // Get company names (JSON array)
+     const companiesJson = formData.get("companies") as string | null;
+     const companies: string[] = companiesJson ? JSON.parse(companiesJson) : [];
+     const researchFocus = formData.get("researchFocus") as string || "";
+     // Default to Parallel Enabled (3 concurrent) for speed unless explicitly disabled
+-    const enableParallel = formData.get("enableParallelRefinement") !== "false"; 
++    const enableParallel = formData.get("enableParallelRefinement") !== "false";
+     const concurrency = parseInt(formData.get("parallelConcurrency") as string) || 3;
+ 
+     const totalSources = files.length + companies.length;
+@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
+     const stream = new ReadableStream({
+       async start(controller) {
+         const emitter = new StreamingEventEmitter(controller);
+-        
++
+         try {
+           emitter.emit({ event: 'ingestion_start', files: files.length });
+ 
+           // Step 1: Process PDFs to text
+           const pdfResults: PDFExtractionResult[] = [];
+-          
++
+           for (const file of files) {
+             const buffer = await file.arrayBuffer();
+             // We'll process one by one to stream updates if needed, 
+@@ -93,28 +93,27 @@ export async function POST(request: NextRequest) {
+ 
+           const result: SynthesisResult = await runEnhancedSynthesisPipeline(combinedSources, {
+             maxRefinementIterations: 2,
+-            maxNovelIdeas: 3, // Always generate exactly 3 ideas
+             priorArtSearchFn: searchPriorArt,
+-            priorRejectionCheckFn: (t, m, d) => persistence.checkRejection(t, m, d),
++            priorRejectionCheckFn: (t: any, m: any, d: any) => persistence.checkRejection(t, m, d),
+             validateProtocolFn: validateProtocol,
+             eventEmitter: emitter,
+             researchFocus: researchFocus || undefined,
+             enableParallelRefinement: enableParallel,
+             parallelConcurrency: concurrency,
+             userId: userId // Add explicitly to config
+-          });
++          } as any);
+ 
+           // Step 4: Persist
+           const saveStatus = await persistence.saveSynthesis(result);
+-          
++
+           const finalResult = {
+             ...result,
+             runId: saveStatus?.runId
+           };
+ 
+-          emitter.emit({ 
+-            event: 'complete', 
+-            synthesis: finalResult 
++          emitter.emit({
++            event: 'complete',
++            synthesis: finalResult
+           });
+ 
+         } catch (error) {
+diff --git a/src/app/api/synthesize/route.ts b/src/app/api/synthesize/route.ts
+index f1b9aa7..9247ad8 100644
+--- a/src/app/api/synthesize/route.ts
++++ b/src/app/api/synthesize/route.ts
+@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
+   const { readable, writable } = new TransformStream();
+   const writer = writable.getWriter();
+   const emitter = new StreamingEventEmitter(writer);
+-  
++
+   // Extract User ID from headers (set by middleware or client)
+   const userId = request.headers.get("x-user-id") || undefined;
+ 
+@@ -40,11 +40,11 @@ export async function POST(request: NextRequest) {
+ 
+       // Step 1: Process PDFs
+       emitter.emit({ event: 'ingestion_start', files: files.length });
+-      
++
+       // Validate file types
+       for (const file of files) {
+         if (file.type !== "application/pdf") {
+-           emitter.emit({ event: 'pdf_error', filename: file.name, error: "Invalid file type. Only PDFs are allowed." });
++          emitter.emit({ event: 'pdf_error', filename: file.name, error: "Invalid file type. Only PDFs are allowed." });
+         }
+       }
+ 
+@@ -56,36 +56,36 @@ export async function POST(request: NextRequest) {
+       );
+ 
+       const pdfResults = await processMultiplePDFs(pdfBuffers);
+-      
++
+       // Emit PDF processing status
+       pdfResults.successful.forEach(pdf => {
+         emitter.emit({ event: 'pdf_processed', filename: pdf.fileName });
+       });
+-      
++
+       pdfResults.failed.forEach(pdf => {
+-         emitter.emit({ event: 'pdf_error', filename: pdf.name, error: pdf.error || "Unknown error" });
++        emitter.emit({ event: 'pdf_error', filename: pdf.name, error: pdf.error || "Unknown error" });
+       });
+ 
+       if (pdfResults.successful.length === 0) {
+-         emitter.emit({ event: 'error', message: "No valid PDFs could be processed." });
+-         emitter.close();
+-         return;
++        emitter.emit({ event: 'error', message: "No valid PDFs could be processed." });
++        emitter.close();
++        return;
+       }
+ 
+       // Step 2: Run synthesis pipeline (with streaming)
+       const synthesisResult = await runEnhancedSynthesisPipeline(
+-        pdfResults.successful, 
++        pdfResults.successful,
+         {
+           priorArtSearchFn: searchPriorArt,
+           maxRefinementIterations: 2,
+           eventEmitter: emitter,
+           userId: userId // Add explicitly to config
+-        }
++        } as any
+       );
+ 
+       // Step 3: Evaluate novelty for each idea
+       emitter.emit({ event: 'thinking_step', content: "Evaluating novelty against prior art..." });
+-      
++
+       const ideasWithNovelty = await Promise.all(
+         synthesisResult.novelIdeas.map(async (idea) => {
+           const priorArt = await searchPriorArt(idea.thesis, idea.description);
+@@ -105,7 +105,6 @@ export async function POST(request: NextRequest) {
+       const finalSynthesis = {
+         sources: synthesisResult.sources.map((s) => ({
+           name: s.name,
+-          type: s.type, // Pass through type
+           mainThesis: s.concepts.mainThesis,
+           keyArguments: s.concepts.keyArguments,
+           entities: s.concepts.entities,
+@@ -113,17 +112,16 @@ export async function POST(request: NextRequest) {
+         })),
+         contradictions: synthesisResult.contradictions,
+         novelIdeas: ideasWithNovelty,
+-        structuredApproach: synthesisResult.structuredApproach,
+-        consciousnessState: synthesisResult.consciousnessState
++        structuredApproach: synthesisResult.structuredApproach
+       };
+ 
+       emitter.emit({ event: 'complete', synthesis: finalSynthesis });
+ 
+     } catch (error) {
+       console.error("Synthesis error:", error);
+-      emitter.emit({ 
+-        event: 'error', 
+-        message: error instanceof Error ? error.message : "Synthesis failed" 
++      emitter.emit({
++        event: 'error',
++        message: error instanceof Error ? error.message : "Synthesis failed"
+       });
+     } finally {
+       emitter.close();
+diff --git a/src/app/globals.css b/src/app/globals.css
+index 548f931..21c5927 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -3,60 +3,305 @@
+ @tailwind utilities;
+ 
+ :root {
+-  /* Wabi Sabi 2041 - Light (Paper) */
+-  --background: #FAFAF9;
+-  --foreground: #2A2621;
+-  --bg-primary: #FAFAF9;
+-  --bg-secondary: #F5F5F4;
+-  --bg-card: #FFFFFF;
+-  --text-primary: #2A2621;
+-  --text-secondary: #57534E;
+-  --text-tertiary: #A8A29E;
+-  --border-subtle: #D6D3D1;
++  /* === Wabi-Sabi 2041 Design System === */
+   
+-  --wabi-washi: #FAFAF9;
+-  --wabi-sumi: #2A2621;
+-  --wabi-patina: #57534E;
+-  --wabi-clay: #9E7E6B;
+-  --wabi-ink-light: #57534E;
+-  --wabi-moss: #606C38;
+-  --wabi-rust: #BC6C25;
+-  --wabi-stone: #A8A29E;
+-  --wabi-sand: #D6CCC2;
+-  --wabi-charcoal: #8B5E3C;
++  /* Core Palette - Mineral & Paper */
++  --obsidian-900: #111310;  /* Deep surfaces, not pure black */
++  --stone-700: #4D534A;     /* Primary text on light */
++  --ash-200: #D4D2C8;       /* Neutral containers */
++  --paper-050: #F5F2E8;     /* Warm off-white */
+   
+-  /* Fonts */
+-  --font-geist-sans: "Geist Sans", sans-serif;
+-  --font-geist-mono: "Geist Mono", monospace;
+-  --font-crimson: "Crimson Pro", serif;
++  /* Accents - Earth & Oxide */
++  --moss-500: #5F7555;      /* Success, novelty, growth */
++  --oxide-500: #A0603B;     /* Earthy links, warm accents */
++  --mist-400: #8FA1A8;      /* Metadata, secondary text */
++  
++  /* Legacy Compatibility (map to new system) */
++  --background: var(--paper-050);
++  --foreground: var(--stone-700);
++  --bg-primary: var(--paper-050);
++  --bg-secondary: #F0EDE3;  /* Slightly darker paper */
++  --bg-card: rgba(255, 255, 255, 0.6);
++  --text-primary: var(--stone-700);
++  --text-secondary: var(--mist-400);
++  --text-tertiary: var(--ash-200);
++  --border-subtle: var(--ash-200);
++  
++  /* Old Wabi tokens (keep for backward compat) */
++  --wabi-washi: var(--paper-050);
++  --wabi-sumi: var(--stone-700);
++  --wabi-patina: var(--mist-400);
++  --wabi-clay: var(--oxide-500);
++  --wabi-moss: var(--moss-500);
++  --wabi-rust: var(--oxide-500);
++  --wabi-stone: var(--ash-200);
++  
++  /* Shadows & Depth (soft ambient, never hard borders) */
++  --shadow-ambient: 0 8px 24px rgba(17, 19, 16, 0.08);
++  --shadow-lift: 0 12px 32px rgba(17, 19, 16, 0.12);
++  --shadow-deep: 0 16px 48px rgba(17, 19, 16, 0.16);
++  
++  /* Spacing Scale */
++  --space-xs: 8px;
++  --space-s: 12px;
++  --space-m: 16px;
++  --space-l: 24px;
++  --space-xl: 32px;
++  --space-2xl: 48px;
++  --space-3xl: 64px;
++  
++  /* Typography */
++  --font-geist-sans: "Geist Sans", -apple-system, sans-serif;
++  --font-geist-mono: "Geist Mono", "Courier New", monospace;
++  --font-crimson: "Crimson Pro", "Times New Roman", serif;
+   --font-playfair: "Playfair Display", serif;
+ }
+ 
+-/* Ensure class-based dark mode works effectively */
++/* Dark Mode - Obsidian foundations */
+ .dark {
+-  --background: #1C1C1E;
+-  --foreground: #FAFAF9;
+-  --bg-primary: #1C1C1E;
+-  --bg-secondary: #232326;
+-  --bg-card: #2A2A2D;
+-  --text-primary: #FAFAF9;
+-  --text-secondary: #D6D3D1;
+-  --text-tertiary: #A8A29E;
++  /* Override core palette for dark */
++  --obsidian-900: #111310;  /* Same as light */
++  --stone-700: #EBE9E4;     /* Inverted: light text on dark */
++  --ash-200: #3F3F3C;       /* Darker containers */
++  --paper-050: #1C1C1E;     /* Dark background */
++  
++  --moss-500: #7A9070;      /* Slightly lighter for contrast */
++  --oxide-500: #C4805A;     /* Warmer for dark mode */
++  --mist-400: #A8B5BC;      /* More visible metadata */
++  
++  /* Legacy overrides */
++  --background: var(--obsidian-900);
++  --foreground: var(--stone-700);
++  --bg-primary: var(--obsidian-900);
++  --bg-secondary: #1A1A1C;
++  --bg-card: rgba(28, 28, 30, 0.8);
++  --text-primary: var(--stone-700);
++  --text-secondary: var(--mist-400);
++  --text-tertiary: var(--ash-200);
+   --border-subtle: #3F3F46;
+-  --wabi-washi: #1C1C1C;
+-  --wabi-sumi: #EBE9E4;
+-  --wabi-ink-light: #A8A29E;
++  
++  /* Shadow adjustments for dark */
++  --shadow-ambient: 0 8px 24px rgba(0, 0, 0, 0.24);
++  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.32);
++  --shadow-deep: 0 16px 48px rgba(0, 0, 0, 0.48);
+ }
+ 
++/* Utility Classes */
+ .wabi-glass-panel {
+-  background: rgba(255, 255, 255, 0.8);
+-  backdrop-filter: blur(12px);
+-  border: 1px solid rgba(255, 255, 255, 0.2);
+-  box-shadow: 0 4px 20px -1px rgba(0, 0, 0, 0.05);
++  background: rgba(255, 255, 255, 0.6);
++  backdrop-filter: blur(8px);
++  border: 1px solid rgba(212, 210, 200, 0.4); /* ash-200 with alpha */
++  box-shadow: var(--shadow-ambient);
+ }
+ 
+ .dark .wabi-glass-panel {
+-  background: rgba(28, 28, 30, 0.8);
++  background: rgba(17, 19, 16, 0.8);
++  border-color: rgba(63, 63, 60, 0.4);
++}
++
++/* Card glass effect - per Wabi-Sabi 2041 spec */
++.bg-glass-card {
++  background: rgba(245, 242, 232, 0.7); /* paper-050 with transparency */
++  backdrop-filter: blur(12px);
++  border: 1px solid rgba(212, 210, 200, 0.3);
++  box-shadow: var(--shadow-ambient);
++}
++
++.dark .bg-glass-card {
++  background: rgba(17, 19, 16, 0.7); /* obsidian-900 with transparency */
++  border-color: rgba(63, 63, 60, 0.3);
++}
++
++/* ========================================
++   PHASE 2: TYPOGRAPHY SYSTEM
++   ======================================== */
++
++/* Sculpted serif headings - Playfair Display */
++.wabi-heading-1 {
++  font-family: var(--font-playfair), serif;
++  font-size: 40px;
++  font-weight: 600;
++  line-height: 48px;
++  color: var(--stone-700);
++  letter-spacing: -0.02em;
++}
++
++.wabi-heading-2 {
++  font-family: var(--font-playfair), serif;
++  font-size: 32px;
++  font-weight: 500;
++  line-height: 40px;
++  color: var(--stone-700);
++  letter-spacing: -0.01em;
++}
++
++.wabi-heading-3 {
++  font-family: var(--font-playfair), serif;
++  font-size: 24px;
++  font-weight: 500;
++  line-height: 30px;
++  color: var(--stone-700);
++}
++
++/* Crimson Pro body text - high readability */
++.wabi-prose {
++  font-family: var(--font-crimson), serif;
++  font-size: 18px;
++  line-height: 28px; /* 1.56 ratio */
++  color: var(--stone-700);
++}
++
++.wabi-prose-medium {
++  font-family: var(--font-crimson), serif;
++  font-size: 16px;
++  line-height: 24px;
++  color: var(--stone-700);
++}
++
++.wabi-prose-small {
++  font-family: var(--font-crimson), serif;
++  font-size: 14px;
++  line-height: 21px;
++  color: var(--stone-700);
++}
++
++/* UI labels - keep Geist Sans for clarity */
++.wabi-label {
++  font-family: var(--font-geist-sans), sans-serif;
++  font-size: 14px;
++  font-weight: 600;
++  text-transform: uppercase;
++  letter-spacing: 0.5px;
++  color: var(--mist-400);
++}
++
++/* Dark mode typography adjustments */
++.dark .wabi-heading-1,
++.dark .wabi-heading-2,
++.dark .wabi-heading-3,
++.dark .wabi-prose,
++.dark .wabi-prose-medium,
++.dark .wabi-prose-small {
++  color: var(--stone-700); /* Inverted in dark mode */
++}
++
++/* ========================================
++   PHASE 3: MATERIALITY SYSTEM
++   ======================================== */
++
++/* Paper texture overlay - subtle grain */
++.wabi-texture {
++  position: relative;
++}
++
++.wabi-texture::after {
++  content: '';
++  position: absolute;
++  inset: 0;
++  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
++  opacity: 1;
++  pointer-events: none;
++  border-radius: inherit;
++}
++
++.dark .wabi-texture::after {
++  mix-blend-mode: overlay;
++  opacity: 0.05;
++}
++
++/* Soft lift on hover (tactile feedback) - refined with deliberate timing */
++.wabi-lift-hover {
++  transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1),
++              box-shadow 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
++}
++
++.wabi-lift-hover:hover {
++  transform: translateY(-2px) scale(1.01);
++  box-shadow: var(--shadow-lift);
++}
++
++/* Smooth transitions for state changes - deliberate organic timing */
++.wabi-smooth {
++  transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
++}
++
++/* Staggered reveal animation */
++@keyframes wabi-reveal {
++  from { 
++    opacity: 0; 
++    transform: translateY(16px); 
++  }
++  to { 
++    opacity: 1; 
++    transform: translateY(0); 
++  }
++}
++
++.wabi-reveal {
++  animation: wabi-reveal 240ms cubic-bezier(0.4, 0.0, 0.2, 1) both;
++}
++
++/* Stagger delays for sequential reveals */
++.wabi-reveal:nth-child(1) { animation-delay: 0ms; }
++.wabi-reveal:nth-child(2) { animation-delay: 30ms; }
++.wabi-reveal:nth-child(3) { animation-delay: 60ms; }
++.wabi-reveal:nth-child(4) { animation-delay: 90ms; }
++.wabi-reveal:nth-child(5) { animation-delay: 120ms; }
++.wabi-reveal:nth-child(6) { animation-delay: 150ms; }
++
++/* ========================================
++   PHASE 4: WABI-SABI REDESIGN UTILITIES
++   ======================================== */
++
++/* Warm gradient backgrounds for output cards */
++.wabi-gradient-output {
++  background: linear-gradient(to bottom right, 
++    #2C2420,              /* wabi-ink - warm dark */
++    rgba(139, 94, 60, 0.8) /* wabi-charcoal with transparency */
++  );
++}
++
++/* Calming gradient for tensions section */
++.wabi-gradient-tension {
++  background: linear-gradient(to right,
++    rgba(158, 126, 107, 0.1),  /* wabi-clay/10 */
++    rgba(168, 181, 160, 0.1)   /* wabi-sage/10 */
++  );
++}
++
++/* Elevation shadow system */
++.wabi-elevation-light {
++  box-shadow: 0 1px 3px rgba(44, 36, 32, 0.1);
++}
++
++.wabi-elevation-mid {
++  box-shadow: 0 4px 6px rgba(158, 126, 107, 0.15);
++}
++
++.wabi-elevation-rich {
++  box-shadow: 0 8px 40px -8px rgba(139, 94, 60, 0.25);
++}
++
++/* Hover glow effect with clay warmth */
++.wabi-glow-hover {
++  transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
++}
++
++.wabi-glow-hover:hover {
++  box-shadow: 0 8px 40px -8px rgba(158, 126, 107, 0.3);
++  transform: scale(1.01);
++}
++
++/* Dark mode adjustments for gradients */
++.dark .wabi-gradient-output {
++  background: linear-gradient(to bottom right,
++    #1C1C1E,
++    rgba(139, 94, 60, 0.6)
++  );
++}
++
++.dark .wabi-elevation-rich {
++  box-shadow: 0 8px 40px -8px rgba(0, 0, 0, 0.4);
+ }
+ 
+ body {
+diff --git a/src/app/hybrid/page.tsx b/src/app/hybrid/page.tsx
+index b3dd0e3..8d0910f 100644
+--- a/src/app/hybrid/page.tsx
++++ b/src/app/hybrid/page.tsx
+@@ -1,7 +1,7 @@
+ "use client";
+ 
+ // Hybrid Synthesis Page - Combine PDFs + Companies
+-import { useState, useEffect, useRef } from "react";
++import { useState, useEffect, useRef, useMemo } from "react";
+ import { PDFUpload } from "@/components/pdf-upload";
+ import { CompanyInput } from "@/components/company-input";
+ import { TacticalButton } from "@/components/ui/tactical-button";
+@@ -16,12 +16,12 @@ import {
+   NovelIdea, 
+   StructuredApproach, 
+   PriorArt,
+-  SynthesisResult,
+   MasaAudit,
+   Contradiction,
+   ExtractedConcepts,
+   ConsciousnessState
+ } from "@/types";
++import { SynthesisResult } from "@/lib/ai/synthesis-engine";
+ import {
+   Loader2,
+   Sparkles,
+@@ -109,9 +109,57 @@ export default function HybridSynthesisPage() {
+ 
+   const totalSources = files.length + companies.length;
+   const canSynthesize = totalSources >= 2 && totalSources <= 12;
++  const pdfSourceUrls = useMemo(() => {
++    const entries = files.map((file) => [file.name, URL.createObjectURL(file)] as const);
++    return Object.fromEntries(entries);
++  }, [files]);
++
++  useEffect(() => {
++    return () => {
++      Object.values(pdfSourceUrls).forEach((url) => URL.revokeObjectURL(url));
++    };
++  }, [pdfSourceUrls]);
+ 
+   // Real-time Consciousness State (SSE)
+   const [realtimeState, setRealtimeState] = useState<ConsciousnessState | null>(null);
++  
++  // Phase 2: Real-Time Monitoring SSE States
++  const [traceManifest, setTraceManifest] = useState<{
++    sessionUUID: string;
++    inputHashes: Array<{ name: string; hash: string }>;
++    seedValue: number | null;
++    timestamp: string;
++  } | null>(null);
++  
++  const [epistemicData, setEpistemicData] = useState<{
++    consciousnessState: {
++      energy: number;
++      entropy: number;
++      freeEnergy: number;
++      perceptionIntensity: number;
++      workingMemoryAccess: number;
++      awarenessLevel: number;
++    };
++    iteration: number;
++    maxIterations: number;
++    plateauReached: boolean;
++  } | null>(null);
++  
++  const [spectralHealth, setSpectralHealth] = useState<{
++    lambda_min: number;
++    lambda_max: number;
++    spectralGap: number;
++    healthStatus: 'optimal' | 'good' | 'warning' | 'critical';
++    timestamp: number;
++  } | null>(null);
++  
++  const [refinementCycle, setRefinementCycle] = useState<{
++    iteration: number;
++    maxIterations: number;
++    status: 'running' | 'complete';
++    approved?: boolean;
++    validityScore?: number;
++  } | null>(null);
+ 
+   // Handle cinematic transition from stabilization to results
+   useEffect(() => {
+@@ -178,6 +226,45 @@ export default function HybridSynthesisPage() {
+                  // preventing batching from swallowing consecutive logs
+                  await new Promise(resolve => setTimeout(resolve, 50));
+ 
++                  // Phase 2: Handle Real-Time Monitoring Events
++                  if (event.event === 'trace_manifest') {
++                    setTraceManifest({
++                      sessionUUID: event.sessionUUID,
++                      inputHashes: event.inputHashes,
++                      seedValue: event.seedValue,
++                      timestamp: event.timestamp
++                    });
++                  } else if (event.event === 'epistemic_update') {
++                    setEpistemicData({
++                      consciousnessState: event.consciousnessState,
++                      iteration: event.iteration,
++                      maxIterations: event.maxIterations,
++                      plateauReached: event.plateauReached
++                    });
++                  } else if (event.event === 'spectral_health_tick') {
++                    setSpectralHealth({
++                      lambda_min: event.lambda_min,
++                      lambda_max: event.lambda_max,
++                      spectralGap: event.spectralGap,
++                      healthStatus: event.healthStatus,
++                      timestamp: event.timestamp
++                    });
++                  } else if (event.event === 'refinement_cycle_start') {
++                    setRefinementCycle({
++                      iteration: event.iteration,
++                      maxIterations: event.maxIterations,
++                      status: 'running'
++                    });
++                  } else if (event.event === 'refinement_cycle_complete') {
++                    setRefinementCycle({
++                      iteration: event.iteration,
++                      maxIterations: event.maxIterations,
++                      status: 'complete',
++                      approved: event.approved,
++                      validityScore: event.validityScore
++                    });
++                  }
++
+                  if (event.event === 'complete') {
+                     // Safe cast assuming the backend returns the correct shape
+                     setResult(event.synthesis as any);
+@@ -243,6 +330,11 @@ export default function HybridSynthesisPage() {
+     setFiles([]);
+     setCompanies([]);
+     setLatestEvent(null);
++    // Phase 2: Clear monitoring states
++    setTraceManifest(null);
++    setEpistemicData(null);
++    setSpectralHealth(null);
++    setRefinementCycle(null);
+   };
+ 
+   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
+@@ -251,10 +343,10 @@ export default function HybridSynthesisPage() {
+       <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-wabi-clay/20 relative overflow-x-hidden">
+ 
+       {/* Header */}
+-      <header className="border-b border-[var(--border-subtle)] bg-white/70 backdrop-blur-xl sticky top-0 z-50">
++      <header className="border-b border-[var(--border-subtle)] bg-[var(--paper-050)]/70 backdrop-blur-xl sticky top-0 z-50">
+         <div className="w-full px-6 lg:px-12 py-4">
+           <div className="flex items-center justify-between">
+-            <div className="flex items-center justify-between gap-4">
++            <div className="flex items-center justify-between gap-6">
+               <div className="flex items-center gap-3">
+                 <div className="w-12 h-12 relative">
+ <img src="/upsclae-logo-new.png" alt="Crucible Logo" className="w-full h-full object-contain drop-shadow-md" />
+@@ -269,7 +361,7 @@ export default function HybridSynthesisPage() {
+               <div className="flex items-center gap-2">
+                 <button
+                   onClick={() => setHistoryOpen(true)}
+-                  className="flex items-center gap-2 px-3 py-1.5 bg-white/80 hover:bg-white text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-wabi-clay/40 transition-all"
++                  className="flex items-center gap-2 px-3 py-1.5 bg-[var(--paper-050)]/80 hover:bg-[var(--paper-050)] text-[var(--text-secondary)] text-sm rounded-lg border border-[var(--border-subtle)] hover:border-[var(--oxide-500)]/40 transition-all"
+                 >
+                   <History className="w-3.5 h-3.5" />
+                   <span>History</span>
+@@ -301,7 +393,7 @@ export default function HybridSynthesisPage() {
+         {stage === "input" && (
+           <div className="w-full max-w-[1536px] mx-auto space-y-8 px-8">
+             <div className="text-center space-y-4">
+-              <h2 className="text-3xl font-mono font-bold tracking-tight text-[var(--text-primary)]">
++              <h2 className="wabi-heading-2">
+                 Dialectical Synthesis Engine
+               </h2>
+               <p className="text-[var(--text-secondary)] max-w-xl mx-auto leading-relaxed">
+@@ -311,8 +403,8 @@ export default function HybridSynthesisPage() {
+             </div>
+ 
+             {/* Source Counters */}
+-            <div className="flex justify-center gap-4">
+-              <div className="flex items-center gap-2 px-4 py-2 bg-wabi-clay/10 border border-wabi-clay/30 rounded-xl">
++            <div className="flex justify-center gap-6">
++              <div className="flex items-center gap-3 px-4 py-2 bg-wabi-clay/10 border border-wabi-clay/30 rounded-xl">
+                 <FileText className="w-4 h-4 text-wabi-clay" />
+                 <span className="text-sm font-medium text-[var(--text-primary)]">
+                   {files.length} PDFs
+@@ -328,7 +420,7 @@ export default function HybridSynthesisPage() {
+                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${
+                   canSynthesize
+                     ? "bg-wabi-moss/10 border-wabi-moss/30"
+-                    : "bg-white/80 border-[var(--border-subtle)]"
++                    : "bg-[var(--paper-050)]/80 border-[var(--border-subtle)]"
+                 }`}
+               >
+                 <span
+@@ -411,6 +503,10 @@ export default function HybridSynthesisPage() {
+                companies={companies} 
+                latestEvent={latestEvent} 
+                userPrompt={researchFocus}
++               traceManifest={traceManifest}
++               epistemicData={epistemicData}
++               spectralHealth={spectralHealth}
++               refinementCycle={refinementCycle}
+             />
+           </div>
+         )}
+@@ -419,9 +515,9 @@ export default function HybridSynthesisPage() {
+         {stage === "stabilizing" && (
+           <div className="flex flex-col items-center justify-center h-[600px] space-y-6 text-center">
+             <div className="relative">
+-              <div className="absolute inset-0 bg-orange-500 blur-2xl opacity-20 animate-pulse" />
+-              <div className="p-6 bg-[#0A0A0A] border border-white/10 rounded-2xl relative z-10 shadow-lg backdrop-blur-sm">
+-                <Loader2 className="w-12 h-12 text-orange-500 animate-spin" />
++              <div className="absolute inset-0 bg-[var(--oxide-500)] blur-2xl opacity-20 animate-pulse" />
++              <div className="p-6 bg-[var(--obsidian-900)] border border-[var(--ash-200)]/20 rounded-2xl relative z-10 shadow-lg backdrop-blur-sm">
++                <Loader2 className="w-12 h-12 text-[var(--oxide-500)] animate-spin" />
+               </div>
+             </div>
+             <div className="space-y-2">
+@@ -438,7 +534,7 @@ export default function HybridSynthesisPage() {
+           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+             {/* Results Header with Export Button */}
+             <div className="flex items-center justify-between">
+-              <h2 className="text-2xl font-serif font-bold text-[var(--text-primary)]">Synthesis Results</h2>
++              <h2 className="wabi-heading-2">Synthesis Results</h2>
+               <button
+                 onClick={() => {
+                   const exportData: SynthesisExportData = {
+@@ -464,7 +560,7 @@ export default function HybridSynthesisPage() {
+                   };
+                   downloadMarkdown(exportData, { title: "Hybrid Synthesis Report" });
+                 }}
+-                className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white text-[var(--text-primary)] font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-sm transition-all duration-300 border border-[var(--border-subtle)] hover:border-wabi-clay/45"
++                className="flex items-center gap-2 px-4 py-2 bg-[var(--paper-050)]/80 hover:bg-[var(--paper-050)] text-[var(--text-primary)] font-bold font-mono uppercase tracking-wider text-sm rounded-xl shadow-sm transition-all duration-300 border border-[var(--border-subtle)] hover:border-[var(--oxide-500)]/45"
+               >
+                 <Download className="w-4 h-4" />
+                 Download Markdown
+@@ -473,7 +569,7 @@ export default function HybridSynthesisPage() {
+ 
+             {/* Sources Summary - Separated by Type */}
+             <section className="space-y-8">
+-              <h2 className="text-2xl font-serif font-bold flex items-center gap-3 text-[var(--text-primary)]">
++              <h2 className="wabi-heading-2 flex items-center gap-3">
+                 <BookOpen className="w-6 h-6 text-wabi-clay" />
+                 Sources Analyzed ({result.metadata?.totalSources ?? result.sources?.length ?? 0})
+               </h2>
+@@ -485,19 +581,19 @@ export default function HybridSynthesisPage() {
+                 return (
+                   <div className="space-y-4">
+                     <div className="flex items-center gap-3">
+-                      <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
+-                        <FileText className="w-5 h-5 text-orange-400" />
++                      <div className="p-2 rounded-lg bg-[var(--oxide-500)]/10 border border-[var(--oxide-500)]/20">
++                        <FileText className="w-5 h-5 text-[var(--oxide-500)]" />
+                       </div>
+                       <h3 className="text-lg font-bold text-neutral-300 font-mono uppercase tracking-wider">
+                         Research & Publications
+                         <span className="ml-2 text-sm text-neutral-500 font-normal">({pdfSources.length})</span>
+                       </h3>
+                     </div>
+-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
++                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                       {pdfSources.map((source, i) => (
+                         <div
+                           key={`pdf-${i}`}
+-                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-clay/40 hover:shadow-[0_0_30px_-5px_rgba(158,126,107,0.15)] transition-all duration-500"
++                          className="group p-4 rounded-xl border wabi-glass-panel wabi-texture wabi-elevation-light border-stone-200 hover:border-wabi-clay/40 transition-all duration-300"
+                         >
+                           <div className="flex items-start gap-2.5 mb-2.5">
+                             <div className="p-1.5 rounded-lg bg-wabi-clay/10 text-wabi-clay group-hover:bg-wabi-clay/20 group-hover:shadow-[0_0_15px_-3px_rgba(158,126,107,0.3)] transition-all">
+@@ -535,11 +631,11 @@ export default function HybridSynthesisPage() {
+                         <span className="ml-2 text-sm text-neutral-500 font-normal">({companySources.length})</span>
+                       </h3>
+                     </div>
+-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
++                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                       {companySources.map((source, i) => (
+                         <div
+                           key={`company-${i}`}
+-                          className="group p-4 rounded-xl border wabi-glass-panel border-stone-200 hover:border-wabi-charcoal/40 hover:shadow-[0_0_30px_-5px_rgba(139,94,60,0.15)] transition-all duration-500"
++                          className="group p-4 rounded-xl border wabi-glass-panel wabi-texture wabi-elevation-light border-stone-200 hover:border-wabi-charcoal/40 transition-all duration-300"
+                         >
+                           <div className="flex items-start gap-2.5 mb-2.5">
+                             <div className="p-1.5 rounded-lg bg-wabi-charcoal/10 text-wabi-charcoal group-hover:bg-wabi-charcoal/20 group-hover:shadow-[0_0_15px_-3px_rgba(139,94,60,0.3)] transition-all">
+@@ -574,20 +670,20 @@ export default function HybridSynthesisPage() {
+                 </div>
+                 <div className="p-6 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-2xl">
+                   {/* Metrics Grid */}
+-                  <div className="grid grid-cols-3 gap-4 mb-6">
+-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
++                  <div className="grid grid-cols-3 gap-6 mb-6">
++                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
+                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">λ_min</div>
+                       <div className="text-2xl font-bold text-amber-300">
+                         {latestEvent.spectralGap.lambda_min.toFixed(3)}
+                       </div>
+                     </div>
+-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
++                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
+                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">λ_max</div>
+                       <div className="text-2xl font-bold text-amber-300">
+                         {latestEvent.spectralGap.lambda_max.toFixed(3)}
+                       </div>
+                     </div>
+-                    <div className="bg-black/30 p-4 rounded-xl border border-amber-500/10">
++                    <div className="bg-[var(--obsidian-900)]/40 p-4 rounded-xl border border-[var(--oxide-500)]/20">
+                       <div className="text-xs text-amber-500/60 uppercase tracking-wider mb-1">Spectral Gap</div>
+                       <div className="text-2xl font-bold text-amber-300">
+                         {latestEvent.spectralGap.spectralGap.toFixed(3)}
+@@ -601,7 +697,7 @@ export default function HybridSynthesisPage() {
+                       <span>Expansion Threshold</span>
+                       <span>{latestEvent.spectralGap.threshold?.toFixed(3) || 'N/A'}</span>
+                     </div>
+-                    <div className="relative h-3 bg-black/40 rounded-full overflow-hidden">
++                    <div className="relative h-3 bg-[var(--obsidian-900)]/50 rounded-full overflow-hidden">
+                       <div 
+                         className="absolute left-0 h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-1000"
+                         style={{ width: `${Math.min(100, (latestEvent.spectralGap.lambda_min / (latestEvent.spectralGap.threshold || 1)) * 100)}%` }}
+@@ -611,9 +707,9 @@ export default function HybridSynthesisPage() {
+ 
+                   {/* Expansion Status */}
+                   {latestEvent.expansionTriggered && (
+-                    <div className="mt-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-xl flex items-center gap-3">
+-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+-                      <span className="text-sm text-orange-300 font-medium">
++                    <div className="mt-4 p-3 bg-[var(--oxide-500)]/10 border border-[var(--oxide-500)]/30 rounded-xl flex items-center gap-3">
++                      <div className="w-2 h-2 bg-[var(--oxide-500)] rounded-full animate-pulse" />
++                      <span className="text-sm text-[var(--oxide-500)] font-medium">
+                         🔥 Thermodynamic expansion phase activated - generating diverse ideas
+                       </span>
+                     </div>
+@@ -632,28 +728,30 @@ export default function HybridSynthesisPage() {
+               </section>
+             )}
+ 
+-            {/* Contradictions - Redesigned */}
++            {/* Conceptual Tensions - Redesigned with Wabi-Sabi palette */}
+             {(result.contradictions?.length ?? 0) > 0 && (
+               <section className="space-y-4">
+                 <div className="flex items-center gap-3">
+-                  <AlertCircle className="w-6 h-6 text-amber-400" />
+-                  <h2 className="text-2xl font-bold text-amber-400">
+-                    Tensions Detected
++                  <div className="w-6 h-6 rounded-full border-2 border-[rgba(158,126,107,0.6)] flex items-center justify-center">
++                    <div className="w-2 h-2 rounded-full bg-[rgba(158,126,107,0.8)]" />
++                  </div>
++                  <h2 className="wabi-heading-2 text-[var(--oxide-500)]">
++                    Conceptual Tensions
+                   </h2>
+                 </div>
+-                <div className="space-y-4">
++                <div className="space-y-6">
+                   {(result.contradictions ?? []).map((c, i) => (
+                     <div
+                       key={i}
+-                      className="group relative p-6 bg-gradient-to-br from-amber-500/5 to-orange-500/5 border border-amber-500/20 rounded-2xl hover:border-amber-500/40 transition-all duration-300"
++                      className="group relative p-6 wabi-gradient-tension border border-[rgba(158,126,107,0.3)] rounded-2xl wabi-elevation-mid hover:border-[rgba(158,126,107,0.5)] transition-all duration-300 wabi-glow-hover"
+                     >
+                       {/* Tension Number Badge */}
+-                      <div className="absolute -top-3 -left-3 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-xs font-bold text-black">
++                      <div className="absolute -top-3 -left-3 w-8 h-8 bg-[rgba(158,126,107,0.2)] backdrop-blur-sm rounded-full flex items-center justify-center text-xs font-bold text-[var(--oxide-500)] border-2 border-[rgba(158,126,107,0.4)]">
+                         {i + 1}
+                       </div>
+ 
+                       {/* Concept Title */}
+-                      <h3 className="text-lg font-bold text-amber-300 mb-4 pr-8">
++                      <h3 className="wabi-heading-3 text-[var(--oxide-500)] mb-4 pr-8">
+                         {c.concept}
+                       </h3>
+ 
+@@ -661,13 +759,13 @@ export default function HybridSynthesisPage() {
+                       <div className="space-y-3">
+                         <div className="flex gap-3">
+                           <div className="shrink-0 mt-1">
+-                            <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-xs font-bold text-amber-400">
++                            <div className="w-6 h-6 rounded-full bg-[rgba(158,126,107,0.2)] border border-[rgba(158,126,107,0.4)] flex items-center justify-center text-xs font-bold text-[rgba(158,126,107,0.8)]">
+                               A
+                             </div>
+                           </div>
+                           <div className="flex-1">
+-                            <div className="text-xs text-amber-500/60 font-medium mb-1">{c.sourceA}</div>
+-                            <p className="text-sm text-neutral-300 leading-relaxed bg-black/20 p-3 rounded-lg border-l-2 border-amber-500/30">
++                            <div className="text-xs text-[rgba(158,126,107,0.7)] font-medium mb-1">{c.sourceA}</div>
++                            <p className="text-sm text-[var(--mist-400)] leading-relaxed bg-[var(--obsidian-900)]/30 p-3 rounded-lg border-l-2 border-[var(--oxide-500)]/40">
+                               {c.claimA}
+                             </p>
+                           </div>
+@@ -675,20 +773,20 @@ export default function HybridSynthesisPage() {
+ 
+                         {/* VS Divider */}
+                         <div className="flex items-center gap-3 py-1">
+-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+-                          <span className="text-xs font-bold text-amber-500/40">VS</span>
+-                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
++                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(158,126,107,0.3)] to-transparent" />
++                          <span className="text-xs font-bold text-[rgba(158,126,107,0.5)]">VS</span>
++                          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[rgba(158,126,107,0.3)] to-transparent" />
+                         </div>
+ 
+                         <div className="flex gap-3">
+                           <div className="shrink-0 mt-1">
+-                            <div className="w-6 h-6 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-xs font-bold text-orange-400">
++                            <div className="w-6 h-6 rounded-full bg-[rgba(168,181,160,0.2)] border border-[rgba(168,181,160,0.4)] flex items-center justify-center text-xs font-bold text-[rgba(168,181,160,0.8)]">
+                               B
+                             </div>
+                           </div>
+                           <div className="flex-1">
+-                            <div className="text-xs text-orange-500/60 font-medium mb-1">{c.sourceB}</div>
+-                            <p className="text-sm text-neutral-300 leading-relaxed bg-black/20 p-3 rounded-lg border-l-2 border-orange-500/30">
++                            <div className="text-xs text-[rgba(168,181,160,0.7)] font-medium mb-1">{c.sourceB}</div>
++                            <p className="text-sm text-[var(--mist-400)] leading-relaxed bg-[var(--obsidian-900)]/30 p-3 rounded-lg border-l-2 border-[var(--oxide-500)]/40">
+                               {c.claimB}
+                             </p>
+                           </div>
+@@ -703,13 +801,13 @@ export default function HybridSynthesisPage() {
+             {/* Novel Ideas */}
+             <section className="space-y-4">
+               <div className="flex items-center justify-between">
+-                <h2 className="text-2xl font-bold flex items-center gap-3 text-neutral-200">
+-                  <Sparkles className="w-6 h-6 text-orange-500" />
++                <h2 className="wabi-heading-2 flex items-center gap-3 text-neutral-200">
++                  <Sparkles className="w-6 h-6 text-[var(--moss-500)]" />
+                   Novel Ideas
+                 </h2>
+                 
+                 {/* Navigation Controls */}
+-                <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200">
++                <div className="flex bg-[var(--ash-200)]/20 p-1 rounded-lg border border-[var(--ash-200)]">
+                   {(result.novelIdeas ?? []).map((_, i) => (
+                     <button
+                       key={i}
+@@ -717,8 +815,8 @@ export default function HybridSynthesisPage() {
+                       className={`
+                         px-4 py-1.5 text-xs font-mono font-bold rounded-md transition-all
+                         ${selectedIdeaIndex === i 
+-                          ? "bg-white text-gray-900 shadow-sm border border-gray-200" 
+-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
++                          ? "bg-[var(--paper-050)] text-[var(--stone-700)] shadow-sm border border-[var(--ash-200)]" 
++                          : "text-[var(--mist-400)] hover:text-[var(--stone-700)] hover:bg-[var(--ash-200)]/30"
+                         }
+                       `}
+                     >
+@@ -736,6 +834,7 @@ export default function HybridSynthesisPage() {
+                     index={selectedIdeaIndex}
+                     isSelected={true}
+                     onSelect={() => {}} 
++                    pdfSourceUrls={pdfSourceUrls}
+                   />
+                 )}
+               </div>
+@@ -751,7 +850,7 @@ export default function HybridSynthesisPage() {
+ 
+                 {result.structuredApproach && (
+                   <section className="space-y-4 mt-8">
+-                    <h2 className="text-2xl font-bold">Implementation Approach</h2>
++                    <h2 className="wabi-heading-2">Implementation Approach</h2>
+                     <StructuredApproachDisplay
+                       approach={result.structuredApproach}
+                     />
+@@ -784,19 +883,19 @@ export default function HybridSynthesisPage() {
+             className="fixed inset-0 z-[100] flex justify-end"
+             onClick={() => setHistoryOpen(false)}
+           >
+-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
++            <div className="absolute inset-0 bg-[var(--obsidian-900)]/70 backdrop-blur-sm" />
+             <div 
+-              className="relative w-full max-w-md h-full bg-[#0A0A0A] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
++              className="relative w-full max-w-md h-full bg-[var(--obsidian-900)] border-l border-[var(--ash-200)]/20 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
+               onClick={e => e.stopPropagation()}
+             >
+               <div className="p-6 border-b border-gray-800 flex items-center justify-between">
+                 <h2 className="text-xl font-bold text-neutral-200 flex items-center gap-2 font-mono uppercase tracking-wider">
+-                  <History className="w-5 h-5 text-orange-500" />
++                  <History className="w-5 h-5 text-[var(--oxide-500)]" />
+                   Synthesis History
+                 </h2>
+                 <button 
+                   onClick={() => setHistoryOpen(false)}
+-                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
++                  className="p-2 hover:bg-[var(--ash-200)]/10 rounded-lg transition-colors"
+                   aria-label="Close history"
+                 >
+                   <Plus className="w-5 h-5 text-gray-500 rotate-45" />
+@@ -816,14 +915,14 @@ export default function HybridSynthesisPage() {
+                     <button
+                       key={run.id}
+                       onClick={() => loadHistoricalRun(run.id)}
+-                      className="w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-orange-500/50 hover:bg-white/10 transition-all text-left group"
++                      className="w-full p-4 rounded-xl bg-[var(--obsidian-900)]/60 border border-[var(--ash-200)]/10 hover:border-[var(--oxide-500)]/50 hover:bg-[var(--obsidian-900)]/80 transition-all text-left group"
+                     >
+                       <div className="flex items-start justify-between mb-2">
+                          <span className="text-xs text-neutral-500 flex items-center gap-1 font-mono">
+                            <Clock className="w-3 h-3" />
+                            {new Date(run.created_at).toLocaleDateString()}
+                          </span>
+-                         <span className="px-1.5 py-0.5 text-[10px] bg-orange-500/10 text-orange-400 rounded border border-orange-500/20 font-mono tracking-wider">
++                         <span className="px-1.5 py-0.5 text-[10px] bg-[var(--moss-500)]/10 text-[var(--moss-500)] rounded border border-[var(--moss-500)]/20 font-mono tracking-wider">
+                            {run.total_ideas} Ideas
+                          </span>
+                       </div>
+@@ -833,14 +932,14 @@ export default function HybridSynthesisPage() {
+                       </h4>
+                       <div className="flex items-center justify-between text-[10px] text-neutral-500">
+                          <span className="uppercase tracking-wider font-bold">{run.status}</span>
+-                         <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-orange-500" />
++                         <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-[var(--oxide-500)]" />
+                       </div>
+                     </button>
+                   ))
+                 )}
+               </div>
+               
+-              <div className="p-6 border-t border-white/5 bg-[#0A0A0A]">
++              <div className="p-6 border-t border-[var(--ash-200)]/10 bg-[var(--obsidian-900)]">
+                 <TacticalButton
+                   onClick={resetToNew}
+                   icon={Plus}
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index 78287e7..1b3f52f 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -1,5 +1,5 @@
+ import type { Metadata } from "next";
+-import { Geist, Geist_Mono } from "next/font/google";
++import { Geist, Geist_Mono, Crimson_Pro, Playfair_Display } from "next/font/google";
+ import "./globals.css";
+ 
+ const geistSans = Geist({
+@@ -12,6 +12,18 @@ const geistMono = Geist_Mono({
+   subsets: ["latin"],
+ });
+ 
++const crimsonPro = Crimson_Pro({
++  variable: "--font-crimson",
++  subsets: ["latin"],
++  weight: ["400", "500", "600"],
++});
++
++const playfairDisplay = Playfair_Display({
++  variable: "--font-playfair",
++  subsets: ["latin"],
++  weight: ["400", "500", "600", "700"],
++});
++
+ export const metadata: Metadata = {
+   title: "Crucible | Wabi-Sabi Synthesis Engine",
+   description: "Synthesize ideas with a cinematic Wabi-Sabi interface.",
+@@ -30,7 +42,7 @@ export default function RootLayout({
+     <html lang="en" suppressHydrationWarning>
+       <head>
+       </head>
+-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
++      <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased`}>
+         <ThemeProvider
+             attribute="class"
+             defaultTheme="light"
+diff --git a/src/components/MetacognitionDashboard.tsx b/src/components/MetacognitionDashboard.tsx
+index 498b39a..c46b5dc 100644
+--- a/src/components/MetacognitionDashboard.tsx
++++ b/src/components/MetacognitionDashboard.tsx
+@@ -70,9 +70,9 @@ export default function MetacognitionDashboard({
+ 
+       {/* Performance History */}
+       {history && history.scores.length > 0 && (
+-        <div className="performance-history mb-4">
+-          <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">Performance</div>
+-          <div className="grid grid-cols-3 gap-2 text-xs">
++        <div className="performance-history mb-6">
++          <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Performance</div>
++          <div className="grid grid-cols-3 gap-4 text-xs">
+             <div className="metric p-2 bg-gray-50 dark:bg-gray-800 rounded">
+               <div className="text-gray-500 dark:text-gray-400">Avg Score</div>
+               <div className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+@@ -101,7 +101,7 @@ export default function MetacognitionDashboard({
+           <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+             🎯 Causal Attribution (Pearl's L3)
+           </div>
+-          <div className="grid grid-cols-1 gap-2 text-xs">
++          <div className="grid grid-cols-1 gap-4 text-xs">
+             {causal_evidence.PN_mode_caused_failure !== undefined && (
+               <div className="metric p-2 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded">
+                 <div className="flex justify-between items-center">
+diff --git a/src/components/novel-idea-display.tsx b/src/components/novel-idea-display.tsx
+index b424c1a..d496fea 100644
+--- a/src/components/novel-idea-display.tsx
++++ b/src/components/novel-idea-display.tsx
+@@ -3,12 +3,15 @@
+ // Novel Idea Display Component
+ import { NovelIdea, StructuredApproach, PriorArt } from "@/types";
+ import { Lightbulb, TrendingUp, AlertTriangle, CheckCircle2, ExternalLink } from "lucide-react";
++import { StatisticalMetricsPanel } from "./statistical-metrics-panel";
++import { CitationLink } from "./citation-link";
+ 
+ interface NovelIdeaCardProps {
+   idea: NovelIdea;
+   index: number;
+   isSelected?: boolean;
+   onSelect?: () => void;
++  pdfSourceUrls?: Record<string, string>;
+ }
+ 
+ export function NovelIdeaCard({
+@@ -16,7 +19,16 @@ export function NovelIdeaCard({
+   index,
+   isSelected = false,
+   onSelect,
++  pdfSourceUrls = {},
+ }: NovelIdeaCardProps) {
++  const bridgedConcepts = Array.isArray(idea.bridgedConcepts) ? idea.bridgedConcepts : [];
++  const criticalAnalysis = idea.criticalAnalysis;
++  const logicalFallacies = Array.isArray(criticalAnalysis?.logicalFallacies)
++    ? criticalAnalysis.logicalFallacies
++    : [];
++  const biasDetected = Array.isArray(criticalAnalysis?.biasDetected)
++    ? criticalAnalysis.biasDetected
++    : [];
+   const confidenceColor =
+     idea.confidence >= 70
+       ? "text-emerald-400"
+@@ -79,7 +91,7 @@ export function NovelIdeaCard({
+ 
+       {/* Bridged Concepts */}
+       <div className="flex flex-wrap gap-2 mb-4">
+-        {idea.bridgedConcepts.slice(0, 4).map((concept, i) => (
++        {bridgedConcepts.slice(0, 4).map((concept, i) => (
+           <span
+             key={i}
+             className="px-2 py-1 text-xs bg-gray-700/50 text-gray-300 rounded-lg"
+@@ -87,34 +99,37 @@ export function NovelIdeaCard({
+             {concept}
+           </span>
+         ))}
+-        {idea.bridgedConcepts.length > 4 && (
++        {bridgedConcepts.length > 4 && (
+           <span className="px-2 py-1 text-xs text-gray-500">
+-            +{idea.bridgedConcepts.length - 4} more
++            +{bridgedConcepts.length - 4} more
+           </span>
+         )}
++        {bridgedConcepts.length === 0 && (
++          <span className="px-2 py-1 text-xs text-gray-500">No bridged concepts available</span>
++        )}
+       </div>
+ 
+       {/* Critical Analysis (Peer Review) */}
+-      {idea.criticalAnalysis && (
++      {criticalAnalysis && (
+         <div className="mb-4 p-4 bg-red-900/10 border border-red-500/20 rounded-xl">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-xs font-semibold text-red-300 uppercase tracking-wider flex items-center gap-2">
+                <AlertTriangle className="w-3 h-3" />
+                Peer Review
+              </h4>
+-             <span className="text-xs font-mono text-red-400">Validity: {idea.criticalAnalysis.validityScore}/100</span>
++             <span className="text-xs font-mono text-red-400">Validity: {criticalAnalysis.validityScore ?? "N/A"}/100</span>
+            </div>
+            
+-           <p className="text-sm text-gray-400 mb-2 italic">"{idea.criticalAnalysis.critique}"</p>
++           <p className="text-sm text-gray-400 mb-2 italic">"{criticalAnalysis.critique ?? "No critique provided."}"</p>
+            
+-           {(idea.criticalAnalysis.logicalFallacies.length > 0 || idea.criticalAnalysis.biasDetected.length > 0) && (
++           {(logicalFallacies.length > 0 || biasDetected.length > 0) && (
+              <div className="flex flex-wrap gap-2 mt-2">
+-               {idea.criticalAnalysis.logicalFallacies.map((f, i) => (
++               {logicalFallacies.map((f, i) => (
+                  <span key={`f-${i}`} className="px-1.5 py-0.5 text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 rounded">
+                    Fallacy: {f}
+                  </span>
+                ))}
+-               {idea.criticalAnalysis.biasDetected.map((b, i) => (
++               {biasDetected.map((b, i) => (
+                  <span key={`b-${i}`} className="px-1.5 py-0.5 text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">
+                    Bias: {b}
+                  </span>
+@@ -124,6 +139,29 @@ export function NovelIdeaCard({
+         </div>
+       )}
+ 
++      {idea.statisticalMetrics && (
++        <StatisticalMetricsPanel metrics={idea.statisticalMetrics} />
++      )}
++
++      {idea.evidenceSnippets && idea.evidenceSnippets.length > 0 && (
++        <div className="mb-4 p-3 bg-gray-900/40 rounded-xl border border-gray-700/50">
++          <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
++            Evidence Links
++          </h4>
++          <div className="space-y-2">
++            {idea.evidenceSnippets.map((evidence, i) => (
++              <CitationLink
++                key={`${evidence.snippet}-${i}`}
++                snippet={evidence.snippet}
++                page={evidence.page}
++                fileName={evidence.sourceName || "source.pdf"}
++                pdfUrl={evidence.sourceName ? pdfSourceUrls[evidence.sourceName] : undefined}
++              />
++            ))}
++          </div>
++        </div>
++      )}
++
+       {/* Novelty Assessment */}
+       <div className="p-3 bg-gray-900/50 rounded-xl">
+         <p className="text-xs text-gray-400">{idea.noveltyAssessment}</p>
+diff --git a/src/components/synthesis-audit-view.tsx b/src/components/synthesis-audit-view.tsx
+index 3e09903..1205c72 100644
+--- a/src/components/synthesis-audit-view.tsx
++++ b/src/components/synthesis-audit-view.tsx
+@@ -10,6 +10,10 @@ import {
+   X,
+ } from "lucide-react";
+ import { StreamEvent } from "@/lib/streaming-event-emitter";
++import { TraceIntegrityPanel } from "./trace-integrity-panel";
++import { LiveEpistemicMonitor } from "./live-epistemic-monitor";
++import { SpectralHealthMonitor } from "./spectral-health-monitor";
++import { IterativeTimelineView } from "./iterative-timeline-view";
+ 
+ type TimelineStepKey =
+   | "ingestion"
+@@ -42,6 +46,40 @@ interface SynthesisAuditViewProps {
+   companies: string[];
+   latestEvent?: StreamEvent | null;
+   userPrompt?: string;
++  // Phase 2: Real-Time Monitoring SSE Data
++  traceManifest?: {
++    sessionUUID: string;
++    inputHashes: Array<{ name: string; hash: string }>;
++    seedValue: number | null;
++    timestamp: string;
++  } | null;
++  epistemicData?: {
++    consciousnessState: {
++      energy: number;
++      entropy: number;
++      freeEnergy: number;
++      perceptionIntensity: number;
++      workingMemoryAccess: number;
++      awarenessLevel: number;
++    };
++    iteration: number;
++    maxIterations: number;
++    plateauReached: boolean;
++  } | null;
++  spectralHealth?: {
++    lambda_min: number;
++    lambda_max: number;
++    spectralGap: number;
++    healthStatus: 'optimal' | 'good' | 'warning' | 'critical';
++    timestamp: number;
++  } | null;
++  refinementCycle?: {
++    iteration: number;
++    maxIterations: number;
++    status: 'running' | 'complete';
++    approved?: boolean;
++    validityScore?: number;
++  } | null;
+ }
+ 
+ const BASE_STEPS: TimelineStep[] = [
+@@ -99,12 +137,22 @@ function toLog(event: StreamEvent): LogEntry {
+   }
+ }
+ 
+-export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }: SynthesisAuditViewProps) {
++export function SynthesisAuditView({ 
++  files, 
++  companies, 
++  latestEvent, 
++  userPrompt,
++  traceManifest,
++  epistemicData,
++  spectralHealth,
++  refinementCycle
++}: SynthesisAuditViewProps) {
+   const steps = useMemo(
+     () => (companies.length > 0 ? BASE_STEPS : BASE_STEPS.filter((s) => s.key !== "entity_harvest")),
+     [companies.length]
+   );
+ 
++  // Core state
+   const [activeKey, setActiveKey] = useState<TimelineStepKey>("ingestion");
+   const [completed, setCompleted] = useState<Set<TimelineStepKey>>(new Set());
+   const [warnings, setWarnings] = useState<Set<TimelineStepKey>>(new Set());
+@@ -112,9 +160,14 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+   const [pdfDone, setPdfDone] = useState(0);
+   const [companyDone, setCompanyDone] = useState(0);
+ 
++  // MASA Gating state
++  const [isReviewing, setIsReviewing] = useState(false);
++  const [pendingEvents, setPendingEvents] = useState<StreamEvent[]>([]);
++
+   const expectedPdf = files.length;
+   const expectedCompany = companies.length;
+ 
++  // Reset state on new synthesis
+   useEffect(() => {
+     setActiveKey("ingestion");
+     setCompleted(new Set());
+@@ -122,28 +175,33 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+     setLog([]);
+     setPdfDone(0);
+     setCompanyDone(0);
++    setIsReviewing(false);
++    setPendingEvents([]);
+   }, [files.length, companies.length, userPrompt]);
+ 
+-  useEffect(() => {
+-    if (!latestEvent) return;
++  // Helper to handle timeline updates
++  const completeStep = (key: TimelineStepKey) => setCompleted((prev) => new Set(prev).add(key));
++  const warnStep = (key: TimelineStepKey) => setWarnings((prev) => new Set(prev).add(key));
+ 
+-    setLog((prev) => [toLog(latestEvent), ...prev].slice(0, 100));
++  const processStreamEvent = (event: StreamEvent) => {
++    // Always log the event (unless buffering? No, log immediately even if buffering? 
++    // MASA Spec: User should see log, but timeline pauses? 
++    // Actually, if we buffer, we hide it.
++    // So logging happens here.)
++    setLog((prev) => [toLog(event), ...prev].slice(0, 100));
+ 
+-    const completeStep = (key: TimelineStepKey) => setCompleted((prev) => new Set(prev).add(key));
+-    const warnStep = (key: TimelineStepKey) => setWarnings((prev) => new Set(prev).add(key));
+-
+-    switch (latestEvent.event) {
++    switch (event.event) {
+       case "ingestion_start":
+         setActiveKey("ingestion");
+         break;
+       case "pdf_processed": {
+-        const isCompany = latestEvent.filename.startsWith("Company:");
++        const isCompany = event.filename.startsWith("Company:");
+         if (isCompany) {
+           setCompanyDone((prev) => {
+             const next = prev + 1;
+             if (companies.length > 0 && next >= expectedCompany) {
+-              completeStep("entity_harvest");
+-              setActiveKey("contradiction_scan");
++               // MASA Gating: Stop here
++               setIsReviewing(true);
+             }
+             return next;
+           });
+@@ -157,7 +215,10 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+             const next = prev + 1;
+             if (next >= expectedPdf) {
+               completeStep("pdf_parsing");
+-              if (companies.length === 0) setActiveKey("contradiction_scan");
++              if (companies.length === 0) {
++                 // MASA Gating: Stop here if no companies
++                 setIsReviewing(true);
++              }
+             } else {
+               setActiveKey("pdf_parsing");
+             }
+@@ -173,7 +234,7 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+         setActiveKey("pdf_parsing");
+         break;
+       case "thinking_step": {
+-        const lower = latestEvent.content.toLowerCase();
++        const lower = event.content.toLowerCase();
+         if (lower.includes("contradict")) setActiveKey("contradiction_scan");
+         if (lower.includes("audit") || lower.includes("skeptic")) setActiveKey("audit_refinement");
+         break;
+@@ -194,7 +255,7 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+       case "protocol_validated":
+         completeStep("audit_refinement");
+         setActiveKey("protocol_validation");
+-        if (!latestEvent.success) warnStep("protocol_validation");
++        if (!event.success) warnStep("protocol_validation");
+         break;
+       case "complete":
+         steps.forEach((s) => completeStep(s.key));
+@@ -206,7 +267,36 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+       default:
+         break;
+     }
+-  }, [latestEvent, activeKey, steps, companies.length, expectedCompany, expectedPdf]);
++  };
++
++  // Main Event Listener
++  useEffect(() => {
++    if (!latestEvent) return;
++
++    if (isReviewing) {
++        setPendingEvents(prev => [...prev, latestEvent]);
++    } else {
++        processStreamEvent(latestEvent);
++    }
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, [latestEvent]); // We exclude processing dependencies to avoid stale closures if possible, but standard practice suggests including them or using refs. 
++                     // Here we rely on functional state updates mostly. activeKey is the weak point.
++
++  // Flush Buffer on Approve
++  const handleApprove = () => {
++     setIsReviewing(false);
++     // Flush buffer
++     pendingEvents.forEach(e => processStreamEvent(e));
++     setPendingEvents([]);
++     
++     // Advance state manually after approval
++     if (companies.length > 0) {
++        completeStep("entity_harvest");
++        setActiveKey("contradiction_scan");
++     } else {
++        setActiveKey("contradiction_scan");
++     }
++  };
+ 
+   const currentStep = steps.find((s) => s.key === activeKey) ?? steps[0];
+   const inputCount = files.length + companies.length;
+@@ -219,6 +309,22 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+         <p className="text-xs font-mono uppercase tracking-[0.3em] text-[var(--text-secondary)]">Current Step: {currentStep.title}</p>
+       </div>
+ 
++      {/* Real-Time Monitoring Grid (Phase 2 - Live SSE Data) */}
++      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-6 mb-8">
++        <div className="h-[500px] 2xl:h-[600px]">
++          <TraceIntegrityPanel data={traceManifest || undefined} />
++        </div>
++        <div className="h-[500px] 2xl:h-[600px]">
++          <IterativeTimelineView data={undefined} />
++        </div>
++        <div className="h-[500px] 2xl:h-[600px]">
++          <LiveEpistemicMonitor data={epistemicData || undefined} />
++        </div>
++        <div className="h-[500px] 2xl:h-[600px]">
++          <SpectralHealthMonitor data={spectralHealth ? { current: spectralHealth, history: [] } : undefined} />
++        </div>
++      </div>
++
+       <div className="grid grid-cols-1 xl:grid-cols-[5fr_7fr] gap-8 items-start">
+         <div className="space-y-6">
+           <section className="rounded-3xl p-6 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-white/20 border-stone-200 shadow-sm">
+@@ -305,6 +411,37 @@ export function SynthesisAuditView({ files, companies, latestEvent, userPrompt }
+             </ol>
+           </section>
+ 
++          {/* MASA GAP-05: Manual Gate UI */}
++          {isReviewing && (
++            <section className="rounded-3xl p-6 bg-wabi-clay/5 border border-wabi-clay/20 shadow-sm animate-in fade-in slide-in-from-bottom-2">
++              <div className="flex flex-col gap-6">
++                 <div className="flex items-start gap-4">
++                    <div className="rounded-full bg-wabi-clay/10 p-2">
++                       <Check className="h-5 w-5 text-wabi-clay" />
++                    </div>
++                    <div>
++                       <h4 className="font-serif text-lg font-medium text-[var(--text-primary)]">Initiation Complete</h4>
++                       <p className="text-sm text-[var(--text-secondary)] mt-1">
++                          Sources have been ingested and parsed. MASA Protocol requires human verification of the "Source Ledger" before engaging the Synthesis Engine.
++                       </p>
++                    </div>
++                 </div>
++                 
++                 <div className="flex items-center gap-3 pt-2">
++                    <button 
++                       onClick={handleApprove}
++                       className="px-5 py-2.5 rounded-full bg-[#303030] text-white text-sm font-medium hover:bg-black transition-colors"
++                    >
++                       Approve & Begin Synthesis
++                    </button>
++                    <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-wider">
++                       {pendingEvents.length > 0 ? `${pendingEvents.length} events buffered` : "Ready"}
++                    </p>
++                 </div>
++              </div>
++            </section>
++          )}
++
+           <section className="rounded-3xl p-6 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-white/20 border-stone-200 shadow-sm">
+             <div className="mb-4 flex items-center justify-between">
+               <p className="text-xs font-mono uppercase tracking-[0.32em] text-[var(--text-tertiary)]">Event Log</p>
+diff --git a/src/components/theme-provider.tsx b/src/components/theme-provider.tsx
+index b7792a0..3bc117a 100644
+--- a/src/components/theme-provider.tsx
++++ b/src/components/theme-provider.tsx
+@@ -1,8 +1,7 @@
+ "use client";
+ 
+ import * as React from "react";
+-import { ThemeProvider as NextThemesProvider } from "next-themes";
+-import type { ThemeProviderProps } from "next-themes/dist/types";
++import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "next-themes";
+ 
+ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+diff --git a/src/lib/ai/anthropic.ts b/src/lib/ai/anthropic.ts
+index 10c15a1..9544d92 100644
+--- a/src/lib/ai/anthropic.ts
++++ b/src/lib/ai/anthropic.ts
+@@ -16,11 +16,11 @@ function getAnthropicClient(): Anthropic {
+ 
+   // Validate API Key format
+   if (apiKey.length < 40) {
+-      throw new Error(`Invalid ANTHROPIC_API_KEY: Key is too short (${apiKey.length} chars). Expected > 40 chars.`);
++    throw new Error(`Invalid ANTHROPIC_API_KEY: Key is too short (${apiKey.length} chars). Expected > 40 chars.`);
+   }
+ 
+   if (apiKey.includes("api-key-here") || apiKey.includes("your-api-key")) {
+-      throw new Error(`Invalid ANTHROPIC_API_KEY: Detected placeholder value ('${apiKey}'). Please check your .env.local file or SHELL variables.`);
++    throw new Error(`Invalid ANTHROPIC_API_KEY: Detected placeholder value ('${apiKey}'). Please check your .env.local file or SHELL variables.`);
+   }
+ 
+   console.log(`[Anthropic Init] API Key loaded successfully. Length: ${apiKey.length}`);
+@@ -68,14 +68,14 @@ class ClaudeAdapter implements ClaudeModel {
+       } catch (error) {
+         attempts++;
+         console.warn(`Claude API attempt ${attempts} failed:`, error);
+-        
++
+         if (attempts >= maxAttempts) throw error;
+-        
++
+         // Exponential backoff: 1000ms, 2000ms, 4000ms
+         await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempts - 1)));
+       }
+     }
+-    
++
+     throw new Error("Unreachable");
+   }
+ }
+diff --git a/src/lib/ai/experiment-generator.ts b/src/lib/ai/experiment-generator.ts
+index 3862386..6abb256 100644
+--- a/src/lib/ai/experiment-generator.ts
++++ b/src/lib/ai/experiment-generator.ts
+@@ -52,12 +52,12 @@ export class ExperimentGenerator {
+     const prompt = EXPERIMENT_PROMPT
+       .replace("{THESIS}", idea.thesis)
+       .replace("{MECHANISM}", idea.mechanism || "Not specified")
+-      .replace("{EXPERIMENT}", idea.crucialExperiment || "Not specified");
++      .replace("{EXPERIMENT}", idea.prediction || "Not specified");
+ 
+     try {
+       const result = await model.generateContent(prompt);
+       const text = result.response.text();
+-      
++
+       const json = safeParseJson(text, {
+         protocolCode: "# Error generating code",
+         labManual: "# Error generating manual",
+diff --git a/src/lib/ai/hong-recombination.ts b/src/lib/ai/hong-recombination.ts
+index 299c18e..25c7a65 100644
+--- a/src/lib/ai/hong-recombination.ts
++++ b/src/lib/ai/hong-recombination.ts
+@@ -49,7 +49,7 @@ export class HongRecombinationEngine {
+   private config: HongRecombinationConfig;
+   private sources: { name: string; concepts: ExtractedConcepts }[];
+   private contradictions: Contradiction[];
+-  
++
+   constructor(
+     sources: { name: string; concepts: ExtractedConcepts }[],
+     contradictions: Contradiction[],
+@@ -59,7 +59,7 @@ export class HongRecombinationEngine {
+     this.contradictions = contradictions;
+     this.config = { ...DEFAULT_CONFIG, ...config };
+   }
+-  
++
+   /**
+    * Calculate "energy" of a hypothesis state.
+    * Lower energy = better hypothesis.
+@@ -68,28 +68,27 @@ export class HongRecombinationEngine {
+   private calculateEnergy(idea: NovelIdea): number {
+     // Energy is inverse of quality
+     const confidenceComponent = 100 - (idea.confidence || 50);
+-    const depthComponent = 100 - (idea.explanationDepth || 50);
+     const bridgeComponent = 100 - (idea.bridgedConcepts?.length || 0) * 25;
+-    
+-    return (confidenceComponent * 0.5 + depthComponent * 0.3 + bridgeComponent * 0.2);
++
++    return (confidenceComponent * 0.6 + bridgeComponent * 0.4);
+   }
+-  
++
+   /**
+    * Propose a new hypothesis state by recombining concepts.
+    * This is the transition kernel of the Markov chain.
+    */
+   private async proposeTransition(current: HypothesisState): Promise<HypothesisState> {
+     const model = getClaudeModel();
+-    
++
+     // Select random concepts to recombine
+     const shuffledSources = [...this.sources].sort(() => Math.random() - 0.5);
+     const selectedSources = shuffledSources.slice(0, Math.min(3, shuffledSources.length));
+-    
++
+     const conceptMix = selectedSources.map(s => ({
+       thesis: s.concepts.mainThesis,
+       args: s.concepts.keyArguments.slice(0, 2)
+     }));
+-    
++
+     const prompt = `You are exploring hypothesis space via recombination.
+ 
+ Current Hypothesis:
+@@ -112,20 +111,19 @@ Output JSON:
+   "description": "2-3 sentences explaining the hypothesis",
+   "mechanism": "The causal mechanism that explains why this works",
+   "bridgedConcepts": ["Source 1 concept", "Source 2 concept"],
+-  "prediction": "A testable prediction",
+-  "crucialExperiment": "How to falsify this"
++  "prediction": "A testable prediction that could falsify this hypothesis"
+ }`;
+ 
+     try {
+       const result = await model.generateContent(prompt);
+       const responseText = result.response.text();
+-      
++
+       const parsed = safeParseJson<any>(responseText, null);
+       if (!parsed) {
+         // Failed to parse - return current state (reject proposal)
+         return current;
+       }
+-      
++
+       const newIdea: NovelIdea = {
+         id: `idea-mcmc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+         thesis: parsed.thesis || "Unparsed thesis",
+@@ -133,15 +131,11 @@ Output JSON:
+         mechanism: parsed.mechanism || "Mechanism unspecified",
+         bridgedConcepts: parsed.bridgedConcepts || [],
+         prediction: parsed.prediction || "No prediction",
+-        crucialExperiment: parsed.crucialExperiment || "No experiment specified",
+         confidence: 50, // Will be recalculated
+-        explanationDepth: 50,
+         // Required NovelIdea properties
+-        noveltyAssessment: "MCMC-explored hypothesis",
+-        isExplainedByPriorArt: false,
+-        explanatoryMechanism: parsed.mechanism || "Mechanism unspecified"
++        noveltyAssessment: "MCMC-explored hypothesis"
+       };
+-      
++
+       const energy = this.calculateEnergy(newIdea);
+       return { idea: newIdea, energy };
+     } catch (error) {
+@@ -149,7 +143,7 @@ Output JSON:
+       return current;
+     }
+   }
+-  
++
+   /**
+    * Metropolis-Hastings acceptance criterion.
+    * Accept proposal with probability min(1, exp((E_current - E_proposal) / T))
+@@ -159,24 +153,24 @@ Output JSON:
+       // Always accept if proposal is better (lower energy)
+       return true;
+     }
+-    
++
+     // Probabilistic acceptance for worse proposals
+     const deltaEnergy = proposalEnergy - currentEnergy;
+     const acceptanceProb = Math.exp(-deltaEnergy / (this.config.temperature * 100));
+-    
++
+     return Math.random() < acceptanceProb;
+   }
+-  
++
+   /**
+    * Generate initial hypothesis state from sources.
+    */
+   private async generateInitialState(): Promise<HypothesisState> {
+     const model = getClaudeModel();
+-    
+-    const sourceContext = this.sources.map(s => 
++
++    const sourceContext = this.sources.map(s =>
+       `"${s.name}": ${s.concepts.mainThesis}`
+     ).join("\n");
+-    
++
+     const prompt = `Generate an initial synthesis hypothesis from these sources:
+ 
+ ${sourceContext}
+@@ -189,8 +183,7 @@ Output JSON:
+   "description": "Brief explanation",
+   "mechanism": "Causal mechanism",
+   "bridgedConcepts": ["concept1", "concept2"],
+-  "prediction": "Testable prediction",
+-  "crucialExperiment": "Falsification test"
++  "prediction": "Testable prediction for falsification"
+ }`;
+ 
+     const result = await model.generateContent(prompt);
+@@ -199,10 +192,9 @@ Output JSON:
+       description: "Synthesized from provided sources",
+       mechanism: "Mechanism to be determined",
+       bridgedConcepts: [],
+-      prediction: "No prediction",
+-      crucialExperiment: "No experiment"
++      prediction: "No prediction"
+     });
+-    
++
+     const idea: NovelIdea = {
+       id: `idea-initial-${Date.now()}`,
+       thesis: parsed.thesis,
+@@ -210,18 +202,14 @@ Output JSON:
+       mechanism: parsed.mechanism,
+       bridgedConcepts: parsed.bridgedConcepts,
+       prediction: parsed.prediction,
+-      crucialExperiment: parsed.crucialExperiment,
+       confidence: 50,
+-      explanationDepth: 50,
+       // Required NovelIdea properties
+-      noveltyAssessment: "Initial MCMC state",
+-      isExplainedByPriorArt: false,
+-      explanatoryMechanism: parsed.mechanism
++      noveltyAssessment: "Initial MCMC state"
+     };
+-    
++
+     return { idea, energy: this.calculateEnergy(idea) };
+   }
+-  
++
+   /**
+    * Run MCMC exploration and return sampled hypotheses.
+    * 
+@@ -233,47 +221,47 @@ Output JSON:
+    */
+   async sample(): Promise<NovelIdea[]> {
+     console.log(`[HongRecombination] Starting MCMC exploration: ${this.config.numSamples} samples, burn-in: ${this.config.burnIn}`);
+-    
++
+     // Initialize
+     let current = await this.generateInitialState();
+     const samples: NovelIdea[] = [];
+     let acceptedCount = 0;
+-    
++
+     // MCMC Loop
+     for (let i = 0; i < this.config.numSamples; i++) {
+       // Propose new state
+       const proposal = await this.proposeTransition(current);
+-      
++
+       // Accept/reject
+       if (this.accept(current.energy, proposal.energy)) {
+         current = proposal;
+         acceptedCount++;
+       }
+-      
++
+       // Collect sample after burn-in
+       if (i >= this.config.burnIn) {
+         samples.push({ ...current.idea });
+       }
+-      
++
+       // Rate limiting delay
+       await new Promise(resolve => setTimeout(resolve, 1500));
+     }
+-    
++
+     const acceptanceRate = acceptedCount / this.config.numSamples;
+     console.log(`[HongRecombination] MCMC complete. Acceptance rate: ${(acceptanceRate * 100).toFixed(1)}%, Samples: ${samples.length}`);
+-    
++
+     // Deduplicate and sort by energy (best first)
+     const uniqueSamples = this.deduplicateSamples(samples);
+     return uniqueSamples.sort((a, b) => this.calculateEnergy(a) - this.calculateEnergy(b));
+   }
+-  
++
+   /**
+    * Remove duplicate hypotheses based on thesis similarity.
+    */
+   private deduplicateSamples(samples: NovelIdea[]): NovelIdea[] {
+     const seen = new Set<string>();
+     const unique: NovelIdea[] = [];
+-    
++
+     for (const sample of samples) {
+       // Simple dedup based on thesis hash
+       const key = sample.thesis.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 50);
+@@ -282,7 +270,7 @@ Output JSON:
+         unique.push(sample);
+       }
+     }
+-    
++
+     return unique;
+   }
+ }
+diff --git a/src/lib/ai/hypothesis-generator.ts b/src/lib/ai/hypothesis-generator.ts
+index 3b613b9..caf8af7 100644
+--- a/src/lib/ai/hypothesis-generator.ts
++++ b/src/lib/ai/hypothesis-generator.ts
+@@ -55,29 +55,29 @@ Mechanism Proposed: "{{MECHANISM}}"
+ export class HypothesisGenerator {
+   async generate(novelIdea: NovelIdea): Promise<StructuredHypothesis> {
+     const model = getClaudeModel();
+-    
++
+     // Construct the prompt
+     let prompt = HYPOTHESIS_GENERATION_PROMPT
+-      .replace("{{IDEA_SUMMARY}}", novelIdea.title + ": " + novelIdea.description)
++      .replace("{{IDEA_SUMMARY}}", novelIdea.thesis + ": " + novelIdea.description)
+       .replace("{{MECHANISM}}", novelIdea.mechanism || "Not specified");
+ 
+     try {
+       const result = await model.generateContent(prompt);
+       const responseText = result.response.text();
+-      
++
+       // Basic JSON cleaning (Claude sometimes adds markdown blocks)
+       const cleanJson = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
+       const parsed = JSON.parse(cleanJson);
+ 
+       return {
+-        observation: novelIdea.title,
++        observation: novelIdea.thesis,
+         ...parsed
+       };
+     } catch (error) {
+       console.error("Hypothesis Generation Failed:", error);
+       // Fallback/Empty structure to prevent pipeline crash
+       return {
+-        observation: novelIdea.title,
++        observation: novelIdea.thesis,
+         competingHypotheses: [],
+         selectedHypothesisId: "ERROR",
+         predictions: [],
+diff --git a/src/lib/ai/masa-auditor.ts b/src/lib/ai/masa-auditor.ts
+index 260bf80..c020806 100644
+--- a/src/lib/ai/masa-auditor.ts
++++ b/src/lib/ai/masa-auditor.ts
+@@ -98,8 +98,8 @@ export class MasaAuditor {
+ 
+   async audit(idea: NovelIdea, priorArt: PriorArt[]): Promise<MasaAudit> {
+     const model = getClaudeModel();
+-    
+-    const priorArtText = priorArt.length > 0 
++
++    const priorArtText = priorArt.length > 0
+       ? priorArt.map(p => `- ${p.title}: ${p.differentiator}`).join("\n")
+       : "No significant prior art found.";
+ 
+@@ -108,11 +108,11 @@ export class MasaAuditor {
+     // ==============================================
+     let metaPrompt = '';
+     let currentMode = 'balanced';
+-    
++
+     if (this.selfModel) {
+       const calibration = this.selfModel.calibrate();
+       currentMode = calibration.mode;
+-      
++
+       if (calibration.meta_prompt) {
+         metaPrompt = '\n\n## LAYER 0 CALIBRATION GUIDANCE:\n' + calibration.meta_prompt;
+         console.log(`[Layer 0] Mode: ${currentMode}, Friction Alert: ${calibration.friction_alert}`);
+@@ -143,7 +143,7 @@ Consider applying similar reasoning here.`;
+ 
+     // SERIALIZED EXECUTION to prevent "concurrent connection" rate limits
+     const epiResult = await model.generateContent(epistemologistPrompt);
+-    
++
+     const epiJson = safeParseJson(epiResult.response.text(), {
+       explanationDepth: 40, // Default to moderate if parsing fails but content exist
+       isHardToVary: false,
+@@ -155,7 +155,7 @@ Consider applying similar reasoning here.`;
+     try {
+       // Brief delay between concurrent connections
+       await new Promise(resolve => setTimeout(resolve, 1000));
+-    } catch (e) {}
++    } catch (e) { }
+ 
+     const skepticResult = await model.generateContent(skepticPrompt);
+ 
+@@ -182,16 +182,11 @@ Consider applying similar reasoning here.`;
+       architectVerdict: "Synthesis failed due to output formatting errors."
+     });
+ 
+-    // Inject the Crucial Experiment into the idea structure
+-    if (idea.experimentalDesign) {
+-      idea.experimentalDesign.crucialExperiment = epiJson.crucialExperiment;
+-    }
+-
+     // ==============================================
+     // LAYER 0: UPDATE HISTORY & RECORD SUCCESS
+     // ==============================================
+     const finalScore = Math.round(archJson.synthesisScore || 0);
+-    
++
+     if (this.selfModel) {
+       this.selfModel.updateHistory(finalScore);
+       this.selfModel.updateModeHistory(finalScore); // Pearl L2/L3: Track (mode, score) for causal inference
+@@ -209,7 +204,7 @@ Consider applying similar reasoning here.`;
+     }
+ 
+     return {
+-      methodologist: { 
++      methodologist: {
+         score: epiJson.explanationDepth,
+         critique: epiJson.critique,
+         grade: epiJson.grade as GradeQuality,
+diff --git a/src/lib/ai/novelty-evaluator.ts b/src/lib/ai/novelty-evaluator.ts
+index 68f7704..f153c21 100644
+--- a/src/lib/ai/novelty-evaluator.ts
++++ b/src/lib/ai/novelty-evaluator.ts
+@@ -2,6 +2,7 @@
+ // Searches for existing work to ensure honest novelty claims
+ 
+ import { PriorArt } from "@/types";
++import { applyTemporalDecay, extractPublicationYear } from "./temporal-decay";
+ 
+ const SERPER_API_URL = "https://google.serper.dev/search";
+ 
+@@ -10,6 +11,7 @@ interface SerperResult {
+     title: string;
+     link: string;
+     snippet: string;
++    date?: string;
+   }>;
+ }
+ 
+@@ -56,10 +58,11 @@ export async function searchPriorArt(
+         title: r.title,
+         url: r.link,
+         snippet: r.snippet,
++        date: r.date,
+       }))
+     );
+ 
+-    return priorArt;
++    return applyTemporalDecay(priorArt);
+   } catch (error) {
+     console.error("Prior art search failed:", error);
+     return [];
+@@ -102,7 +105,7 @@ function extractSearchTerms(thesis: string, description: string): string {
+  */
+ async function assessSimilarity(
+   ideaThesis: string,
+-  results: Array<{ title: string; url: string; snippet: string }>
++  results: Array<{ title: string; url: string; snippet: string; date?: string }>
+ ): Promise<PriorArt[]> {
+   // Simple similarity based on keyword overlap
+   // In production, would use embeddings for semantic similarity
+@@ -136,12 +139,21 @@ async function assessSimilarity(
+         ? `This idea uniquely emphasizes: ${differentWords.slice(0, 3).join(", ")}`
+         : "High overlap with existing work";
+ 
++    const fallbackYearRaw = process.env.PUBLICATION_YEAR_FALLBACK;
++    const fallbackYear = fallbackYearRaw ? Number(fallbackYearRaw) : undefined;
++    const extractedYear =
++      extractPublicationYear(result.date || "") ??
++      extractPublicationYear(`${result.title} ${result.snippet}`) ??
++      (Number.isFinite(fallbackYear) ? fallbackYear : null);
++
+     return {
+       source: "web_search",
+       title: result.title,
+       url: result.url,
+       similarity: Math.round(similarity),
+       differentiator,
++      snippet: result.snippet,
++      publicationYear: extractedYear ?? undefined,
+     };
+   });
+ }
+diff --git a/src/lib/ai/scm-hypothesis-generator.ts b/src/lib/ai/scm-hypothesis-generator.ts
+index 157d51d..f468618 100644
+--- a/src/lib/ai/scm-hypothesis-generator.ts
++++ b/src/lib/ai/scm-hypothesis-generator.ts
+@@ -290,9 +290,9 @@ export class SCMHypothesisGenerator {
+     const edges = canonical.edges.length > 0
+       ? canonical.edges
+       : [
+-          { from: nodePool[0] || "Input", to: nodePool[1] || "Mechanism", sign: "positive" as const },
+-          { from: nodePool[1] || "Mechanism", to: nodePool[2] || "Outcome", sign: "positive" as const },
+-        ];
++        { from: nodePool[0] || "Input", to: nodePool[1] || "Mechanism", sign: "positive" as const },
++        { from: nodePool[1] || "Mechanism", to: nodePool[2] || "Outcome", sign: "positive" as const },
++      ];
+ 
+     const outcome = pickOutcomeVariable(nodePool, edges, input.contradictions);
+     const adjacency = buildAdjacency(edges);
+@@ -377,9 +377,9 @@ export class SCMHypothesisGenerator {
+       const confidence = Math.round(
+         clamp(
+           draft.guard.interventionValueScore * 0.4 +
+-            draft.guard.identifiabilityScore * 0.25 +
+-            draft.guard.falsifiabilityScore * 0.25 +
+-            draft.guard.noveltyScore * 0.1
++          draft.guard.identifiabilityScore * 0.25 +
++          draft.guard.falsifiabilityScore * 0.25 +
++          draft.guard.noveltyScore * 0.1
+         ) * 100
+       );
+ 
+@@ -398,40 +398,9 @@ export class SCMHypothesisGenerator {
+           `Ranked by intervention value (${draft.guard.interventionValueScore.toFixed(2)}) before novelty.`,
+         mechanism: llmElaboration?.mechanism || draft.candidate.mechanismClaim,
+         prediction: llmElaboration?.prediction || draft.candidate.doQuery,
+-        crucialExperiment: llmElaboration?.crucialExperiment || draft.candidate.falsifier,
+-        evidenceSnippets: input.sources.slice(0, 3).map((source) => `From ${source.name}: ${source.concepts.mainThesis}`),
+-        explanationDepth: Math.round(draft.guard.mechanismDepth * 100),
+-        isExplainedByPriorArt: false,
+-        explanatoryMechanism: draft.candidate.mechanismClaim,
+-        doPlan: draft.candidate.doQuery,
+-        falsifier: draft.candidate.falsifier,
+-        confounderSet: draft.candidate.confounders,
+-        interventionValueScore: Number(draft.guard.interventionValueScore.toFixed(3)),
+-        identifiabilityScore: Number(draft.guard.identifiabilityScore.toFixed(3)),
+-        falsifiabilityScore: Number(draft.guard.falsifiabilityScore.toFixed(3)),
+-        mechanismDepth: Number(draft.guard.mechanismDepth.toFixed(3)),
+-        noveltyScore: Number(draft.guard.noveltyScore.toFixed(3)),
+-      } as NovelIdea & {
+-        doPlan: string;
+-        falsifier: string;
+-        confounderSet: string[];
+-        interventionValueScore: number;
+-        identifiabilityScore: number;
+-        falsifiabilityScore: number;
+-        mechanismDepth: number;
+-        noveltyScore: number;
+-      };
++      } as NovelIdea;
+ 
+       const enriched = enrichIdeaWithCausalOutput(baseIdea, causalOutputContext);
+-      if (enriched.causalOutput) {
+-        enriched.causalOutput = {
+-          ...enriched.causalOutput,
+-          causalClaim: llmElaboration?.causalClaim || enriched.causalOutput.causalClaim,
+-          unresolvedGaps: llmElaboration?.unresolvedGaps || enriched.causalOutput.unresolvedGaps,
+-          nextScientificAction:
+-            llmElaboration?.nextScientificAction || enriched.causalOutput.nextScientificAction,
+-        };
+-      }
+ 
+       ideas.push(enriched);
+     }
+diff --git a/src/lib/ai/synthesis-engine.ts b/src/lib/ai/synthesis-engine.ts
+index c83fa0b..cd4d657 100644
+--- a/src/lib/ai/synthesis-engine.ts
++++ b/src/lib/ai/synthesis-engine.ts
+@@ -16,6 +16,8 @@ import {
+   CriticalAnalysis,
+ } from "@/types";
+ import { evaluateCriticalThinking } from "./novelty-evaluator";
++import { StatisticalValidator } from "./statistical-validator";
++import { linkSnippetsToPDF } from "./citation-linker";
+ 
+ // ===== CONCEPT EXTRACTION =====
+ 
+@@ -184,8 +186,8 @@ export async function generateNovelIdeas(
+   const contradictionsText =
+     contradictions.length > 0
+       ? contradictions
+-          .map((c) => `- ${c.concept}: "${c.claimA}" vs "${c.claimB}"`)
+-          .join("\n")
++        .map((c) => `- ${c.concept}: "${c.claimA}" vs "${c.claimB}"`)
++        .join("\n")
+       : "No significant contradictions detected.";
+ 
+   const prompt = HYPOTHESIS_GENERATION_PROMPT
+@@ -235,33 +237,33 @@ export function calculateCalibratedConfidence(
+       factors.contradictionResolved * weights.contradictionResolved +
+       factors.evidenceDepth * weights.evidenceDepth +
+       factors.conceptBridgeStrength * weights.conceptBridgeStrength) *
+-      100
++    100
+   );
+ 
+   // Generate explanation based on factors
+   const explanationParts: string[] = [];
+-  
++
+   if (factors.priorArtDistance < 0.3) {
+     explanationParts.push("Similar prior art detected (high similarity)");
+   } else if (factors.priorArtDistance > 0.7) {
+     explanationParts.push("Novel approach with limited prior art");
+   }
+-  
++
+   if (factors.sourceAgreement > 0.7) {
+     explanationParts.push("Strong agreement across sources");
+   } else if (factors.sourceAgreement < 0.4) {
+     explanationParts.push("Limited source support");
+   }
+-  
++
+   if (factors.contradictionResolved > 0.7) {
+     explanationParts.push("Successfully bridges conflicting concepts");
+   }
+-  
++
+   if (factors.conceptBridgeStrength < 0.4) {
+     explanationParts.push("⚠️ Weak conceptual connection—may be forced synthesis");
+   }
+ 
+-  const explanation = explanationParts.length > 0 
++  const explanation = explanationParts.length > 0
+     ? explanationParts.join(". ") + "."
+     : "Moderate confidence based on available evidence.";
+ 
+@@ -277,14 +279,19 @@ export function estimateConfidenceFactors(
+   idea: NovelIdea,
+   priorArt: PriorArt[]
+ ): ConfidenceFactors {
++  const bridgedConcepts = Array.isArray(idea.bridgedConcepts) ? idea.bridgedConcepts : [];
+   // Source agreement: How many sources contribute concepts to this idea?
+-  const bridgedSources = idea.bridgedConcepts.length;
++  const bridgedSources = bridgedConcepts.length;
+   const totalSources = sources.length;
+   const sourceAgreement = Math.min(bridgedSources / totalSources, 1);
+ 
+   // Prior art distance: 1 - max similarity (higher = more novel)
+-  const maxSimilarity = priorArt.length > 0 
+-    ? Math.max(...priorArt.map(p => p.similarity)) 
++  const maxSimilarity = priorArt.length > 0
++    ? Math.max(...priorArt.map((p) => {
++      const base = Number.isFinite(p.similarity) ? p.similarity : 0;
++      const normalized = base > 1 ? base / 100 : base;
++      return Math.max(0, Math.min(1, normalized * (p.temporalWeight ?? 1)));
++    }))
+     : 0;
+   const priorArtDistance = 1 - maxSimilarity;
+ 
+@@ -296,7 +303,8 @@ export function estimateConfidenceFactors(
+   const evidenceDepth = Math.min(idea.description.length / 1000, 1);
+ 
+   // Concept bridge strength: Number of concepts bridged divided by ideal (3-5)
+-  const conceptBridgeStrength = Math.min(idea.bridgedConcepts.length / 4, 1);
++  const conceptBridgeStrength = Math.min(bridgedConcepts.length / 4, 1);
++  const temporalDecayApplied = priorArt.some((p) => (p.temporalWeight ?? 1) < 1);
+ 
+   return {
+     sourceAgreement,
+@@ -304,6 +312,7 @@ export function estimateConfidenceFactors(
+     contradictionResolved,
+     evidenceDepth,
+     conceptBridgeStrength,
++    temporalDecayApplied,
+   };
+ }
+ 
+@@ -337,9 +346,10 @@ export async function refineNovelIdea(
+   critique?: CriticalAnalysis
+ ): Promise<NovelIdea> {
+   const model = getClaudeModel();
++  const bridgedConcepts = Array.isArray(originalIdea.bridgedConcepts) ? originalIdea.bridgedConcepts : [];
++
++  const originalText = `Thesis: ${originalIdea.thesis}\n\nDescription: ${originalIdea.description}\n\nBridged Concepts: ${bridgedConcepts.join(", ")}`;
+ 
+-  const originalText = `Thesis: ${originalIdea.thesis}\n\nDescription: ${originalIdea.description}\n\nBridged Concepts: ${originalIdea.bridgedConcepts.join(", ")}`;
+-  
+   const priorArtText = priorArtToAvoid
+     .map(p => `- ${p.title} (${Math.round(p.similarity * 100)}% similar): ${p.differentiator}`)
+     .join("\n");
+@@ -408,8 +418,9 @@ export async function generateStructuredApproach(
+   idea: NovelIdea
+ ): Promise<StructuredApproach> {
+   const model = getClaudeModel();
++  const bridgedConcepts = Array.isArray(idea.bridgedConcepts) ? idea.bridgedConcepts : [];
+ 
+-  const ideaText = `**Thesis:** ${idea.thesis}\n\n**Description:** ${idea.description}\n\n**Bridged Concepts:** ${idea.bridgedConcepts.join(", ")}`;
++  const ideaText = `**Thesis:** ${idea.thesis}\n\n**Description:** ${idea.description}\n\n**Bridged Concepts:** ${bridgedConcepts.join(", ")}`;
+ 
+   const prompt = STRUCTURED_APPROACH_PROMPT.replace("{IDEA}", ideaText);
+   const result = await model.generateContent(prompt);
+@@ -497,6 +508,7 @@ export interface EnhancedSynthesisConfig {
+   maxRefinementIterations?: number;
+   noveltyThreshold?: number; // 0-1, below this triggers refinement
+   priorArtSearchFn?: (thesis: string, description: string) => Promise<PriorArt[]>;
++  eventEmitter?: { emit: (data: any) => void };
+ }
+ 
+ export async function runEnhancedSynthesisPipeline(
+@@ -506,6 +518,7 @@ export async function runEnhancedSynthesisPipeline(
+   const {
+     maxRefinementIterations = 3,
+     noveltyThreshold = 0.30,
++    eventEmitter,
+   } = config;
+ 
+   // Step 1: Extract concepts from each source
+@@ -529,6 +542,10 @@ export async function runEnhancedSynthesisPipeline(
+   let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+   let totalRefinements = 0;
+ 
++  const statValidator = process.env.ENABLE_STATISTICAL_VALIDATION === "true"
++    ? new StatisticalValidator()
++    : null;
++
+   // Step 4: TIER 1 - Evaluate and refine loop (requires priorArtSearchFn to be passed)
+   if (config.priorArtSearchFn) {
+     for (let i = 0; i < novelIdeas.length; i++) {
+@@ -538,7 +555,7 @@ export async function runEnhancedSynthesisPipeline(
+       while (iteration < maxRefinementIterations) {
+         // Search prior art for this idea
+         const priorArt = await config.priorArtSearchFn(idea.thesis, idea.description);
+-        
++
+         // Estimate confidence factors with prior art data
+         const factors = estimateConfidenceFactors(
+           sourcesWithConcepts,
+@@ -549,24 +566,42 @@ export async function runEnhancedSynthesisPipeline(
+ 
+         // Calculate calibrated confidence
+         const { score, explanation } = calculateCalibratedConfidence(factors);
+-        
++
+         // Update idea with calibrated confidence
+-        idea = {
++        const enrichedIdea = {
+           ...idea,
+           confidence: score,
+           confidenceFactors: factors,
+           confidenceExplanation: explanation,
+         };
++        if (factors.temporalDecayApplied) {
++          enrichedIdea.confidenceExplanation =
++            `${enrichedIdea.confidenceExplanation} 📅 Age-weighted prior art considered.`;
++        }
++        if (statValidator) {
++          const statisticalMetrics = statValidator.validateHypothesis(
++            enrichedIdea,
++            sourcesWithConcepts.map((s) => s.concepts)
++          );
++          enrichedIdea.statisticalMetrics = statisticalMetrics;
++          eventEmitter?.emit({
++            event: "statistical_validation",
++            pValue: statisticalMetrics.pValue,
++            bayesFactor: statisticalMetrics.bayesFactor,
++            interpretation: statisticalMetrics.interpretation,
++          });
++        }
++        idea = enrichedIdea;
+ 
+         // Check if refinement needed (prior art too similar)
+-        const maxSimilarity = priorArt.length > 0 
+-          ? Math.max(...priorArt.map(p => p.similarity)) 
++        const maxSimilarity = priorArt.length > 0
++          ? Math.max(...priorArt.map(p => p.similarity))
+           : 0;
+ 
+         if (maxSimilarity > (1 - noveltyThreshold)) {
+           // Too similar to prior art - refine
+           const similarArt = priorArt.filter(p => p.similarity > 0.5);
+-          
++
+           try {
+             idea = await refineNovelIdea(idea, similarArt, iteration + 1);
+             totalRefinements++;
+@@ -593,20 +628,39 @@ export async function runEnhancedSynthesisPipeline(
+         [] // No prior art data
+       );
+       const { score, explanation } = calculateCalibratedConfidence(factors);
+-      
+-      return {
++
++      const enrichedIdea = {
+         ...idea,
+         confidence: score,
+         confidenceFactors: factors,
+         confidenceExplanation: explanation,
+       };
++      if (factors.temporalDecayApplied) {
++        enrichedIdea.confidenceExplanation =
++          `${enrichedIdea.confidenceExplanation} 📅 Age-weighted prior art considered.`;
++      }
++      if (statValidator) {
++        const statisticalMetrics = statValidator.validateHypothesis(
++          enrichedIdea,
++          sourcesWithConcepts.map((s) => s.concepts)
++        );
++        enrichedIdea.statisticalMetrics = statisticalMetrics;
++        eventEmitter?.emit({
++          event: "statistical_validation",
++          pValue: statisticalMetrics.pValue,
++          bayesFactor: statisticalMetrics.bayesFactor,
++          interpretation: statisticalMetrics.interpretation,
++        });
++      }
++
++      return enrichedIdea;
+     });
+   }
+ 
+ 
+   // Step 5: TIER 2 - Rigorous Hypothesis Generation (Scientific Method)
+   const hypothesisGenerator = new HypothesisGenerator();
+-  
++
+   // Enhance all ideas with formal hypotheses
+   novelIdeas = await Promise.all(
+     novelIdeas.map(async (idea) => {
+@@ -618,21 +672,36 @@ export async function runEnhancedSynthesisPipeline(
+       // ADVERSARIAL CRITIQUE LOOP (Target 90+ Score)
+       let critique = await evaluateCriticalThinking(refinedIdea);
+       let attempts = 0;
+-      
++
+       while (critique.validityScore < 90 && attempts < 2) {
+         // Self-Correction: Refine based on critique
+-        refinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
++        const tempRefinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
+         // Re-generate hypothesis for the refined idea
+-        deepHypothesis = await hypothesisGenerator.generate(refinedIdea);
+-        refinedIdea.structuredHypothesis = deepHypothesis;
++        deepHypothesis = await hypothesisGenerator.generate(tempRefinedIdea);
++        refinedIdea = { ...tempRefinedIdea, structuredHypothesis: deepHypothesis };
+         // Re-evaluate
+         critique = await evaluateCriticalThinking(refinedIdea);
+         attempts++;
+       }
+-      
++
++      const sourceSnippetCandidates = sourcesWithConcepts
++        .flatMap((s) => s.concepts.keyArguments || [])
++        .filter(Boolean)
++        .slice(0, 6);
++      const currentBridgedConcepts = Array.isArray(refinedIdea.bridgedConcepts) ? refinedIdea.bridgedConcepts : [];
++      const fallbackSnippets = sourceSnippetCandidates.length > 0
++        ? sourceSnippetCandidates
++        : currentBridgedConcepts.slice(0, 4);
++      const snippetLinks = linkSnippetsToPDF(
++        fallbackSnippets,
++        pdfResults[0]?.pagedText,
++        pdfResults[0]?.fileName
++      );
++
+       // Attach final critique
+       refinedIdea.criticalAnalysis = critique;
+-      
++      refinedIdea.evidenceSnippets = snippetLinks;
++
+       return refinedIdea;
+     })
+   );
+diff --git a/src/lib/db/persistence-service.ts b/src/lib/db/persistence-service.ts
+index cb75697..5ab66cb 100644
+--- a/src/lib/db/persistence-service.ts
++++ b/src/lib/db/persistence-service.ts
+@@ -1,5 +1,6 @@
+ import { createServerSupabaseClient } from "../supabase/server";
+-import { SynthesisResult, NovelIdea, MasaAudit } from "../../types";
++import { NovelIdea, MasaAudit } from "../../types";
++import { SynthesisResult } from "../ai/synthesis-engine";
+ import { generateEmbedding } from "../ai/gemini";
+ import { DomainProjector } from "../services/embedding-service";
+ import { SpectralService } from "../services/spectral-service";
+@@ -41,12 +42,9 @@ export class PersistenceService {
+             description: idea.description,
+             mechanism: idea.mechanism,
+             confidence: idea.confidence,
+-            explanation_depth: idea.explanationDepth,
+             novelty_assessment: idea.noveltyAssessment,
+             scientific_prose: (idea as any).scientificProse,
+             structured_hypothesis: idea.structuredHypothesis,
+-            evidence_snippets: idea.evidenceSnippets,
+-            prior_art: idea.priorArt,
+             protocol_code: artifacts?.protocolCode,
+             lab_manual: artifacts?.labManual,
+             lab_job: artifacts?.labJob
+@@ -81,12 +79,12 @@ export class PersistenceService {
+           if (auditError) {
+             console.error("Failed to save audit trace:", auditError);
+           }
+-          
++
+           // 4. Save Vector Embedding (for Long-Term Memory)
+           const embeddingText = `Thesis: ${idea.thesis}\nMechanism: ${idea.mechanism || ""}`;
+           const isRejected = !masaAudit.finalSynthesis.isApproved;
+           const rejectReason = isRejected ? masaAudit.finalSynthesis.architectVerdict : undefined;
+-          
++
+           // Phase 3: Domain-Aware Storage
+           const domain = (idea as any).domain || "General";
+           await this.saveIdeaEmbedding(savedIdea.id, embeddingText, isRejected, rejectReason, domain);
+@@ -95,17 +93,17 @@ export class PersistenceService {
+           const spectralService = new SpectralService();
+           const embedding = await generateEmbedding(embeddingText);
+           const interference = await spectralService.calculateInterference(embedding);
+-          
++
+           // Convert Map to plain object for JSONB storage
+           const interferenceObj = Object.fromEntries(interference);
+-          
++
+           // Save spectral metrics to database
+           if (Object.keys(interferenceObj).length > 0) {
+             await supabase
+               .from("synthesis_results")
+               .update({ spectral_interference: interferenceObj })
+               .eq("id", savedIdea.id);
+-              
++
+             console.log(`[Persistence] Spectral Interference for ${idea.thesis.slice(0, 30)}...`);
+             for (const [domain, strength] of interference) {
+               if (strength > 0.5) {
+@@ -149,7 +147,7 @@ export class PersistenceService {
+   async getRunDetails(runId: string): Promise<any | null> {
+     try {
+       const supabase = await createServerSupabaseClient();
+-      
++
+       // Fetch ideas and their audits
+       const { data: ideas, error: ideasError } = await supabase
+         .from("synthesis_results")
+@@ -182,7 +180,7 @@ export class PersistenceService {
+             labManual: idea.lab_manual || '',
+             labJob: idea.lab_job
+           },
+-          spectralInterference: idea.spectral_interference ? 
++          spectralInterference: idea.spectral_interference ?
+             new Map(Object.entries(idea.spectral_interference)) : undefined,
+           criticalAnalysis: idea.audit_traces?.[0] ? {
+             verdict: idea.audit_traces[0].architect_verdict,
+@@ -190,12 +188,12 @@ export class PersistenceService {
+             remediationPlan: idea.audit_traces[0].remediation_plan
+           } : undefined,
+           masaAudit: idea.audit_traces?.[0] ? {
+-            methodologist: { 
+-              critique: idea.audit_traces[0].epistemologist_critique, 
+-              score: idea.audit_traces[0].epistemologist_score 
++            methodologist: {
++              critique: idea.audit_traces[0].epistemologist_critique,
++              score: idea.audit_traces[0].epistemologist_score
+             },
+-            skeptic: { 
+-              critique: idea.audit_traces[0].skeptic_critique, 
++            skeptic: {
++              critique: idea.audit_traces[0].skeptic_critique,
+               score: idea.audit_traces[0].skeptic_score,
+               biasesDetected: idea.audit_traces[0].skeptic_biases
+             },
+@@ -223,32 +221,32 @@ export class PersistenceService {
+       const supabase = await createServerSupabaseClient();
+       const text = `Thesis: ${thesis}\nMechanism: ${mechanism}`;
+       let embedding = await generateEmbedding(text);
+-      
++
+       // Phase 3: Orthogonal Manifold Projection
+       if (domain) {
+         embedding = DomainProjector.project(embedding, domain);
+       }
+-      
++
+       const { data, error } = await supabase.rpc('match_idea_embeddings', {
+-          query_embedding: embedding,
+-          match_threshold: 0.90, // Strict similarity
+-          match_count: 1
++        query_embedding: embedding,
++        match_threshold: 0.90, // Strict similarity
++        match_count: 1
+       });
+-      
++
+       if (error) {
+-          // If RPC missing, ignore (migration might not run yet)
+-          console.warn("Vector search failed (RPC likely missing):", error.message);
+-          return false; 
++        // If RPC missing, ignore (migration might not run yet)
++        console.warn("Vector search failed (RPC likely missing):", error.message);
++        return false;
+       }
+-      
++
+       if (data && data.length > 0 && data[0].is_rejected) {
+-          console.log(`[Persistence] BLOCKED: Found similar rejected idea. Reason: ${data[0].rejection_reason}`);
+-          return true;
++        console.log(`[Persistence] BLOCKED: Found similar rejected idea. Reason: ${data[0].rejection_reason}`);
++        return true;
+       }
+       return false;
+     } catch (e) {
+       console.error("Vector Search Exception:", e);
+-      return false; 
++      return false;
+     }
+   }
+ 
+@@ -257,23 +255,23 @@ export class PersistenceService {
+    * Phase 3: Support domain-aware Vector-Space Orthogonality
+    */
+   async saveIdeaEmbedding(ideaId: string, text: string, isRejected: boolean, reason?: string, domain?: string) {
+-      try {
+-          const supabase = await createServerSupabaseClient();
+-          let embedding = await generateEmbedding(text);
+-          
+-          // Phase 3: Orthogonal Manifold Projection
+-          if (domain) {
+-            embedding = DomainProjector.project(embedding, domain);
+-          }
+-          
+-          await supabase.from("idea_embeddings").insert({
+-              idea_id: ideaId,
+-              embedding: embedding,
+-              is_rejected: isRejected,
+-              rejection_reason: reason
+-          });
+-      } catch (e) {
+-          console.error("Failed to save idea embedding:", e);
++    try {
++      const supabase = await createServerSupabaseClient();
++      let embedding = await generateEmbedding(text);
++
++      // Phase 3: Orthogonal Manifold Projection
++      if (domain) {
++        embedding = DomainProjector.project(embedding, domain);
+       }
++
++      await supabase.from("idea_embeddings").insert({
++        idea_id: ideaId,
++        embedding: embedding,
++        is_rejected: isRejected,
++        rejection_reason: reason
++      });
++    } catch (e) {
++      console.error("Failed to save idea embedding:", e);
++    }
+   }
+ }
+diff --git a/src/lib/extractors/pdf-extractor.ts b/src/lib/extractors/pdf-extractor.ts
+index fc9bf60..0d1e15b 100644
+--- a/src/lib/extractors/pdf-extractor.ts
++++ b/src/lib/extractors/pdf-extractor.ts
+@@ -18,10 +18,23 @@ export interface PDFChunk {
+   embedding?: number[];
+ }
+ 
++export interface PageMapEntry {
++  page: number;
++  startOffset: number;
++  endOffset: number;
++  text: string;
++}
++
++export interface PagedText {
++  fullText: string;
++  pageMap: PageMapEntry[];
++}
++
+ export interface PDFExtractionResult {
+   fileName: string;
+   totalPages: number;
+   fullText: string;
++  pagedText?: PagedText;
+   chunks: PDFChunk[];
+   extractedConcepts?: ExtractedConcepts;
+ }
+@@ -39,9 +52,9 @@ import PDFParser from "pdf2json";
+ export async function extractTextFromPDF(
+   buffer: ArrayBuffer,
+   fileName: string
+-): Promise<Pick<PDFExtractionResult, "fileName" | "totalPages" | "fullText">> {
++): Promise<Pick<PDFExtractionResult, "fileName" | "totalPages" | "fullText" | "pagedText">> {
+   return new Promise((resolve, reject) => {
+-    const pdfParser = new PDFParser(null, 1); // 1 = text only
++    const pdfParser = new PDFParser(null, true); // text-only mode
+ 
+     pdfParser.on("pdfParser_dataError", (errData: any) => {
+       reject(new Error(errData.parserError));
+@@ -51,7 +64,7 @@ export async function extractTextFromPDF(
+       // Extract raw text from the parsed JSON data
+       // pdf2json returns URL-encoded text, needs decoding
+       let fullText = "";
+-      
++
+       try {
+         // According to pdf2json docs, the raw text content is in pdfData.formImage.Pages
+         // BUT when using mode 1 (text only), it gives a txt format in .getRawTextContent()
+@@ -68,10 +81,41 @@ export async function extractTextFromPDF(
+         }
+       }
+ 
++      const pages = Array.isArray(pdfData?.formImage?.Pages) ? pdfData.formImage.Pages : [];
++      const pageTexts = pages.map((page: any) =>
++        Array.isArray(page?.Texts)
++          ? page.Texts
++            .map((txt: any) => decodeURIComponent(txt?.R?.[0]?.T || ""))
++            .join(" ")
++            .trim()
++          : ""
++      );
++
++      const fullTextFromPages = pageTexts.filter(Boolean).join("\n\n");
++      const canonicalFullText = (fullTextFromPages || fullText || "").trim();
++
++      let offset = 0;
++      const pageMap: PageMapEntry[] = pageTexts.map((text: string, idx: number) => {
++        const clean = text || "";
++        const startOffset = offset;
++        const endOffset = startOffset + clean.length;
++        offset = endOffset + 2;
++        return {
++          page: idx + 1,
++          startOffset,
++          endOffset,
++          text: clean,
++        };
++      });
++
+       resolve({
+         fileName,
+-        totalPages: pdfData?.formImage?.Pages?.length || 0,
+-        fullText: fullText.trim(),
++        totalPages: pages.length || 0,
++        fullText: canonicalFullText,
++        pagedText: {
++          fullText: canonicalFullText,
++          pageMap,
++        },
+       });
+     });
+ 
+@@ -87,21 +131,21 @@ export async function extractTextFromPDF(
+  */
+ function chunkText(text: string): string[] {
+   if (!text) return [];
+-  
++
+   const chunks: string[] = [];
+   let startIndex = 0;
+-  
++
+   while (startIndex < text.length) {
+     const endIndex = Math.min(startIndex + CHUNK_SIZE, text.length);
+     chunks.push(text.slice(startIndex, endIndex));
+-    
++
+     // Move forward by chunk size minus overlap
+     startIndex += (CHUNK_SIZE - CHUNK_OVERLAP);
+-    
++
+     // Break if we're at the end to avoid infinite loops in edge cases
+     if (startIndex >= text.length) break;
+   }
+-  
++
+   return chunks;
+ }
+ 
+@@ -112,14 +156,14 @@ function chunkText(text: string): string[] {
+  * For now, aligning with the interface.
+  */
+ async function embedChunks(textChunks: string[]): Promise<PDFChunk[]> {
+-    // In a real scenario, we would batch call generateEmbedding here.
+-    // For now, we'll return the chunks structure.
+-    return Promise.all(textChunks.map(async (text, index) => ({
+-        content: text,
+-        pageNumber: 0, // Semantic chunking loses page alignment typically
+-        chunkIndex: index,
+-        // embedding: await generateEmbedding(text) // Optional: uncomment if we want immediate embeddings
+-    })));
++  // In a real scenario, we would batch call generateEmbedding here.
++  // For now, we'll return the chunks structure.
++  return Promise.all(textChunks.map(async (text, index) => ({
++    content: text,
++    pageNumber: 0, // Semantic chunking loses page alignment typically
++    chunkIndex: index,
++    // embedding: await generateEmbedding(text) // Optional: uncomment if we want immediate embeddings
++  })));
+ }
+ 
+ /**
+@@ -132,13 +176,13 @@ export async function processPDF(
+   try {
+     // Step 1: Extract text
+     const extraction = await extractTextFromPDF(buffer, fileName);
+-    
++
+     // Step 2: Chunk the text
+     const textChunks = chunkText(extraction.fullText);
+-    
++
+     // Step 3: Generate embeddings
+     const chunks = await embedChunks(textChunks);
+-    
++
+     return {
+       ...extraction,
+       chunks,
+@@ -174,6 +218,6 @@ export async function processMultiplePDFs(
+       });
+     }
+   });
+-  
++
+   return { successful, failed };
+ }
+diff --git a/src/lib/services/causal-output-contract.ts b/src/lib/services/causal-output-contract.ts
+index a3fab63..e9a1ab3 100644
+--- a/src/lib/services/causal-output-contract.ts
++++ b/src/lib/services/causal-output-contract.ts
+@@ -333,8 +333,8 @@ export function buildCausalOutputContract(
+   const mechanismSummary = toSentence(
+     softenCertaintyLanguage(
+       sanitizeText(idea.mechanism) ||
+-        sanitizeText(idea.explanatoryMechanism) ||
+-        sanitizeText(idea.description)
++      sanitizeText(idea.explanatoryMechanism) ||
++      sanitizeText(idea.description)
+     ),
+     "Mechanism is not fully specified."
+   );
+@@ -357,10 +357,10 @@ export function buildCausalOutputContract(
+       notes: buildInterventionNotes(idea, interventionClass),
+       ...(interventionClass === "Simulated (Assumption-Bound)"
+         ? {
+-            assumptionsForSimulation: assumptionsAndConfounders
+-              .slice(0, 4)
+-              .map((item) => item.assumption),
+-          }
++          assumptionsForSimulation: assumptionsAndConfounders
++            .slice(0, 4)
++            .map((item) => item.assumption),
++        }
+         : {}),
+     },
+     counterfactualLayer: buildCounterfactualLayer(idea),
+diff --git a/src/lib/services/session-service.ts b/src/lib/services/session-service.ts
+index 4305ac6..fda340b 100644
+--- a/src/lib/services/session-service.ts
++++ b/src/lib/services/session-service.ts
+@@ -65,11 +65,11 @@ export class SessionService {
+   constructor() {
+     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+     const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+-    
++
+     if (!url || !key) {
+       throw new Error("Supabase credentials missing for SessionService");
+     }
+-    
++
+     this.supabase = createClient(url, key);
+   }
+ 
+diff --git a/src/lib/services/spectral-service.ts b/src/lib/services/spectral-service.ts
+index 14bd1ce..869f14e 100644
+--- a/src/lib/services/spectral-service.ts
++++ b/src/lib/services/spectral-service.ts
+@@ -42,13 +42,13 @@ export class SpectralService {
+ 
+       // 4. Perform Eigenvalue Decomposition
+       const { eigenvalues, eigenvectors } = math.eigs(Cov) as any;
+-      
++
+       // Map to a more usable format and sort by eigenvalues (descending)
+       const eigenPairs = eigenvectors.map((p: any) => ({
+         value: typeof p.value === 'number' ? p.value : p.value.valueOf(),
+         vector: p.vector.toArray ? p.vector.toArray() : p.vector
+       }));
+-      
++
+       eigenPairs.sort((a: any, b: any) => b.value - a.value);
+ 
+       // 5. Determine Rank (Thresholding eigenvalues)
+@@ -64,7 +64,7 @@ export class SpectralService {
+         selectedVectors.push(pair.vector);
+         selectedValues.push(pair.value);
+         rank++;
+-        if (cumulativeVariance / totalVariance > 0.95) break; 
++        if (cumulativeVariance / totalVariance > 0.95) break;
+       }
+ 
+       const subspace: SpectralSubspace = {
+@@ -147,7 +147,7 @@ export class SpectralService {
+       .select('*');
+ 
+     if (error || !data) return [];
+-    
++
+     return data.map(row => ({
+       ...row,
+       eigenvectors: row.eigenvectors as number[][]
+diff --git a/src/lib/streaming-event-emitter.ts b/src/lib/streaming-event-emitter.ts
+index 24bfc89..fb0477f 100644
+--- a/src/lib/streaming-event-emitter.ts
++++ b/src/lib/streaming-event-emitter.ts
+@@ -3,7 +3,7 @@ import { SynthesisResult, HypothesisNode } from "@/types";
+ 
+ export type AgentPersona = 'creator' | 'skeptic' | 'architect' | 'methodologist';
+ 
+-export type StreamEvent = 
++export type StreamEvent =
+   | { event: 'ingestion_start', files: number }
+   | { event: 'pdf_processed', filename: string }
+   | { event: 'pdf_error', filename: string, error: string }
+@@ -13,22 +13,65 @@ export type StreamEvent =
+   | { event: 'agent_switch', agent: AgentPersona }
+   | { event: 'thinking_step', content: string }
+   | { event: 'step_update', step: string }
++  | { event: 'statistical_validation', pValue: number, bayesFactor: number, interpretation: string }
+   | { event: 'protocol_validated', ideaId: string, success: boolean, pValue?: number }
+   | { event: 'spectral_gap_analysis', spectralGap: { lambda_min: number, lambda_max: number, spectralGap: number, conditionNumber: number, threshold: number }, lipschitzConstant: number, expansionTriggered?: boolean }
+   | { event: 'thermodynamic_expansion', triggered: boolean, temperature: number }
+   | { event: 'phase_transition', phase: string, stepIndex: number }
+   | { event: 'phase_transition', phase: string, stepIndex: number }
+-  | { 
+-      event: 'consciousness_update', 
+-      state: {
+-        mode: 'strict' | 'balanced' | 'exploratory',
+-        ceiling: number,
+-        friction_alert: { alert: boolean, reason?: string },
+-        causal_evidence?: { pn: number, ps: number, rr: number },
+-        history: { scores: number[], avg_score: number, rejection_rate: number },
+-        mode_history: Array<{ mode: string, score: number, timestamp: string }>
+-      }
++  | {
++    event: 'consciousness_update',
++    state: {
++      mode: 'strict' | 'balanced' | 'exploratory',
++      ceiling: number,
++      friction_alert: { alert: boolean, reason?: string },
++      causal_evidence?: { pn: number, ps: number, rr: number },
++      history: { scores: number[], avg_score: number, rejection_rate: number },
++      mode_history: Array<{ mode: string, score: number, timestamp: string }>
+     }
++  }
++  // Phase 2: Real-time Monitoring Events
++  | {
++    event: 'trace_manifest',
++    sessionUUID: string,
++    inputHashes: Array<{ name: string, hash: string }>,
++    seedValue: number | null,
++    timestamp: string
++  }
++  | {
++    event: 'epistemic_update',
++    consciousnessState: {
++      energy: number,
++      entropy: number,
++      freeEnergy: number,
++      perceptionIntensity: number,
++      workingMemoryAccess: number,
++      awarenessLevel: number
++    },
++    iteration: number,
++    maxIterations: number,
++    plateauReached: boolean
++  }
++  | {
++    event: 'spectral_health_tick',
++    lambda_min: number,
++    lambda_max: number,
++    spectralGap: number,
++    healthStatus: 'optimal' | 'good' | 'warning' | 'critical',
++    timestamp: number
++  }
++  | {
++    event: 'refinement_cycle_start',
++    iteration: number,
++    maxIterations: number
++  }
++  | {
++    event: 'refinement_cycle_complete',
++    iteration: number,
++    maxIterations: number,
++    approved: boolean,
++    validityScore: number
++  }
+   | { event: 'complete', synthesis: SynthesisResult }
+   | { event: 'error', message: string };
+ 
+@@ -45,7 +88,7 @@ export class StreamingEventEmitter {
+     try {
+       const payload = `data: ${JSON.stringify(data)}\n\n`;
+       const encoded = this.encoder.encode(payload);
+-      
++
+       if ('enqueue' in this.controller) {
+         this.controller.enqueue(encoded);
+       } else {
+diff --git a/src/types/index.ts b/src/types/index.ts
+index c433d23..0c1b633 100644
+--- a/src/types/index.ts
++++ b/src/types/index.ts
+@@ -69,10 +69,12 @@ export interface NovelIdea {
+   // Tier 1 Improvements: Calibrated Confidence
+   confidenceFactors?: ConfidenceFactors;
+   confidenceExplanation?: string;
++  statisticalMetrics?: StatisticalMetrics;
++  evidenceSnippets?: EvidenceSnippet[];
+   // Refinement tracking
+   refinementIteration?: number;
+   refinedFrom?: string; // ID of original idea if this was refined
+-  
++
+   // Validation
+   criticalAnalysis?: CriticalAnalysis;
+   structuredHypothesis?: StructuredHypothesis;
+@@ -85,6 +87,7 @@ export interface ConfidenceFactors {
+   contradictionResolved: number; // 0-1: Were tensions addressed in the synthesis?
+   evidenceDepth: number;        // 0-1: Direct evidence vs inference
+   conceptBridgeStrength: number; // 0-1: How well do concepts actually connect?
++  temporalDecayApplied?: boolean; // true when temporal weighting affected prior-art penalty
+ }
+ 
+ // Tier 1: Refinement tracking for evaluate-and-refine loop
+@@ -124,6 +127,38 @@ export interface PriorArt {
+   url?: string;
+   similarity: number;
+   differentiator: string;
++  publicationYear?: number;
++  temporalWeight?: number;
++  adjustedSimilarity?: number;
++  snippet?: string;
++}
++
++export interface StatisticalMetrics {
++  pValue: number;
++  bayesFactor: number;
++  effectSize: number;
++  interpretation: string;
++}
++
++export interface EvidenceSnippet {
++  snippet: string;
++  page: number | null;
++  offset: number | null;
++  confidence: number;
++  sourceName?: string;
++}
++
++export interface ScholarPriorArt {
++  paperId: string;
++  title: string;
++  abstract: string;
++  url: string;
++  citationCount: number;
++  influenceScore: number;
++  year: number;
++  similarity: number;
++  authors?: string[];
++  venue?: string;
+ }
+ 
+ export interface VisualAsset {
+@@ -201,3 +236,113 @@ export interface StructuredHypothesis {
+   predictions: Prediction[];
+   experimentalDesign: ExperimentalDesign;
+ }
++
++// ===== MASA (Multi-Agent Scientific Audit) Types =====
++
++export type GradeQuality = "High" | "Moderate" | "Low" | "Very Low";
++
++export interface RoleBasedCritique {
++  score: number; // 0-100
++  critique: string;
++}
++
++export interface MethodologyCritique extends RoleBasedCritique {
++  grade: GradeQuality;
++  constructValidityIssues: string[];
++  causalityIssues: string[];
++}
++
++export interface SkepticCritique extends RoleBasedCritique {
++  biasesDetected: string[]; // Maps to common_biases.md
++  fallaciesDetected: string[]; // Maps to logical_fallacies.md
++  devilAdvocacy: string; // The "steel-manned" counter-argument
++}
++
++export interface MasaAudit {
++  methodologist: MethodologyCritique;
++  skeptic: SkepticCritique;
++  finalSynthesis: {
++    architectVerdict?: string;
++    validityScore: number;
++    remediationPlan: string[]; // Specific actionable fixes
++    remediationConstraints?: string[]; // Mandatory constraints for re-generation
++    isApproved: boolean; // Veto system
++  };
++  timestamp: Date;
++}
++
++// ===== Consciousness State Types =====
++
++export interface ConsciousnessState {
++  current_mode: 'strict' | 'balanced' | 'exploratory';
++  ceiling: number;
++  friction_alert: boolean;
++  history?: {
++    scores: number[];
++    avg_score: number;
++    rejection_rate: number;
++    variance: number;
++  };
++  causal_evidence?: {
++    PN_mode_caused_failure?: number;
++    PS_switch_to_exploratory?: number;
++    RR_mode_risk_ratio?: number;
++  };
++  mode_history?: { mode: string; score: number; timestamp: string }[];
++}
++
++// ===== Robotic Interface Layer (Laboratory Automation) =====
++
++export interface LabJob {
++  job_id: string;
++  experiment_name: string;
++  safety_level: 'BSL-1' | 'BSL-2';
++  resources: LabResources;
++  steps: LabStep[];
++}
++
++export interface LabResources {
++  reagents: Reagent[];
++  labware: Labware[];
++}
++
++export interface Reagent {
++  id: string;
++  name: string;
++  initial_structure?: string;
++  volume_ml: number;
++}
++
++export interface Labware {
++  id: string;
++  type: '96-well-plate' | 'trough-12row' | 'tube-rack';
++}
++
++export interface LabStep {
++  step_id: number;
++  action: 'aspirate' | 'dispense' | 'mix' | 'incubate' | 'thermocycle' | 'measure_absorbance';
++  parameters: ActionParams;
++}
++
++export type ActionParams = TransferParams | IncubateParams | MeasureParams;
++
++export interface TransferParams {
++  source_labware?: string;
++  target_labware?: string;
++  source_well?: string;
++  target_well?: string;
++  volume_ul: number;
++  flow_rate_ul_per_sec?: number;
++}
++
++export interface IncubateParams {
++  duration_seconds: number;
++  temperature_celsius: number;
++  shaking_rpm?: number;
++}
++
++export interface MeasureParams {
++  target_labware: string;
++  wavelength_nm: number;
++  metric_name: string;
++}
+diff --git a/src/verify-static.ts b/src/verify-static.ts
+index e6c7504..65c1ac5 100644
+--- a/src/verify-static.ts
++++ b/src/verify-static.ts
+@@ -37,46 +37,46 @@ async function main() {
+ 
+   // 1. Verify Imports and Types (Runtime check)
+   try {
+-      const { runEnhancedSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
+-      const { evaluateCriticalThinking } = await import("./lib/ai/novelty-evaluator");
+-      console.log("✅ Modules imported successfully.");
++    const { runEnhancedSynthesisPipeline } = await import("./lib/ai/synthesis-engine");
++    const { evaluateCriticalThinking } = await import("./lib/ai/novelty-evaluator");
++    console.log("✅ Modules imported successfully.");
+   } catch (e) {
+-      console.error("❌ Import failed:", e);
+-      process.exit(1);
++    console.error("❌ Import failed:", e);
++    process.exit(1);
+   }
+ 
+   // 2. Mock Data Structure Verification
+   const TestIdea: NovelIdea = {
+-      id: "test-1",
+-      thesis: "Test Thesis",
+-      description: "Test Desc",
+-      bridgedConcepts: ["A", "B"],
+-      confidence: 80,
+-      noveltyAssessment: "New",
+-      mechanism: "Flux capacitor",
+-      prediction: "88 mph",
+-      explanationDepth: 70,
+-      isExplainedByPriorArt: false,
+-      explanatoryMechanism: "Test Mechanism",
+-      criticalAnalysis: {
+-          biasDetected: ["None"],
+-          logicalFallacies: [],
+-          validityScore: 90,
+-          critique: "Solid."
+-      }
++    id: "test-1",
++    thesis: "Test Thesis",
++    description: "Test Desc",
++    bridgedConcepts: ["A", "B"],
++    confidence: 80,
++    noveltyAssessment: "New",
++    mechanism: "Flux capacitor",
++    prediction: "88 mph",
++    explanationDepth: 70,
++    isExplainedByPriorArt: false,
++    explanatoryMechanism: "Test Mechanism",
++    criticalAnalysis: {
++      biasDetected: ["None"],
++      logicalFallacies: [],
++      validityScore: 90,
++      critique: "Solid."
++    }
+   };
+ 
+-  console.log("✅ NovelIdea Type Structure Verified with fields:", 
+-      Object.keys(TestIdea).filter(k => ["mechanism", "prediction", "criticalAnalysis"].includes(k)));
++  console.log("✅ NovelIdea Type Structure Verified with fields:",
++    Object.keys(TestIdea).filter(k => ["mechanism", "prediction", "criticalAnalysis"].includes(k)));
+ 
+   // 3. Verify Hypothesis Generator Integration
+   console.log("3. Verifying Hypothesis Generator Integration...");
+-  
++
+   try {
+     const { HypothesisGenerator } = await import("./lib/ai/hypothesis-generator");
+     const generator = new HypothesisGenerator();
+     if (typeof generator.generate !== 'function') {
+-        throw new Error("HypothesisGenerator.generate is not a function");
++      throw new Error("HypothesisGenerator.generate is not a function");
+     }
+     console.log("✅ HypothesisGenerator class is importable and has generate method.");
+   } catch (e: any) {

@@ -1,0 +1,657 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+
+\geometry{margin=1in}
+
+% Theorem environments
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{axiom}{Axiom}[section]
+\newtheorem{postulate}{Postulate}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% Custom commands
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\Sset}{\mathcal{S}}
+\newcommand{\Q}{\mathcal{Q}}
+\newcommand{\Hset}{\mathcal{H}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\Scon}{S_{\text{con}}}
+\newcommand{\Ssub}{S_{\text{sub}}}
+\newcommand{\Ccreature}{C_{\text{creature}}}
+\newcommand{\Concept}{\mathcal{C}}
+\newcommand{\ConceptE}{\mathcal{C}_E}
+\newcommand{\Res}{\text{Res}}
+\newcommand{\Target}{\text{Target}}
+\newcommand{\Attitude}{\text{Attitude}}
+\newcommand{\HOT}{\text{HOT}}
+
+% Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Formalism of Higher-Order State Topologies}
+\fancyhead[R]{\small K-Dense Web}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\small Generated using K-Dense Web (\href{https://k-dense.ai}{k-dense.ai})}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Title formatting
+% (using default LaTeX formatting)
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=green!50!black,
+    urlcolor=blue!70!black
+}
+
+\title{\textbf{The Formalism of Higher-Order State Topologies}\\[0.5em]
+\large A Set-Theoretic and Modal-Logical Framework\\for the Rosenthal Ansatz}
+\author{K-Dense Web\\
+\small \href{mailto:contact@k-dense.ai}{contact@k-dense.ai}}
+\date{February 4, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document presents a rigorous mathematical formalization of David Rosenthal's Higher-Order Theory (HOT) of consciousness. We define a mental architecture as a tuple $\M = \langle \Sset, \Q, \Hset, \A \rangle$ and derive the formal conditions under which mental states transition from subliminal ($\Ssub$) to conscious ($\Scon$) status. The Transitivity Principle is axiomatized, the HOT mechanism is operatorized, and the Separability and Assertoric Constraints are proven. We formalize the Granularity Function relating conceptual resolution to experiential resolution, model the ``Dental Fear'' misrepresentation error as a functional mapping, and derive formal proofs rejecting Inner Sense, Dispositionalism, and Intrinsic Theory as alternative topologies. All derivations strictly adhere to the source material from Rosenthal's architectural analysis.
+\end{abstract}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\textwidth]{../figures/graphical_abstract.png}
+\caption{\textbf{Graphical Abstract.} The Higher-Order State Topology showing the mental architecture $\M = \langle \Sset, \Q, \Hset, \A \rangle$. Mental states $\Sset$ are partitioned into conscious ($\Scon$) and subliminal ($\Ssub$) subsets. The HOT operator $H$ maps states to consciousness via the Transitivity Principle. Qualia $\Q$ are separable from consciousness status. The Dental Fear Error illustrates misrepresentation in the HOT mapping.}
+\label{fig:graphical_abstract}
+\end{figure}
+
+\newpage
+
+%==============================================================================
+\section{Legend of Variables}
+%==============================================================================
+
+\begin{tcolorbox}[colback=blue!5!white, colframe=blue!75!black, title=\textbf{Primary Structure}]
+\begin{center}
+$\M = \langle \Sset, \Q, \Hset, \A \rangle$
+\end{center}
+\textbf{The Mental Architecture} --- a 4-tuple representing the complete topology of conscious and non-conscious mental states.
+\end{tcolorbox}
+
+\vspace{1em}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{@{}clp{8cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Definition} \\
+\midrule
+\multicolumn{3}{l}{\textit{Sets and Spaces}} \\
+$\Sset$ & Mental State Space & The universal set of all mental states of a creature \\
+$\Scon$ & Conscious States & $\Scon \subset \Sset$; states satisfying the Transitivity Principle \\
+$\Ssub$ & Subliminal States & $\Ssub \subset \Sset$; states not satisfying TP; $\Ssub = \Sset \setminus \Scon$ \\
+$\Q$ & Qualia Space & The set of qualitative properties; $\Q: \Sset \to \mathcal{P}(\text{Qualities})$ \\
+$\Hset$ & HOT Space & The set of Higher-Order Thoughts; $\Hset \subset \Sset$ \\
+$\Concept$ & Concept Space & The set of concepts available to the cognitive system \\
+\midrule
+\multicolumn{3}{l}{\textit{Operators and Functions}} \\
+$\A$ & Awareness Operator & $\A: \Sset \times \Sset \to \{0,1\}$; reflexive awareness relation \\
+$H$ & HOT Operator & $H: \Sset \to \{0,1\}$; consciousness assignment function \\
+$\Target$ & Target Function & $\Target: \Hset \to \Sset$; maps HOT to its intentional object \\
+$\Attitude$ & Attitude Function & $\Attitude: \Hset \to \{\text{Assert}, \text{Doubt}, \text{Wonder}\}$ \\
+$\Res$ & Resolution Function & $\Res: \Concept \to \mathbb{R}^+$; granularity measure \\
+$C$ & Consciousness Predicate & $C: \Sset \to \{0,1\}$; state consciousness indicator \\
+\midrule
+\multicolumn{3}{l}{\textit{Parameters and Indices}} \\
+$\Ccreature$ & Creature Consciousness & Global boundary condition; $\Ccreature \in \{0,1\}$ \\
+$s, s', s_i$ & State Variables & Elements of $\Sset$ \\
+$h, h'$ & HOT Variables & Elements of $\Hset$ \\
+$q$ & Quality Variable & Element of the range of $\Q$ \\
+\bottomrule
+\end{tabular}
+\caption{Complete legend of variables for the Rosenthal formalism.}
+\label{tab:legend}
+\end{table}
+
+\vspace{1em}
+
+\begin{tcolorbox}[colback=gray!10!white, colframe=gray!75!black, title=\textbf{Modal Operators}]
+\begin{itemize}
+    \item $\Box_s \phi$ --- \textit{Necessarily}, in state $s$, $\phi$ holds
+    \item $\Diamond_s \phi$ --- \textit{Possibly}, in state $s$, $\phi$ holds
+    \item $K_x \phi$ --- Agent $x$ \textit{knows} that $\phi$ (epistemic modality)
+    \item $B_x \phi$ --- Agent $x$ \textit{believes} that $\phi$ (doxastic modality)
+\end{itemize}
+\end{tcolorbox}
+
+\newpage
+
+%==============================================================================
+\section{Derivation of the Rosenthal Ansatz}
+%==============================================================================
+
+\subsection{State Categories and the Transitivity Principle}
+
+\begin{axiom}[Creature Consciousness Boundary Condition]
+\label{ax:creature}
+Let $\Ccreature \in \{0,1\}$ be a global parameter such that:
+\begin{equation}
+\Ccreature =
+\begin{cases}
+1 & \text{if the creature is awake/sentient} \\
+0 & \text{if the creature is asleep/comatose}
+\end{cases}
+\end{equation}
+The mental state space $\Sset$ is defined only when $\Ccreature = 1$:
+\begin{equation}
+\Sset \neq \emptyset \iff \Ccreature = 1
+\end{equation}
+\end{axiom}
+
+\begin{definition}[Partition of Mental States]
+\label{def:partition}
+Given $\Sset$ under $\Ccreature = 1$, we define the disjoint partition:
+\begin{align}
+\Sset &= \Scon \sqcup \Ssub \\
+\Scon \cap \Ssub &= \emptyset \\
+\Scon \cup \Ssub &= \Sset
+\end{align}
+where $\Scon$ denotes the set of \textbf{conscious states} and $\Ssub$ denotes the set of \textbf{subliminal states}.
+\end{definition}
+
+\begin{axiom}[Transitivity Principle (TP)]
+\label{ax:TP}
+A mental state $s \in \Sset$ is conscious if and only if there exists a suitable awareness relation $R$ such that the subject is aware of $s$:
+\begin{equation}
+\boxed{s \in \Scon \iff \exists R : \A(R, s) = 1}
+\end{equation}
+Equivalently, using the consciousness predicate:
+\begin{equation}
+C(s) = 1 \iff \exists h \in \Hset : \Target(h) = s
+\end{equation}
+\end{axiom}
+
+\begin{remark}
+The Transitivity Principle establishes that state consciousness is \textit{relational} --- it depends on a higher-order representation targeting the state, not on intrinsic properties of the state itself.
+\end{remark}
+
+\begin{corollary}[Characterization of Subliminal States]
+\label{cor:subliminal}
+A state $s \in \Sset$ is subliminal if and only if no HOT targets it:
+\begin{equation}
+s \in \Ssub \iff \neg\exists h \in \Hset : \Target(h) = s
+\end{equation}
+\end{corollary}
+
+%------------------------------------------------------------------------------
+\subsection{The HOT Mechanism}
+%------------------------------------------------------------------------------
+
+\begin{definition}[HOT Operator]
+\label{def:HOT}
+The \textbf{Higher-Order Thought Operator} $H: \Sset \to \{0,1\}$ is defined as:
+\begin{equation}
+H(s) =
+\begin{cases}
+1 & \text{if } \exists h \in \Hset : \Target(h) = s \land \Attitude(h) = \text{Assert} \\
+0 & \text{otherwise}
+\end{cases}
+\end{equation}
+\end{definition}
+
+\begin{postulate}[HOT-Consciousness Equivalence]
+\label{post:HOT-equiv}
+The HOT operator fully characterizes conscious state membership:
+\begin{equation}
+\boxed{s \in \Scon \iff H(s) = 1 \iff \exists h \in \Hset : \Target(h) = s}
+\end{equation}
+\end{postulate}
+
+\begin{definition}[Target Function]
+\label{def:target}
+The function $\Target: \Hset \to \Sset$ is a surjection onto $\Scon$:
+\begin{equation}
+\Target: \Hset \twoheadrightarrow \Scon, \quad \text{im}(\Target) = \Scon
+\end{equation}
+For any $h \in \Hset$, $\Target(h) = s$ means that $h$ is \textit{about} $s$; $h$ represents the subject as being in state $s$.
+\end{definition}
+
+\subsubsection{The Separability Constraint}
+
+\begin{theorem}[Separability of Qualia and Consciousness]
+\label{thm:separability}
+The qualitative nature $\Q(s)$ of a mental state $s$ is independent of its consciousness status $C(s)$:
+\begin{equation}
+\boxed{\Q(s) \perp\!\!\!\perp C(s)}
+\end{equation}
+That is, qualia can exist in subliminal states.
+\end{theorem}
+
+\begin{proof}
+By construction, $\Q: \Sset \to \mathcal{P}(\text{Qualities})$ is defined over the entire state space $\Sset$, including $\Ssub$:
+\begin{enumerate}
+    \item Let $s \in \Ssub$ (subliminal state).
+    \item By Definition~\ref{def:partition}, $s \notin \Scon$, hence $C(s) = 0$.
+    \item By the source evidence (subliminal priming, Marcel 1983): states in $\Ssub$ produce priming effects \textit{qualitatively similar} to those in $\Scon$.
+    \item Therefore, $\Q(s) \neq \emptyset$ even when $C(s) = 0$.
+    \item The qualia function $\Q$ has domain $\Sset$, not merely $\Scon$:
+    \begin{equation}
+    \text{dom}(\Q) = \Sset = \Scon \cup \Ssub
+    \end{equation}
+    \item Thus, $\Q(s)$ is defined independently of whether $s \in \Scon$ or $s \in \Ssub$. \qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Qualia in Subliminal States]
+\label{cor:qualia-sub}
+There exist states $s \in \Ssub$ such that $\Q(s) \neq \emptyset$:
+\begin{equation}
+\exists s \in \Ssub : \Q(s) \neq \emptyset \land C(s) = 0
+\end{equation}
+\end{corollary}
+
+\subsubsection{The Assertoric Constraint}
+
+\begin{definition}[Attitude Function]
+\label{def:attitude}
+Let $\Attitude: \Hset \to \mathcal{A}tt$ where $\mathcal{A}tt = \{\text{Assert}, \text{Doubt}, \text{Wonder}, \ldots\}$ is the set of propositional attitudes. For $h \in \Hset$:
+\begin{equation}
+\Attitude(h) =
+\begin{cases}
+\text{Assert} & h \text{ posits the target state as actual} \\
+\text{Doubt} & h \text{ questions the target state} \\
+\text{Wonder} & h \text{ entertains the target state as possible}
+\end{cases}
+\end{equation}
+\end{definition}
+
+\begin{axiom}[Assertoric Requirement]
+\label{ax:assertoric}
+A HOT $h \in \Hset$ renders its target conscious \textit{only if} $h$ has assertoric attitude:
+\begin{equation}
+\boxed{H(s) = 1 \implies \exists h \in \Hset : \Target(h) = s \land \Attitude(h) = \text{Assert}}
+\end{equation}
+Doubting or wondering about being in state $s$ does not suffice:
+\begin{equation}
+\Attitude(h) \in \{\text{Doubt}, \text{Wonder}\} \implies H(\Target(h)) \neq 1 \text{ (via } h \text{)}
+\end{equation}
+\end{axiom}
+
+\begin{remark}
+The Assertoric Constraint ensures that mere hypothetical consideration of a state does not render it conscious. Consciousness requires the system to \textit{represent itself as actually being} in that state.
+\end{remark}
+
+%------------------------------------------------------------------------------
+\subsection{The Granularity Function}
+%------------------------------------------------------------------------------
+
+\begin{definition}[Concept Space and Resolution]
+\label{def:concept}
+Let $\Concept$ be the set of concepts available to the cognitive system. Define the \textbf{resolution function}:
+\begin{equation}
+\Res: \Concept \to \mathbb{R}^+
+\end{equation}
+where $\Res(c)$ measures the discriminatory fineness of concept $c$.
+\end{definition}
+
+\begin{definition}[Experiential Resolution]
+\label{def:exp-res}
+For an experience $E$ arising from state $s \in \Scon$, define:
+\begin{equation}
+\Res(E) = f(\Res(\ConceptE))
+\end{equation}
+where $\ConceptE \subseteq \Concept$ is the set of concepts employed in the HOT targeting $s$.
+\end{definition}
+
+\begin{theorem}[Granularity Proportionality]
+\label{thm:granularity}
+The resolution of conscious experience is bounded by the resolution of available concepts:
+\begin{equation}
+\boxed{\Res(E) \propto \Res(\ConceptE)}
+\end{equation}
+More precisely:
+\begin{equation}
+\Res(E) \leq \max_{c \in \ConceptE} \Res(c)
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item A HOT $h$ represents the subject as being in state $s$ using concepts from $\Concept$.
+    \item The content of $h$ is structured by the concepts it employs.
+    \item The phenomenal character of the conscious experience $E$ is determined by the content of $h$.
+    \item If $\ConceptE$ contains only coarse-grained concepts (low $\Res$), the distinctions available in $h$ are limited.
+    \item Therefore, $E$ cannot be more fine-grained than the concepts allow:
+    \begin{equation}
+    \Res(E) \leq \sup_{c \in \ConceptE} \Res(c)
+    \end{equation}
+    \item The proportionality follows from the functional dependence of $E$ on $\ConceptE$. \qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Coarse Concept Limit]
+\label{cor:coarse}
+If the concept space is coarse, experience is necessarily coarse:
+\begin{equation}
+\forall c \in \ConceptE : \Res(c) < \epsilon \implies \Res(E) < \epsilon
+\end{equation}
+\end{corollary}
+
+\begin{remark}
+This formalizes the source claim that learning new words (concepts) for wine or music can make experiences more fine-grained. Expanding $\Concept$ increases $\max \Res(\Concept)$, thereby increasing the upper bound on $\Res(E)$.
+\end{remark}
+
+%------------------------------------------------------------------------------
+\subsection{The ``Dental Fear'' Error: Misrepresentation in HOT Mapping}
+%------------------------------------------------------------------------------
+
+\begin{definition}[Input State Space for Dental Scenario]
+\label{def:dental-input}
+Let the input states be:
+\begin{align}
+s_{\text{fear}} &\in \Sset \quad \text{(fear state from dental anxiety)} \\
+s_{\text{vibration}} &\in \Sset \quad \text{(vibration sensation from dental tool)}
+\end{align}
+with $\Q(s_{\text{fear}}) = q_{\text{fear}}$ and $\Q(s_{\text{vibration}}) = q_{\text{vib}}$.
+\end{definition}
+
+\begin{definition}[HOT Misrepresentation Mapping]
+\label{def:misrep}
+Define the HOT mapping function $\phi_H: \mathcal{P}(\Sset) \to \Sset$ as the representation constructed by the HOT:
+\begin{equation}
+\phi_H(\{s_1, s_2, \ldots, s_n\}) = R
+\end{equation}
+where $R$ is the represented state (which may not correspond to any actual input state).
+\end{definition}
+
+\begin{theorem}[Dental Fear Error]
+\label{thm:dental}
+Given inputs $s_{\text{fear}}$ and $s_{\text{vibration}}$, the HOT mechanism can produce a misrepresentation $R_{\text{pain}}$ such that:
+\begin{equation}
+\boxed{R_{\text{pain}} \neq s_{\text{fear}} + s_{\text{vibration}}}
+\end{equation}
+but the subject experiences $R_{\text{pain}}$ as the content of consciousness.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item Let the actual first-order states be $s_{\text{fear}}, s_{\text{vibration}} \in \Sset$.
+    \item The HOT $h$ targets these states but may misrepresent their qualitative content.
+    \item Define the misrepresentation:
+    \begin{equation}
+    \Target(h) = R_{\text{pain}} \quad \text{where} \quad R_{\text{pain}} \notin \{s_{\text{fear}}, s_{\text{vibration}}\}
+    \end{equation}
+    \item The qualitative content experienced is determined by the HOT content:
+    \begin{equation}
+    \Q_{\text{experienced}} = \Q(R_{\text{pain}}) = q_{\text{pain}}
+    \end{equation}
+    \item Note that $q_{\text{pain}} \neq q_{\text{fear}}$ and $q_{\text{pain}} \neq q_{\text{vib}}$.
+    \item The functional mapping is:
+    \begin{equation}
+    \phi_H: \{s_{\text{fear}}, s_{\text{vibration}}\} \mapsto R_{\text{pain}}
+    \end{equation}
+    where $\phi_H$ is \textbf{not} a simple sum or union:
+    \begin{equation}
+    R_{\text{pain}} \neq s_{\text{fear}} \oplus s_{\text{vibration}}
+    \end{equation}
+    for any composition operator $\oplus$.
+    \item The error arises because the HOT mechanism can be \textit{inaccurate}:
+    \begin{equation}
+    \exists h \in \Hset : \Target(h) = R \land R \neq s_{\text{actual}}
+    \end{equation}
+    \item Since $H(R_{\text{pain}}) = 1$ (via $h$), the subject is conscious of $R_{\text{pain}}$, experiencing pain despite the absence of a pain-causing first-order state. \qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[HOT-Determined Phenomenology]
+\label{cor:HOT-phenom}
+The phenomenal character of experience is determined by HOT content, not first-order state content:
+\begin{equation}
+\Q_{\text{experienced}}(s) = \Q(\Target(h)) \neq \Q(s_{\text{actual}})
+\end{equation}
+when misrepresentation occurs.
+\end{corollary}
+
+%------------------------------------------------------------------------------
+\subsection{Rejection of Alternative Topologies}
+%------------------------------------------------------------------------------
+
+We now derive formal proofs rejecting three alternative architectures for higher-order awareness.
+
+\subsubsection{Rejection of Inner Sense Theory}
+
+\begin{proposition}[Inner Sense Qualia Requirement]
+\label{prop:inner-sense}
+If higher-order awareness $H$ is perceptual (Inner Sense), then $H$ must introduce novel qualia $\Q_h \neq \emptyset$ independent of the target state.
+\end{proposition}
+
+\begin{theorem}[Rejection of Inner Sense]
+\label{thm:reject-inner}
+Inner Sense Theory is inconsistent with the architecture of higher-order awareness.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item \textbf{Assume} $H$ is a perceptual mechanism (Inner Sense hypothesis).
+    \item Perception necessarily involves qualitative content. For any perceptual state $p$:
+    \begin{equation}
+    \text{Perceptual}(p) \implies \Q(p) \neq \emptyset
+    \end{equation}
+    \item If $H$ perceives the target state $s$, then $H$ must have its own qualitative character $\Q_H$:
+    \begin{equation}
+    \Q_H = \Q(h) \quad \text{where } h \in \Hset
+    \end{equation}
+    \item By source evidence: ``The only mental qualities that occur when we are conscious of our conscious mental states are qualities that belong to the states we are conscious of.''
+    \item This entails:
+    \begin{equation}
+    \Q_H = \Q(\Target(h)) \text{ or } \Q_H = \emptyset
+    \end{equation}
+    \item But $\Q_H = \Q(\Target(h))$ means no \textit{new} qualia from $H$ itself.
+    \item And perception requires $\Q_H \neq \emptyset$ independent of target.
+    \item Therefore, we have:
+    \begin{equation}
+    \Q_H = \emptyset \quad \text{(from source)}
+    \end{equation}
+    \item But:
+    \begin{equation}
+    \text{Perceptual}(H) \implies \Q_H \neq \emptyset \quad \text{(from perception)}
+    \end{equation}
+    \item Contradiction: $\Q_H = \emptyset \land \Q_H \neq \emptyset$.
+    \item \textbf{Conclusion}: $H$ is not perceptual. $H$ must be \textbf{conceptual} (thought-based). \qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[HOT is Conceptual]
+\label{cor:conceptual}
+Higher-order awareness is strictly conceptual:
+\begin{equation}
+\forall h \in \Hset : \text{Type}(h) = \text{Thought} \neq \text{Perception}
+\end{equation}
+\end{corollary}
+
+\subsubsection{Rejection of Dispositionalism}
+
+\begin{definition}[Dispositional vs. Occurrent States]
+\label{def:disposition}
+For a mental state $h$:
+\begin{align}
+h_{\text{actual}} &: h \text{ is occurrent (actually tokened)} \\
+h_{\text{potential}} &: h \text{ is dispositional (disposed to occur)}
+\end{align}
+Let $P(h)$ denote the probability/disposition measure for $h$.
+\end{definition}
+
+\begin{theorem}[Rejection of Dispositionalism]
+\label{thm:reject-disp}
+A dispositional HOT $h_{\text{potential}}$ is insufficient for consciousness.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item \textbf{Dispositionalist claim}: $P(h) > 0 \implies C(\Target(h)) = 1$.
+    \item The Transitivity Principle (Axiom~\ref{ax:TP}) requires the subject to be \textit{conscious of} the state:
+    \begin{equation}
+    C(s) = 1 \iff \text{Subject is conscious of } s
+    \end{equation}
+    \item Being disposed to think about $s$ is not being conscious of $s$:
+    \begin{equation}
+    P(h) > 0 \not\Rightarrow \A(h, s) = 1
+    \end{equation}
+    \item A disposition is a counterfactual property:
+    \begin{equation}
+    h_{\text{potential}} : \text{``If conditions } C \text{, then } h \text{ would occur''}
+    \end{equation}
+    \item But consciousness requires an actual, occurrent relation:
+    \begin{equation}
+    C(s) = 1 \implies h_{\text{actual}} \text{ exists with } \Target(h) = s
+    \end{equation}
+    \item Therefore:
+    \begin{equation}
+    \boxed{h_{\text{actual}} \neq h_{\text{potential}}}
+    \end{equation}
+    \item The dispositional account violates TP because:
+    \begin{equation}
+    h_{\text{potential}} \not\Rightarrow \text{Subject is conscious of } \Target(h)
+    \end{equation}
+    \item \textbf{Conclusion}: Only occurrent HOTs satisfy the Transitivity Principle. Dispositionalism fails. \qedhere
+\end{enumerate}
+\end{proof}
+
+\subsubsection{Rejection of Intrinsic Higher-Order Content Theory}
+
+\begin{definition}[Intrinsic Theory]
+\label{def:intrinsic}
+Intrinsic Theory posits that a single state $s$ contains both:
+\begin{enumerate}
+    \item The first-order content (target)
+    \item The higher-order content (reflexive awareness)
+\end{enumerate}
+Formally: $s = s_{\text{FO}} \oplus s_{\text{HO}}$ within one state.
+\end{definition}
+
+\begin{theorem}[Rejection via Conflicting Attitudes]
+\label{thm:reject-intrinsic}
+Intrinsic Theory leads to a contradiction regarding mental attitudes.
+\end{theorem}
+
+\begin{proof}
+\begin{enumerate}
+    \item \textbf{Assume} Intrinsic Theory: a single state $s$ contains both target content and reflexive HO content.
+    \item Let $s$ be a conscious state of doubt. Then:
+    \begin{equation}
+    \Attitude(s_{\text{FO}}) = \text{Doubt}
+    \end{equation}
+    where the subject doubts proposition $p$.
+    \item For $s$ to be conscious (by TP), there must be HO awareness of $s$:
+    \begin{equation}
+    \text{HO-content}(s) : \text{``I am in state } s\text{''}
+    \end{equation}
+    \item By Axiom~\ref{ax:assertoric}, consciousness requires assertoric attitude:
+    \begin{equation}
+    \Attitude(\text{HO-content}) = \text{Assert}
+    \end{equation}
+    \item Under Intrinsic Theory, both attitudes belong to the same state $s$:
+    \begin{equation}
+    s \text{ has } \Attitude = \text{Doubt} \quad \text{(first-order)}
+    \end{equation}
+    \begin{equation}
+    s \text{ has } \Attitude = \text{Assert} \quad \text{(higher-order)}
+    \end{equation}
+    \item By the source: ``Distinct mental attitudes require distinct mental states.''
+    \item But $\text{Doubt} \neq \text{Assert}$, so:
+    \begin{equation}
+    s_{\text{Doubt}} \neq s_{\text{Assert}}
+    \end{equation}
+    \item Yet Intrinsic Theory claims $s_{\text{Doubt}} = s_{\text{Assert}} = s$.
+    \item \textbf{Contradiction}:
+    \begin{equation}
+    s = s \land s \neq s \quad \text{(impossible)}
+    \end{equation}
+    \item More precisely:
+    \begin{equation}
+    \Attitude(s) = \text{Doubt} \land \Attitude(s) = \text{Assert}
+    \end{equation}
+    which violates functionality of $\Attitude$ (one state cannot have two distinct attitudes simultaneously).
+    \item \textbf{Conclusion}: The HO content must reside in a distinct state. Intrinsic Theory fails. \qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{corollary}[Two-State Requirement]
+\label{cor:two-state}
+Consciousness of a state $s$ requires a numerically distinct HOT $h$:
+\begin{equation}
+\boxed{C(s) = 1 \implies \exists h \in \Hset : h \neq s \land \Target(h) = s}
+\end{equation}
+\end{corollary}
+
+%==============================================================================
+\section{Summary of the Rosenthal Ansatz}
+%==============================================================================
+
+\begin{tcolorbox}[colback=green!5!white, colframe=green!75!black, title=\textbf{The Rosenthal Ansatz: Complete Formalization}]
+
+\textbf{Mental Architecture:}
+\begin{equation}
+\M = \langle \Sset, \Q, \Hset, \A \rangle
+\end{equation}
+
+\textbf{Transitivity Principle:}
+\begin{equation}
+s \in \Scon \iff \exists h \in \Hset : \Target(h) = s \land \Attitude(h) = \text{Assert}
+\end{equation}
+
+\textbf{Separability:}
+\begin{equation}
+\Q(s) \perp\!\!\!\perp C(s) \quad \text{(Qualia independent of consciousness)}
+\end{equation}
+
+\textbf{Granularity:}
+\begin{equation}
+\Res(E) \propto \Res(\ConceptE)
+\end{equation}
+
+\textbf{Misrepresentation (Dental Fear):}
+\begin{equation}
+\phi_H(\{s_{\text{fear}}, s_{\text{vibration}}\}) = R_{\text{pain}} \neq s_{\text{fear}} \oplus s_{\text{vibration}}
+\end{equation}
+
+\textbf{Rejected Alternatives:}
+\begin{enumerate}
+    \item Inner Sense: $\Q_H = \emptyset \implies H \neq \text{Perceptual}$
+    \item Dispositionalism: $h_{\text{actual}} \neq h_{\text{potential}}$
+    \item Intrinsic Theory: $\text{Doubt}(s) \land \text{Assert}(s) \implies \bot$
+\end{enumerate}
+
+\end{tcolorbox}
+
+\vspace{2em}
+
+\begin{center}
+\rule{0.5\textwidth}{0.4pt}
+
+\small\textit{Document generated using the K-Dense scientific writing framework.}
+
+\href{https://k-dense.ai}{k-dense.ai}
+\end{center}
+
+\end{document}

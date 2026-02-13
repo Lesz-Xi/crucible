@@ -1,0 +1,307 @@
+{
+  "graph_id": "hot_rosenthal_v1",
+  "version": "1.0.0",
+  "graph_type": "structural_causal_model",
+  "source": {
+    "title": "The Formalism of Higher-Order State Topologies",
+    "path": "Higher-Order/formalism_higher_order_state_topologies.tex",
+    "date": "2026-02-04"
+  },
+  "domains": {
+    "binary": [
+      0,
+      1
+    ],
+    "attitudes": [
+      "Assert",
+      "Doubt",
+      "Wonder"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "C_creature",
+      "label": "Creature Consciousness Boundary",
+      "kind": "exogenous",
+      "domain": "binary"
+    },
+    {
+      "id": "S_exists",
+      "label": "Mental State Space Exists",
+      "kind": "endogenous",
+      "domain": "binary"
+    },
+    {
+      "id": "s",
+      "label": "First-Order State Token",
+      "kind": "state"
+    },
+    {
+      "id": "h",
+      "label": "Higher-Order Thought Token",
+      "kind": "state"
+    },
+    {
+      "id": "Target_h",
+      "label": "Target(h)",
+      "kind": "endogenous",
+      "domain": "state_ref"
+    },
+    {
+      "id": "Attitude_h",
+      "label": "Attitude(h)",
+      "kind": "endogenous",
+      "domain": "attitudes"
+    },
+    {
+      "id": "H_s",
+      "label": "HOT Operator H(s)",
+      "kind": "endogenous",
+      "domain": "binary"
+    },
+    {
+      "id": "C_s",
+      "label": "State Consciousness C(s)",
+      "kind": "endogenous",
+      "domain": "binary"
+    },
+    {
+      "id": "S_con_membership",
+      "label": "s in S_con",
+      "kind": "derived",
+      "domain": "binary"
+    },
+    {
+      "id": "S_sub_membership",
+      "label": "s in S_sub",
+      "kind": "derived",
+      "domain": "binary"
+    },
+    {
+      "id": "Q_s",
+      "label": "Qualia of s",
+      "kind": "endogenous",
+      "domain": "qualia_set"
+    },
+    {
+      "id": "Concept_E",
+      "label": "Concept Set Used in HOT",
+      "kind": "endogenous",
+      "domain": "concept_set"
+    },
+    {
+      "id": "Res_Concept_E",
+      "label": "Resolution of Concept Set",
+      "kind": "endogenous",
+      "domain": "nonnegative_real"
+    },
+    {
+      "id": "Res_E",
+      "label": "Experiential Resolution",
+      "kind": "endogenous",
+      "domain": "nonnegative_real"
+    },
+    {
+      "id": "s_fear",
+      "label": "Fear State",
+      "kind": "state"
+    },
+    {
+      "id": "s_vibration",
+      "label": "Vibration State",
+      "kind": "state"
+    },
+    {
+      "id": "phi_H",
+      "label": "HOT Misrepresentation Mapping",
+      "kind": "mechanism"
+    },
+    {
+      "id": "R_pain",
+      "label": "Represented Pain State",
+      "kind": "endogenous",
+      "domain": "state_ref"
+    },
+    {
+      "id": "Q_experienced",
+      "label": "Experienced Qualia",
+      "kind": "endogenous",
+      "domain": "qualia_set"
+    }
+  ],
+  "edges": [
+    {
+      "from": "C_creature",
+      "to": "S_exists",
+      "type": "causal"
+    },
+    {
+      "from": "h",
+      "to": "Target_h",
+      "type": "functional"
+    },
+    {
+      "from": "h",
+      "to": "Attitude_h",
+      "type": "functional"
+    },
+    {
+      "from": "Target_h",
+      "to": "H_s",
+      "type": "causal",
+      "condition": "Target_h = s"
+    },
+    {
+      "from": "Attitude_h",
+      "to": "H_s",
+      "type": "causal",
+      "condition": "Attitude_h = Assert"
+    },
+    {
+      "from": "H_s",
+      "to": "C_s",
+      "type": "causal"
+    },
+    {
+      "from": "C_s",
+      "to": "S_con_membership",
+      "type": "definition"
+    },
+    {
+      "from": "C_s",
+      "to": "S_sub_membership",
+      "type": "definition",
+      "polarity": "inverse"
+    },
+    {
+      "from": "Concept_E",
+      "to": "Res_Concept_E",
+      "type": "causal"
+    },
+    {
+      "from": "Res_Concept_E",
+      "to": "Res_E",
+      "type": "causal",
+      "relation": "proportional"
+    },
+    {
+      "from": "s_fear",
+      "to": "phi_H",
+      "type": "input"
+    },
+    {
+      "from": "s_vibration",
+      "to": "phi_H",
+      "type": "input"
+    },
+    {
+      "from": "phi_H",
+      "to": "R_pain",
+      "type": "causal"
+    },
+    {
+      "from": "R_pain",
+      "to": "Target_h",
+      "type": "causal"
+    },
+    {
+      "from": "Target_h",
+      "to": "Q_experienced",
+      "type": "causal",
+      "relation": "Q_experienced = Q(Target_h)"
+    }
+  ],
+  "structural_equations": [
+    {
+      "node": "S_exists",
+      "equation": "S_exists := C_creature"
+    },
+    {
+      "node": "H_s",
+      "equation": "H_s := 1 iff exists h such that Target_h = s and Attitude_h = Assert; else 0"
+    },
+    {
+      "node": "C_s",
+      "equation": "C_s := H_s"
+    },
+    {
+      "node": "S_con_membership",
+      "equation": "S_con_membership := C_s"
+    },
+    {
+      "node": "S_sub_membership",
+      "equation": "S_sub_membership := 1 - C_s"
+    },
+    {
+      "node": "Res_E",
+      "equation": "Res_E := f(Res_Concept_E), with Res_E <= max_{c in Concept_E} Res(c)"
+    },
+    {
+      "node": "R_pain",
+      "equation": "R_pain := phi_H({s_fear, s_vibration}), with R_pain not equal to s_fear and not equal to s_vibration"
+    },
+    {
+      "node": "Q_experienced",
+      "equation": "Q_experienced := Q(Target_h)"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "transitivity_principle",
+      "expression": "C_s = 1 iff exists h with Target_h = s and Attitude_h = Assert"
+    },
+    {
+      "id": "assertoric_constraint",
+      "expression": "Attitude_h in {Doubt, Wonder} implies H_s = 0 via that h"
+    },
+    {
+      "id": "two_state_requirement",
+      "expression": "C_s = 1 implies exists h such that h != s and Target_h = s"
+    },
+    {
+      "id": "separability",
+      "expression": "Q_s is independent of C_s",
+      "kind": "independence"
+    },
+    {
+      "id": "misrepresentation",
+      "expression": "Q_experienced may differ from Q(actual_state) when Target_h misrepresents input states"
+    }
+  ],
+  "interventions": [
+    {
+      "id": "do_make_state_conscious",
+      "do": [
+        "Target_h := s",
+        "Attitude_h := Assert"
+      ],
+      "effect": "C_s = 1"
+    },
+    {
+      "id": "do_make_state_subliminal",
+      "do": [
+        "remove all h such that Target_h = s",
+        "or set Attitude_h != Assert for all h targeting s"
+      ],
+      "effect": "C_s = 0"
+    },
+    {
+      "id": "do_increase_granularity",
+      "do": [
+        "expand Concept_E with higher-resolution concepts"
+      ],
+      "effect": "increases upper bound of Res_E"
+    },
+    {
+      "id": "do_induce_dental_misrepresentation",
+      "do": [
+        "set phi_H({s_fear, s_vibration}) := R_pain"
+      ],
+      "effect": "Q_experienced = Q(R_pain) with possible mismatch from first-order inputs"
+    }
+  ],
+  "notes": [
+    "This file encodes the HOT formalism as an SCM-friendly graph artifact.",
+    "Separability is represented as a statistical-independence constraint, not as an edge."
+  ]
+}

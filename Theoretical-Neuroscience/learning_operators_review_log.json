@@ -1,0 +1,21 @@
+{
+  "user_prompt": "Learning Operators in Neural Systems: Scientific diagram showing three learning paradigms. TOP ROW - Hebbian/Oja Learning: Input vector u pointing to neuron output v, weight vector w, showing PCA extraction - input cloud converging to principal eigenvector direction, equation dw/dt = vu - \u03b1v\u00b2w. MIDDLE ROW - Temporal Difference Learning: Timeline showing reward r(t), value predictions v(t) and v(t+1), TD error \u03b4(t) = r(t) + v(t+1) - v(t) as prediction error signal, dopamine neuron firing pattern diagram. BOTTOM ROW - EM Algorithm/Generative Models: Two-layer network with visible units u (bottom) and hidden units v (top), generative model P[u|v] arrows pointing down, recognition model P[v|u] arrows pointing up, E-step and M-step cycle diagram. Professional machine learning style, clear mathematical annotations.",
+  "doc_type": "default",
+  "quality_threshold": 7.5,
+  "iterations": [
+    {
+      "iteration": 1,
+      "image_path": "writing_outputs/figures/learning_operators_v1.png",
+      "prompt": "\nCreate a high-quality scientific diagram with these requirements:\n\nVISUAL QUALITY:\n- Clean white or light background (no textures or gradients)\n- High contrast for readability and printing\n- Professional, publication-ready appearance\n- Sharp, clear lines and text\n- Adequate spacing between elements to prevent crowding\n\nTYPOGRAPHY:\n- Clear, readable sans-serif fonts (Arial, Helvetica style)\n- Minimum 10pt font size for all labels\n- Consistent font sizes throughout\n- All text horizontal or clearly readable\n- No overlapping text\n\nSCIENTIFIC STANDARDS:\n- Accurate representation of concepts\n- Clear labels for all components\n- Include scale bars, legends, or axes where appropriate\n- Use standard scientific notation and symbols\n- Include units where applicable\n\nACCESSIBILITY:\n- Colorblind-friendly color palette (use Okabe-Ito colors if using color)\n- High contrast between elements\n- Redundant encoding (shapes + colors, not just colors)\n- Works well in grayscale\n\nLAYOUT:\n- Logical flow (left-to-right or top-to-bottom)\n- Clear visual hierarchy\n- Balanced composition\n- Appropriate use of whitespace\n- No clutter or unnecessary decorative elements\n\nIMPORTANT - NO FIGURE NUMBERS:\n- Do NOT include \"Figure 1:\", \"Fig. 1\", or any figure numbering in the image\n- Do NOT add captions or titles like \"Figure: ...\" at the top or bottom\n- Figure numbers and captions are added separately in the document/LaTeX\n- The diagram should contain only the visual content itself\n\n\nUSER REQUEST: Learning Operators in Neural Systems: Scientific diagram showing three learning paradigms. TOP ROW - Hebbian/Oja Learning: Input vector u pointing to neuron output v, weight vector w, showing PCA extraction - input cloud converging to principal eigenvector direction, equation dw/dt = vu - \u03b1v\u00b2w. MIDDLE ROW - Temporal Difference Learning: Timeline showing reward r(t), value predictions v(t) and v(t+1), TD error \u03b4(t) = r(t) + v(t+1) - v(t) as prediction error signal, dopamine neuron firing pattern diagram. BOTTOM ROW - EM Algorithm/Generative Models: Two-layer network with visible units u (bottom) and hidden units v (top), generative model P[u|v] arrows pointing down, recognition model P[v|u] arrows pointing up, E-step and M-step cycle diagram. Professional machine learning style, clear mathematical annotations.\n\nGenerate a publication-quality scientific diagram that meets all the guidelines above.",
+      "critique": "Image generated successfully (review skipped)",
+      "score": 7.5,
+      "needs_improvement": false,
+      "success": true
+    }
+  ],
+  "final_image": "writing_outputs/figures/learning_operators_v1.png",
+  "final_score": 7.5,
+  "success": true,
+  "early_stop": true,
+  "early_stop_reason": "Quality score 7.5 meets threshold 7.5 for default"
+}

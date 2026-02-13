@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASA Walkthrough: Sovereign Memory & Chemical Entity Validation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+        }
+        h1 {
+            color: #0a0a12;
+            border-bottom: 3px solid #22d3ee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1e40af;
+            margin-top: 40px;
+            border-left: 4px solid #22d3ee;
+            padding-left: 12px;
+        }
+        h3 {
+            color: #374151;
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+        .mermaid {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .important {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .file-link {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .status-complete {
+            color: #10b981;
+            font-weight: 600;
+        }
+        .status-pending {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        ul {
+            padding-left: 24px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .header-meta {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>MASA Walkthrough: Sovereign Memory & Chemical Entity Validation</h1>
+    <p class="header-meta">Generated: 2026-01-21 | Synthesis Engine v1.0</p>
+
+    <h2>Phase 6: Sovereign Memory <span class="status-complete">✓ Complete</span></h2>
+
+    <h3>Overview</h3>
+    <p>The <strong>Sovereign Memory</strong> feature enables MASA to learn from past rejections via vector embeddings. When an idea is rejected by the auditor, its embedding is stored in a vector database. Before generating new ideas, the system queries for similar rejected patterns to avoid repeating mistakes.</p>
+
+    <h3>Architecture</h3>
+    <div class="mermaid">
+flowchart TD
+    A["Novel Idea Generated"] --> B["generateEmbedding()"]
+    B --> C{"checkRejection()"}
+    C -->|"Similar Rejected Found"| D["Skip Idea"]
+    C -->|"No Match"| E["MASA Audit"]
+    E -->|"Approved"| F["saveIdeaEmbedding(isRejected=false)"]
+    E -->|"Rejected"| G["saveIdeaEmbedding(isRejected=true)"]
+    F --> H["idea_embeddings table"]
+    G --> H
+    H --> I["Vector Index (ivfflat)"]
+    I --> C
+    </div>
+
+    <h3>Implementation Details</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>File</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>SQL Migration</td>
+                <td><code>20260120_vector_memory.sql</code></td>
+                <td>Creates idea_embeddings table with pgvector, ivfflat index, and match_idea_embeddings RPC</td>
+            </tr>
+            <tr>
+                <td>Embedding Generator</td>
+                <td><code>gemini.ts</code></td>
+                <td>Uses Google's text-embedding-004 model (768 dimensions)</td>
+            </tr>
+            <tr>
+                <td>Vector Store Integration</td>
+                <td><code>persistence-service.ts</code></td>
+                <td>checkRejection() and saveIdeaEmbedding() methods</td>
+            </tr>
+            <tr>
+                <td>Pipeline Integration</td>
+                <td><code>synthesis-engine.ts</code></td>
+                <td>Lines 547-573: Filters ideas via priorRejectionCheckFn</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Data Flow</h3>
+    <ol>
+        <li><strong>Generation:</strong> Novel ideas created by Claude</li>
+        <li><strong>Check:</strong> Each idea embedded and compared to rejected ideas (>90% similarity threshold)</li>
+        <li><strong>Filter:</strong> Similar ideas to rejected patterns are skipped</li>
+        <li><strong>Audit:</strong> Remaining ideas go through MASA Auditor</li>
+        <li><strong>Store:</strong> Embedding saved with is_rejected flag based on audit outcome</li>
+        <li><strong>Learn:</strong> Future generations avoid similar rejected patterns</li>
+    </ol>
+
+    <div class="important">
+        <strong>Important:</strong> Apply the pgvector migration to your Supabase project to activate the feedback loop.
+    </div>
+
+    <hr>
+
+    <h2>Phase 7: Chemical Entity Validation Validator <span class="status-complete">✓ Complete</span></h2>
+
+    <h3>Overview</h3>
+    <p>Transitions MASA from <strong>Philosopher</strong> (logic only) → <strong>Scientist</strong> (hypothesis → simulation → evidence) by executing generated Python protocols in a secure Pyodide (WebAssembly) sandbox.</p>
+
+    <h3>Architecture</h3>
+    <div class="mermaid">
+flowchart TD
+    A["Novel Idea"] --> B["ExperimentGenerator"]
+    B --> C["protocolCode + labManual"]
+    C --> D["ProtocolValidator"]
+    D --> E{"Pyodide Sandbox"}
+    E --> F["Execute Python"]
+    F --> G["Capture stdout"]
+    G --> H["Parse Metrics"]
+    H --> I["ValidationResult"]
+    I --> J["Attach to NovelIdea"]
+    J --> K["Store in synthesis_results"]
+    </div>
+
+    <h3>Implementation Details</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>File</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Pyodide Sandbox</td>
+                <td><code>protocol-validator.ts</code></td>
+                <td>WebAssembly sandbox with numpy, scipy, networkx</td>
+            </tr>
+            <tr>
+                <td>API Route</td>
+                <td><code>validate-protocol/route.ts</code></td>
+                <td>POST endpoint with security checks</td>
+            </tr>
+            <tr>
+                <td>Engine Integration</td>
+                <td><code>synthesis-engine.ts</code></td>
+                <td>Lines 669-692: validateProtocolFn callback</td>
+            </tr>
+            <tr>
+                <td>Type Definition</td>
+                <td><code>types/index.ts</code></td>
+                <td>validationResult field on NovelIdea</td>
+            </tr>
+            <tr>
+                <td>Stream Event</td>
+                <td><code>streaming-event-emitter.ts</code></td>
+                <td>protocol_validated event for real-time UI</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Features</h3>
+    <ul>
+        <li><strong>Secure Sandbox:</strong> Pyodide (WebAssembly) isolates Python execution - no filesystem access</li>
+        <li><strong>Scientific Packages:</strong> numpy, scipy, networkx available for simulations</li>
+        <li><strong>Metrics Parsing:</strong> Extracts p-values, Bayes factors from stdout</li>
+        <li><strong>Timeout Protection:</strong> 30s max execution time prevents runaway simulations</li>
+        <li><strong>Security Checks:</strong> Blocks dangerous imports (os, subprocess, socket, etc.)</li>
+    </ul>
+
+    <h3>Metrics Captured</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Pattern Matched</th>
+                <th>Interpretation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>p-value</td>
+                <td><code>p-value: 0.05</code></td>
+                <td>&lt; 0.05 = statistically significant</td>
+            </tr>
+            <tr>
+                <td>Bayes Factor</td>
+                <td><code>bayes_factor: 3.2</code></td>
+                <td>&gt; 3 = substantial evidence</td>
+            </tr>
+            <tr>
+                <td>Sample Size</td>
+                <td><code>n: 1000</code></td>
+                <td>Simulation iteration count</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note">
+        <strong>Note:</strong> Pyodide loads ~15MB on first call. Subsequent validations reuse the cached instance for fast execution.
+    </div>
+
+    <hr>
+
+    <h2>Summary: Main Goal Achievement</h2>
+    <p>Per the architect's verdict in <code>Main_Goal.md</code>, closing the loop requires three things:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Requirement</th>
+                <th>Status</th>
+                <th>Implementation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>1. Generator</strong></td>
+                <td class="status-complete">✓ Complete</td>
+                <td>Novel Idea Engine (synthesis-engine.ts)</td>
+            </tr>
+            <tr>
+                <td><strong>2. Evaluator</strong></td>
+                <td class="status-complete">✓ Complete</td>
+                <td>MASA Auditor (masa-auditor.ts)</td>
+            </tr>
+            <tr>
+                <td><strong>3. Update Mechanism</strong></td>
+                <td class="status-complete">✓ Complete</td>
+                <td>Sovereign Memory (persistence-service.ts + pgvector)</td>
+            </tr>
+            <tr>
+                <td><strong>4. Chemical Entity Validation</strong></td>
+                <td class="status-complete">✓ Complete</td>
+                <td>Protocol Validator (protocol-validator.ts + Pyodide)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>MASA has transitioned from Philosopher to Scientist.</strong></p>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

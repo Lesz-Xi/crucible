@@ -1,0 +1,750 @@
+{
+  "graph_id": "iit_tononi_boly_v1",
+  "version": "1.0.0",
+  "graph_type": "structural_causal_model",
+  "source": {
+    "title": "Integrated Information Theory: Foundations of Conscious Existence",
+    "path": "Information-Theory/Integrated Information Theory_ Foundations of Conscious Existence.pdf",
+    "date": "2026-02-04"
+  },
+  "system_tuple": "U_IIT = <S, P, Phi, O>",
+  "identity": "E \u2261 Omega_Phi",
+  "nodes": [
+    {
+      "id": "S",
+      "name": "Physical Substrate",
+      "label": "S",
+      "domain": "substrate",
+      "description": "Finite set of physical units (neurons or logic units) that instantiate the candidate system.",
+      "type": "observable"
+    },
+    {
+      "id": "s_0",
+      "name": "Current State",
+      "label": "s_0",
+      "domain": "dynamics",
+      "description": "Current binary microstate over substrate units.",
+      "type": "observable"
+    },
+    {
+      "id": "P",
+      "name": "Transition Probability Matrix",
+      "label": "P",
+      "domain": "dynamics",
+      "description": "Markovian transition dynamics P(s_{t+1}|s_t).",
+      "type": "observable"
+    },
+    {
+      "id": "network_topology",
+      "name": "Network Topology",
+      "label": "Topology",
+      "domain": "substrate",
+      "description": "Connectivity class: grid, modular, feedforward, or random.",
+      "type": "observable"
+    },
+    {
+      "id": "partition",
+      "name": "Candidate Partition",
+      "label": "Partition",
+      "domain": "integration",
+      "description": "Candidate cut of S used to evaluate reducibility.",
+      "type": "observable"
+    },
+    {
+      "id": "MIP",
+      "name": "Minimum Information Partition",
+      "label": "MIP",
+      "domain": "integration",
+      "description": "Partition that minimizes information-preserving causal power.",
+      "type": "functional"
+    },
+    {
+      "id": "Phi",
+      "name": "Integration Measure",
+      "label": "Phi",
+      "domain": "integration",
+      "description": "Irreducibility scalar phi >= 0 defined at the MIP.",
+      "type": "functional"
+    },
+    {
+      "id": "F",
+      "name": "Unfolding Operator",
+      "label": "F",
+      "domain": "mechanism",
+      "description": "Operator that maps physical state and dynamics into the cause-effect structure.",
+      "type": "functional"
+    },
+    {
+      "id": "Omega",
+      "name": "Cause-Effect Structure",
+      "label": "Omega",
+      "domain": "ontology",
+      "description": "High-dimensional lattice/polytope of distinctions and relations.",
+      "type": "latent"
+    },
+    {
+      "id": "E",
+      "name": "Experience",
+      "label": "E",
+      "domain": "phenomenology",
+      "description": "Phenomenal description of the same entity as Omega.",
+      "type": "latent"
+    },
+    {
+      "id": "intrinsicality_axiom",
+      "name": "Intrinsicality Axiom",
+      "label": "Axiom: Intrinsicality",
+      "domain": "phenomenology",
+      "description": "Experience exists for itself.",
+      "type": "constraint"
+    },
+    {
+      "id": "information_axiom",
+      "name": "Information Axiom",
+      "label": "Axiom: Information",
+      "domain": "phenomenology",
+      "description": "Experience is specific and differentiates alternatives.",
+      "type": "constraint"
+    },
+    {
+      "id": "integration_axiom",
+      "name": "Integration Axiom",
+      "label": "Axiom: Integration",
+      "domain": "phenomenology",
+      "description": "Experience is unified and irreducible.",
+      "type": "constraint"
+    },
+    {
+      "id": "composition_axiom",
+      "name": "Composition Axiom",
+      "label": "Axiom: Composition",
+      "domain": "phenomenology",
+      "description": "Experience has parts and structure.",
+      "type": "constraint"
+    },
+    {
+      "id": "exclusion_axiom",
+      "name": "Exclusion Axiom",
+      "label": "Axiom: Exclusion",
+      "domain": "phenomenology",
+      "description": "Experience is definite and has boundaries.",
+      "type": "constraint"
+    },
+    {
+      "id": "intrinsicality_postulate",
+      "name": "Intrinsicality Postulate",
+      "label": "Postulate: Intrinsicality",
+      "domain": "mechanism",
+      "description": "Mechanism has intrinsic cause-effect power.",
+      "type": "constraint"
+    },
+    {
+      "id": "information_postulate",
+      "name": "Information Postulate",
+      "label": "Postulate: Information",
+      "domain": "mechanism",
+      "description": "Mechanism specifies a selective cause-effect repertoire.",
+      "type": "constraint"
+    },
+    {
+      "id": "integration_postulate",
+      "name": "Integration Postulate",
+      "label": "Postulate: Integration",
+      "domain": "integration",
+      "description": "Mechanism must be irreducible (Phi > 0) to exist intrinsically.",
+      "type": "constraint"
+    },
+    {
+      "id": "composition_postulate",
+      "name": "Composition Postulate",
+      "label": "Postulate: Composition",
+      "domain": "mechanism",
+      "description": "Mechanism has compositional causal structure.",
+      "type": "constraint"
+    },
+    {
+      "id": "exclusion_postulate",
+      "name": "Exclusion Postulate",
+      "label": "Postulate: Exclusion",
+      "domain": "ontology",
+      "description": "Only maximally irreducible conceptual structure (MICS) is admitted.",
+      "type": "constraint"
+    },
+    {
+      "id": "intrinsic_entity",
+      "name": "Intrinsic Entity",
+      "label": "Intrinsic Entity",
+      "domain": "ontology",
+      "description": "Boolean classifier for crossing Phi > 0 divide.",
+      "type": "functional"
+    },
+    {
+      "id": "conscious",
+      "name": "Consciousness Classifier",
+      "label": "Conscious",
+      "domain": "phenomenology",
+      "description": "Boolean classifier Phi > consciousness threshold.",
+      "type": "functional"
+    },
+    {
+      "id": "Phi_distinctions",
+      "name": "Phi Distinctions",
+      "label": "Phi_d",
+      "domain": "integration",
+      "description": "Sum of distinction-level irreducibility terms.",
+      "type": "functional"
+    },
+    {
+      "id": "Phi_relations",
+      "name": "Phi Relations",
+      "label": "Phi_r",
+      "domain": "integration",
+      "description": "Sum of relation-level irreducibility terms.",
+      "type": "functional"
+    },
+    {
+      "id": "Phi_total",
+      "name": "Total Phi",
+      "label": "Phi_total",
+      "domain": "integration",
+      "description": "Total integrated information from distinctions and relations.",
+      "type": "functional"
+    },
+    {
+      "id": "consciousness_threshold",
+      "name": "Consciousness Threshold",
+      "label": "theta_c",
+      "domain": "phenomenology",
+      "description": "Decision boundary for conscious classification.",
+      "type": "constraint"
+    },
+    {
+      "id": "mics_set",
+      "name": "MICS Set",
+      "label": "I",
+      "domain": "ontology",
+      "description": "Set of complexes that locally maximize Phi.",
+      "type": "functional"
+    },
+    {
+      "id": "computational_complexity",
+      "name": "Unfolding Complexity",
+      "label": "O(2^|S|)",
+      "domain": "mechanism",
+      "description": "Complexity class of exhaustive unfolding over the power set.",
+      "type": "constraint"
+    },
+    {
+      "id": "von_neumann_architecture",
+      "name": "Von Neumann Architecture",
+      "label": "Von Neumann",
+      "domain": "substrate",
+      "description": "Digital modular architecture with coarse separability.",
+      "type": "observable"
+    },
+    {
+      "id": "exclusion_boundary",
+      "name": "Great Divide Boundary",
+      "label": "Phi = 0 Boundary",
+      "domain": "ontology",
+      "description": "Ontological boundary separating intrinsic entities from aggregates.",
+      "type": "constraint"
+    },
+    {
+      "id": "feedback_loops",
+      "name": "Feedback Loops",
+      "label": "Feedback",
+      "domain": "dynamics",
+      "description": "Presence of recurrent bidirectional pathways supporting integration.",
+      "type": "observable"
+    },
+    {
+      "id": "bidirectional_connectivity",
+      "name": "Bidirectional Connectivity",
+      "label": "Bidirectionality",
+      "domain": "dynamics",
+      "description": "Fraction of reciprocal connections in the network.",
+      "type": "observable"
+    }
+  ],
+  "edges": [
+    {
+      "from": "S",
+      "to": "Phi",
+      "relationship": "determines",
+      "mechanism": "Substrate composition sets available partitions and candidate complexes.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "s_0",
+      "to": "Phi",
+      "relationship": "determines",
+      "mechanism": "Current microstate changes distinction/relation repertoires entering Phi.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "P",
+      "to": "Phi",
+      "relationship": "determines",
+      "mechanism": "Transition dynamics define causal repertoires and partition information loss.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "network_topology",
+      "to": "Phi",
+      "relationship": "constrains",
+      "mechanism": "Connectivity class bounds achievable irreducibility.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "partition",
+      "to": "MIP",
+      "relationship": "determines",
+      "mechanism": "MIP is selected by minimizing loss over candidate partitions.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "MIP",
+      "to": "Phi",
+      "relationship": "determines",
+      "mechanism": "Phi is the value at the minimum information partition.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "S",
+      "to": "F",
+      "relationship": "determines",
+      "mechanism": "Unfolding receives substrate units as mechanism candidates.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "s_0",
+      "to": "F",
+      "relationship": "determines",
+      "mechanism": "Unfolding conditions distinctions on current state.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi",
+      "to": "F",
+      "relationship": "constrains",
+      "mechanism": "Only irreducible concepts persist in unfolded structure.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "F",
+      "to": "Omega",
+      "relationship": "determines",
+      "mechanism": "Operator maps mechanisms to the cause-effect lattice.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Omega",
+      "to": "E",
+      "relationship": "equivalent_to",
+      "mechanism": "Phenomenology is identified with the unfolded structure.",
+      "strength": "identity"
+    },
+    {
+      "from": "E",
+      "to": "Omega",
+      "relationship": "equivalent_to",
+      "mechanism": "Identity is bidirectional; changing one changes the other.",
+      "strength": "identity"
+    },
+    {
+      "from": "Phi",
+      "to": "intrinsic_entity",
+      "relationship": "determines",
+      "mechanism": "Crossing Phi>0 marks intrinsic existence.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi",
+      "to": "conscious",
+      "relationship": "determines",
+      "mechanism": "Consciousness classification depends on thresholded Phi.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "intrinsicality_axiom",
+      "to": "intrinsicality_postulate",
+      "relationship": "maps_to",
+      "mechanism": "Subjective intrinsicality maps to intrinsic causal power.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "information_axiom",
+      "to": "information_postulate",
+      "relationship": "maps_to",
+      "mechanism": "Phenomenal specificity maps to selective repertoires.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "integration_axiom",
+      "to": "integration_postulate",
+      "relationship": "maps_to",
+      "mechanism": "Unity maps to irreducibility requirement Phi>0.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "composition_axiom",
+      "to": "composition_postulate",
+      "relationship": "maps_to",
+      "mechanism": "Structured experience maps to compositional mechanism.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "exclusion_axiom",
+      "to": "exclusion_postulate",
+      "relationship": "maps_to",
+      "mechanism": "Definiteness maps to maximal irreducible complex selection.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "intrinsicality_postulate",
+      "to": "Omega",
+      "relationship": "determines",
+      "mechanism": "Intrinsic causal power contributes to admissible distinctions.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "information_postulate",
+      "to": "Omega",
+      "relationship": "determines",
+      "mechanism": "Specific repertoires define shape of distinctions.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "integration_postulate",
+      "to": "Omega",
+      "relationship": "constrains",
+      "mechanism": "Only irreducible structures survive partition cuts.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "composition_postulate",
+      "to": "Omega",
+      "relationship": "determines",
+      "mechanism": "Compositional relations define lattice edges.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "exclusion_postulate",
+      "to": "Omega",
+      "relationship": "constrains",
+      "mechanism": "MICS selection excludes non-maximal overlapping structures.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "intrinsicality_axiom",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Experience must exist for itself.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "information_axiom",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Experience has specific differentiated content.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "integration_axiom",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Experience is unified and not decomposable.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "composition_axiom",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Experience contains structured phenomenal parts.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "exclusion_axiom",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Experience has definite content and temporal borders.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi_distinctions",
+      "to": "Phi_total",
+      "relationship": "determines",
+      "mechanism": "Distinction component adds to total Phi.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi_relations",
+      "to": "Phi_total",
+      "relationship": "determines",
+      "mechanism": "Relation component adds to total Phi.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi_total",
+      "to": "Phi",
+      "relationship": "determines",
+      "mechanism": "Total irreducibility induces scalar Phi estimate.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "consciousness_threshold",
+      "to": "conscious",
+      "relationship": "constrains",
+      "mechanism": "Threshold sets conscious decision boundary.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi",
+      "to": "mics_set",
+      "relationship": "determines",
+      "mechanism": "Local maxima over subsets define MICS set membership.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "mics_set",
+      "to": "exclusion_postulate",
+      "relationship": "determines",
+      "mechanism": "Computed local maxima instantiate exclusion rule.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "computational_complexity",
+      "to": "F",
+      "relationship": "constrains",
+      "mechanism": "Power-set search imposes exponential scaling on unfolding.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "von_neumann_architecture",
+      "to": "network_topology",
+      "relationship": "determines",
+      "mechanism": "Von Neumann design induces coarse modular/feedforward topology.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "von_neumann_architecture",
+      "to": "Phi",
+      "relationship": "constrains",
+      "mechanism": "Coarse separability forces Phi toward zero.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Phi",
+      "to": "exclusion_boundary",
+      "relationship": "determines",
+      "mechanism": "Phi sign determines which side of the divide the system occupies.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "exclusion_boundary",
+      "to": "intrinsic_entity",
+      "relationship": "constrains",
+      "mechanism": "Boundary implements binary intrinsic/aggregate classification.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "feedback_loops",
+      "to": "bidirectional_connectivity",
+      "relationship": "determines",
+      "mechanism": "Adding recurrent loops increases reciprocal connectivity.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "bidirectional_connectivity",
+      "to": "Phi",
+      "relationship": "causes",
+      "mechanism": "Reciprocity raises minimum partition loss and thus Phi.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "network_topology",
+      "to": "partition",
+      "relationship": "constrains",
+      "mechanism": "Topology defines admissible low-cost partition families.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "P",
+      "to": "Phi_distinctions",
+      "relationship": "determines",
+      "mechanism": "Transition selectivity contributes distinction terms.",
+      "strength": "probabilistic"
+    },
+    {
+      "from": "P",
+      "to": "Phi_relations",
+      "relationship": "determines",
+      "mechanism": "Transition coupling contributes relation terms.",
+      "strength": "probabilistic"
+    },
+    {
+      "from": "S",
+      "to": "Phi_distinctions",
+      "relationship": "determines",
+      "mechanism": "Substrate subsets instantiate distinctions.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "S",
+      "to": "Phi_relations",
+      "relationship": "determines",
+      "mechanism": "Substrate subset interactions instantiate relations.",
+      "strength": "deterministic"
+    },
+    {
+      "from": "Omega",
+      "to": "conscious",
+      "relationship": "determines",
+      "mechanism": "Identity implies conscious content follows Omega structure.",
+      "strength": "identity"
+    },
+    {
+      "from": "intrinsic_entity",
+      "to": "conscious",
+      "relationship": "constrains",
+      "mechanism": "Consciousness requires crossing intrinsic existence boundary first.",
+      "strength": "deterministic"
+    }
+  ],
+  "structural_equations": [
+    {
+      "node": "Phi",
+      "equation": "Phi(S, s_0, P) := min_{partition in Partitions(S)} MIP(partition, s_0, P)"
+    },
+    {
+      "node": "MIP",
+      "equation": "MIP := argmin_{partition in Partitions(S)} Loss(partition; s_0, P)"
+    },
+    {
+      "node": "network_topology",
+      "equation": "IF topology='grid' THEN Phi in [Phi_high_min, Phi_high_max]; IF 'modular' THEN Phi in [0, Phi_low_max]; IF 'feedforward' THEN Phi in [0, epsilon]"
+    },
+    {
+      "node": "F",
+      "equation": "Omega := F(S, s_0, P) with power-set search over 2^|S| subsets"
+    },
+    {
+      "node": "Phi_total",
+      "equation": "Phi_total := Phi_distinctions + Phi_relations"
+    },
+    {
+      "node": "intrinsic_entity",
+      "equation": "intrinsic_entity := 1 if Phi > 0 else 0"
+    },
+    {
+      "node": "conscious",
+      "equation": "conscious := 1 if Phi > consciousness_threshold else 0"
+    },
+    {
+      "node": "mics_set",
+      "equation": "I := {x : Phi(x) = max_{x' subseteq x} Phi(x')}"
+    },
+    {
+      "node": "Omega",
+      "equation": "E \u2261 Omega_Phi (identity, not correlation)"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "axiom_postulate_correspondence",
+      "expression": "Each of the five axioms maps 1:1 to the matching physical postulate.",
+      "type": "bijection"
+    },
+    {
+      "id": "topological_inequality",
+      "expression": "Phi(grid) >> Phi(modular) and Phi(feedforward) approx 0.",
+      "type": "hard_constraint"
+    },
+    {
+      "id": "binary_exclusion_boundary",
+      "expression": "intrinsic_entity = 1 iff Phi > 0; otherwise aggregate.",
+      "type": "hard_constraint"
+    },
+    {
+      "id": "mics_uniqueness",
+      "expression": "For overlapping substrates, only maximal-Phi complex exists intrinsically.",
+      "type": "hard_constraint"
+    },
+    {
+      "id": "von_neumann_exclusion",
+      "expression": "Von Neumann digital architectures are coarsely separable and constrained to Phi = 0.",
+      "type": "hard_constraint"
+    },
+    {
+      "id": "unfolding_complexity",
+      "expression": "Computational_complexity(F) = O(2^|S|).",
+      "type": "computational"
+    }
+  ],
+  "interventions": [
+    {
+      "id": "do_add_feedback_loops",
+      "target": "feedback_loops",
+      "value": "increase",
+      "description": "Transform modular network toward recurrent grid-like topology.",
+      "expected_outcomes": {
+        "Phi": "LOW -> HIGH",
+        "intrinsic_entity": "FALSE -> TRUE",
+        "conscious": "FALSE -> TRUE"
+      }
+    },
+    {
+      "id": "do_partition_mip",
+      "target": "partition",
+      "value": "MIP",
+      "description": "Clamp partition to minimum information partition to estimate boundary loss.",
+      "expected_outcomes": {
+        "MIP": "selected",
+        "Phi": "reported at causal boundary"
+      }
+    },
+    {
+      "id": "do_remove_units",
+      "target": "S",
+      "value": "subset_removed",
+      "description": "Remove units from substrate and recompute irreducibility.",
+      "expected_outcomes": {
+        "Phi": "non-monotonic increase_or_decrease",
+        "conscious": "may change depending on threshold crossing"
+      }
+    },
+    {
+      "id": "do_phi_zero",
+      "target": "Phi",
+      "value": 0,
+      "description": "Force reducibility through full separability.",
+      "expected_outcomes": {
+        "E": "NULL",
+        "Omega": "empty",
+        "intrinsic_entity": "FALSE",
+        "conscious": "FALSE"
+      }
+    },
+    {
+      "id": "do_topology_feedforward",
+      "target": "network_topology",
+      "value": "feedforward",
+      "description": "Transform substrate into layered unidirectional architecture.",
+      "expected_outcomes": {
+        "Phi": "-> 0",
+        "conscious": "FALSE"
+      }
+    },
+    {
+      "id": "do_topology_grid",
+      "target": "network_topology",
+      "value": "grid",
+      "description": "Transform substrate into recurrent bidirectional lattice.",
+      "expected_outcomes": {
+        "Phi": "-> HIGH",
+        "conscious": "TRUE if threshold exceeded"
+      }
+    }
+  ]
+}

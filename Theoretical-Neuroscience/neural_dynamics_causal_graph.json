@@ -1,0 +1,1083 @@
+{
+  "graph_id": "neural_dynamics_v1",
+  "version": "1.0.0",
+  "graph_type": "structural_causal_model",
+  "source": {
+    "title": "The Grand Unification of Neural Dynamics",
+    "subtitle": "N = ⟨B, D, I, L⟩ Framework",
+    "reference": "Dayan & Abbott, Theoretical Neuroscience",
+    "date": "2026-02-04"
+  },
+  "domains": {
+    "network_state": [
+      "stable",
+      "unstable",
+      "oscillatory",
+      "line_attractor"
+    ],
+    "learning_rule": [
+      "hebbian",
+      "oja",
+      "td",
+      "em"
+    ],
+    "boolean": [
+      false,
+      true
+    ]
+  },
+  "nodes": [
+    {
+      "id": "V",
+      "label": "Membrane potential",
+      "kind": "endogenous",
+      "unit": "mV",
+      "domain_group": "B"
+    },
+    {
+      "id": "tau_m",
+      "label": "Membrane time constant",
+      "kind": "exogenous",
+      "unit": "ms",
+      "domain_group": "B"
+    },
+    {
+      "id": "lambda",
+      "label": "Cable space constant",
+      "kind": "exogenous",
+      "unit": "mm",
+      "domain_group": "B"
+    },
+    {
+      "id": "r_m",
+      "label": "Membrane resistance",
+      "kind": "exogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "i_e",
+      "label": "External injected current",
+      "kind": "exogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "g_Na",
+      "label": "Sodium conductance",
+      "kind": "endogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "g_K",
+      "label": "Potassium conductance",
+      "kind": "endogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "g_L",
+      "label": "Leak conductance",
+      "kind": "exogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "m",
+      "label": "Na activation gate",
+      "kind": "endogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "h",
+      "label": "Na inactivation gate",
+      "kind": "endogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "n",
+      "label": "K activation gate",
+      "kind": "endogenous",
+      "domain_group": "B"
+    },
+    {
+      "id": "V_thresh",
+      "label": "Spike threshold",
+      "kind": "exogenous",
+      "unit": "mV",
+      "domain_group": "B"
+    },
+    {
+      "id": "firing_rate",
+      "label": "Single-neuron firing rate",
+      "kind": "endogenous",
+      "unit": "Hz",
+      "domain_group": "B"
+    },
+    {
+      "id": "v_E",
+      "label": "Excitatory population rate",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "v_I",
+      "label": "Inhibitory population rate",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "tau_E",
+      "label": "Excitatory population time constant",
+      "kind": "exogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "tau_I",
+      "label": "Inhibitory population time constant",
+      "kind": "exogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "W_EE",
+      "label": "E to E synaptic weight",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "W_EI",
+      "label": "I to E synaptic weight",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "W_IE",
+      "label": "E to I synaptic weight",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "W_II",
+      "label": "I to I synaptic weight",
+      "kind": "endogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "I_E",
+      "label": "External drive to E population",
+      "kind": "exogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "I_I",
+      "label": "External drive to I population",
+      "kind": "exogenous",
+      "domain_group": "D"
+    },
+    {
+      "id": "M",
+      "label": "Recurrent connection matrix",
+      "kind": "derived",
+      "domain_group": "D"
+    },
+    {
+      "id": "eigenvalue_M",
+      "label": "Eigenvalues of recurrent matrix",
+      "kind": "derived",
+      "domain_group": "D"
+    },
+    {
+      "id": "network_state",
+      "label": "Network qualitative regime",
+      "kind": "derived",
+      "domain": "network_state",
+      "domain_group": "D"
+    },
+    {
+      "id": "E_boltzmann",
+      "label": "Boltzmann energy",
+      "kind": "derived",
+      "domain_group": "D"
+    },
+    {
+      "id": "s",
+      "label": "Stimulus",
+      "kind": "exogenous",
+      "domain_group": "I"
+    },
+    {
+      "id": "r",
+      "label": "Neural response",
+      "kind": "endogenous",
+      "domain_group": "I"
+    },
+    {
+      "id": "f_r_s",
+      "label": "Tuning function f(r|s)",
+      "kind": "derived",
+      "domain_group": "I"
+    },
+    {
+      "id": "K_encoding",
+      "label": "Encoding kernel",
+      "kind": "exogenous",
+      "domain_group": "I"
+    },
+    {
+      "id": "s_hat",
+      "label": "Decoded stimulus estimate",
+      "kind": "endogenous",
+      "domain_group": "I"
+    },
+    {
+      "id": "Fisher_I",
+      "label": "Fisher information",
+      "kind": "derived",
+      "domain_group": "I"
+    },
+    {
+      "id": "var_s_hat",
+      "label": "Variance of decoded estimate",
+      "kind": "endogenous",
+      "domain_group": "I"
+    },
+    {
+      "id": "P_r_s",
+      "label": "Conditional response density P(r|s)",
+      "kind": "derived",
+      "domain_group": "I"
+    },
+    {
+      "id": "coding_efficiency",
+      "label": "Mutual information efficiency",
+      "kind": "derived",
+      "domain_group": "I"
+    },
+    {
+      "id": "w",
+      "label": "Synaptic weight vector",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "u",
+      "label": "Presynaptic activity",
+      "kind": "exogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "v_post",
+      "label": "Postsynaptic activity",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "C_input",
+      "label": "Input covariance matrix",
+      "kind": "exogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "eta_learn",
+      "label": "Learning rate",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "theta_BCM",
+      "label": "BCM sliding threshold",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "delta_TD",
+      "label": "Temporal-difference error",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "reward",
+      "label": "Reward signal",
+      "kind": "exogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "value_function",
+      "label": "Predicted value",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "free_energy",
+      "label": "EM free energy",
+      "kind": "derived",
+      "domain_group": "L"
+    },
+    {
+      "id": "log_likelihood",
+      "label": "Data log-likelihood",
+      "kind": "endogenous",
+      "domain_group": "L"
+    },
+    {
+      "id": "dopamine_signal",
+      "label": "Phasic dopamine signal",
+      "kind": "derived",
+      "domain_group": "L"
+    },
+    {
+      "id": "L_neural",
+      "label": "Unified neural Lagrangian",
+      "kind": "derived",
+      "domain_group": "ALL"
+    }
+  ],
+  "edges": [
+    {
+      "source": "i_e",
+      "target": "V",
+      "type": "causal",
+      "channel": "external_current"
+    },
+    {
+      "source": "tau_m",
+      "target": "V",
+      "type": "causal",
+      "channel": "membrane_time_constant"
+    },
+    {
+      "source": "lambda",
+      "target": "V",
+      "type": "causal",
+      "channel": "spatial_diffusion"
+    },
+    {
+      "source": "r_m",
+      "target": "V",
+      "type": "causal",
+      "channel": "ohmic_scaling"
+    },
+    {
+      "source": "V",
+      "target": "m",
+      "type": "temporal",
+      "channel": "voltage_dependent_gating"
+    },
+    {
+      "source": "V",
+      "target": "h",
+      "type": "temporal",
+      "channel": "voltage_dependent_gating"
+    },
+    {
+      "source": "V",
+      "target": "n",
+      "type": "temporal",
+      "channel": "voltage_dependent_gating"
+    },
+    {
+      "source": "m",
+      "target": "g_Na",
+      "type": "causal",
+      "channel": "na_activation"
+    },
+    {
+      "source": "h",
+      "target": "g_Na",
+      "type": "causal",
+      "channel": "na_inactivation"
+    },
+    {
+      "source": "n",
+      "target": "g_K",
+      "type": "causal",
+      "channel": "k_activation"
+    },
+    {
+      "source": "g_Na",
+      "target": "V",
+      "type": "temporal",
+      "channel": "na_current_feedback"
+    },
+    {
+      "source": "g_K",
+      "target": "V",
+      "type": "temporal",
+      "channel": "k_current_feedback"
+    },
+    {
+      "source": "g_L",
+      "target": "V",
+      "type": "causal",
+      "channel": "leak_current"
+    },
+    {
+      "source": "V",
+      "target": "firing_rate",
+      "type": "causal",
+      "channel": "threshold_crossing"
+    },
+    {
+      "source": "V_thresh",
+      "target": "firing_rate",
+      "type": "causal",
+      "channel": "threshold_control"
+    },
+    {
+      "source": "i_e",
+      "target": "firing_rate",
+      "type": "causal",
+      "channel": "fI_drive"
+    },
+    {
+      "source": "v_E",
+      "target": "v_E",
+      "type": "temporal",
+      "channel": "recurrent_excitation"
+    },
+    {
+      "source": "v_I",
+      "target": "v_E",
+      "type": "temporal",
+      "channel": "inhibition_to_excitation"
+    },
+    {
+      "source": "v_E",
+      "target": "v_I",
+      "type": "temporal",
+      "channel": "excitation_to_inhibition"
+    },
+    {
+      "source": "v_I",
+      "target": "v_I",
+      "type": "temporal",
+      "channel": "recurrent_inhibition"
+    },
+    {
+      "source": "tau_E",
+      "target": "v_E",
+      "type": "causal",
+      "channel": "population_time_constant"
+    },
+    {
+      "source": "tau_I",
+      "target": "v_I",
+      "type": "causal",
+      "channel": "population_time_constant"
+    },
+    {
+      "source": "W_EE",
+      "target": "v_E",
+      "type": "causal",
+      "channel": "recurrent_weight"
+    },
+    {
+      "source": "W_EI",
+      "target": "v_E",
+      "type": "causal",
+      "channel": "cross_weight"
+    },
+    {
+      "source": "W_IE",
+      "target": "v_I",
+      "type": "causal",
+      "channel": "cross_weight"
+    },
+    {
+      "source": "W_II",
+      "target": "v_I",
+      "type": "causal",
+      "channel": "recurrent_weight"
+    },
+    {
+      "source": "I_E",
+      "target": "v_E",
+      "type": "causal",
+      "channel": "external_drive"
+    },
+    {
+      "source": "I_I",
+      "target": "v_I",
+      "type": "causal",
+      "channel": "external_drive"
+    },
+    {
+      "source": "W_EE",
+      "target": "M",
+      "type": "causal",
+      "channel": "matrix_assembly"
+    },
+    {
+      "source": "W_EI",
+      "target": "M",
+      "type": "causal",
+      "channel": "matrix_assembly"
+    },
+    {
+      "source": "W_IE",
+      "target": "M",
+      "type": "causal",
+      "channel": "matrix_assembly"
+    },
+    {
+      "source": "W_II",
+      "target": "M",
+      "type": "causal",
+      "channel": "matrix_assembly"
+    },
+    {
+      "source": "M",
+      "target": "eigenvalue_M",
+      "type": "causal",
+      "channel": "eigendecomposition"
+    },
+    {
+      "source": "eigenvalue_M",
+      "target": "network_state",
+      "type": "causal",
+      "channel": "stability_classifier"
+    },
+    {
+      "source": "v_E",
+      "target": "E_boltzmann",
+      "type": "causal",
+      "channel": "state_energy"
+    },
+    {
+      "source": "v_I",
+      "target": "E_boltzmann",
+      "type": "causal",
+      "channel": "state_energy"
+    },
+    {
+      "source": "M",
+      "target": "E_boltzmann",
+      "type": "causal",
+      "channel": "quadratic_form"
+    },
+    {
+      "source": "s",
+      "target": "r",
+      "type": "causal",
+      "channel": "stimulus_encoding"
+    },
+    {
+      "source": "f_r_s",
+      "target": "r",
+      "type": "causal",
+      "channel": "tuning_curve"
+    },
+    {
+      "source": "K_encoding",
+      "target": "r",
+      "type": "causal",
+      "channel": "linear_filter"
+    },
+    {
+      "source": "r",
+      "target": "s_hat",
+      "type": "causal",
+      "channel": "decoder_input"
+    },
+    {
+      "source": "P_r_s",
+      "target": "s_hat",
+      "type": "causal",
+      "channel": "bayesian_inference"
+    },
+    {
+      "source": "f_r_s",
+      "target": "Fisher_I",
+      "type": "causal",
+      "channel": "likelihood_curvature"
+    },
+    {
+      "source": "P_r_s",
+      "target": "Fisher_I",
+      "type": "causal",
+      "channel": "likelihood_curvature"
+    },
+    {
+      "source": "Fisher_I",
+      "target": "var_s_hat",
+      "type": "constraint",
+      "channel": "cramer_rao_bound"
+    },
+    {
+      "source": "r",
+      "target": "coding_efficiency",
+      "type": "causal",
+      "channel": "entropy_terms"
+    },
+    {
+      "source": "P_r_s",
+      "target": "coding_efficiency",
+      "type": "causal",
+      "channel": "mutual_information"
+    },
+    {
+      "source": "u",
+      "target": "w",
+      "type": "causal",
+      "channel": "hebbian_drive"
+    },
+    {
+      "source": "v_post",
+      "target": "w",
+      "type": "causal",
+      "channel": "hebbian_drive"
+    },
+    {
+      "source": "C_input",
+      "target": "w",
+      "type": "causal",
+      "channel": "covariance_learning"
+    },
+    {
+      "source": "w",
+      "target": "w",
+      "type": "temporal",
+      "channel": "oja_normalization"
+    },
+    {
+      "source": "v_post",
+      "target": "theta_BCM",
+      "type": "causal",
+      "channel": "activity_average"
+    },
+    {
+      "source": "theta_BCM",
+      "target": "w",
+      "type": "causal",
+      "channel": "bcm_thresholding"
+    },
+    {
+      "source": "eta_learn",
+      "target": "w",
+      "type": "causal",
+      "channel": "step_size"
+    },
+    {
+      "source": "reward",
+      "target": "delta_TD",
+      "type": "causal",
+      "channel": "reward_prediction_error"
+    },
+    {
+      "source": "value_function",
+      "target": "delta_TD",
+      "type": "causal",
+      "channel": "value_bootstrap"
+    },
+    {
+      "source": "delta_TD",
+      "target": "w",
+      "type": "causal",
+      "channel": "reinforcement_update"
+    },
+    {
+      "source": "delta_TD",
+      "target": "dopamine_signal",
+      "type": "causal",
+      "channel": "neuromodulation"
+    },
+    {
+      "source": "log_likelihood",
+      "target": "free_energy",
+      "type": "causal",
+      "channel": "variational_bound"
+    },
+    {
+      "source": "free_energy",
+      "target": "w",
+      "type": "causal",
+      "channel": "em_maximization"
+    },
+    {
+      "source": "firing_rate",
+      "target": "v_E",
+      "type": "causal",
+      "channel": "population_aggregation"
+    },
+    {
+      "source": "firing_rate",
+      "target": "v_I",
+      "type": "causal",
+      "channel": "population_aggregation"
+    },
+    {
+      "source": "v_E",
+      "target": "r",
+      "type": "causal",
+      "channel": "network_to_response"
+    },
+    {
+      "source": "v_I",
+      "target": "r",
+      "type": "causal",
+      "channel": "network_to_response"
+    },
+    {
+      "source": "network_state",
+      "target": "coding_efficiency",
+      "type": "causal",
+      "channel": "stability_information_link"
+    },
+    {
+      "source": "Fisher_I",
+      "target": "eta_learn",
+      "type": "causal",
+      "channel": "information_scaled_learning"
+    },
+    {
+      "source": "r",
+      "target": "w",
+      "type": "temporal",
+      "channel": "activity_plasticity"
+    },
+    {
+      "source": "w",
+      "target": "W_EE",
+      "type": "causal",
+      "channel": "weight_projection"
+    },
+    {
+      "source": "w",
+      "target": "W_EI",
+      "type": "causal",
+      "channel": "weight_projection"
+    },
+    {
+      "source": "w",
+      "target": "W_IE",
+      "type": "causal",
+      "channel": "weight_projection"
+    },
+    {
+      "source": "w",
+      "target": "W_II",
+      "type": "causal",
+      "channel": "weight_projection"
+    },
+    {
+      "source": "w",
+      "target": "M",
+      "type": "causal",
+      "channel": "recurrent_matrix_formation"
+    },
+    {
+      "source": "w",
+      "target": "eigenvalue_M",
+      "type": "causal",
+      "channel": "stability_modulation"
+    },
+    {
+      "source": "w",
+      "target": "g_Na",
+      "type": "causal",
+      "channel": "plasticity_to_conductance"
+    },
+    {
+      "source": "w",
+      "target": "g_K",
+      "type": "causal",
+      "channel": "plasticity_to_conductance"
+    },
+    {
+      "source": "V",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_B"
+    },
+    {
+      "source": "v_E",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_D"
+    },
+    {
+      "source": "v_I",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_D"
+    },
+    {
+      "source": "Fisher_I",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_I"
+    },
+    {
+      "source": "var_s_hat",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_I"
+    },
+    {
+      "source": "w",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_L"
+    },
+    {
+      "source": "delta_TD",
+      "target": "L_neural",
+      "type": "causal",
+      "channel": "lagrangian_term_L"
+    }
+  ],
+  "structural_equations": [
+    {
+      "node": "V",
+      "equation": "τ_m ∂V/∂t = λ² ∂²V/∂x² - V + r_m i_e",
+      "description": "Passive cable equation from Kirchhoff's laws",
+      "domain": "B"
+    },
+    {
+      "node": "V",
+      "equation": "τ_m ∂V/∂t = λ² ∂²V/∂x² - V - g_Na m³h(V - E_Na) - g_K n⁴(V - E_K)",
+      "description": "Cable equation plus Hodgkin-Huxley active conductances",
+      "domain": "B"
+    },
+    {
+      "node": "firing_rate",
+      "equation": "ν = 1 / (τ_ref + τ_m ln((V_rest - V_thresh + r_m i_e)/(V_reset - V_thresh + r_m i_e)))",
+      "description": "f-I curve for leaky integrate-and-fire neuron",
+      "domain": "B"
+    },
+    {
+      "node": "v_E",
+      "equation": "τ_E dv_E/dt = -v_E + F(W_EE v_E + W_EI v_I + I_E)",
+      "description": "Wilson-Cowan excitatory population dynamics",
+      "domain": "D"
+    },
+    {
+      "node": "v_I",
+      "equation": "τ_I dv_I/dt = -v_I + F(W_IE v_E + W_II v_I + I_I)",
+      "description": "Wilson-Cowan inhibitory population dynamics",
+      "domain": "D"
+    },
+    {
+      "node": "network_state",
+      "equation": "stable ⇔ Re(eigenvalue_M)<1; line_attractor ⇔ eigenvalue_M=1; unstable ⇔ Re(eigenvalue_M)>1",
+      "description": "Deterministic stability classifier from recurrent eigen-spectrum",
+      "domain": "D"
+    },
+    {
+      "node": "E_boltzmann",
+      "equation": "E = -h·v - (1/2) v·M·v",
+      "description": "Boltzmann machine energy function",
+      "domain": "D"
+    },
+    {
+      "node": "r",
+      "equation": "r(t) = ∫ K(τ) s(t-τ) dτ + noise",
+      "description": "Linear encoding model from stimulus to response",
+      "domain": "I"
+    },
+    {
+      "node": "Fisher_I",
+      "equation": "I(s) = ∫ (1/P(r|s)) (∂P(r|s)/∂s)^2 dr",
+      "description": "Fisher information from response likelihood geometry",
+      "domain": "I"
+    },
+    {
+      "node": "var_s_hat",
+      "equation": "var(s_hat) ≥ 1 / I(s)",
+      "description": "Cramér-Rao lower bound",
+      "domain": "I"
+    },
+    {
+      "node": "w",
+      "equation": "τ_w dw/dt = v u - α v² w",
+      "description": "Oja learning rule",
+      "domain": "L"
+    },
+    {
+      "node": "delta_TD",
+      "equation": "δ(t) = r(t) + v(t+1) - v(t)",
+      "description": "Temporal-difference prediction error",
+      "domain": "L"
+    },
+    {
+      "node": "free_energy",
+      "equation": "F = Σ_v P(v|u) ln P(u,v) + H(P(v|u))",
+      "description": "EM variational free-energy lower bound",
+      "domain": "L"
+    },
+    {
+      "node": "L_neural",
+      "equation": "L = ∫[B(V,g)+D(v_E,v_I,M)+I(Fisher_I,var)+L(w,δ)]dt",
+      "description": "Unified variational principle over all neural domains",
+      "domain": "ALL"
+    },
+    {
+      "node": "dopamine_signal",
+      "equation": "dopamine(t) ∝ δ(t)",
+      "description": "Biophysical correlate of TD error",
+      "domain": "L"
+    },
+    {
+      "node": "theta_BCM",
+      "equation": "θ_BCM = ⟨v_post²⟩",
+      "description": "Sliding BCM threshold from postsynaptic activity history",
+      "domain": "L"
+    },
+    {
+      "node": "eta_learn",
+      "equation": "η = η_0 (1 + κ Fisher_I)",
+      "description": "Information-aware learning rate schedule",
+      "domain": "L"
+    },
+    {
+      "node": "coding_efficiency",
+      "equation": "I(R;S) = H(R) - H(R|S)",
+      "description": "Mutual information coding objective",
+      "domain": "I"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "cable_constants",
+      "expression": "τ_m = r_m c_m; λ = sqrt(r_m / r_a)",
+      "description": "Time and space constants from membrane and axial properties",
+      "domain": "B"
+    },
+    {
+      "id": "rall_power_law",
+      "expression": "d_parent^(3/2) = Σ d_daughter^(3/2)",
+      "description": "Equivalent cylinder condition for branching dendrites",
+      "domain": "B"
+    },
+    {
+      "id": "voltage_gating",
+      "expression": "dm/dt = (m_∞(V)-m)/τ_m(V)",
+      "description": "Voltage-dependent gating dynamics",
+      "domain": "B"
+    },
+    {
+      "id": "network_stability",
+      "expression": "Re(λ_ν) < 1 for all eigenvalues λ_ν of M",
+      "description": "Recurrent network stable if all real parts are below one",
+      "domain": "D"
+    },
+    {
+      "id": "line_attractor",
+      "expression": "if λ_ν = 1 then persistent integration occurs",
+      "description": "Eigenvalue one yields line-attractor memory behavior",
+      "domain": "D"
+    },
+    {
+      "id": "associative_memory",
+      "expression": "M_ij ∝ Σ_μ v_i^μ v_j^μ",
+      "description": "Hebbian covariance creates fixed-point memories",
+      "domain": "D"
+    },
+    {
+      "id": "cramer_rao",
+      "expression": "var(s_hat) ≥ 1/I(s) for unbiased estimators",
+      "description": "Fisher information bounds estimator precision",
+      "domain": "I"
+    },
+    {
+      "id": "histogram_equalization",
+      "expression": "f(s) = f_max ∫_0^s P(s') ds'",
+      "description": "Optimal coding by cumulative stimulus distribution",
+      "domain": "I"
+    },
+    {
+      "id": "oja_convergence",
+      "expression": "w → principal eigenvector(C_input) as t → ∞",
+      "description": "Oja rule implements online PCA",
+      "domain": "L"
+    },
+    {
+      "id": "bcm_stability",
+      "expression": "θ_v = ⟨v²⟩ prevents runaway potentiation",
+      "description": "BCM threshold normalizes plasticity",
+      "domain": "L"
+    },
+    {
+      "id": "td_convergence",
+      "expression": "v(t) → Σ_τ γ^τ r(t+τ)",
+      "description": "TD converges to Bellman value fixed point",
+      "domain": "L"
+    },
+    {
+      "id": "sparse_coding",
+      "expression": "Sparse P(v) induces Gabor-like receptive fields",
+      "description": "Sparse coding generative prior explains V1-like features",
+      "domain": "L"
+    }
+  ],
+  "interventions": [
+    {
+      "id": "do_inject_current",
+      "do": [
+        "set i_e = constant"
+      ],
+      "effect": "drives V above V_thresh and increases firing_rate",
+      "experimental_analog": "Intracellular current injection"
+    },
+    {
+      "id": "do_block_channels",
+      "do": [
+        "set g_Na = 0 or g_K = 0"
+      ],
+      "effect": "suppresses action-potential generation",
+      "experimental_analog": "TTX or K+ channel blockade"
+    },
+    {
+      "id": "do_perturb_recurrence",
+      "do": [
+        "increase W_EE or W_IE"
+      ],
+      "effect": "shifts eigenvalue_M and can destabilize dynamics",
+      "experimental_analog": "Optogenetic E/I balance perturbation"
+    },
+    {
+      "id": "do_create_line_attractor",
+      "do": [
+        "tune M so dominant eigenvalue_M = 1"
+      ],
+      "effect": "creates persistent integration and working-memory traces",
+      "experimental_analog": "Oculomotor integrator"
+    },
+    {
+      "id": "do_increase_fisher",
+      "do": [
+        "increase ∂f(s)/∂s"
+      ],
+      "effect": "reduces var_s_hat through the Cramér-Rao inequality",
+      "experimental_analog": "Attention-dependent tuning sharpening"
+    },
+    {
+      "id": "do_hebbian",
+      "do": [
+        "set dw/dt = v u"
+      ],
+      "effect": "correlated activity increases weights and can diverge",
+      "experimental_analog": "LTP induction"
+    },
+    {
+      "id": "do_oja",
+      "do": [
+        "set dw/dt = v u - α v² w"
+      ],
+      "effect": "weights converge to principal covariance mode",
+      "experimental_analog": "Hebbian plasticity with synaptic scaling"
+    },
+    {
+      "id": "do_reward",
+      "do": [
+        "set reward(t) > 0"
+      ],
+      "effect": "induces positive delta_TD and dopamine_signal",
+      "experimental_analog": "VTA dopamine burst"
+    },
+    {
+      "id": "do_em_learning",
+      "do": [
+        "maximize free_energy by alternating E-step and M-step"
+      ],
+      "effect": "improves generative model likelihood and sparse latent structure",
+      "experimental_analog": "Wake-sleep style inference/learning cycles"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Wabi Sabi 2041"
+  short_description: "Future-minimal design with imperfect elegance"
+  default_prompt: "Use $wabi-sabi-2041 to redesign this app screen with calm asymmetry, tactile depth, and 2041-ready clarity."
+

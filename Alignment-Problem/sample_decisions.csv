@@ -1,0 +1,15 @@
+record_id,group,label,prediction,representation_bucket
+1,A,1,1,high
+2,A,1,1,high
+3,A,1,1,low
+4,A,0,1,high
+5,A,0,1,low
+6,A,0,0,low
+7,A,0,0,high
+8,B,1,1,high
+9,B,1,0,low
+10,B,1,0,low
+11,B,0,1,high
+12,B,0,1,low
+13,B,0,1,low
+14,B,0,0,low

@@ -1,0 +1,67 @@
+{
+  "simulation_parameters": {
+    "N": 20,
+    "t_span": [
+      0,
+      100
+    ],
+    "stress_time": 30,
+    "stress_duration": 10,
+    "stress_magnitude": 2.0,
+    "stress_fraction": 0.5
+  },
+  "healthy_forest": {
+    "topology": "watts_strogatz",
+    "gamma": 0.3,
+    "k": 4,
+    "p": 0.3,
+    "metrics": {
+      "scenario": "Healthy Forest",
+      "pre_stress_stability": 0.9714631853278168,
+      "min_stability": 0.9668952834261496,
+      "stability_drop": 0.004567901901667226,
+      "recovery_rate": 0.00042973137631597776,
+      "final_stability": 0.9715699032241956,
+      "final_variance": 0.00011641957695880442,
+      "time_to_min": 10.080160320641284
+    }
+  },
+  "fragmented_forest": {
+    "topology": "random",
+    "gamma": 0.05,
+    "p": 0.15,
+    "modified_params": [
+      "beta_entropy",
+      "beta_disturb",
+      "beta_isolation",
+      "alpha_network",
+      "E_net_balance",
+      "alpha_energy",
+      "S_eq"
+    ],
+    "metrics": {
+      "scenario": "Fragmented Forest",
+      "pre_stress_stability": 0.9132663892913341,
+      "min_stability": 0.8268050677992773,
+      "stability_drop": 0.08646132149205676,
+      "recovery_rate": 0.00806668626862988,
+      "final_stability": 0.9124455254530649,
+      "final_variance": 0.00012803734015219464,
+      "time_to_min": 8.476953907815634
+    }
+  },
+  "hypothesis_validation": {
+    "street_kids_hypothesis": "Isolation leads to reduced stability and resilience",
+    "criteria": {
+      "healthy_higher_final_stability": true,
+      "healthy_smaller_stability_drop": true
+    },
+    "healthy_final_stability": 0.9715699032241956,
+    "fragmented_final_stability": 0.9124455254530649,
+    "stability_difference": 0.059124377771130665,
+    "healthy_stability_drop": 0.004567901901667226,
+    "fragmented_stability_drop": 0.08646132149205676,
+    "drop_ratio": 18.92801626508211,
+    "hypothesis_supported": true
+  }
+}

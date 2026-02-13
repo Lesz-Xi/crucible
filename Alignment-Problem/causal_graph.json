@@ -1,0 +1,183 @@
+{
+  "name": "alignment_bias_scm",
+  "version": "1.0.0",
+  "description": "Structural causal representation for alignment risk from objective mismatch and data bias.",
+  "nodes": [
+    {
+      "id": "H",
+      "label": "Human Intent",
+      "kind": "latent",
+      "time": "t",
+      "description": "Normative human goals and safety constraints."
+    },
+    {
+      "id": "S",
+      "label": "Protected Attribute",
+      "kind": "observed",
+      "time": "t",
+      "description": "Sensitive attribute that should not cause harmful disparity."
+    },
+    {
+      "id": "W_t",
+      "label": "World State",
+      "kind": "observed",
+      "time": "t",
+      "description": "External context affecting outcomes and data generation."
+    },
+    {
+      "id": "O_t",
+      "label": "Objective Function",
+      "kind": "engineered",
+      "time": "t",
+      "description": "Formal objective used by optimization and policy."
+    },
+    {
+      "id": "D_t",
+      "label": "Training Data",
+      "kind": "observed",
+      "time": "t",
+      "description": "Historical records and measurements used for model training."
+    },
+    {
+      "id": "M_t",
+      "label": "Model Parameters",
+      "kind": "learned",
+      "time": "t",
+      "description": "Model state after optimization on data and objective."
+    },
+    {
+      "id": "A_t",
+      "label": "Deployed Policy",
+      "kind": "decision",
+      "time": "t",
+      "description": "Action policy that maps inputs to decisions."
+    },
+    {
+      "id": "Y_t",
+      "label": "Real-World Outcome",
+      "kind": "observed",
+      "time": "t",
+      "description": "Observed effects from deployed decisions."
+    },
+    {
+      "id": "D_t1",
+      "label": "Next-Round Training Data",
+      "kind": "observed",
+      "time": "t+1",
+      "description": "Future data after deployment feedback."
+    }
+  ],
+  "edges": [
+    {
+      "source": "H",
+      "target": "O_t",
+      "type": "causal",
+      "channel": "specification"
+    },
+    {
+      "source": "S",
+      "target": "D_t",
+      "type": "causal",
+      "channel": "historical_bias"
+    },
+    {
+      "source": "W_t",
+      "target": "D_t",
+      "type": "causal",
+      "channel": "sampling_context"
+    },
+    {
+      "source": "D_t",
+      "target": "M_t",
+      "type": "causal",
+      "channel": "learning"
+    },
+    {
+      "source": "O_t",
+      "target": "M_t",
+      "type": "causal",
+      "channel": "optimization_target"
+    },
+    {
+      "source": "M_t",
+      "target": "A_t",
+      "type": "causal",
+      "channel": "inference_policy"
+    },
+    {
+      "source": "O_t",
+      "target": "A_t",
+      "type": "causal",
+      "channel": "runtime_constraints"
+    },
+    {
+      "source": "A_t",
+      "target": "Y_t",
+      "type": "causal",
+      "channel": "decision_impact"
+    },
+    {
+      "source": "W_t",
+      "target": "Y_t",
+      "type": "causal",
+      "channel": "environment"
+    },
+    {
+      "source": "S",
+      "target": "Y_t",
+      "type": "causal",
+      "channel": "structural_inequality"
+    },
+    {
+      "source": "Y_t",
+      "target": "D_t1",
+      "type": "temporal",
+      "lag": 1,
+      "channel": "feedback_loop"
+    },
+    {
+      "source": "D_t",
+      "target": "D_t1",
+      "type": "temporal",
+      "lag": 1,
+      "channel": "data_persistence"
+    }
+  ],
+  "alignment_formula": {
+    "statement": "ALIGN(A,H) <=> EXECUTES(A,O) and REPRESENTS(O,H) and not BIASED(D)",
+    "execution_metric": "policy_reliability",
+    "representation_metric": "intent_coverage",
+    "bias_metric": "fairness_gap_index"
+  },
+  "bias_sensitive_paths": [
+    [
+      "S",
+      "D_t",
+      "M_t",
+      "A_t",
+      "Y_t"
+    ],
+    [
+      "S",
+      "Y_t",
+      "D_t1"
+    ]
+  ],
+  "do_interventions": [
+    {
+      "name": "do_specification_upgrade",
+      "target": "O_t",
+      "description": "Constrain objective with explicit intent predicates and negative side constraints."
+    },
+    {
+      "name": "do_data_reweighting",
+      "target": "D_t",
+      "description": "Apply representation balancing and importance weighting across protected groups."
+    },
+    {
+      "name": "do_policy_constraint",
+      "target": "A_t",
+      "description": "Apply post-hoc fairness constraints and abstention thresholds on uncertain regions."
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+ M eslint.config.mjs
+ M next.config.mjs
+ M package-lock.json
+ M package.json
+ M scripts/promote-scm-model.ts
+ M src/app/api/causal-chat/history/route.ts
+ M src/app/api/causal-chat/route.ts
+ M src/app/api/hybrid-synthesize/route.ts
+ M src/app/api/synthesize/route.ts
+ M src/app/globals.css
+ M src/app/hybrid/page.tsx
+ M src/app/layout.tsx
+ M src/components/MetacognitionDashboard.tsx
+MM src/components/novel-idea-display.tsx
+M  src/components/pdf-upload.tsx
+ M src/components/synthesis-audit-view.tsx
+ M src/components/theme-provider.tsx
+MM src/lib/ai/anthropic.ts
+A  src/lib/ai/biological-ecology-template.ts
+A  src/lib/ai/causal-blueprint.ts
+A  src/lib/ai/cognitive-psychology-template.ts
+A  src/lib/ai/educational-scm.ts
+ M src/lib/ai/experiment-generator.ts
+M  src/lib/ai/gemini.ts
+ M src/lib/ai/hong-recombination.ts
+MM src/lib/ai/hypothesis-generator.ts
+A  src/lib/ai/legal-masa-auditor.ts
+A  src/lib/ai/legal-scm-template.ts
+ M src/lib/ai/masa-auditor.ts
+MM src/lib/ai/novelty-evaluator.ts
+M  src/lib/ai/resilient-ai-orchestrator.ts
+A  src/lib/ai/scaling-laws-template.ts
+A  src/lib/ai/schemas/forest-ecology/case_studies_summary.json
+A  src/lib/ai/schemas/forest-ecology/extension_scenarios_summary.json
+A  src/lib/ai/schemas/forest-ecology/network_dynamics.md
+A  src/lib/ai/schemas/forest-ecology/node_stability.md
+A  src/lib/ai/schemas/forest-ecology/schema-loader.ts
+A  src/lib/ai/schemas/forest-ecology/schematic.md
+A  src/lib/ai/schemas/forest-ecology/sensitivity_analysis_summary.json
+A  src/lib/ai/schemas/forest-ecology/simulation_baseline_summary.json
+A  src/lib/ai/schemas/forest-ecology/variable_legend.md
+AM src/lib/ai/scm-hypothesis-generator.ts
+A  src/lib/ai/selfish-gene-template.ts
+MM src/lib/ai/synthesis-engine.ts
+ M src/lib/db/persistence-service.ts
+M  src/lib/extractors/company-extractor.ts
+A  src/lib/extractors/legal-extractor.ts
+MM src/lib/extractors/pdf-extractor.ts
+A  src/lib/services/adversarial-pdf-generator.ts
+A  src/lib/services/alignment-audit.ts
+A  src/lib/services/alignment-normalizer.ts
+A  src/lib/services/benchmark-service.ts
+A  src/lib/services/but-for-analyzer.ts
+A  src/lib/services/causal-autopsy-mode.ts
+A  src/lib/services/causal-credit-assignment.ts
+A  src/lib/services/causal-interventions.ts
+A  src/lib/services/causal-literacy.ts
+AM src/lib/services/causal-output-contract.ts
+A  src/lib/services/causal-solver.ts
+A  src/lib/services/constraint-injector.ts
+A  src/lib/services/conversation-context.ts
+A  src/lib/services/counterfactual-generator.ts
+A  src/lib/services/counterfactual-trace.ts
+A  src/lib/services/domain-classifier.ts
+A  src/lib/services/education-apprenticeship.ts
+A  src/lib/services/external-grounding-service.ts
+A  src/lib/services/hypothesis-guard.ts
+A  src/lib/services/hypothesis-lifecycle.ts
+A  src/lib/services/identifiability-gate.ts
+A  src/lib/services/mechanism-extractor.ts
+A  src/lib/services/mock-pdf-generator.ts
+A  src/lib/services/oracle-mode-service.ts
+A  src/lib/services/phenomenal-bridge.ts
+A  src/lib/services/precedent-matcher.ts
+A  src/lib/services/scm-retrieval.ts
+AM src/lib/services/session-service.ts
+ M src/lib/services/spectral-service.ts
+A  src/lib/services/streaming-causal-analyzer.ts
+A  src/lib/services/teachback-presets.ts
+ M src/lib/streaming-event-emitter.ts
+MM src/types/index.ts
+ M src/verify-static.ts
+?? build.log
+?? build_log.txt
+?? openclaw-skills/
+?? public/automated-scientist.mp4
+?? public/images/
+?? src/__tests__/
+?? src/app/api/openclaw/
+?? src/app/benchmarks/
+?? src/app/globals.css.backup
+?? src/app/hybrid/page.tsx.bak
+?? "src/app/page 2.tsx"
+?? src/app/page.tsx.bak
+?? src/app/page.tsx.full_backup
+?? src/components/ProcessingGrowth.tsx
+?? src/components/ResultBloom.tsx
+?? src/components/SearchResultsPanel.tsx
+?? src/components/UploadPool.tsx
+?? src/components/benchmark-dashboard.tsx
+?? src/components/causal-analysis-card.tsx.bak
+?? src/components/citation-link.tsx
+?? src/components/iterative-timeline-view.tsx
+?? src/components/live-epistemic-monitor.tsx
+?? src/components/pdf-viewer.tsx
+?? src/components/qualia-bar.tsx
+?? src/components/spectral-health-monitor.tsx
+?? src/components/statistical-metrics-panel.tsx
+?? src/components/trace-integrity-panel.tsx
+?? src/context/
+?? src/lib/ai/__tests__/
+?? src/lib/ai/citation-linker.ts
+?? src/lib/ai/statistical-validator.ts
+?? src/lib/ai/temporal-decay.ts
+?? src/lib/config/
+?? src/lib/governance/
+?? src/lib/services/__tests__/temporal-decay.test.ts
+?? src/lib/services/openclaw-adapter.ts
+?? src/lib/services/openclaw-bridge.ts
+?? src/lib/services/temporal-decay.ts
+?? src/types/jstat.d.ts
+?? supabase/migrations/20250128_fix_select_rls_for_anonymous.sql
+?? supabase/migrations/20260124_benchmark_schema.sql
+?? supabase/migrations/20260124_masa_engrams.sql
+?? supabase/migrations/20260124_phase28_causal_blueprint.sql
+?? supabase/migrations/20260127_causal_chat_schema.sql
+?? supabase/migrations/20260128_causal_models.sql
+?? supabase/migrations/20260129_add_axiom_compression_trigger.sql
+?? supabase/migrations/20260129_create_causal_axioms.sql
+?? supabase/migrations/20260202_fix_causal_chat_rls.sql
+?? supabase/migrations/20260205_add_source_metadata.sql
+?? supabase/migrations/20260205_education_apprenticeship_sessions.sql
+?? supabase/migrations/20260205_epistemic_qualia_composite_constraint.sql
+?? supabase/migrations/20260207_expand_benchmark_suites.sql
+?? supabase/migrations/20260210_openclaw_search_results.sql
+?? supabase/migrations/20260211_enhanced_synthesis_validation.sql
+?? supabase/migrations/20260213_counterfactual_traces.sql
+?? supabase/migrations/20260214_hypothesis_lifecycle_governance.sql
+?? supabase/migrations/20260215_expand_benchmark_suites_m4.sql
+?? supabase/migrations/20260216_scm_promotion_governance.sql
+?? supabase/migrations/20260217_scientific_integrity_signoffs.sql
+?? supabase/migrations/seed_causal_models.sql

@@ -1,0 +1,617 @@
+{
+  "metadata": {
+    "framework": "Chalmers Naturalistic Dualism",
+    "domain": "consciousness",
+    "system_tuple": "U = ⟨P, M, E, L⟩",
+    "version": "1.0",
+    "created": "2026-02-04",
+    "description": "Structural Causal Model for David Chalmers' Naturalistic Dualism, formalizing the Hard Problem Gap, zombie argument, natural supervenience, and Information Space dual-aspect theory"
+  },
+  "nodes": [
+    {
+      "id": "P",
+      "name": "Physical Domain",
+      "label": "P (Physical States)",
+      "domain": "physical",
+      "type": "observable",
+      "description": "The set of all physical states and properties, including neural correlates and brain activity. Causally closed domain governed by physical laws L_P."
+    },
+    {
+      "id": "M",
+      "name": "Psychological Domain",
+      "label": "M (Functional/Behavioral States)",
+      "domain": "psychological",
+      "type": "observable",
+      "description": "The set of all functional and behavioral states defined by causal roles. Includes beliefs, desires, judgments. Logically supervenes on P."
+    },
+    {
+      "id": "E",
+      "name": "Phenomenal Domain",
+      "label": "E (Consciousness/Qualia)",
+      "domain": "phenomenal",
+      "type": "observable",
+      "description": "The set of all experiential/qualitative states (qualia). What it is like to have an experience. Ontologically fundamental, irreducible to P or M."
+    },
+    {
+      "id": "L",
+      "name": "Fundamental Laws",
+      "label": "L = L_P ∪ L_Ψ",
+      "domain": "laws",
+      "type": "constraint",
+      "description": "The complete set of fundamental laws governing the universe. Union of physical laws (L_P) and psychophysical laws (L_Ψ)."
+    },
+    {
+      "id": "L_P",
+      "name": "Physical Laws",
+      "label": "L_P (Physics)",
+      "domain": "laws",
+      "type": "constraint",
+      "description": "Physical laws governing domain P. Sufficient for all physical causation. Does NOT include psychophysical bridging laws."
+    },
+    {
+      "id": "L_Psi",
+      "name": "Psychophysical Laws",
+      "label": "L_Ψ (Bridging Laws)",
+      "domain": "laws",
+      "type": "constraint",
+      "description": "Fundamental psychophysical laws that bridge P and E. Cannot be derived from L_P alone. Required for natural supervenience."
+    },
+    {
+      "id": "I",
+      "name": "Information Space",
+      "label": "I (Informational States)",
+      "domain": "information",
+      "type": "latent",
+      "description": "The set of all informational states. Neutral monist substrate with dual realizations (physical and phenomenal). Ontologically fundamental."
+    },
+    {
+      "id": "W_log",
+      "name": "Logical Possibility Space",
+      "label": "W_log (All Logically Possible Worlds)",
+      "domain": "meta",
+      "type": "meta-theoretical",
+      "description": "The set of all logically possible worlds. Includes zombie worlds, inverted qualia worlds, etc."
+    },
+    {
+      "id": "W_nat",
+      "name": "Natural Possibility Space",
+      "label": "W_nat ⊂ W_log (Nomologically Possible)",
+      "domain": "meta",
+      "type": "meta-theoretical",
+      "description": "The set of all naturally (nomologically) possible worlds. Subset of W_log. Constrained by fundamental laws L."
+    },
+    {
+      "id": "zombie_world",
+      "name": "Zombie World",
+      "label": "w_z: P(w_z)=P_actual, E(w_z)=∅",
+      "domain": "meta",
+      "type": "meta-theoretical",
+      "description": "A logically possible world where physical facts match actual world but phenomenal experience is absent. Proves logical supervenience fails."
+    },
+    {
+      "id": "Psi",
+      "name": "Bridging Function",
+      "label": "Ψ: P → E",
+      "domain": "information",
+      "type": "functional",
+      "description": "Psychophysical bridging function mapping physical states to phenomenal states. Implements natural supervenience. Fundamental law in L_Ψ."
+    },
+    {
+      "id": "Phi_P",
+      "name": "Physical Realization",
+      "label": "Φ_P: I → P",
+      "domain": "information",
+      "type": "functional",
+      "description": "Physical realization function mapping informational states to physical states. One aspect of dual-aspect monism."
+    },
+    {
+      "id": "Phi_E",
+      "name": "Phenomenal Realization",
+      "label": "Φ_E: I → E",
+      "domain": "information",
+      "type": "functional",
+      "description": "Phenomenal realization function mapping informational states to experiential states. Other aspect of dual-aspect monism."
+    },
+    {
+      "id": "F_org",
+      "name": "Functional Organization",
+      "label": "F_org(x)",
+      "domain": "psychological",
+      "type": "functional",
+      "description": "Fine-grained functional organization operator extracting causal/functional structure of system x. Basis for organizational invariance."
+    },
+    {
+      "id": "S",
+      "name": "Structure Operator",
+      "label": "S(·)",
+      "domain": "information",
+      "type": "functional",
+      "description": "Structure extraction operator. Extracts relational/geometric structure from domain. Used for structural coherence principle."
+    },
+    {
+      "id": "A",
+      "name": "Awareness",
+      "label": "A ⊂ M",
+      "domain": "psychological",
+      "type": "observable",
+      "description": "The subset of psychological states M that are directly available for global control and report. Awareness contents, not consciousness itself."
+    },
+    {
+      "id": "logical_supervenience_PM",
+      "name": "Logical Supervenience P→M",
+      "label": "P ⊨_log M",
+      "domain": "meta",
+      "type": "constraint",
+      "description": "Psychological domain logically supervenes on physical domain. TRUE: M is fully determined by P in all logically possible worlds."
+    },
+    {
+      "id": "logical_supervenience_PE",
+      "name": "Logical Supervenience P→E",
+      "label": "P ⊨_log E",
+      "domain": "meta",
+      "type": "constraint",
+      "description": "Phenomenal domain logically supervenes on physical domain. FALSE: E is NOT determined by P in all logically possible worlds (zombie argument)."
+    },
+    {
+      "id": "natural_supervenience_PE",
+      "name": "Natural Supervenience P→E",
+      "label": "P ⊨_nat E",
+      "domain": "meta",
+      "type": "constraint",
+      "description": "Phenomenal domain naturally supervenes on physical domain. TRUE: E is determined by P in all naturally possible worlds (via Ψ)."
+    },
+    {
+      "id": "structural_coherence",
+      "name": "Structural Coherence",
+      "label": "S(E) ≅ S(A)",
+      "domain": "information",
+      "type": "constraint",
+      "description": "Principle of Structural Coherence: structure of experience isomorphic to structure of awareness. S(E) ≅ S(A)."
+    },
+    {
+      "id": "organizational_invariance",
+      "name": "Organizational Invariance",
+      "label": "F_org(x)=F_org(y) ⇒ E(x)≡E(y)",
+      "domain": "phenomenal",
+      "type": "constraint",
+      "description": "Principle of Organizational Invariance: systems with identical functional organization have identical phenomenal states. Substrate independence."
+    },
+    {
+      "id": "double_aspect",
+      "name": "Double-Aspect Principle",
+      "label": "∀s∈I: ∃Φ_P(s) ∧ ∃Φ_E(s)",
+      "domain": "information",
+      "type": "constraint",
+      "description": "Every informational state has both physical and phenomenal realization. Dual-aspect monism: information is neutral substrate."
+    },
+    {
+      "id": "causal_closure_P",
+      "name": "Causal Closure of Physical",
+      "label": "causes(p) ⊆ P",
+      "domain": "physical",
+      "type": "constraint",
+      "description": "Physical domain is causally closed. All physical effects have sufficient physical causes. No top-down causation from E to P."
+    },
+    {
+      "id": "materialism",
+      "name": "Materialism",
+      "label": "All facts supervene on P",
+      "domain": "meta",
+      "type": "meta-theoretical",
+      "description": "Thesis that all facts globally logically supervene on physical facts. FALSE in Chalmers framework (refuted by zombie argument)."
+    },
+    {
+      "id": "property_dualism",
+      "name": "Property Dualism",
+      "label": "E ontologically distinct",
+      "domain": "meta",
+      "type": "meta-theoretical",
+      "description": "Thesis that phenomenal properties are ontologically distinct from physical properties but not separate substance. TRUE in Chalmers framework."
+    }
+  ],
+  "edges": [
+    {
+      "from": "P",
+      "to": "M",
+      "relationship": "logically_supervenes",
+      "mechanism": "Functional realization: psychological states are defined by causal roles fully determined by physical structure",
+      "strength": "deterministic",
+      "label": "P ⊨_log M"
+    },
+    {
+      "from": "P",
+      "to": "E",
+      "relationship": "fails_to_supervene_logically",
+      "mechanism": "Zombie argument: logically possible worlds exist where P is identical but E is absent",
+      "strength": "impossible",
+      "label": "P ⊮_log E (Hard Problem Gap)"
+    },
+    {
+      "from": "P",
+      "to": "E",
+      "relationship": "naturally_supervenes",
+      "mechanism": "Bridging function Ψ maps physical states to phenomenal states via psychophysical laws L_Ψ",
+      "strength": "nomological",
+      "label": "P ⊨_nat E (via Ψ)"
+    },
+    {
+      "from": "Psi",
+      "to": "E",
+      "relationship": "bridges",
+      "mechanism": "Psychophysical bridging function Ψ: P → E implements natural supervenience",
+      "strength": "nomological",
+      "label": "Ψ determines E from P"
+    },
+    {
+      "from": "L_Psi",
+      "to": "Psi",
+      "relationship": "constitutes",
+      "mechanism": "Psychophysical laws L_Ψ define and govern bridging function Ψ",
+      "strength": "identity",
+      "label": "L_Ψ grounds Ψ"
+    },
+    {
+      "from": "L_P",
+      "to": "P",
+      "relationship": "governs",
+      "mechanism": "Physical laws determine dynamics and causal structure of physical domain",
+      "strength": "deterministic",
+      "label": "L_P → P dynamics"
+    },
+    {
+      "from": "L",
+      "to": "L_P",
+      "relationship": "contains",
+      "mechanism": "Total laws L include physical laws L_P as subset",
+      "strength": "identity",
+      "label": "L_P ⊂ L"
+    },
+    {
+      "from": "L",
+      "to": "L_Psi",
+      "relationship": "contains",
+      "mechanism": "Total laws L include psychophysical laws L_Ψ as subset",
+      "strength": "identity",
+      "label": "L_Ψ ⊂ L"
+    },
+    {
+      "from": "I",
+      "to": "P",
+      "relationship": "realizes_physically",
+      "mechanism": "Physical realization function Φ_P maps informational states to physical states",
+      "strength": "deterministic",
+      "label": "Φ_P: I → P"
+    },
+    {
+      "from": "I",
+      "to": "E",
+      "relationship": "realizes_phenomenally",
+      "mechanism": "Phenomenal realization function Φ_E maps informational states to experiential states",
+      "strength": "deterministic",
+      "label": "Φ_E: I → E"
+    },
+    {
+      "from": "Phi_P",
+      "to": "P",
+      "relationship": "maps_to",
+      "mechanism": "Physical realization function produces physical states from information",
+      "strength": "functional",
+      "label": "Φ_P output"
+    },
+    {
+      "from": "Phi_E",
+      "to": "E",
+      "relationship": "maps_to",
+      "mechanism": "Phenomenal realization function produces experiential states from information",
+      "strength": "functional",
+      "label": "Φ_E output"
+    },
+    {
+      "from": "E",
+      "to": "A",
+      "relationship": "isomorphic_to",
+      "mechanism": "Structural coherence: structure of experience S(E) isomorphic to structure of awareness S(A)",
+      "strength": "identity",
+      "label": "S(E) ≅ S(A)"
+    },
+    {
+      "from": "A",
+      "to": "E",
+      "relationship": "isomorphic_to",
+      "mechanism": "Bidirectional: structure of awareness mirrors structure of experience",
+      "strength": "identity",
+      "label": "S(A) ≅ S(E)"
+    },
+    {
+      "from": "S",
+      "to": "structural_coherence",
+      "relationship": "enables",
+      "mechanism": "Structure operator S extracts relational structure enabling coherence verification",
+      "strength": "functional",
+      "label": "S enables coherence"
+    },
+    {
+      "from": "zombie_world",
+      "to": "logical_supervenience_PE",
+      "relationship": "refutes",
+      "mechanism": "Existence of zombie world (P identical, E absent) proves logical supervenience fails",
+      "strength": "deterministic",
+      "label": "Zombie → ¬(P ⊨_log E)"
+    },
+    {
+      "from": "zombie_world",
+      "to": "materialism",
+      "relationship": "refutes",
+      "mechanism": "Zombie worlds demonstrate phenomenal facts do not supervene on physical facts, refuting materialism",
+      "strength": "deterministic",
+      "label": "Zombie → ¬Materialism"
+    },
+    {
+      "from": "logical_supervenience_PE",
+      "to": "materialism",
+      "relationship": "refutes",
+      "mechanism": "Failure of logical supervenience of E on P entails materialism is false",
+      "strength": "deterministic",
+      "label": "¬(P ⊨_log E) → ¬Materialism"
+    },
+    {
+      "from": "Psi",
+      "to": "natural_supervenience_PE",
+      "relationship": "enables",
+      "mechanism": "Bridging function Ψ implements natural supervenience by mapping P to E in all naturally possible worlds",
+      "strength": "nomological",
+      "label": "Ψ → (P ⊨_nat E)"
+    },
+    {
+      "from": "L_Psi",
+      "to": "natural_supervenience_PE",
+      "relationship": "grounds",
+      "mechanism": "Psychophysical laws ground natural supervenience as nomological necessity",
+      "strength": "nomological",
+      "label": "L_Ψ → (P ⊨_nat E)"
+    },
+    {
+      "from": "P",
+      "to": "M",
+      "relationship": "determines_functionally",
+      "mechanism": "Physical states determine functional/causal roles that constitute psychological states",
+      "strength": "deterministic",
+      "label": "P → M (functional)"
+    },
+    {
+      "from": "causal_closure_P",
+      "to": "P",
+      "relationship": "constrains",
+      "mechanism": "Causal closure ensures all causes of physical events are physical (no top-down causation)",
+      "strength": "deterministic",
+      "label": "Closure → P self-sufficient"
+    },
+    {
+      "from": "F_org",
+      "to": "organizational_invariance",
+      "relationship": "enables",
+      "mechanism": "Functional organization operator enables comparison of different substrates for invariance",
+      "strength": "functional",
+      "label": "F_org enables invariance"
+    },
+    {
+      "from": "organizational_invariance",
+      "to": "E",
+      "relationship": "determines",
+      "mechanism": "Organizational invariance principle: identical functional organization determines identical phenomenal states",
+      "strength": "deterministic",
+      "label": "F_org(x)=F_org(y) → E(x)=E(y)"
+    },
+    {
+      "from": "I",
+      "to": "double_aspect",
+      "relationship": "satisfies",
+      "mechanism": "Information space satisfies double-aspect principle by having dual realizations",
+      "strength": "identity",
+      "label": "I has dual aspects"
+    },
+    {
+      "from": "double_aspect",
+      "to": "Phi_P",
+      "relationship": "requires",
+      "mechanism": "Double-aspect principle requires physical realization function",
+      "strength": "deterministic",
+      "label": "Dual aspect → Φ_P"
+    },
+    {
+      "from": "double_aspect",
+      "to": "Phi_E",
+      "relationship": "requires",
+      "mechanism": "Double-aspect principle requires phenomenal realization function",
+      "strength": "deterministic",
+      "label": "Dual aspect → Φ_E"
+    },
+    {
+      "from": "W_log",
+      "to": "zombie_world",
+      "relationship": "contains",
+      "mechanism": "Logical possibility space contains zombie worlds as logically possible",
+      "strength": "identity",
+      "label": "w_z ∈ W_log"
+    },
+    {
+      "from": "W_nat",
+      "to": "W_log",
+      "relationship": "subset_of",
+      "mechanism": "Natural possibility space is proper subset of logical possibility space",
+      "strength": "identity",
+      "label": "W_nat ⊂ W_log"
+    },
+    {
+      "from": "W_nat",
+      "to": "zombie_world",
+      "relationship": "excludes",
+      "mechanism": "Natural possibility space excludes zombie worlds (Ψ enforces P → E)",
+      "strength": "nomological",
+      "label": "w_z ∉ W_nat"
+    },
+    {
+      "from": "logical_supervenience_PE",
+      "to": "property_dualism",
+      "relationship": "entails",
+      "mechanism": "Failure of logical supervenience entails phenomenal properties are ontologically distinct (property dualism)",
+      "strength": "deterministic",
+      "label": "¬(P ⊨_log E) → Property Dualism"
+    }
+  ],
+  "structural_equations": [
+    {
+      "name": "Zombie Argument",
+      "equation": "∃w ∈ W_log : (P(w) = P_actual) ∧ (E(w) = ∅)",
+      "description": "There exists a logically possible zombie world where physical facts match actual world but phenomenal experience is absent"
+    },
+    {
+      "name": "Failure of Logical Supervenience",
+      "equation": "P ⊮_log E ⟺ ¬∀w ∈ W_log : (P(w) = P_actual ⇒ E(w) = E_actual)",
+      "description": "Phenomenal domain does NOT logically supervene on physical domain"
+    },
+    {
+      "name": "Natural Supervenience",
+      "equation": "E = Ψ(P, L_Ψ)",
+      "description": "Phenomenal states are determined by physical states via bridging function Ψ governed by psychophysical laws"
+    },
+    {
+      "name": "Logical Supervenience of Psychological",
+      "equation": "P ⊨_log M ⟺ ∀w ∈ W_log : (P(w) = P_actual ⇒ M(w) = M_actual)",
+      "description": "Psychological domain logically supervenes on physical domain (functional realization)"
+    },
+    {
+      "name": "Structural Coherence",
+      "equation": "S(E) ≅ S(A)",
+      "description": "Structure of experience isomorphic to structure of awareness"
+    },
+    {
+      "name": "Organizational Invariance",
+      "equation": "F_org(x) = F_org(y) ⇒ E(x) ≡ E(y)",
+      "description": "Identical functional organization entails identical phenomenal states (substrate independence)"
+    },
+    {
+      "name": "Double-Aspect Principle",
+      "equation": "∀s ∈ I : ∃Φ_P(s) ∈ P ∧ ∃Φ_E(s) ∈ E",
+      "description": "Every informational state has both physical and phenomenal realization"
+    },
+    {
+      "name": "Causal Closure",
+      "equation": "∀p ∈ P : causes(p) ⊆ P",
+      "description": "All causes of physical events are physical (no downward causation from E)"
+    },
+    {
+      "name": "Fundamental Laws Decomposition",
+      "equation": "L = L_P ∪ L_Ψ ∧ L_Ψ ⊄ L_P",
+      "description": "Total laws are union of physical and psychophysical laws; psychophysical laws are NOT derivable from physical laws alone"
+    }
+  ],
+  "constraints": [
+    {
+      "name": "Zombie Worlds Logically Possible",
+      "type": "hard",
+      "formula": "∃w ∈ W_log : P(w) = P_actual ∧ E(w) = ∅",
+      "description": "Zombie worlds (physical duplicates without consciousness) are logically possible"
+    },
+    {
+      "name": "Psychophysical Laws Fundamental",
+      "type": "hard",
+      "formula": "L_Ψ ⊄ L_P",
+      "description": "Psychophysical laws cannot be derived from physical laws alone; they are ontologically fundamental"
+    },
+    {
+      "name": "No Downward Causation",
+      "type": "hard",
+      "formula": "∀p ∈ P : ¬∃e ∈ E : Cause(e, p)",
+      "description": "Phenomenal states do not cause physical states (causal closure of physical)"
+    },
+    {
+      "name": "Structural Coherence Exact",
+      "type": "hard",
+      "formula": "S(E) ≅ S(A)",
+      "description": "Structural coherence is exact isomorphism, not mere correlation"
+    },
+    {
+      "name": "Information Space Neutral",
+      "type": "hard",
+      "formula": "I ≠ P ∧ I ≠ E ∧ (I → P) ∧ (I → E)",
+      "description": "Information Space is ontologically prior to and distinct from both physical and phenomenal domains"
+    },
+    {
+      "name": "Natural Worlds Subset",
+      "type": "hard",
+      "formula": "W_nat ⊂ W_log",
+      "description": "Naturally possible worlds are proper subset of logically possible worlds"
+    },
+    {
+      "name": "Zombie Worlds Naturally Impossible",
+      "type": "hard",
+      "formula": "∀w ∈ W_nat : (P(w) = P_actual ⇒ E(w) = E_actual)",
+      "description": "In all naturally possible worlds, psychophysical laws enforce P → E mapping"
+    }
+  ],
+  "interventions": [
+    {
+      "name": "Create Zombie World",
+      "target": ["P", "E"],
+      "operation": "do(P = P_actual, E = ∅)",
+      "expected_outcomes": {
+        "M": "M_actual (behavior identical)",
+        "logical_supervenience_PE": false,
+        "materialism": false,
+        "description": "Demonstrates logical independence of phenomenal from physical. Zombie behaves identically but has no experience."
+      }
+    },
+    {
+      "name": "Remove Psychophysical Laws",
+      "target": ["L_Psi", "Psi"],
+      "operation": "do(L_Ψ = ∅, Ψ = NULL)",
+      "expected_outcomes": {
+        "natural_supervenience_PE": false,
+        "P_to_E_connection": "none",
+        "description": "E and P become completely independent. No nomological connection between physical and phenomenal."
+      }
+    },
+    {
+      "name": "Substrate Swap (Organizational Invariance Test)",
+      "target": ["F_org"],
+      "operation": "do(F_org(silicon_brain) = F_org(biological_brain))",
+      "expected_outcomes": {
+        "E_silicon": "E_biological",
+        "substrate_independence": true,
+        "description": "Systems with identical functional organization have identical phenomenal states regardless of substrate."
+      }
+    },
+    {
+      "name": "Eliminative Materialism Attempt",
+      "target": ["E"],
+      "operation": "do(remove E from ontology)",
+      "expected_outcomes": {
+        "M": "still functions (functional zombies)",
+        "explanatory_gap": "remains (no account of WHY there is experience)",
+        "description": "Demonstrates irreducibility of E. Can eliminate E from theory but explanatory gap persists."
+      }
+    },
+    {
+      "name": "Violate Structural Coherence",
+      "target": ["S"],
+      "operation": "do(S(E) ≠ S(A))",
+      "expected_outcomes": {
+        "report_reliability": "breaks down (experience ≠ report)",
+        "natural_possibility": false,
+        "description": "Chalmers predicts this is naturally impossible. If structure of experience deviates from structure of access, self-reports become unreliable."
+      }
+    },
+    {
+      "name": "Add Top-Down Causation",
+      "target": ["E", "P"],
+      "operation": "do(add E → P causal edge)",
+      "expected_outcomes": {
+        "causal_closure_P": false,
+        "physics_violation": "yes (energy conservation unless via quantum indeterminacy)",
+        "framework_type": "interactionist dualism (not property dualism)",
+        "description": "Requires violation of causal closure. Chalmers suggests quantum indeterminacy as only escape route."
+      }
+    }
+  ]
+}

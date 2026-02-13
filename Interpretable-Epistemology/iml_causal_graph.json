@@ -1,0 +1,414 @@
+{
+    "graph_id": "iml_epistemology_v1",
+    "version": "1.0.0",
+    "graph_type": "structural_causal_model",
+    "source": {
+        "title": "The Formalism of Interpretability Manifolds",
+        "path": "Interpretable-Epistemology/v1_draft.tex",
+        "date": "2026-02-04"
+    },
+    "domains": {
+        "binary": [
+            0,
+            1
+        ],
+        "unit_interval": [
+            0.0,
+            1.0
+        ],
+        "complexity": "nonnegative_real"
+    },
+    "nodes": [
+        {
+            "id": "H_stat",
+            "label": "Statistical hypothesis space",
+            "kind": "regime"
+        },
+        {
+            "id": "H_ml",
+            "label": "Machine learning hypothesis space",
+            "kind": "regime"
+        },
+        {
+            "id": "H_stat_membership",
+            "label": "Membership indicator for H_stat",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "H_ml_membership",
+            "label": "Membership indicator for H_ml",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "Complexity_f",
+            "label": "Model complexity C(f)",
+            "kind": "endogenous",
+            "domain": "complexity"
+        },
+        {
+            "id": "Interp_f",
+            "label": "Interpretability I(f)",
+            "kind": "derived",
+            "domain": "unit_interval"
+        },
+        {
+            "id": "f_pred",
+            "label": "Predictive model",
+            "kind": "mechanism"
+        },
+        {
+            "id": "f_cause",
+            "label": "Causal mechanism model",
+            "kind": "mechanism"
+        },
+        {
+            "id": "theta",
+            "label": "Model parameters",
+            "kind": "endogenous"
+        },
+        {
+            "id": "X",
+            "label": "Feature set",
+            "kind": "exogenous"
+        },
+        {
+            "id": "X_causal",
+            "label": "Causal feature subset",
+            "kind": "derived"
+        },
+        {
+            "id": "X_confound",
+            "label": "Confounding feature subset",
+            "kind": "derived"
+        },
+        {
+            "id": "Y",
+            "label": "Output prediction",
+            "kind": "endogenous"
+        },
+        {
+            "id": "f_decomposable",
+            "label": "Model decomposability indicator",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "O_comp_applicable",
+            "label": "Component operator applicability",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "O_sens_reliable",
+            "label": "Sensitivity reliability",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "O_surr_fidelity",
+            "label": "Surrogate local fidelity",
+            "kind": "derived",
+            "domain": "unit_interval"
+        },
+        {
+            "id": "Local_neighborhood",
+            "label": "Neighborhood around x_0",
+            "kind": "exogenous"
+        },
+        {
+            "id": "Feature_correlation",
+            "label": "Feature dependence strength",
+            "kind": "exogenous"
+        },
+        {
+            "id": "Delta_causal",
+            "label": "Causal divergence",
+            "kind": "derived",
+            "domain": "complexity"
+        },
+        {
+            "id": "sigma2_E",
+            "label": "Estimator variance",
+            "kind": "derived",
+            "domain": "complexity"
+        },
+        {
+            "id": "x_prime_extrapolated",
+            "label": "Extrapolation artifact indicator",
+            "kind": "derived",
+            "domain": "binary"
+        },
+        {
+            "id": "P_manifold",
+            "label": "Probability perturbed point lies on manifold",
+            "kind": "derived",
+            "domain": "unit_interval"
+        },
+        {
+            "id": "L_interp",
+            "label": "Interpretation Lagrangian",
+            "kind": "derived",
+            "domain": "complexity"
+        }
+    ],
+    "edges": [
+        {
+            "source": "Complexity_f",
+            "target": "Interp_f",
+            "type": "causal",
+            "polarity": "negative",
+            "note": "Opacity transition"
+        },
+        {
+            "source": "Complexity_f",
+            "target": "H_stat_membership",
+            "type": "definition",
+            "condition": "Complexity_f < epsilon"
+        },
+        {
+            "source": "Complexity_f",
+            "target": "H_ml_membership",
+            "type": "definition",
+            "condition": "Complexity_f >= epsilon"
+        },
+        {
+            "source": "H_stat",
+            "target": "H_stat_membership",
+            "type": "definition"
+        },
+        {
+            "source": "H_ml",
+            "target": "H_ml_membership",
+            "type": "definition"
+        },
+        {
+            "source": "X",
+            "target": "X_causal",
+            "type": "partition"
+        },
+        {
+            "source": "X",
+            "target": "X_confound",
+            "type": "partition"
+        },
+        {
+            "source": "theta",
+            "target": "f_pred",
+            "type": "parametric"
+        },
+        {
+            "source": "theta",
+            "target": "f_cause",
+            "type": "parametric"
+        },
+        {
+            "source": "X_causal",
+            "target": "f_pred",
+            "type": "causal"
+        },
+        {
+            "source": "X_confound",
+            "target": "f_pred",
+            "type": "causal",
+            "note": "Predictive model uses confounders"
+        },
+        {
+            "source": "X_causal",
+            "target": "f_cause",
+            "type": "causal"
+        },
+        {
+            "source": "f_pred",
+            "target": "Y",
+            "type": "causal"
+        },
+        {
+            "source": "f_pred",
+            "target": "Delta_causal",
+            "type": "causal"
+        },
+        {
+            "source": "f_cause",
+            "target": "Delta_causal",
+            "type": "causal"
+        },
+        {
+            "source": "X_confound",
+            "target": "Delta_causal",
+            "type": "causal",
+            "note": "Confounders create divergence"
+        },
+        {
+            "source": "Feature_correlation",
+            "target": "x_prime_extrapolated",
+            "type": "causal"
+        },
+        {
+            "source": "x_prime_extrapolated",
+            "target": "O_sens_reliable",
+            "type": "causal",
+            "polarity": "negative"
+        },
+        {
+            "source": "P_manifold",
+            "target": "O_sens_reliable",
+            "type": "causal",
+            "polarity": "positive"
+        },
+        {
+            "source": "f_decomposable",
+            "target": "O_comp_applicable",
+            "type": "causal"
+        },
+        {
+            "source": "Local_neighborhood",
+            "target": "O_surr_fidelity",
+            "type": "causal"
+        },
+        {
+            "source": "f_pred",
+            "target": "O_surr_fidelity",
+            "type": "causal"
+        },
+        {
+            "source": "O_comp_applicable",
+            "target": "Interp_f",
+            "type": "causal",
+            "polarity": "positive"
+        },
+        {
+            "source": "O_sens_reliable",
+            "target": "Interp_f",
+            "type": "causal",
+            "polarity": "positive"
+        },
+        {
+            "source": "O_surr_fidelity",
+            "target": "Interp_f",
+            "type": "causal",
+            "polarity": "positive"
+        },
+        {
+            "source": "Delta_causal",
+            "target": "L_interp",
+            "type": "causal"
+        },
+        {
+            "source": "Complexity_f",
+            "target": "L_interp",
+            "type": "causal"
+        }
+    ],
+    "structural_equations": [
+        {
+            "node": "H_stat_membership",
+            "equation": "H_stat_membership := 1 iff Complexity_f < epsilon and f in H_stat; else 0"
+        },
+        {
+            "node": "H_ml_membership",
+            "equation": "H_ml_membership := 1 iff Complexity_f >= epsilon and f is optimized for empirical risk; else 0"
+        },
+        {
+            "node": "Interp_f",
+            "equation": "Interp_f := 1 / (1 + Complexity_f) if no post-hoc operator applied; else Interp_f += alpha1*O_comp_applicable + alpha2*O_sens_reliable + alpha3*O_surr_fidelity"
+        },
+        {
+            "node": "Delta_causal",
+            "equation": "Delta_causal := |f_pred - f_cause|, where f_pred uses X_confound and f_cause excludes it"
+        },
+        {
+            "node": "P_manifold",
+            "equation": "P_manifold := P(x_prime) with P(x_prime) approx 0 if x_prime = perturb(x, i, j) and Cov(X_i, X_j) != 0"
+        },
+        {
+            "node": "x_prime_extrapolated",
+            "equation": "x_prime_extrapolated := 1 iff P_manifold < delta_manifold"
+        },
+        {
+            "node": "f_decomposable",
+            "equation": "f_decomposable := 1 iff f = sum_j(theta_j * phi_j(x_j)) or f is modular"
+        },
+        {
+            "node": "O_comp_applicable",
+            "equation": "O_comp_applicable := f_decomposable"
+        },
+        {
+            "node": "O_sens_reliable",
+            "equation": "O_sens_reliable := 1 iff P_manifold >= delta_manifold and x_prime_extrapolated = 0"
+        },
+        {
+            "node": "O_surr_fidelity",
+            "equation": "O_surr_fidelity := E_x[1 - L(g(x), f(x))] for x in Local_neighborhood and g in H_stat"
+        },
+        {
+            "node": "sigma2_E",
+            "equation": "sigma2_E := Var(E_hat); typically unknown for many post-hoc estimators"
+        },
+        {
+            "node": "L_interp",
+            "equation": "L_interp := Delta_causal + lambda * Complexity_f"
+        }
+    ],
+    "constraints": [
+        {
+            "id": "intrinsic_interp",
+            "expression": "if f in H_stat and Complexity_f < epsilon, then Interp_f > Interp_min > 0"
+        },
+        {
+            "id": "decomposability",
+            "expression": "O_comp applicable iff f = sum(theta_j * phi_j(x_j)) (additive) or f is modular"
+        },
+        {
+            "id": "surrogate_fidelity",
+            "expression": "g(x) approx f(x) for all x in Neigh(x_0), with g in H_stat"
+        },
+        {
+            "id": "regime_separation",
+            "expression": "lim (Complexity_f -> inf) H_stat intersection H_ml = empty"
+        },
+        {
+            "id": "sensitivity_manifold_constraint",
+            "expression": "O_sens valid only when perturbation support remains on manifold"
+        },
+        {
+            "id": "uncertainty_gap",
+            "expression": "sigma2_E is unknown for most IML estimators without resampling"
+        }
+    ],
+    "interventions": [
+        {
+            "id": "do_reduce_complexity",
+            "do": [
+                "set Complexity_f < epsilon"
+            ],
+            "effect": "forces f into H_stat, increases Interp_f"
+        },
+        {
+            "id": "do_remove_confounders",
+            "do": [
+                "remove X_confound from feature set"
+            ],
+            "effect": "reduces Delta_causal, aligns f_pred with f_cause"
+        },
+        {
+            "id": "do_apply_operator",
+            "do": [
+                "apply O_comp or O_sens or O_surr to f"
+            ],
+            "effect": "increases Interp_f even if Complexity_f is high"
+        },
+        {
+            "id": "do_enforce_manifold",
+            "do": [
+                "restrict perturbations to P_manifold > delta"
+            ],
+            "effect": "prevents extrapolation artifacts, ensures O_sens reliability"
+        }
+    ],
+    "notes": [
+        "Edges encode confounder-driven divergence and manifold-sensitive operator validity.",
+        "No X_confound -> f_cause edge is included by design to preserve causal objective semantics."
+    ]
+}

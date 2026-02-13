@@ -1,0 +1,21 @@
+{
+  "user_prompt": "Publication-quality conceptual diagram titled 'Replicator Vector Field: The Master Equation for Gene Propagation (\u03a8_rep)'. Central hexagonal node labeled '\u03a8_rep (Total Replicator Success)' in the center with golden/amber color. Five major vector fields flowing radially into the center as colored arrows/pathways: 1) R_base (Fundamental Replicator Term) in blue with sub-labels L (Longevity), F (Fecundity), Q (Copying-Fidelity) - show this inside a dashed oval labeled 'Vehicle (V)' with annotation 'V\u21920 as t\u2192\u221e' and 'G\u2192\u221e' showing gene persistence. 2) H_kin (Hamiltonian of Altruism) in green with Hamilton's Rule equation 'rB > C' and r=0.5 standard, r=0.75 haplodiploidy annotations. 3) S_ESS (Game Theoretic Stability) in purple showing Hawk/Dove strategies and 'dPop/dt = 0' equilibrium condition. 4) O_rep (Reproductive Optimization) in orange with clutch size, parental investment (PI), and gamete asymmetry symbols. 5) M_eme & P_ext (Information Vector Fields) in teal showing memes (brain symbol) and extended phenotype (web/dam icons). Clean scientific style, white background, gradient coloring, clear labels, professional typography suitable for academic publication.",
+  "doc_type": "journal",
+  "quality_threshold": 8.5,
+  "iterations": [
+    {
+      "iteration": 1,
+      "image_path": "figures/replicator_vector_field_v1.png",
+      "prompt": "\nCreate a high-quality scientific diagram with these requirements:\n\nVISUAL QUALITY:\n- Clean white or light background (no textures or gradients)\n- High contrast for readability and printing\n- Professional, publication-ready appearance\n- Sharp, clear lines and text\n- Adequate spacing between elements to prevent crowding\n\nTYPOGRAPHY:\n- Clear, readable sans-serif fonts (Arial, Helvetica style)\n- Minimum 10pt font size for all labels\n- Consistent font sizes throughout\n- All text horizontal or clearly readable\n- No overlapping text\n\nSCIENTIFIC STANDARDS:\n- Accurate representation of concepts\n- Clear labels for all components\n- Include scale bars, legends, or axes where appropriate\n- Use standard scientific notation and symbols\n- Include units where applicable\n\nACCESSIBILITY:\n- Colorblind-friendly color palette (use Okabe-Ito colors if using color)\n- High contrast between elements\n- Redundant encoding (shapes + colors, not just colors)\n- Works well in grayscale\n\nLAYOUT:\n- Logical flow (left-to-right or top-to-bottom)\n- Clear visual hierarchy\n- Balanced composition\n- Appropriate use of whitespace\n- No clutter or unnecessary decorative elements\n\n\nUSER REQUEST: Publication-quality conceptual diagram titled 'Replicator Vector Field: The Master Equation for Gene Propagation (\u03a8_rep)'. Central hexagonal node labeled '\u03a8_rep (Total Replicator Success)' in the center with golden/amber color. Five major vector fields flowing radially into the center as colored arrows/pathways: 1) R_base (Fundamental Replicator Term) in blue with sub-labels L (Longevity), F (Fecundity), Q (Copying-Fidelity) - show this inside a dashed oval labeled 'Vehicle (V)' with annotation 'V\u21920 as t\u2192\u221e' and 'G\u2192\u221e' showing gene persistence. 2) H_kin (Hamiltonian of Altruism) in green with Hamilton's Rule equation 'rB > C' and r=0.5 standard, r=0.75 haplodiploidy annotations. 3) S_ESS (Game Theoretic Stability) in purple showing Hawk/Dove strategies and 'dPop/dt = 0' equilibrium condition. 4) O_rep (Reproductive Optimization) in orange with clutch size, parental investment (PI), and gamete asymmetry symbols. 5) M_eme & P_ext (Information Vector Fields) in teal showing memes (brain symbol) and extended phenotype (web/dam icons). Clean scientific style, white background, gradient coloring, clear labels, professional typography suitable for academic publication.\n\nGenerate a publication-quality scientific diagram that meets all the guidelines above.",
+      "critique": "Image generated successfully (review skipped)",
+      "score": 7.5,
+      "needs_improvement": false,
+      "success": true
+    }
+  ],
+  "final_image": "figures/replicator_vector_field_v1.png",
+  "final_score": 7.5,
+  "success": true,
+  "early_stop": true,
+  "early_stop_reason": "Quality score 7.5 meets threshold 8.5 for journal"
+}

@@ -1,0 +1,598 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-02-11T00:00:00Z",
+  "profiles": [
+    {
+      "domain_id": "alignment",
+      "display_name": "AI Alignment",
+      "status": "active",
+      "scm_model_key": "alignment_core_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "alignment-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "adjudicate_model_disagreement"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "gies", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": [
+          "pc_if_latent_confounding_high",
+          "gies_if_intervention_targets_unknown"
+        ]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["causal_sufficiency_or_latent_handling", "stable_measurement"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 0
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unsafe_policy_release_without_review"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "identifiability_gate", "counterfactual_stability"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "scm-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "theoretical_neuroscience",
+      "display_name": "Theoretical Neuroscience",
+      "status": "active",
+      "scm_model_key": "theoretical_neuroscience_core_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "theoretical-neuroscience-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "find_invariant_predictors",
+        "counterfactual_necessity"
+      ],
+      "method_policy": {
+        "primary_order": ["gies", "do_calculus_query", "icp", "fci", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["gies_if_intervention_targets_unknown"]
+      },
+      "intervention_capabilities": {
+        "hard_do": true,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 3
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["mechanism_stationarity", "measurement_validity"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 0
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.3,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unbounded_interventions"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["counterfactual_stability", "intervention_value_regression", "identifiability_gate"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "scm-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "neuroscience",
+      "display_name": "Neuroscience",
+      "status": "active",
+      "scm_model_key": "neuroscience_networks_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "neuroscience-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "find_invariant_predictors"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "gies", "icp", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["pc_if_latent_confounding_high"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["confounder_control_plan"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unsafe_clinical_recommendation"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "identifiability_gate"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "scm-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "legal",
+      "display_name": "Legal Causation",
+      "status": "active",
+      "scm_model_key": "legal_causation_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "legal-ontology-v1",
+      "query_intents_supported": [
+        "estimate_intervention_effect",
+        "counterfactual_necessity",
+        "adjudicate_model_disagreement"
+      ],
+      "method_policy": {
+        "primary_order": ["do_calculus_query", "fci", "icp", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["gies_if_no_interventional_data"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": false,
+        "max_intervention_arity": 1
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["but_for_and_proximate_cause_documented"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 0
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.04,
+        "ece_ood_max": 0.08,
+        "ood_confidence_risk_max": 0.25,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["final_legal_advice_without_human_review"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 3
+      },
+      "benchmark_packs": ["counterfactual_stability", "legal_but_for_suite"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "legal-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "education",
+      "display_name": "Education",
+      "status": "active",
+      "scm_model_key": "education_outcomes_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "education-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "find_invariant_predictors"
+      ],
+      "method_policy": {
+        "primary_order": ["icp", "gies", "do_calculus_query", "fci", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["icp_if_num_environments_lt_2"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["baseline_ability_and_context_controls"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.3,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["harmful_learning_intervention_recommendations"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "identifiability_gate", "calibration_ood_suite"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "education-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "iml",
+      "display_name": "Interpretable ML",
+      "status": "active",
+      "scm_model_key": "iml_causal_interpretation_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "iml-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "adjudicate_model_disagreement"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "gies", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["pc_if_latent_feature_confounding_high"]
+      },
+      "intervention_capabilities": {
+        "hard_do": true,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 3
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["feature_semantics_documented"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 0
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.3,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["high_stakes_auto_decision_without_override"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "calibration_ood_suite", "counterfactual_stability"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "iml-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "scaling_laws",
+      "display_name": "Scaling Laws",
+      "status": "active",
+      "scm_model_key": "scaling_laws_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "scaling-laws-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "find_invariant_predictors",
+        "estimate_intervention_effect"
+      ],
+      "method_policy": {
+        "primary_order": ["icp", "fci", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["icp_if_num_environments_lt_2"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": false,
+        "max_intervention_arity": 1
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["regime_stability_assessment"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unbounded_policy_projection_without_uncertainty"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["invariance_suite", "calibration_ood_suite"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "scaling-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "cognitive_psychology",
+      "display_name": "Cognitive Psychology",
+      "status": "active",
+      "scm_model_key": "cognitive_bias_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "cognitive-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "find_invariant_predictors"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "icp", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["pc_if_latent_confounding_high"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["measurement_invariance"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.3,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["psychological_harmful_interventions"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "identifiability_gate"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "cogpsy-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "evolutionary_biology",
+      "display_name": "Evolutionary Biology",
+      "status": "active",
+      "scm_model_key": "evolutionary_biology_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "evolutionary-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "find_invariant_predictors",
+        "estimate_intervention_effect"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "icp", "gies", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["gies_if_intervention_targets_unknown"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": false,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["population_structure_controls"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unsafe_bio_intervention_guidance"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["invariance_suite", "counterfactual_stability"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "bio-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "ecology",
+      "display_name": "Ecology",
+      "status": "active",
+      "scm_model_key": "ecology_networks_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "ecology-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "find_invariant_predictors"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "icp", "gies", "do_calculus_query", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["pc_if_latent_confounding_high"]
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": false,
+        "max_intervention_arity": 2
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["seasonality_controls", "sampling_bias_controls"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["harmful_ecosystem_interventions_without_review"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 2
+      },
+      "benchmark_packs": ["policy_eval_core", "invariance_suite", "identifiability_gate"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "ecology-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "physics",
+      "display_name": "Physics",
+      "status": "active",
+      "scm_model_key": "physics_causal_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "physics-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "counterfactual_necessity"
+      ],
+      "method_policy": {
+        "primary_order": ["do_calculus_query", "gies", "fci", "pc"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": ["do_calculus_query_if_assumptions_missing"]
+      },
+      "intervention_capabilities": {
+        "hard_do": true,
+        "soft_do": true,
+        "known_targets_required": true,
+        "max_intervention_arity": 3
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["conservation_constraints_logged", "mechanism_consistency"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 0
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.04,
+        "ece_ood_max": 0.08,
+        "ood_confidence_risk_max": 0.25,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": ["unsafe_experimental_protocol_release"]
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 3
+      },
+      "benchmark_packs": ["counterfactual_stability", "identifiability_gate", "law_falsification_suite"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "physics-governance",
+        "override_ttl_days_max": 14
+      }
+    },
+    {
+      "domain_id": "abstract",
+      "display_name": "Abstract",
+      "status": "active",
+      "scm_model_key": "abstract_general_v1",
+      "default_version": "v1.0.0",
+      "ontology_version": "abstract-ontology-v1",
+      "query_intents_supported": [
+        "discover_structure",
+        "estimate_intervention_effect",
+        "adjudicate_model_disagreement"
+      ],
+      "method_policy": {
+        "primary_order": ["fci", "pc", "do_calculus_query"],
+        "fallback_order": ["fci", "pc"],
+        "disqualifiers": []
+      },
+      "intervention_capabilities": {
+        "hard_do": false,
+        "soft_do": true,
+        "known_targets_required": false,
+        "max_intervention_arity": 1
+      },
+      "identifiability_policy": {
+        "required_assumptions": ["minimal_assumption_set_documented"],
+        "block_on_not_identified": true,
+        "max_unknown_confounders": 1
+      },
+      "uncertainty_policy": {
+        "ece_id_max": 0.05,
+        "ece_ood_max": 0.1,
+        "ood_confidence_risk_max": 0.35,
+        "confidence_suppression_on_fail": true
+      },
+      "safety_policy": {
+        "preflight_required": true,
+        "forbidden_actions": []
+      },
+      "falsification_policy": {
+        "required_for_promotion": true,
+        "min_discriminative_tests": 1
+      },
+      "benchmark_packs": ["policy_eval_core", "calibration_ood_suite"],
+      "governance": {
+        "owner": "@Lesz-Xi",
+        "codeowners_group": "scm-governance",
+        "override_ttl_days_max": 14
+      }
+    }
+  ]
+}
