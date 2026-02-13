@@ -47,14 +47,16 @@ interface AssistantEventPayload {
   label?: string;
   confidence?: number;
   model_key?: string;
+  model_version?: string;
   primary?: string;
+  allowed?: boolean;
+  rationale?: string;
   message?: string;
   finished?: boolean;
   sources?: GroundingSource[];
   sourceCount?: number;
   topDomains?: string[];
   level?: FactualConfidenceResult["level"];
-  rationale?: string;
   claimId?: string;
 }
 
@@ -74,6 +76,12 @@ interface SessionHistoryMessage {
   } | null;
 }
 
+const isRealDomain = (value: string | null | undefined): value is string =>
+  typeof value === 'string' && value.trim().length > 0 && value !== 'unclassified';
+
+const isRealModelKey = (value: string | null | undefined): value is string =>
+  typeof value === 'string' && value.trim().length > 0 && value !== 'default';
+
 export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Props) {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
@@ -84,10 +92,14 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [currentDomain, setCurrentDomain] = useState<string>('unclassified');
   const [currentModelKey, setCurrentModelKey] = useState<string>('default');
   const [lastDensity, setLastDensity] = useState<{ score: number; label: string; confidence: number } | null>(null);
+  const currentDomainRef = useRef<string>('unclassified');
+  const currentModelKeyRef = useRef<string>('default');
+  const lastDensityRef = useRef<{ score: number; label: string; confidence: number } | null>(null);
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
   const [groundingStatus, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
   const [groundingError, setGroundingError] = useState<string | null>(null);
   const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
+  const [alignmentPosture, setAlignmentPosture] = useState<string>('No unaudited intervention claims without identifiability gates.');
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
@@ -103,12 +115,16 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setError(null);
     setDbSessionId(null);
     setCurrentDomain('unclassified');
+    currentDomainRef.current = 'unclassified';
     setCurrentModelKey('default');
+    currentModelKeyRef.current = 'default';
     setLastDensity(null);
+    lastDensityRef.current = null;
     setGroundingSources([]);
     setGroundingStatus('idle');
     setGroundingError(null);
     setFactualConfidence(null);
+    setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setLatestClaimId(null);
     setClaimCopied(false);
     onNewChat?.();
@@ -177,42 +193,60 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
             createdAt: new Date(message.created_at),
           }));
 
-        const latestAssistantWithEvidence = [...filteredMessages]
+        const latestAssistantWithDensity = [...filteredMessages]
           .reverse()
           .find((message) => {
             if (message.role !== 'assistant') return false;
-            const hasDomain = typeof message.domain_classified === 'string' && message.domain_classified.length > 0;
-            const hasModel = typeof message.model_key === 'string' && message.model_key.length > 0;
             const density = message.causal_density;
-            const hasDensity =
+            return (
               !!density &&
               typeof density.score === 'number' &&
               Number.isFinite(density.score) &&
               typeof density.confidence === 'number' &&
-              Number.isFinite(density.confidence);
-            return hasDomain || hasModel || hasDensity;
+              Number.isFinite(density.confidence)
+            );
           });
 
+        const latestAssistantWithEvidence = latestAssistantWithDensity || [...filteredMessages]
+          .reverse()
+          .find((message) => {
+            if (message.role !== 'assistant') return false;
+            return isRealDomain(message.domain_classified) || isRealModelKey(message.model_key);
+          });
+
+        const restoredDomain = isRealDomain(latestAssistantWithEvidence?.domain_classified)
+          ? latestAssistantWithEvidence.domain_classified
+          : 'unclassified';
+        const restoredModelKey = isRealModelKey(latestAssistantWithEvidence?.model_key)
+          ? latestAssistantWithEvidence.model_key
+          : 'default';
+
         setMessages(loadedMessages);
-        setCurrentDomain(latestAssistantWithEvidence?.domain_classified || 'unclassified');
-        setCurrentModelKey(latestAssistantWithEvidence?.model_key || 'default');
+        setCurrentDomain(restoredDomain);
+        currentDomainRef.current = restoredDomain;
+        setCurrentModelKey(restoredModelKey);
+        currentModelKeyRef.current = restoredModelKey;
         if (
           latestAssistantWithEvidence?.causal_density &&
           typeof latestAssistantWithEvidence.causal_density.score === 'number' &&
           typeof latestAssistantWithEvidence.causal_density.confidence === 'number'
         ) {
-          setLastDensity({
+          const restoredDensity = {
             score: latestAssistantWithEvidence.causal_density.score,
             label: latestAssistantWithEvidence.causal_density.label || 'Unknown',
             confidence: latestAssistantWithEvidence.causal_density.confidence,
-          });
+          };
+          setLastDensity(restoredDensity);
+          lastDensityRef.current = restoredDensity;
         } else {
           setLastDensity(null);
+          lastDensityRef.current = null;
         }
         setGroundingSources([]);
         setGroundingStatus('idle');
         setGroundingError(null);
         setFactualConfidence(null);
+        setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
         setLatestClaimId(null);
         setClaimCopied(false);
         setDbSessionId(sessionId);
@@ -247,11 +281,13 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
 
       if (eventName === 'domain_classified' && payload.primary) {
         setCurrentDomain(payload.primary);
+        currentDomainRef.current = payload.primary;
         return;
       }
 
       if (eventName === 'provenance' && payload.model_key) {
         setCurrentModelKey(payload.model_key);
+        currentModelKeyRef.current = payload.model_key;
         return;
       }
 
@@ -286,13 +322,34 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         return;
       }
 
+      if (eventName === 'intervention_gate') {
+        if (payload.allowed === false) {
+          setAlignmentPosture(`Gate blocked: ${payload.rationale || 'missing confounder controls or identifiability requirements.'}`);
+        } else {
+          setAlignmentPosture(`Gate cleared: ${payload.rationale || 'intervention allowed under declared identifiability assumptions.'}`);
+        }
+        return;
+      }
+
+      if (eventName === 'intervention_blocked') {
+        setAlignmentPosture('Intervention downgraded to association-level output pending identifiability gates.');
+        return;
+      }
+
+      if (eventName === 'alignment_audit_report') {
+        setAlignmentPosture('Alignment audit report loaded: using latest global governance check.');
+        return;
+      }
+
       const isDensityEvent = eventName === 'causal_density_update' || eventName === 'causal_density_final';
       if (isDensityEvent && typeof payload.score === 'number') {
-        setLastDensity({
+        const nextDensity = {
           score: payload.score,
           label: payload.label || 'Unknown',
           confidence: typeof payload.confidence === 'number' ? payload.confidence : 0,
-        });
+        };
+        setLastDensity(nextDensity);
+        lastDensityRef.current = nextDensity;
       }
 
       if (eventName === 'answer_chunk') {
@@ -337,6 +394,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
     setGroundingStatus('idle');
     setGroundingError(null);
     setFactualConfidence(null);
+    setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setLatestClaimId(null);
     setClaimCopied(false);
 
@@ -377,7 +435,9 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         setDbSessionId(sessionForSave);
       }
 
-      if (sessionForSave) {
+      const shouldPersistClientSide = !!sessionForSave && sessionForSave.startsWith('local-');
+
+      if (shouldPersistClientSide && sessionForSave) {
         await chatPersistence.saveMessage(sessionForSave, {
           id: userMessage.id,
           role: 'user',
@@ -424,9 +484,10 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
         }
       }
 
-      if (sessionForSave) {
+      if (shouldPersistClientSide && sessionForSave) {
         const finalText = assistantContentRef.current;
-        const normalizedScore = Math.max(1, Math.min(3, Math.round(lastDensity?.score ?? 1))) as 1 | 2 | 3;
+        const latestDensity = lastDensityRef.current;
+        const normalizedScore = Math.max(1, Math.min(3, Math.round(latestDensity?.score ?? 1))) as 1 | 2 | 3;
         const normalizedLabel =
           normalizedScore === 3 ? 'Counterfactual' : normalizedScore === 2 ? 'Intervention' : 'Association';
 
@@ -435,12 +496,13 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
           role: 'assistant',
           content: finalText,
           timestamp: new Date(),
-          domain: currentDomain,
-          causalDensity: lastDensity
+          domain: currentDomainRef.current,
+          modelKey: currentModelKeyRef.current,
+          causalDensity: latestDensity
             ? {
                 score: normalizedScore,
                 label: normalizedLabel,
-                confidence: lastDensity.confidence,
+                confidence: latestDensity.confidence,
                 detectedMechanisms: [],
               }
             : undefined,
@@ -465,7 +527,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [chatPersistence, currentDomain, dbSessionId, handleStreamEvent, isLoading, lastDensity, messages, operatorMode, prompt]);
+  }, [chatPersistence, dbSessionId, handleStreamEvent, isLoading, messages, operatorMode, prompt]);
 
   const handleStop = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -641,7 +703,7 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
                 <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
                 <p className="lab-section-title !mb-0">Alignment Posture</p>
               </div>
-              <p className="text-sm text-[var(--lab-text-secondary)]">No unaudited intervention claims without identifiability gates.</p>
+              <p className="text-sm text-[var(--lab-text-secondary)]">{alignmentPosture}</p>
             </div>
 
             {latestClaimId ? (

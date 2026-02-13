@@ -743,6 +743,8 @@ ${sourceList}`;
               role: "assistant",
               content: fullText,
               domain_classified: classification.primary,
+              model_key: scmContext.model?.modelKey,
+              model_version: scmContext.model?.version,
               scm_tier1_used: scmContext.primaryScm.getConstraints(),
               scm_tier2_used: scmContext.tier2?.getConstraints(),
               confidence_score: classification.confidence,
@@ -761,6 +763,18 @@ ${sourceList}`;
               );
               causalDensityColumnAvailable = false;
               delete assistantPayload.causal_density;
+              const retry = await supabase
+                .from("causal_chat_messages")
+                .insert(assistantPayload);
+              assistantError = retry.error;
+            }
+
+            if (assistantError && /model_key|model_version|column/i.test(assistantError.message || "")) {
+              console.warn(
+                "[CausalChat] Failed writing model provenance columns. Retrying without model_key/model_version. Apply new model provenance migration."
+              );
+              delete assistantPayload.model_key;
+              delete assistantPayload.model_version;
               const retry = await supabase
                 .from("causal_chat_messages")
                 .insert(assistantPayload);

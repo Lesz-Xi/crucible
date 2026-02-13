@@ -13,6 +13,8 @@ export interface Message {
   confidenceScore?: number;
   causalGraph?: Record<string, unknown>;
   causalDensity?: CausalDensityResult;
+  modelKey?: string;
+  modelVersion?: string;
 }
 
 /**
@@ -123,6 +125,8 @@ export class ChatPersistence {
       scm_tier2_used: message.tier2Used,
       confidence_score: message.confidenceScore,
       causal_graph: message.causalGraph,
+      model_key: message.modelKey,
+      model_version: message.modelVersion,
     };
     if (canPersistDensity && message.causalDensity) {
       payload.causal_density = message.causalDensity;
@@ -211,6 +215,8 @@ export class ChatPersistence {
       confidenceScore: row.confidence_score || undefined,
       causalDensity: row.causal_density || undefined,
       causalGraph: row.causal_graph || undefined,
+      modelKey: row.model_key || undefined,
+      modelVersion: row.model_version || undefined,
     }));
   }
 
@@ -285,6 +291,8 @@ export class ChatPersistence {
       confidence_score: message.confidenceScore || null,
       causal_graph: message.causalGraph || null,
       causal_density: message.causalDensity || null,
+      model_key: message.modelKey || null,
+      model_version: message.modelVersion || null,
     });
     session.updated_at = new Date().toISOString();
     this.writeLocalStore(store);
@@ -308,6 +316,8 @@ export class ChatPersistence {
       confidenceScore: row.confidence_score || undefined,
       causalDensity: row.causal_density || undefined,
       causalGraph: row.causal_graph || undefined,
+      modelKey: row.model_key || undefined,
+      modelVersion: row.model_version || undefined,
     }));
   }
 
@@ -329,6 +339,8 @@ export class ChatPersistence {
         confidence_score: number | null;
         causal_graph: Record<string, unknown> | null;
         causal_density: CausalDensityResult | null;
+        model_key: string | null;
+        model_version: string | null;
       }>;
     }>;
   } {
@@ -364,6 +376,8 @@ export class ChatPersistence {
             confidence_score: number | null;
             causal_graph: Record<string, unknown> | null;
             causal_density: CausalDensityResult | null;
+            model_key: string | null;
+            model_version: string | null;
           }>;
         }>;
       };
