@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import {
   FlaskConical,
   Microscope,
@@ -102,7 +101,6 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
-  const searchParams = useSearchParams();
 
   const resetThread = useCallback(() => {
     setMessages([]);
@@ -257,18 +255,25 @@ export function ChatWorkbenchV2({ onLoadSession, onNewChat }: ChatWorkbenchV2Pro
   );
 
   useEffect(() => {
-    const urlSessionId = searchParams.get('sessionId');
-    const isNew = searchParams.get('new') === '1';
+    const syncFromUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlSessionId = params.get('sessionId');
+      const isNew = params.get('new') === '1';
 
-    if (isNew) {
-      resetThread();
-      return;
-    }
+      if (isNew) {
+        resetThread();
+        return;
+      }
 
-    if (urlSessionId && urlSessionId !== dbSessionId) {
-      void loadSession(urlSessionId);
-    }
-  }, [dbSessionId, loadSession, resetThread, searchParams]);
+      if (urlSessionId && urlSessionId !== dbSessionId) {
+        void loadSession(urlSessionId);
+      }
+    };
+
+    syncFromUrl();
+    window.addEventListener('popstate', syncFromUrl);
+    return () => window.removeEventListener('popstate', syncFromUrl);
+  }, [dbSessionId, loadSession, resetThread]);
 
   useEffect(() => {
     const onLoadSessionEvent = (event: Event) => {
