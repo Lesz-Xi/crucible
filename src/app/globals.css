@@ -113,9 +113,9 @@
   --lab-text-primary: #e7e9ee;
   --lab-text-secondary: #b1b6c0;
   --lab-text-tertiary: #828894;
-  --lab-accent-clay: #a4acb8;
-  --lab-accent-earth: #c7ccd6;
-  --lab-accent-moss: #96a0ad;
+  --lab-accent-clay: #8f877f;
+  --lab-accent-earth: #d7d2ca;
+  --lab-accent-moss: #9a9389;
   --lab-shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.36);
   --lab-shadow-lift: 0 20px 42px rgba(0, 0, 0, 0.44);
   
@@ -426,6 +426,13 @@
   font-size: 14px;
   font-weight: 600;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease, background-color 180ms ease;
+}
+
+.lab-button-primary:focus-visible,
+.lab-button-secondary:focus-visible,
+.lab-nav-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(42, 38, 33, 0.22);
 }
 
 .lab-button-primary {
@@ -917,6 +924,13 @@
   color: #f0f2f6;
   border-color: rgba(255, 255, 255, 0.24);
   background: rgba(255, 255, 255, 0.08);
+}
+
+.dark .lab-button-primary:focus-visible,
+.dark .lab-button-secondary:focus-visible,
+.dark .lab-nav-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(232, 235, 241, 0.28);
 }
 
 .dark .lab-button-secondary:hover:not(:disabled),

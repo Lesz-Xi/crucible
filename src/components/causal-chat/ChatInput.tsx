@@ -44,7 +44,7 @@ export function ChatInput({ input, setInput, isLoading, onSend, onStop, isExpand
 
   return (
     <div className={cn(
-      "w-full bg-white/10 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(31,38,135,0.15)] transition-all duration-500 group focus-within:bg-white/20 focus-within:shadow-[0_8px_32px_rgba(31,38,135,0.2)]",
+      "w-full bg-white/10 backdrop-blur-xl border border-white/30 shadow-[0_8px_30px_rgba(0,0,0,0.22)] transition-all duration-500 group focus-within:bg-white/15 focus-within:shadow-[0_8px_30px_rgba(0,0,0,0.28)]",
       isExpanded ? "rounded-3xl p-4 md:p-6" : "rounded-3xl p-3" // Input Box Shape
     )}>
       <textarea

@@ -27,15 +27,15 @@ export function InterventionTutorial({ className = '' }: InterventionTutorialPro
   };
 
   return (
-    <div className={`rounded-lg border border-wabi-clay/30 bg-gradient-to-br from-purple-500/5 to-blue-500/5 overflow-hidden shadow-lg ${className}`}>
+    <div className={`rounded-lg border border-wabi-clay/30 bg-gradient-to-br from-white/5 to-white/0 overflow-hidden shadow-lg ${className}`}>
       {/* Header */}
       <button
         onClick={handleToggle}
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors group"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
-            <Microscope className="w-5 h-5 text-purple-400" />
+          <div className="p-2 rounded-lg bg-white/10 group-hover:bg-white/15 transition-colors">
+            <Microscope className="w-5 h-5 text-[var(--lab-accent-earth)]" />
           </div>
           <div className="text-left">
             <h3 className="font-bold text-sm text-wabi-clay">Causal Surgery Playground</h3>
@@ -55,7 +55,7 @@ export function InterventionTutorial({ className = '' }: InterventionTutorialPro
           {/* Introduction */}
           <div className="text-sm text-wabi-clay/80 leading-relaxed">
             <p>
-              Perform <strong className="text-purple-400">causal interventions</strong> on your computational models using the do-calculus playground.
+              Perform <strong className="text-[var(--lab-accent-earth)]">causal interventions</strong> on your computational models using the do-calculus playground.
               This feature lets you test hypotheses by clamping variables and observing downstream effects.
             </p>
           </div>
@@ -67,7 +67,7 @@ export function InterventionTutorial({ className = '' }: InterventionTutorialPro
             <div className="space-y-2">
               {/* Step 1 */}
               <div className="flex gap-3 items-start">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-xs font-bold text-blue-400">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xs font-bold text-[var(--lab-accent-earth)]">
                   1
                 </div>
                 <div className="flex-1">
@@ -79,12 +79,12 @@ export function InterventionTutorial({ className = '' }: InterventionTutorialPro
 
               {/* Step 2 */}
               <div className="flex gap-3 items-start">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-xs font-bold text-purple-400">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xs font-bold text-[var(--lab-accent-earth)]">
                   2
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-wabi-clay/90">
-                    <strong>Specify an intervention</strong> like <code className="px-1.5 py-0.5 rounded bg-wabi-sumi/20 text-purple-400 text-xs font-mono">do(temperature = 500K)</code>
+                    <strong>Specify an intervention</strong> like <code className="px-1.5 py-0.5 rounded bg-wabi-sumi/20 text-[var(--lab-accent-earth)] text-xs font-mono">do(temperature = 500K)</code>
                   </p>
                 </div>
               </div>
@@ -106,15 +106,15 @@ export function InterventionTutorial({ className = '' }: InterventionTutorialPro
           {/* Example */}
           <div className="p-3 rounded-lg bg-wabi-sumi/10 border border-wabi-sumi/20">
             <div className="flex items-start gap-2 mb-2">
-              <Code className="w-4 h-4 text-green-400 mt-0.5" />
+              <Code className="w-4 h-4 text-[var(--lab-accent-moss)] mt-0.5" />
               <h5 className="text-xs font-bold text-wabi-clay">Example Query</h5>
             </div>
             <div className="space-y-2 text-xs">
               <p className="text-wabi-clay/70 italic">
-                "I have a neural network training loop. What if we set <code className="text-green-400">learning_rate = 0.01</code>? 
+                "I have a neural network training loop. What if we set <code className="text-[var(--lab-accent-moss)]">learning_rate = 0.01</code>? 
                 Show me how this affects loss convergence."
               </p>
-              <div className="flex items-center gap-2 text-purple-400">
+              <div className="flex items-center gap-2 text-[var(--lab-accent-earth)]">
                 <Zap className="w-3 h-3" />
                 <span className="text-[10px] font-semibold">→ System will clamp the variable and trace effects through your code</span>
               </div>
