@@ -27,6 +27,11 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: "Wu-Weism | Wabi-Sabi Synthesis Engine",
   description: "Synthesize ideas with a cinematic Wabi-Sabi interface.",
+  icons: {
+    icon: "/wu-wei-mark.png",
+    shortcut: "/wu-wei-mark.png",
+    apple: "/wu-wei-mark.png",
+  },
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
