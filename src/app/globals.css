@@ -691,16 +691,6 @@
   margin: 0.35rem 0;
 }
 
-.lab-chat-prose ol > li::marker {
-  color: var(--lab-accent-earth);
-  font-weight: 700;
-}
-
-.lab-chat-prose ol > li {
-  border-left: 2px solid color-mix(in srgb, var(--lab-border) 74%, transparent);
-  padding-left: 0.62rem;
-}
-
 .lab-chat-prose h1,
 .lab-chat-prose h2,
 .lab-chat-prose h3 {
@@ -778,10 +768,6 @@
 
 .dark .lab-chat-prose h2 {
   border-top-color: rgba(255, 255, 255, 0.14);
-}
-
-.dark .lab-chat-prose ol > li {
-  border-left-color: rgba(255, 255, 255, 0.16);
 }
 
 .dark .lab-chat-prose blockquote {
