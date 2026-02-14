@@ -604,7 +604,7 @@ POLICY:
                 .join("\n\n")
               : "No reliable sources retrieved.";
 
-          finalPrompt = `${systemPrompt}
+          finalPrompt = `${finalPrompt}
 
 FACTUAL GROUNDING POLICY (MANDATORY):
 - This answer must be strictly evidence-grounded for named factual claims.
