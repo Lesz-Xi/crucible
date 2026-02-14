@@ -136,7 +136,7 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
     };
 
     // Digit-form numerics
-    for (const match of markdown.matchAll(/-?\d+(?:\.\d+)?/g)) {
+    for (const match of markdown.matchAll(/\d+(?:\.\d+)?/g)) {
         const raw = match[0];
         const value = Number(raw);
         const idx = match.index || 0;

@@ -67,7 +67,8 @@ function classifyNumericEvidence(value: number, snippet: string): NumericEvidenc
   if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+|\bm\d+\b|\bec\d+\b|\bs\d+\b)\b/.test(text)) {
     return "structural";
   }
-  if (structuralEnumeration && !metricSignal) {
+  // Structural enumerations override metric signals (e.g., "three main side effects" near latency text).
+  if (structuralEnumeration) {
     return "structural";
   }
 
