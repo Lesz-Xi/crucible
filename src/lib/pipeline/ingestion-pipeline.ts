@@ -53,6 +53,10 @@ async function sha256(data: ArrayBuffer): Promise<string> {
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function cloneArrayBuffer(buffer: ArrayBuffer): ArrayBuffer {
+    return buffer.slice(0);
+}
+
 // ── Pipeline ─────────────────────────────────────────────────
 
 /**
@@ -121,10 +125,10 @@ export async function runIngestionPipeline(
 
     try {
         // ── Step 3: Extract metadata ──
-        const metadata = await extractMetadataFromPDF(buffer);
+        const metadata = await extractMetadataFromPDF(cloneArrayBuffer(buffer));
 
         // ── Step 4: Extract tables ──
-        const rawTables: RawTableResult[] = await extractTablesFromPDF(buffer);
+        const rawTables: RawTableResult[] = await extractTablesFromPDF(cloneArrayBuffer(buffer));
         const { trusted: trustedRaw, flagged: flaggedRaw } = filterTrustedTables(
             rawTables,
             minTableConfidence
@@ -166,7 +170,7 @@ export async function runIngestionPipeline(
         // ── Step 5: Markdown conversion ──
         let markdown = "";
         if (!skipMarkdown) {
-            markdown = await convertPDFToMarkdown(buffer);
+            markdown = await convertPDFToMarkdown(cloneArrayBuffer(buffer));
         }
 
         // ── Step 6: Parse numeric data points from trusted tables ──
