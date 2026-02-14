@@ -5,6 +5,7 @@
 // =============================================================
 
 import "./polyfill";
+import { buildPdfDocumentOptions, loadPdfJs } from "./pdfjs-loader";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -109,9 +110,9 @@ function groupIntoLines(
 export async function convertPDFToMarkdown(
     buffer: ArrayBuffer
 ): Promise<string> {
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const pdfjsLib = await loadPdfJs();
 
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+    const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
     const pdf = await loadingTask.promise;
 
     const markdownParts: string[] = [];

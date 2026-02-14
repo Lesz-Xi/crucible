@@ -5,6 +5,7 @@
 // =============================================================
 
 import "./polyfill";
+import { buildPdfDocumentOptions, loadPdfJs } from "./pdfjs-loader";
 import type { DocumentMetadata } from "../../types/scientific-data";
 
 // ── Regex Patterns ───────────────────────────────────────────
@@ -95,9 +96,9 @@ function parseAuthors(authorStr: string): string[] {
 export async function extractMetadataFromPDF(
     buffer: ArrayBuffer
 ): Promise<DocumentMetadata> {
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+    const pdfjsLib = await loadPdfJs();
 
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+    const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
     const pdf = await loadingTask.promise;
 
     // ── Pass 1: PDF Metadata Dict ──

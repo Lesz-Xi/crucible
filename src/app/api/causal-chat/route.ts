@@ -425,7 +425,12 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
         });
 
         if (factTrigger.shouldSearch) {
-          if (!groundingEnabled) {
+          if (normalizedAttachments.length > 0) {
+            sendEvent("web_grounding_failed", {
+              reason: "attachment_mode",
+              message: "Web grounding suppressed: attachment-first mode is active.",
+            });
+          } else if (!groundingEnabled) {
             sendEvent("web_grounding_failed", {
               reason: "feature_disabled",
               message: "Web grounding feature is disabled via CHAT_WEB_GROUNDING_V1=false.",
