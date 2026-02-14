@@ -54,6 +54,8 @@ type NumericEvidenceCategory =
 function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
   const text = (snippet || "").toLowerCase();
 
+  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b/.test(text);
+
   if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
   if (/\b(19|20)\d{2}\b/.test(String(value)) && /(et al\.|\(|\)|references?|journal|copyright|received|accepted|revised)/.test(text)) {
     return "citation_year";
@@ -61,11 +63,11 @@ function classifyNumericEvidence(value: number, snippet: string): NumericEvidenc
   if (/(doi|ssrn|arxiv|world journal|volume|issue|pages?|copyright|received|accepted|revised|creative commons|license)/.test(text)) {
     return "bibliographic";
   }
-  if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+)\b/.test(text)) {
+  if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+|\bm\d+\b|\bec\d+\b|\bs\d+\b)\b/.test(text)) {
     return "structural";
   }
 
-  return "potential_metric";
+  return metricSignal ? "potential_metric" : "structural";
 }
 
 function confidenceForCategory(category: NumericEvidenceCategory): "high" | "medium" | "low" {

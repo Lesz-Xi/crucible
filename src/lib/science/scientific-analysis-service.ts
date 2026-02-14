@@ -145,6 +145,13 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
         const next = end < markdown.length ? markdown[end] : "";
         const snippet = snippetAt(markdown, idx);
 
+        // Skip alphanumeric entity tokens like M3, EC2, S3, v2 unless there is explicit metric-unit context.
+        const embeddedAlphaNumeric = /[a-z]/i.test(prev) || /[a-z]/i.test(next);
+        const metricUnitContext = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b/i.test(snippet);
+        if (embeddedAlphaNumeric && !metricUnitContext) {
+            continue;
+        }
+
         // Skip DOI decimal fragments like ".2.1521" tokenized as "2.1521".
         const looksDoiContext = /doi\.org|\bdoi\b/i.test(snippet);
         const isEmbeddedInDotChain = prev === "." || next === ".";
