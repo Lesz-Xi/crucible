@@ -64,6 +64,15 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
       );
     }
 
+    const numericEvidence = entry.numericEvidence || [];
+    if (numericEvidence.length > 0) {
+      lines.push("Numeric evidence samples:");
+      numericEvidence.slice(0, 8).forEach((item) => {
+        const snippet = item.contextSnippet ? ` | context: ${item.contextSnippet}` : "";
+        lines.push(`- value=${item.value} source=${item.source}${snippet}`);
+      });
+    }
+
     lines.push("---");
   });
 

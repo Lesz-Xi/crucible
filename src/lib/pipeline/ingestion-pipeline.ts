@@ -45,39 +45,56 @@ export interface PipelineOptions {
     skipMarkdown?: boolean;
 }
 
-function parseProseNumericSeries(markdown: string): number[] {
+interface ProseNumericHit {
+    value: number;
+    contextSnippet: string;
+}
+
+function getContextSnippet(text: string, index: number, radius = 80): string {
+    const start = Math.max(0, index - radius);
+    const end = Math.min(text.length, index + radius);
+    return text.slice(start, end).replace(/\s+/g, " ").trim();
+}
+
+function parseProseNumericSeries(markdown: string): ProseNumericHit[] {
     if (!markdown || typeof markdown !== "string") return [];
 
-    const candidates: number[] = [];
+    const candidates: ProseNumericHit[] = [];
 
     // Range patterns: 84-92, 84–92, 84 to 92
     for (const match of markdown.matchAll(/(-?\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(-?\d+(?:\.\d+)?)/gi)) {
         const a = Number(match[1]);
         const b = Number(match[2]);
-        if (Number.isFinite(a)) candidates.push(a);
-        if (Number.isFinite(b)) candidates.push(b);
-        if (Number.isFinite(a) && Number.isFinite(b)) candidates.push((a + b) / 2);
+        const idx = match.index || 0;
+        const snippet = getContextSnippet(markdown, idx);
+        if (Number.isFinite(a)) candidates.push({ value: a, contextSnippet: snippet });
+        if (Number.isFinite(b)) candidates.push({ value: b, contextSnippet: snippet });
+        if (Number.isFinite(a) && Number.isFinite(b)) candidates.push({ value: (a + b) / 2, contextSnippet: snippet });
     }
 
     // Slash metrics: 0.82/0.76, F1/AUC-like pairs
     for (const match of markdown.matchAll(/(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)/g)) {
         const a = Number(match[1]);
         const b = Number(match[2]);
-        if (Number.isFinite(a)) candidates.push(a);
-        if (Number.isFinite(b)) candidates.push(b);
+        const idx = match.index || 0;
+        const snippet = getContextSnippet(markdown, idx);
+        if (Number.isFinite(a)) candidates.push({ value: a, contextSnippet: snippet });
+        if (Number.isFinite(b)) candidates.push({ value: b, contextSnippet: snippet });
     }
 
     // Number + optional decimal + optional percent/unit prefix/suffix
     for (const match of markdown.matchAll(/(?:(?:p|r|f1|auc|accuracy|precision|recall|latency|loss|rmse|mae|mape)\s*[:=]?\s*)?(-?\d+(?:\.\d+)?)(\s*%?)/gi)) {
         const raw = Number(match[1]);
         if (!Number.isFinite(raw)) continue;
-        candidates.push(raw);
+        const idx = match.index || 0;
+        candidates.push({ value: raw, contextSnippet: getContextSnippet(markdown, idx) });
     }
 
-    const filtered: number[] = [];
+    const filtered: ProseNumericHit[] = [];
     const seen = new Set<string>();
 
-    for (const raw of candidates) {
+    for (const hit of candidates) {
+        const raw = hit.value;
         const isLikelyYear = raw >= 1900 && raw <= 2100;
         const isLikelyNoise = Math.abs(raw) > 1_000_000;
         if (isLikelyYear || isLikelyNoise) continue;
@@ -86,7 +103,7 @@ function parseProseNumericSeries(markdown: string): number[] {
         if (seen.has(roundedKey)) continue;
         seen.add(roundedKey);
 
-        filtered.push(raw);
+        filtered.push(hit);
         if (filtered.length >= 80) break;
     }
 
@@ -94,18 +111,19 @@ function parseProseNumericSeries(markdown: string): number[] {
 }
 
 function buildProseDataPoints(ingestionId: string, markdown: string): CreateDataPointInput[] {
-    const values = parseProseNumericSeries(markdown);
-    if (values.length < 2) return [];
+    const hits = parseProseNumericSeries(markdown);
+    if (hits.length < 2) return [];
 
-    return values.map((value, index) => ({
+    return hits.map((hit, index) => ({
         ingestionId,
         variableXName: "prose_index",
         variableYName: "prose_metric",
         xValue: index + 1,
-        yValue: value,
+        yValue: hit.value,
         metadata: {
             source: "prose_numeric_extraction",
-            extractionVersion: "2.0.0",
+            extractionVersion: "2.1.0",
+            contextSnippet: hit.contextSnippet,
         },
     }));
 }

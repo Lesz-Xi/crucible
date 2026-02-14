@@ -32,6 +32,14 @@ export interface ScientificAnalysisSummary {
     dataPointCount: number;
 }
 
+export interface ScientificNumericEvidenceItem {
+    value: number;
+    variableXName?: string;
+    variableYName?: string;
+    source: "table" | "prose" | "unknown";
+    contextSnippet?: string;
+}
+
 export interface ScientificAnalysisResponse {
     ingestionId: string;
     status: "completed" | "partial" | "failed";
@@ -39,6 +47,7 @@ export interface ScientificAnalysisResponse {
     computeRunId?: string;
     reasoningGraph?: ReasoningGraph;
     warnings: string[];
+    numericEvidence: ScientificNumericEvidenceItem[];
     /** Contract §5: provenance reference for downstream consumers */
     provenance?: ProvenanceReference;
     /** Contract §E: observability metadata */
@@ -205,6 +214,24 @@ export class DefaultScientificAnalysisService implements ScientificAnalysisServi
             `[ScientificAnalysis] file=${fileName} status=${status} durationMs=${durationMs} warnings=${result.warnings.length}`,
         );
 
+        const numericEvidence: ScientificNumericEvidenceItem[] = result.dataPoints
+            .slice(0, 15)
+            .map((dp) => ({
+                value: dp.yValue,
+                variableXName: dp.variableXName,
+                variableYName: dp.variableYName,
+                source:
+                    dp.metadata?.source === "prose_numeric_extraction"
+                        ? "prose"
+                        : dp.sourceTableId
+                            ? "table"
+                            : "unknown",
+                contextSnippet:
+                    typeof dp.metadata?.contextSnippet === "string"
+                        ? dp.metadata.contextSnippet
+                        : undefined,
+            }));
+
         return {
             ingestionId: result.ingestion.id,
             status,
@@ -216,6 +243,7 @@ export class DefaultScientificAnalysisService implements ScientificAnalysisServi
             computeRunId: result.computeRun?.id,
             reasoningGraph: result.reasoningGraph,
             warnings: result.warnings,
+            numericEvidence,
             provenance,
             observability: {
                 fileName,
@@ -243,6 +271,7 @@ export class DefaultScientificAnalysisService implements ScientificAnalysisServi
             status: "failed",
             summary: { tableCount: 0, trustedTableCount: 0, dataPointCount: 0 },
             warnings: [warning],
+            numericEvidence: [],
             observability: {
                 fileName,
                 durationMs,

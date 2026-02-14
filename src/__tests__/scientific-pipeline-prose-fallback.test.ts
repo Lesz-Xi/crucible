@@ -48,6 +48,6 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(saveDataPoints).toHaveBeenCalled();
     expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
     expect(result.warnings.join(' ')).toContain('prose numeric extraction fallback');
-    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.0.0')).toBe(true);
+    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.1.0')).toBe(true);
   });
 });
