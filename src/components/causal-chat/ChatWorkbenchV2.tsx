@@ -13,7 +13,7 @@ import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
-import { ChatComposerV2 } from '@/components/causal-chat/ChatComposerV2';
+import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
@@ -48,6 +48,26 @@ interface AssistantEventPayload {
 }
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
+
+interface PendingAttachment extends ComposerAttachment {
+  file: File;
+}
+
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === 'string') {
+        const payload = result.includes(',') ? result.split(',')[1] : result;
+        resolve(payload || '');
+      } else {
+        reject(new Error('Failed to read attachment as base64 string'));
+      }
+    };
+    reader.onerror = () => reject(reader.error || new Error('Attachment read failed'));
+    reader.readAsDataURL(file);
+  });
 
 const quantizeConfidence = (value: number): number => {
   const bounded = Math.max(0, Math.min(1, value));
@@ -233,6 +253,7 @@ export function ChatWorkbenchV2() {
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
+  const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
@@ -720,6 +741,14 @@ export function ChatWorkbenchV2() {
       abortControllerRef.current?.abort();
       abortControllerRef.current = new AbortController();
 
+      const serializedAttachments = await Promise.all(
+        attachments.map(async (item) => ({
+          name: item.name,
+          mimeType: item.mimeType,
+          data: await fileToBase64(item.file),
+        }))
+      );
+
       const response = await fetch('/api/causal-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -728,6 +757,7 @@ export function ChatWorkbenchV2() {
           sessionId: sessionForSave,
           operatorMode: inferredMode,
           intervention: interventionPayload || undefined,
+          attachments: serializedAttachments.length > 0 ? serializedAttachments : undefined,
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -781,6 +811,7 @@ export function ChatWorkbenchV2() {
         });
       }
 
+      setAttachments([]);
       window.dispatchEvent(new Event('historyImported'));
     } catch (sendError) {
       if ((sendError as Error).name !== 'AbortError') {
@@ -799,7 +830,7 @@ export function ChatWorkbenchV2() {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [chatPersistence, dbSessionId, handleStreamEvent, isLoading, messages, operatorMode, prompt]);
+  }, [attachments, chatPersistence, dbSessionId, handleStreamEvent, isLoading, messages, operatorMode, prompt]);
 
   const handleStop = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -828,6 +859,28 @@ export function ChatWorkbenchV2() {
       window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
       return next;
     });
+  }, []);
+
+  const handleAddAttachments = useCallback((files: File[]) => {
+    setAttachments((previous) => {
+      const next = [...previous];
+      for (const file of files) {
+        if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) continue;
+        if (!next.some((item) => item.name === file.name)) {
+          next.push({
+            file,
+            name: file.name,
+            mimeType: file.type || 'application/pdf',
+            sizeBytes: file.size,
+          });
+        }
+      }
+      return next.slice(0, 3);
+    });
+  }, []);
+
+  const handleRemoveAttachment = useCallback((name: string) => {
+    setAttachments((previous) => previous.filter((item) => item.name !== name));
   }, []);
 
   return (
@@ -886,6 +939,9 @@ export function ChatWorkbenchV2() {
               onQuickPromptSelect={handleQuickPrompt}
               evidenceRailOpen={evidenceRailOpen}
               onToggleEvidenceRail={toggleEvidenceRail}
+              attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
+              onAddAttachments={handleAddAttachments}
+              onRemoveAttachment={handleRemoveAttachment}
               placeholder={
                 operatorMode === 'intervene'
                   ? 'Describe the action you want to take, expected impact, and guardrails...'

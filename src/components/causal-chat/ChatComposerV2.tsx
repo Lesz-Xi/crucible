@@ -1,12 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { ChevronDown, Eye, EyeOff, FlaskConical, Loader2, Paperclip, Send, SlidersHorizontal, Square } from 'lucide-react';
 
 interface QuickPromptOption {
   id: string;
   label: string;
   snippet: string;
+}
+
+export interface ComposerAttachment {
+  name: string;
+  mimeType: string;
+  sizeBytes: number;
 }
 
 export interface ChatComposerV2Props {
@@ -24,6 +30,9 @@ export interface ChatComposerV2Props {
   onQuickPromptSelect?: (id: string, snippet: string) => void;
   evidenceRailOpen?: boolean;
   onToggleEvidenceRail?: () => void;
+  attachments?: ComposerAttachment[];
+  onAddAttachments?: (files: File[]) => void;
+  onRemoveAttachment?: (name: string) => void;
 }
 
 export function ChatComposerV2({
@@ -41,10 +50,22 @@ export function ChatComposerV2({
   onQuickPromptSelect,
   evidenceRailOpen = true,
   onToggleEvidenceRail,
+  attachments = [],
+  onAddAttachments,
+  onRemoveAttachment,
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
   const [shortcutMenuOpen, setShortcutMenuOpen] = useState(false);
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
+    const selected = Array.from(event.currentTarget.files || []);
+    if (selected.length > 0) {
+      onAddAttachments?.(selected);
+    }
+    event.currentTarget.value = '';
+  };
 
   const modeLabel: Record<'explore' | 'intervene' | 'audit', string> = {
     explore: 'Diagnose',
@@ -70,7 +91,20 @@ export function ChatComposerV2({
 
       <div className="mt-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <button type="button" className="lab-button-secondary !px-2.5 !py-1 text-[11px]" disabled>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/pdf,.pdf"
+            multiple
+            className="hidden"
+            onChange={handleFileInput}
+          />
+          <button
+            type="button"
+            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={disabled || isLoading}
+          >
             <Paperclip className="h-3.5 w-3.5" />
             Attach
           </button>
@@ -164,6 +198,23 @@ Scenarios
           )}
         </div>
       </div>
+
+      {attachments.length > 0 ? (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {attachments.map((file) => (
+            <button
+              key={file.name}
+              type="button"
+              className="lab-nav-pill"
+              onClick={() => onRemoveAttachment?.(file.name)}
+              title="Remove attachment"
+            >
+              <Paperclip className="h-3.5 w-3.5" />
+              {file.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
