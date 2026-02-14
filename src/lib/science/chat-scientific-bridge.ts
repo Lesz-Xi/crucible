@@ -80,6 +80,12 @@ function confidenceForCategory(category: NumericEvidenceCategory): "high" | "med
   return "low";
 }
 
+function trimContextSnippet(snippet: string, max = 180): string {
+  const clean = snippet.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  return `${clean.slice(0, max - 1)}…`;
+}
+
 function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
   if (analyses.length === 0) return "";
 
@@ -103,19 +109,45 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
     const numericEvidence = entry.numericEvidence || [];
     if (numericEvidence.length > 0) {
       lines.push("Extracted numbers with context (all explicit numerics):");
-      numericEvidence.slice(0, 20).forEach((item) => {
+
+      const normalized = numericEvidence.map((item) => {
         const category = classifyNumericEvidence(item.value, item.contextSnippet || "");
         const confidence = confidenceForCategory(category);
-        const snippet = item.contextSnippet ? item.contextSnippet : "(no snippet available)";
-        lines.push(`- value=${item.value} | category=${category} | confidence=${confidence} | source=${item.source} | context=${snippet}`);
+        const snippet = trimContextSnippet(item.contextSnippet || "(no snippet available)");
+        return { item, category, confidence, snippet };
       });
 
-      const claimEligible = numericEvidence.filter((item) => classifyNumericEvidence(item.value, item.contextSnippet || "") === "potential_metric");
+      const deduped: typeof normalized = [];
+      const seen = new Set<string>();
+      for (const row of normalized) {
+        const key = `${row.category}|${row.item.value}|${row.snippet.slice(0, 80)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        deduped.push(row);
+      }
+
+      const categoryOrder: NumericEvidenceCategory[] = [
+        "potential_metric",
+        "structural",
+        "bibliographic",
+        "citation_year",
+        "reference_index",
+      ];
+
+      for (const category of categoryOrder) {
+        const bucket = deduped.filter((row) => row.category === category).slice(0, 8);
+        if (bucket.length === 0) continue;
+        lines.push(`${category}:`);
+        for (const row of bucket) {
+          lines.push(`- value=${row.item.value} | category=${row.category} | confidence=${row.confidence} | context=${row.snippet}`);
+        }
+      }
+
+      const claimEligible = deduped.filter((row) => row.category === "potential_metric");
       if (claimEligible.length > 0) {
         lines.push("Claim-eligible numeric candidates:");
-        claimEligible.slice(0, 10).forEach((item) => {
-          const snippet = item.contextSnippet ? item.contextSnippet : "(no snippet available)";
-          lines.push(`- value=${item.value} | context=${snippet}`);
+        claimEligible.slice(0, 8).forEach((row) => {
+          lines.push(`- value=${row.item.value} | context=${row.snippet}`);
         });
       } else {
         lines.push("Claim-eligible numeric candidates: NONE");
