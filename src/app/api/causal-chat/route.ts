@@ -587,6 +587,30 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
         }
 
         let finalPrompt = systemPrompt;
+
+        if (normalizedAttachments.length > 0) {
+          const ingestionStatusLines = scientificAnalysis.length > 0
+            ? scientificAnalysis
+              .map((entry, index) => `Attachment #${index + 1}: status=${entry.status}, tables=${entry.summary.tableCount}, trusted=${entry.summary.trustedTableCount}, data_points=${entry.summary.dataPointCount}`)
+              .join("\n")
+            : `Attachment count in request: ${normalizedAttachments.length}`;
+
+          const warningBlock = scientificWarnings.length > 0
+            ? `\nWarnings:\n- ${scientificWarnings.slice(0, 5).join("\n- ")}`
+            : "";
+
+          finalPrompt = `${finalPrompt}
+
+ATTACHMENT INGESTION STATUS (authoritative):
+${ingestionStatusLines}${warningBlock}
+
+HARD POLICY:
+- The user DID upload attachment(s) in this request.
+- Never claim that no PDF/attachment was uploaded.
+- If extraction quality is weak, say extraction is low-confidence and cite the warning/status above.
+- Use only attachment-derived evidence in this mode; do not fabricate numeric claims.`;
+        }
+
         if (scientificSummaryForContext) {
           finalPrompt = `${finalPrompt}
 
