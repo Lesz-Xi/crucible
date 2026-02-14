@@ -72,7 +72,7 @@ describe('scientific ingestion pipeline prose fallback', () => {
 
   it('uses weak prose lane when metric-scored numbers are insufficient', async () => {
     convertPDFToMarkdownMock.mockResolvedValue(
-      'System observed values 11, 14, and 18 across checkpoints; sequence remained stable.',
+      'System observed values 14 and 18 across checkpoints; sequence remained stable under load.',
     );
 
     const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
@@ -80,5 +80,16 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
     expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionLane === 'weak')).toBe(true);
     expect(result.warnings.join(' ')).toContain('lane=weak');
+  });
+
+  it('suppresses section ordinals without metric context', async () => {
+    convertPDFToMarkdownMock.mockResolvedValue(
+      '1. Introduction ... 5. Ethical and Implementation Considerations ... 6. Conclusion ...',
+    );
+
+    const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
+
+    expect(result.dataPoints.length).toBe(0);
+    expect(result.warnings.join(' ')).toContain('Fewer than 2 numeric data points extracted');
   });
 });

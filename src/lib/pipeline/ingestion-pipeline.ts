@@ -57,6 +57,7 @@ interface ProseNumericLanes {
 
 const BIBLIOGRAPHIC_CONTEXT_PATTERN = /(journal|doi|issn|volume|issue|pages?|copyright|license|received|revised|accepted|publication history|creativecommons|author\(s\)|corresponding author)/i;
 const METRIC_CONTEXT_PATTERN = /(accuracy|precision|recall|f1|auc|latency|ms|seconds?|error|loss|rmse|mae|mape|improv(e|ed|ement)|reduc(e|ed|tion)|increas(e|ed)|baseline|compared|outperform|performance)/i;
+const SECTION_ORDINAL_CONTEXT_PATTERN = /(section|introduction|background|methodology|methods|results|discussion|conclusion|chapter|part\s+\d+)/i;
 
 function getContextSnippet(text: string, index: number, radius = 80): string {
     const start = Math.max(0, index - radius);
@@ -111,9 +112,21 @@ function parseProseNumericSeries(markdown: string): ProseNumericLanes {
 
     for (const hit of candidates) {
         const raw = hit.value;
+        const snippet = hit.contextSnippet;
         const isLikelyYear = raw >= 1900 && raw <= 2100;
         const isLikelyNoise = Math.abs(raw) > 1_000_000;
+
+        const isSmallOrdinal = Number.isInteger(raw) && raw >= 1 && raw <= 12;
+        const hasMetricUnitNearby = /%|\bms\b|\bsec\b|\bseconds\b|\bx\b|±/i.test(snippet);
+        const hasMetricTermNearby = METRIC_CONTEXT_PATTERN.test(snippet);
+        const isSectionLike = SECTION_ORDINAL_CONTEXT_PATTERN.test(snippet);
+
+        const isBrokenFragment = snippet.length < 24 || /^["'\-\s\d\.]+$/.test(snippet);
+
         if (isLikelyYear || isLikelyNoise) continue;
+        if (isBrokenFragment) continue;
+        if (isSectionLike && !hasMetricTermNearby) continue;
+        if (isSmallOrdinal && !hasMetricUnitNearby && !hasMetricTermNearby) continue;
 
         const roundedKey = raw.toFixed(4);
         if (seen.has(roundedKey)) continue;
