@@ -7,7 +7,7 @@ import type {
 } from '@/types/claim-ledger';
 
 export interface ClaimLedgerEvidenceInput {
-  evidenceType: 'source' | 'tool_output' | 'citation' | 'memory' | 'counterfactual_trace';
+  evidenceType: 'source' | 'tool_output' | 'citation' | 'memory' | 'counterfactual_trace' | 'scientific_provenance';
   evidenceRef: string;
   snippet?: string;
   reliabilityScore?: number;
@@ -57,7 +57,7 @@ export interface RecordClaimInput {
 }
 
 export class ClaimLedgerService {
-  constructor(private readonly supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient) { }
 
   async recordClaim(input: RecordClaimInput): Promise<string | null> {
     const claimText = input.claimText?.trim();

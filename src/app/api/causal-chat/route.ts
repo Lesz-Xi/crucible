@@ -25,6 +25,8 @@ import { CausalLatticeService } from "@/lib/services/causal-lattice";
 import type { CacheTtlState, CompactionReceipt, LatticeBroadcastGateResult, RetrievalFusionResult } from "@/types/persistent-memory";
 import { SessionService } from "@/lib/services/session-service";
 import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
+import { processChatAttachments, type ChatAttachment } from "@/lib/science/chat-scientific-bridge";
+import type { ScientificAnalysisResponse } from "@/lib/science/scientific-analysis-service";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -170,6 +172,7 @@ export async function POST(req: NextRequest) {
     traceId,
     latticeTargetSessionId,
     operatorMode,
+    attachments,
   } = requestBody;
 
   // Support both single question and message history
@@ -185,6 +188,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Question is required" }, { status: 400 });
   }
 
+  const normalizedAttachments: ChatAttachment[] = Array.isArray(attachments)
+    ? attachments.filter((item): item is ChatAttachment => {
+      if (!item || typeof item !== "object") return false;
+      const candidate = item as Partial<ChatAttachment>;
+      return (
+        typeof candidate.name === "string" &&
+        typeof candidate.data === "string" &&
+        typeof candidate.mimeType === "string"
+      );
+    })
+    : [];
+
   const normalizedIncomingMessages = normalizeChatTurns(messages);
   const cacheTtlState: CacheTtlState = (() => {
     const header = req.headers.get("x-cache-ttl-state")?.toLowerCase();
@@ -196,19 +211,19 @@ export async function POST(req: NextRequest) {
   const pruningEnabled = FEATURE_FLAGS.MASA_CAUSAL_PRUNING_V1;
   const pruningResult = pruningEnabled
     ? evaluateCausalPruning(
-        normalizedIncomingMessages.map((message, idx) => mapMessageToPrunable(message, idx)),
-        {
-          maxMessages: 10,
-          cacheTtlState,
-        },
-      )
+      normalizedIncomingMessages.map((message, idx) => mapMessageToPrunable(message, idx)),
+      {
+        maxMessages: 10,
+        cacheTtlState,
+      },
+    )
     : null;
 
   const messagesForContext = pruningResult
     ? pruningResult.retainedMessages.map((message) => ({
-        role: message.role,
-        content: message.content,
-      }))
+      role: message.role,
+      content: message.content,
+    }))
     : normalizedIncomingMessages;
 
   const contextResult = buildConversationContext(messagesForContext, userQuestion, {
@@ -258,6 +273,48 @@ export async function POST(req: NextRequest) {
         rationale: "Grounding not evaluated.",
       };
       let compactionReceipt: CompactionReceipt | null = null;
+      let scientificAnalysis: ScientificAnalysisResponse[] = [];
+
+      const scientificPromise = normalizedAttachments.length > 0
+        ? (async () => {
+          if (!user?.id) {
+            const warning = "Scientific extraction skipped: authenticated user required for PDF ingestion.";
+            sendEvent("scientific_extraction_failed", {
+              fileName: "all_attachments",
+              error: warning,
+            });
+            return {
+              analyses: [] as ScientificAnalysisResponse[],
+              summaryForContext: "",
+              warnings: [warning],
+            };
+          }
+
+          return processChatAttachments(normalizedAttachments, user.id, {
+            sessionId: sessionId || undefined,
+            onEvent: (event) => {
+              if (event.type === "started") {
+                sendEvent("scientific_extraction_started", { fileName: event.fileName });
+              }
+              if (event.type === "complete") {
+                sendEvent("scientific_extraction_complete", {
+                  fileName: event.fileName,
+                  status: event.analysis.status,
+                  summary: event.analysis.summary,
+                  warnings: event.analysis.warnings,
+                  provenance: event.analysis.provenance,
+                });
+              }
+              if (event.type === "failed") {
+                sendEvent("scientific_extraction_failed", {
+                  fileName: event.fileName,
+                  error: event.error,
+                });
+              }
+            },
+          });
+        })()
+        : null;
       let retrievalFusionDebug: RetrievalFusionResult | null = null;
       let latticeBroadcastSummary: LatticeBroadcastGateResult | null = null;
       let interventionGateSummary: { allowed: boolean; allowedOutputClass: string; rationale: string } | null = null;
@@ -515,16 +572,36 @@ Keep your response brief (1-2 sentences) and mention that you adhere to the natu
           ambiguousReference: contextResult.ambiguousReference,
         });
 
+        let scientificSummaryForContext = "";
+        let scientificWarnings: string[] = [];
+        if (scientificPromise) {
+          const bridgeResult = await scientificPromise;
+          scientificAnalysis = bridgeResult.analyses;
+          scientificSummaryForContext = bridgeResult.summaryForContext;
+          scientificWarnings = bridgeResult.warnings;
+        }
+
         let finalPrompt = systemPrompt;
+        if (scientificSummaryForContext) {
+          finalPrompt = `${finalPrompt}
+
+SCIENTIFIC ATTACHMENT SUMMARY (deterministic extraction):
+${scientificSummaryForContext}
+
+POLICY:
+- Treat attachment-derived summaries as high-priority grounding for numeric claims.
+- If extraction warnings exist, mention uncertainty and avoid overclaiming causality.`;
+        }
+
         if (factTrigger.shouldSearch) {
           const sourceList =
             groundingSources.length > 0
               ? groundingSources
-                  .map(
-                    (source) =>
-                      `[${source.rank}] ${source.title}\nURL: ${source.link}\nSnippet: ${source.snippet || "N/A"}`
-                  )
-                  .join("\n\n")
+                .map(
+                  (source) =>
+                    `[${source.rank}] ${source.title}\nURL: ${source.link}\nSnippet: ${source.snippet || "N/A"}`
+                )
+                .join("\n\n")
               : "No reliable sources retrieved.";
 
           finalPrompt = `${systemPrompt}
@@ -755,13 +832,13 @@ ${sourceList}`;
             const persistedGraphPayload =
               graphPayload && typeof graphPayload === "object"
                 ? {
-                    ...(graphPayload as Record<string, unknown>),
-                    persistent_memory_meta: {
-                      compactionReceipt,
-                      retrievalFusionDebug,
-                      latticeBroadcastSummary,
-                    },
-                  }
+                  ...(graphPayload as Record<string, unknown>),
+                  persistent_memory_meta: {
+                    compactionReceipt,
+                    retrievalFusionDebug,
+                    latticeBroadcastSummary,
+                  },
+                }
                 : graphPayload;
             const assistantPayload: Record<string, unknown> = {
               session_id: sessionId,
@@ -907,16 +984,30 @@ ${sourceList}`;
                     : "high",
               modelKey: scmContext.model?.modelKey,
               modelVersion: scmContext.model?.version,
-              evidenceLinks: groundingSources.map((source) => ({
-                evidenceType: "citation",
-                evidenceRef: source.link,
-                snippet: source.snippet || source.title,
-                metadata: {
-                  rank: source.rank,
-                  domain: source.domain,
-                  title: source.title,
-                },
-              })),
+              evidenceLinks: [
+                ...groundingSources.map((source) => ({
+                  evidenceType: "citation" as const,
+                  evidenceRef: source.link,
+                  snippet: source.snippet || source.title,
+                  metadata: {
+                    rank: source.rank,
+                    domain: source.domain,
+                    title: source.title,
+                  },
+                })),
+                ...scientificAnalysis
+                  .filter((entry) => entry.provenance?.ingestionId)
+                  .map((entry) => ({
+                    evidenceType: "scientific_provenance" as const,
+                    evidenceRef: entry.provenance!.ingestionId,
+                    snippet: `Scientific extraction ${entry.status}`,
+                    metadata: {
+                      summary: entry.summary,
+                      warnings: entry.warnings,
+                      provenance: entry.provenance,
+                    },
+                  })),
+              ],
               gateDecisions: [
                 {
                   gateName: "factual_confidence",
@@ -935,15 +1026,15 @@ ${sourceList}`;
                 },
                 ...(interventionGateSummary
                   ? [
-                      {
-                        gateName: "intervention_gate",
-                        decision: interventionGateSummary.allowed ? ("pass" as const) : ("fail" as const),
-                        rationale: interventionGateSummary.rationale,
-                        metadata: {
-                          allowedOutputClass: interventionGateSummary.allowedOutputClass,
-                        },
+                    {
+                      gateName: "intervention_gate",
+                      decision: interventionGateSummary.allowed ? ("pass" as const) : ("fail" as const),
+                      rationale: interventionGateSummary.rationale,
+                      metadata: {
+                        allowedOutputClass: interventionGateSummary.allowedOutputClass,
                       },
-                    ]
+                    },
+                  ]
                   : []),
               ],
               receipts: [
@@ -973,6 +1064,8 @@ ${sourceList}`;
           compactionReceipt,
           retrievalFusionDebug,
           latticeBroadcastSummary,
+          scientificAnalysis,
+          scientificWarnings,
         });
         if (!isControllerClosed) {
           isControllerClosed = true;

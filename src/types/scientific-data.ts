@@ -150,3 +150,13 @@ export interface DocumentMetadata {
     keywords?: string[];
     pageCount?: number;
 }
+
+// ── Phase E: Provenance Reference (Contract §5) ─────────────
+
+export interface ProvenanceReference {
+    ingestionId: string;
+    sourceTableIds: string[];
+    dataPointIds: string[];
+    computeRunId?: string;
+    methodVersion: string;
+}

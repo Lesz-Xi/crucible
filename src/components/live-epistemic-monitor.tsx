@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Brain, TrendingUp, AlertTriangle, Activity } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Brain, TrendingUp, AlertTriangle, Activity, Database } from 'lucide-react';
 
 /**
  * LiveEpistemicMonitor
@@ -36,7 +36,33 @@ interface EpistemicMonitorData {
   plateauReached: boolean;
 }
 
+interface ScientificEvidenceItem {
+  ingestionId: string;
+  fileName: string;
+  dataPointCount: number;
+  trustedTableCount: number;
+}
+
 export const LiveEpistemicMonitor: React.FC<{ data?: EpistemicMonitorData }> = ({ data }) => {
+  const [scientificEvidence, setScientificEvidence] = useState<ScientificEvidenceItem[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch('/api/epistemic/scientific-evidence')
+      .then((res) => res.json())
+      .then((json) => {
+        if (mounted && Array.isArray(json?.evidence)) {
+          setScientificEvidence(json.evidence as ScientificEvidenceItem[]);
+        }
+      })
+      .catch(() => {
+        if (mounted) setScientificEvidence([]);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
   // Mock data for Phase 1 design validation
   const mockData: EpistemicMonitorData = {
     consciousnessState: {
@@ -162,6 +188,24 @@ export const LiveEpistemicMonitor: React.FC<{ data?: EpistemicMonitorData }> = (
           <MetricBar label="Perception Intensity" value={cs.perceptionIntensity} />
           <MetricBar label="Working Memory Access" value={cs.workingMemoryAccess} />
           <MetricBar label="Awareness Level" value={cs.awarenessLevel} />
+        </div>
+
+        {/* Scientific Evidence Snapshot */}
+        <div className="pt-4 border-t border-wabi-sand/10 space-y-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-wabi-charcoal/70 dark:text-wabi-sand/70 uppercase tracking-wide">
+            <Database className="w-3.5 h-3.5" />
+            Scientific Evidence
+          </div>
+          <div className="text-xs text-wabi-charcoal/70 dark:text-wabi-sand/70">
+            {scientificEvidence.length > 0
+              ? `${scientificEvidence.length} recent ingestions • ${scientificEvidence.reduce((sum, item) => sum + item.dataPointCount, 0)} data points`
+              : 'No recent scientific evidence yet'}
+          </div>
+          {scientificEvidence.slice(0, 2).map((item) => (
+            <div key={item.ingestionId} className="text-xs text-wabi-charcoal/65 dark:text-wabi-sand/65">
+              {item.fileName}: {item.trustedTableCount} trusted tables, {item.dataPointCount} points
+            </div>
+          ))}
         </div>
 
         {/* Confidence Assessment */}

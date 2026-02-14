@@ -16,6 +16,11 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createInitialTimelineReceipt, updateTimelineStage } from "@/lib/hybrid/timeline";
 import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
 import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
+import {
+  DefaultScientificAnalysisService,
+  type ScientificAnalysisEnvelope,
+  type ScientificAnalysisRequest,
+} from "@/lib/science/scientific-analysis-service";
 
 // Synthesis limits configuration
 const MAX_PDF_FILES = 6;
@@ -145,12 +150,13 @@ export async function POST(request: NextRequest) {
             meta: { processedFiles: 0, totalFiles: files.length },
           });
 
+          // Phase E: Prepare buffers for parallel scientific analysis
+          const fileBuffers: { buffer: ArrayBuffer; name: string }[] = [];
+
           for (const file of files) {
             throwIfAborted();
             const buffer = await file.arrayBuffer();
-            // We'll process one by one to stream updates if needed, 
-            // but for now keeping batch process for efficiency unless we split it
-            // Actually, let's process them to emit events
+            fileBuffers.push({ buffer, name: file.name });
             const { successful } = await processMultiplePDFs([{ buffer, name: file.name }]);
             if (successful.length > 0) {
               pdfResults.push(successful[0]);
@@ -173,6 +179,38 @@ export async function POST(request: NextRequest) {
             timestamp: new Date().toISOString(),
             meta: { processedFiles: pdfResults.length, totalFiles: files.length },
           });
+
+          // Phase E (Contract §C): Run scientific analysis IN PARALLEL
+          // Graceful degradation — failure does NOT block hybrid synthesis (§B)
+          let scientificEnvelope: ScientificAnalysisEnvelope | null = null;
+          try {
+            if (fileBuffers.length > 0 && userId) {
+              const analysisService = new DefaultScientificAnalysisService();
+              const analysisRequests: ScientificAnalysisRequest[] = fileBuffers.map((fb) => ({
+                userId: userId!,
+                pdfBuffer: fb.buffer,
+                fileName: fb.name,
+                context: { feature: "hybrid" as const },
+              }));
+
+              // Contract §C: concurrency cap of 2
+              scientificEnvelope = await analysisService.runBatch(analysisRequests, 2);
+
+              emitter.emit({
+                event: "scientific_analysis_complete",
+                pdfCount: scientificEnvelope.requestSummary.pdfCount,
+                completed: scientificEnvelope.requestSummary.completedCount,
+                failed: scientificEnvelope.requestSummary.failedCount,
+              });
+            }
+          } catch (sciErr) {
+            // Contract §B: Never fail the overall request
+            console.warn('[Hybrid] Scientific analysis batch failed (non-fatal):', sciErr);
+            emitter.emit({
+              event: "scientific_analysis_failed",
+              reason: sciErr instanceof Error ? sciErr.message : "unknown_error",
+            });
+          }
 
           // Step 2: Process Companies
           const companyResults: PDFExtractionResult[] = [];
@@ -320,29 +358,43 @@ export async function POST(request: NextRequest) {
                 uncertaintyLabel: result.noveltyGate?.decision === 'pass' ? 'low' : 'medium',
                 modelKey: 'hybrid_synthesis_pipeline',
                 modelVersion: 'v2',
-                evidenceLinks: combinedSources.slice(0, 12).map((source) => ({
-                  evidenceType: 'source',
-                  evidenceRef: source.fileName,
-                  snippet: source.fullText?.slice(0, 240),
-                  metadata: { sourceType: source.sourceType || 'pdf' },
-                })),
+                evidenceLinks: [
+                  ...combinedSources.slice(0, 12).map((source) => ({
+                    evidenceType: 'source' as const,
+                    evidenceRef: source.fileName,
+                    snippet: source.fullText?.slice(0, 240),
+                    metadata: { sourceType: source.sourceType || 'pdf' },
+                  })),
+                  // Contract §D: Link scientific provenance to claim ledger
+                  ...(scientificEnvelope?.scientificAnalysis ?? []).filter(a => a.provenance).map(a => ({
+                    evidenceType: 'scientific_provenance' as const,
+                    evidenceRef: a.provenance!.ingestionId,
+                    snippet: `tables=${a.summary.tableCount} points=${a.summary.dataPointCount} compute=${a.provenance!.computeRunId ?? 'none'}`,
+                    metadata: {
+                      sourceType: 'automated_scientist',
+                      methodVersion: a.provenance!.methodVersion,
+                      sourceTableIds: a.provenance!.sourceTableIds,
+                      dataPointIds: a.provenance!.dataPointIds,
+                    },
+                  })),
+                ],
                 gateDecisions: result.noveltyGate
                   ? [
-                      {
-                        gateName: 'novelty_gate',
-                        decision:
-                          result.noveltyGate.decision === 'pass'
-                            ? 'pass'
-                            : result.noveltyGate.decision === 'recover'
-                              ? 'warn'
-                              : 'fail',
-                        rationale: result.noveltyGate.reasons.join(' | ') || `Novelty gate: ${result.noveltyGate.decision}`,
-                        score: result.noveltyGate.threshold,
-                        metadata: {
-                          proofCount: result.noveltyProof?.length || 0,
-                        },
+                    {
+                      gateName: 'novelty_gate',
+                      decision:
+                        result.noveltyGate.decision === 'pass'
+                          ? 'pass'
+                          : result.noveltyGate.decision === 'recover'
+                            ? 'warn'
+                            : 'fail',
+                      rationale: result.noveltyGate.reasons.join(' | ') || `Novelty gate: ${result.noveltyGate.decision}`,
+                      score: result.noveltyGate.threshold,
+                      metadata: {
+                        proofCount: result.noveltyProof?.length || 0,
                       },
-                    ]
+                    },
+                  ]
                   : [],
                 receipts: [
                   {
@@ -366,9 +418,14 @@ export async function POST(request: NextRequest) {
             }
           }
 
+          // Contract §A: SSE complete payload includes scientificAnalysis + featureContext
           emitter.emit({
             event: 'complete',
-            synthesis: finalResult
+            synthesis: finalResult,
+            ...(scientificEnvelope ? {
+              scientificAnalysis: scientificEnvelope.scientificAnalysis,
+              featureContext: scientificEnvelope.featureContext,
+            } : {}),
           });
 
         } catch (error) {
