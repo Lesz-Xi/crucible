@@ -65,9 +65,9 @@
   --lab-text-primary: #2A2621;
   --lab-text-secondary: #57534E;
   --lab-text-tertiary: #A8A29E;
-  --lab-accent-clay: #60A5FA;
-  --lab-accent-earth: #2563EB;
-  --lab-accent-moss: #1D4ED8;
+  --lab-accent-clay: #9E7E6B;
+  --lab-accent-earth: #8B5E3C;
+  --lab-accent-moss: #5F7555;
   --lab-shadow-soft: 0 8px 24px rgba(42, 38, 33, 0.08);
   --lab-shadow-lift: 0 12px 30px rgba(42, 38, 33, 0.12);
 }
@@ -75,21 +75,21 @@
 /* Dark Mode - Obsidian foundations */
 .dark {
   /* Codex-like obsidian theme */
-  --obsidian-900: #121316;
+  --obsidian-900: #4A4A4A;
   --stone-700: #f3f4f6;
-  --ash-200: #262a31;
-  --paper-050: #171a1f;
+  --ash-200: #5a5a5a;
+  --paper-050: #535353;
 
   --moss-500: #6fb08f;
   --oxide-500: #d18f67;
   --mist-400: #a9b0bb;
 
   /* Legacy overrides */
-  --background: #121316;
+  --background: #4A4A4A;
   --foreground: #f3f4f6;
-  --bg-primary: #121316;
-  --bg-secondary: #171a1f;
-  --bg-card: rgba(23, 26, 31, 0.92);
+  --bg-primary: #4A4A4A;
+  --bg-secondary: #535353;
+  --bg-card: rgba(74, 74, 74, 0.92);
   --text-primary: #f3f4f6;
   --text-secondary: #a9b0bb;
   --text-tertiary: #7f8794;
@@ -97,7 +97,7 @@
   --border-subtle: #2a2f38;
 
   /* Backward-compat tokens with readable contrast in dark */
-  --wabi-washi: #121316;
+  --wabi-washi: #4A4A4A;
   --wabi-sumi: #f3f4f6;
   --wabi-patina: #a9b0bb;
   --wabi-clay: #d18f67;
@@ -106,16 +106,16 @@
   --wabi-stone: #8f96a3;
 
   /* Automated Scientist dark tokens */
-  --lab-bg: #111316;
-  --lab-bg-elevated: #171a1f;
-  --lab-panel: rgba(20, 22, 27, 0.9);
-  --lab-border: rgba(255, 255, 255, 0.12);
+  --lab-bg: #4A4A4A;
+  --lab-bg-elevated: #535353;
+  --lab-panel: rgba(74, 74, 74, 0.9);
+  --lab-border: rgba(255, 255, 255, 0.16);
   --lab-text-primary: #e7e9ee;
   --lab-text-secondary: #b1b6c0;
   --lab-text-tertiary: #828894;
-  --lab-accent-clay: #93C5FD;
-  --lab-accent-earth: #60A5FA;
-  --lab-accent-moss: #3B82F6;
+  --lab-accent-clay: #8f877f;
+  --lab-accent-earth: #d7d2ca;
+  --lab-accent-moss: #9a9389;
   --lab-shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.36);
   --lab-shadow-lift: 0 20px 42px rgba(0, 0, 0, 0.44);
   
