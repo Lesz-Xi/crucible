@@ -45,6 +45,46 @@ export interface PipelineOptions {
     skipMarkdown?: boolean;
 }
 
+function parseProseNumericSeries(markdown: string): number[] {
+    if (!markdown || typeof markdown !== "string") return [];
+
+    const matches = Array.from(markdown.matchAll(/(-?\d+(?:\.\d+)?)(\s*%?)/g));
+    const values: number[] = [];
+
+    for (const match of matches) {
+        const raw = Number(match[1]);
+        if (!Number.isFinite(raw)) continue;
+
+        const hasPercent = (match[2] || "").includes("%");
+        const isLikelyYear = raw >= 1900 && raw <= 2100 && !hasPercent;
+        const isLikelyNoise = Math.abs(raw) > 1_000_000;
+
+        if (isLikelyYear || isLikelyNoise) continue;
+
+        values.push(raw);
+        if (values.length >= 40) break;
+    }
+
+    return values;
+}
+
+function buildProseDataPoints(ingestionId: string, markdown: string): CreateDataPointInput[] {
+    const values = parseProseNumericSeries(markdown);
+    if (values.length < 2) return [];
+
+    return values.map((value, index) => ({
+        ingestionId,
+        variableXName: "prose_index",
+        variableYName: "prose_metric",
+        xValue: index + 1,
+        yValue: value,
+        metadata: {
+            source: "prose_numeric_extraction",
+            extractionVersion: "1.0.0",
+        },
+    }));
+}
+
 // ── Hash Helper ──────────────────────────────────────────────
 
 async function sha256(data: ArrayBuffer): Promise<string> {
@@ -197,6 +237,16 @@ export async function runIngestionPipeline(
                         yValue: yVal,
                     });
                 }
+            }
+        }
+
+        if (dataPointInputs.length < 2 && markdown.trim().length > 0) {
+            const prosePoints = buildProseDataPoints(ingestion.id, markdown);
+            if (prosePoints.length >= 2) {
+                dataPointInputs.push(...prosePoints);
+                warnings.push(
+                    `Table-derived numeric points were insufficient; used prose numeric extraction fallback (${prosePoints.length} points).`,
+                );
             }
         }
 
