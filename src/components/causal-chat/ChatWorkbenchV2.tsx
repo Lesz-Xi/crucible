@@ -60,6 +60,44 @@ const quantizeConfidence = (value: number): number => {
   return 0.95;
 };
 
+const parseInterventionPayload = (input: string): {
+  node_id: string;
+  value: string;
+  outcome_var?: string;
+  known_confounders?: string[];
+  adjustment_set?: string[];
+} | null => {
+  const text = input || '';
+
+  const doMatch = text.match(/do\(\s*([a-zA-Z0-9_]+)\s*=\s*([^\)]+)\)/i);
+  if (!doMatch) return null;
+
+  const node_id = doMatch[1]?.trim();
+  const value = doMatch[2]?.trim();
+  if (!node_id || !value) return null;
+
+  const extractList = (pattern: RegExp): string[] => {
+    const match = text.match(pattern);
+    if (!match?.[1]) return [];
+    return match[1]
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  };
+
+  const outcomeMatch = text.match(/outcome\s*:\s*([a-zA-Z0-9_]+)/i);
+  const knownConfounders = extractList(/known\s+confounders\s*:\s*([^\.\n]+)/i);
+  const adjustmentSet = extractList(/adjustment\s+set\s*:\s*([^\.\n]+)/i);
+
+  return {
+    node_id,
+    value,
+    outcome_var: outcomeMatch?.[1]?.trim(),
+    known_confounders: knownConfounders,
+    adjustment_set: adjustmentSet,
+  };
+};
+
 const inferOperatorMode = (input: string): OperatorMode => {
   const text = input.toLowerCase();
 
@@ -604,6 +642,14 @@ export function ChatWorkbenchV2() {
       setOperatorMode(inferredMode);
     }
 
+    const interventionPayload = inferredMode === 'intervene'
+      ? parseInterventionPayload(cleanPrompt)
+      : null;
+
+    if (inferredMode === 'intervene' && !interventionPayload) {
+      setAlignmentPosture('Intervention gate not evaluated: missing structured do(X)=value payload.');
+    }
+
     setError(null);
     setIsLoading(true);
     setGroundingSources([]);
@@ -681,6 +727,7 @@ export function ChatWorkbenchV2() {
           messages: conversation,
           sessionId: sessionForSave,
           operatorMode: inferredMode,
+          intervention: interventionPayload || undefined,
         }),
         signal: abortControllerRef.current.signal,
       });
