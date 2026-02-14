@@ -107,9 +107,16 @@ function sanitizeAutomatedScientistTone(text: string): string {
   // Hard block legacy Taoist persona spillover.
   const forbiddenPhrases = [
     /the tao teaches[^\n]*/gi,
+    /\btao\b[^\n]*/gi,
     /uncarved block[^\n]*/gi,
     /like the valley[^\n]*/gi,
     /river'?s depth from surface ripples[^\n]*/gi,
+    /like attempting to read the tao[^\n]*/gi,
+    /the tao is silent[^\n]*/gi,
+    /the wise path[^\n]*/gi,
+    /natural flow of evidence extraction[^\n]*/gi,
+    /like water seeking its course[^\n]*/gi,
+    /the stream that entered your valley[^\n]*/gi,
   ];
 
   for (const pattern of forbiddenPhrases) {
@@ -645,7 +652,8 @@ ${scientificSummaryForContext}
 
 POLICY:
 - Treat attachment-derived summaries as high-priority grounding for numeric claims.
-- If extraction warnings exist, mention uncertainty and avoid overclaiming causality.`;
+- If extraction warnings exist, mention uncertainty and avoid overclaiming causality.
+- Use Automated Scientist tone only: no Taoist framing, no valley/river/stream/water metaphors, no philosophical persona language.`;
         }
 
         if (factTrigger.shouldSearch) {
