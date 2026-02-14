@@ -50,6 +50,11 @@ interface ProseNumericHit {
     contextSnippet: string;
 }
 
+interface ProseNumericLanes {
+    strong: ProseNumericHit[];
+    weak: ProseNumericHit[];
+}
+
 const BIBLIOGRAPHIC_CONTEXT_PATTERN = /(journal|doi|issn|volume|issue|pages?|copyright|license|received|revised|accepted|publication history|creativecommons|author\(s\)|corresponding author)/i;
 const METRIC_CONTEXT_PATTERN = /(accuracy|precision|recall|f1|auc|latency|ms|seconds?|error|loss|rmse|mae|mape|improv(e|ed|ement)|reduc(e|ed|tion)|increas(e|ed)|baseline|compared|outperform|performance)/i;
 
@@ -67,8 +72,8 @@ function scoreContextSnippet(snippet: string): number {
     return score;
 }
 
-function parseProseNumericSeries(markdown: string): ProseNumericHit[] {
-    if (!markdown || typeof markdown !== "string") return [];
+function parseProseNumericSeries(markdown: string): ProseNumericLanes {
+    if (!markdown || typeof markdown !== "string") return { strong: [], weak: [] };
 
     const candidates: ProseNumericHit[] = [];
 
@@ -123,31 +128,47 @@ function parseProseNumericSeries(markdown: string): ProseNumericHit[] {
         .map((hit) => ({ hit, score: scoreContextSnippet(hit.contextSnippet) }))
         .sort((a, b) => b.score - a.score);
 
-    const strong = ranked.filter((item) => item.score > 0).map((item) => item.hit);
-    if (strong.length > 0) {
-        return strong.slice(0, 80);
-    }
+    const strong = ranked.filter((item) => item.score > 0).map((item) => item.hit).slice(0, 80);
+    const weak = ranked
+        .filter((item) => item.score <= 0 && !BIBLIOGRAPHIC_CONTEXT_PATTERN.test(item.hit.contextSnippet))
+        .map((item) => item.hit)
+        .slice(0, 40);
 
-    // If all hits are bibliographic/noise contexts, return none to avoid fabricated quantitative grounding.
-    return [];
+    return { strong, weak };
 }
 
-function buildProseDataPoints(ingestionId: string, markdown: string): CreateDataPointInput[] {
-    const hits = parseProseNumericSeries(markdown);
-    if (hits.length < 2) return [];
+function buildProseDataPoints(
+    ingestionId: string,
+    markdown: string
+): { points: CreateDataPointInput[]; lane: "strong" | "weak" | "none" } {
+    const lanes = parseProseNumericSeries(markdown);
 
-    return hits.map((hit, index) => ({
-        ingestionId,
-        variableXName: "prose_index",
-        variableYName: "prose_metric",
-        xValue: index + 1,
-        yValue: hit.value,
-        metadata: {
-            source: "prose_numeric_extraction",
-            extractionVersion: "2.1.0",
-            contextSnippet: hit.contextSnippet,
-        },
-    }));
+    const selected = lanes.strong.length >= 2
+        ? { lane: "strong" as const, hits: lanes.strong }
+        : lanes.weak.length >= 2
+            ? { lane: "weak" as const, hits: lanes.weak }
+            : { lane: "none" as const, hits: [] as ProseNumericHit[] };
+
+    if (selected.lane === "none") {
+        return { points: [], lane: "none" };
+    }
+
+    return {
+        lane: selected.lane,
+        points: selected.hits.map((hit, index) => ({
+            ingestionId,
+            variableXName: "prose_index",
+            variableYName: selected.lane === "strong" ? "prose_metric" : "prose_metric_weak",
+            xValue: index + 1,
+            yValue: hit.value,
+            metadata: {
+                source: "prose_numeric_extraction",
+                extractionVersion: "2.2.0",
+                extractionLane: selected.lane,
+                contextSnippet: hit.contextSnippet,
+            },
+        })),
+    };
 }
 
 // ── Hash Helper ──────────────────────────────────────────────
@@ -296,11 +317,11 @@ export async function runIngestionPipeline(
         }
 
         if (dataPointInputs.length < 2 && markdown.trim().length > 0) {
-            const prosePoints = buildProseDataPoints(ingestion.id, markdown);
-            if (prosePoints.length >= 2) {
-                dataPointInputs.push(...prosePoints);
+            const proseResult = buildProseDataPoints(ingestion.id, markdown);
+            if (proseResult.points.length >= 2) {
+                dataPointInputs.push(...proseResult.points);
                 warnings.push(
-                    `Table-derived numeric points were insufficient; used prose numeric extraction fallback (${prosePoints.length} points).`,
+                    `Table-derived numeric points were insufficient; used prose numeric extraction fallback (${proseResult.points.length} points, lane=${proseResult.lane}).`,
                 );
             }
         }

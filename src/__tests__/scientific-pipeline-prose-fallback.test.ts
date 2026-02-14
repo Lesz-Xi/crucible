@@ -56,7 +56,7 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(saveDataPoints).toHaveBeenCalled();
     expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
     expect(result.warnings.join(' ')).toContain('prose numeric extraction fallback');
-    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.1.0')).toBe(true);
+    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.2.0')).toBe(true);
   });
 
   it('suppresses bibliographic-only numerics in prose fallback', async () => {
@@ -68,5 +68,17 @@ describe('scientific ingestion pipeline prose fallback', () => {
 
     expect(result.dataPoints.length).toBe(0);
     expect(result.warnings.join(' ')).toContain('Fewer than 2 numeric data points extracted');
+  });
+
+  it('uses weak prose lane when metric-scored numbers are insufficient', async () => {
+    convertPDFToMarkdownMock.mockResolvedValue(
+      'System observed values 11, 14, and 18 across checkpoints; sequence remained stable.',
+    );
+
+    const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
+
+    expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
+    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionLane === 'weak')).toBe(true);
+    expect(result.warnings.join(' ')).toContain('lane=weak');
   });
 });
