@@ -54,7 +54,8 @@ type NumericEvidenceCategory =
 function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
   const text = (snippet || "").toLowerCase();
 
-  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b/.test(text);
+  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b|\bdecreas(e|ed)\b|\bbaseline\b|\bversus\b|\bfrom\b\s+\w+\s+to\s+\w+/.test(text);
+  const structuralEnumeration = /\b(main side effects?|critical areas?|separate teams?|references?|sections?|chapters?|categories?|components?)\b/.test(text);
 
   if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
   if (/\b(19|20)\d{2}\b/.test(String(value)) && /(et al\.|\(|\)|references?|journal|copyright|received|accepted|revised)/.test(text)) {
@@ -64,6 +65,9 @@ function classifyNumericEvidence(value: number, snippet: string): NumericEvidenc
     return "bibliographic";
   }
   if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+|\bm\d+\b|\bec\d+\b|\bs\d+\b)\b/.test(text)) {
+    return "structural";
+  }
+  if (structuralEnumeration && !metricSignal) {
     return "structural";
   }
 

@@ -83,6 +83,9 @@ describe("chat-scientific-bridge", () => {
         { value: 1, source: "prose_numeric_extraction", contextSnippet: "1. Introduction" },
         { value: 3, source: "prose_numeric_extraction", contextSnippet: "The system called M3 starts anomaly detection" },
         { value: 2, source: "prose_numeric_extraction", contextSnippet: "An EC2 instance downloaded excessive data" },
+        { value: 3, source: "prose_numeric_extraction", contextSnippet: "Latency spikes bring about three main side effects" },
+        { value: 5, source: "prose_numeric_extraction", contextSnippet: "A deep analysis investigates model implementation within five critical areas" },
+        { value: 5, source: "prose_numeric_extraction", contextSnippet: "AI observability tools need staff from five separate teams" },
         { value: 0.82, source: "prose_numeric_extraction", contextSnippet: "model achieved 82% accuracy on validation" },
       ],
       observability: { fileName: "a.pdf", durationMs: 10, status: "completed", warningsCount: 0 },
@@ -97,7 +100,9 @@ describe("chat-scientific-bridge", () => {
     expect(result.summaryForContext).toContain("value=1 | category=structural");
     expect(result.summaryForContext).toContain("value=3 | category=structural");
     expect(result.summaryForContext).toContain("value=2 | category=structural");
+    expect(result.summaryForContext).toContain("value=5 | category=structural");
     expect(result.summaryForContext).toContain("value=0.82 | category=potential_metric");
     expect(result.summaryForContext).toContain("Claim-eligible numeric candidates:");
+    expect(result.summaryForContext).toContain("- value=0.82 | context=");
   });
 });
