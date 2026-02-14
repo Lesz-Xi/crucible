@@ -81,9 +81,38 @@ function confidenceForCategory(category: NumericEvidenceCategory): "high" | "med
 }
 
 function trimContextSnippet(snippet: string, max = 180): string {
-  const clean = snippet.replace(/\s+/g, " ").trim();
+  let clean = snippet.replace(/\s+/g, " ").trim();
+
+  // Heuristic cleanup for clipped leading fragments from fixed-window extraction.
+  // Examples: "le. This article ...", "gineering, AnnArbor ..."
+  clean = clean
+    .replace(/^[a-z]{1,4}\.\s+/, "")
+    .replace(/^[a-z]{3,}(?=,\s+[A-Z])/, "")
+    .replace(/^[-–,:;\s]+/, "")
+    .trim();
+
+  // If snippet starts with a lowercase fragment token, drop first token.
+  if (/^[a-z][a-z'-]*\s/.test(clean)) {
+    const firstSpace = clean.indexOf(" ");
+    if (firstSpace > 0 && firstSpace < 20) {
+      clean = clean.slice(firstSpace + 1).trim();
+    }
+  }
+
+  // If snippet ends mid-word, trim trailing partial token.
+  if (/[a-zA-Z]$/.test(clean) && !/[.!?]$/.test(clean)) {
+    const lastSpace = clean.lastIndexOf(" ");
+    if (lastSpace > clean.length - 24) {
+      clean = clean.slice(0, lastSpace).trim();
+    }
+  }
+
   if (clean.length <= max) return clean;
-  return `${clean.slice(0, max - 1)}…`;
+
+  const sliced = clean.slice(0, max - 1);
+  const boundary = Math.max(sliced.lastIndexOf("."), sliced.lastIndexOf(";"), sliced.lastIndexOf(","), sliced.lastIndexOf(" "));
+  const stable = boundary > 40 ? sliced.slice(0, boundary).trim() : sliced.trim();
+  return `${stable}…`;
 }
 
 function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
