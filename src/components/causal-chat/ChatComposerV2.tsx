@@ -46,6 +46,12 @@ export function ChatComposerV2({
   const [shortcutMenuOpen, setShortcutMenuOpen] = useState(false);
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
 
+  const modeLabel: Record<'explore' | 'intervene' | 'audit', string> = {
+    explore: 'Diagnose',
+    intervene: 'Act',
+    audit: 'Validate',
+  };
+
   return (
     <div className="lab-card !rounded-t-none border-0 !bg-transparent px-6 pb-0 pt-1 shadow-none">
       <textarea
@@ -77,7 +83,7 @@ export function ChatComposerV2({
               title="Response mode"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
-              {operatorMode[0].toUpperCase() + operatorMode.slice(1)}
+              {modeLabel[operatorMode]}
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
             {modeMenuOpen ? (
@@ -93,7 +99,7 @@ export function ChatComposerV2({
                       setModeMenuOpen(false);
                     }}
                   >
-                    {mode[0].toUpperCase() + mode.slice(1)}
+                    {modeLabel[mode]}
                   </button>
                 ))}
               </div>
@@ -108,7 +114,7 @@ export function ChatComposerV2({
                 onClick={() => setShortcutMenuOpen((current) => !current)}
               >
                 <FlaskConical className="h-3.5 w-3.5" />
-                Shortcuts
+Scenarios
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {shortcutMenuOpen ? (

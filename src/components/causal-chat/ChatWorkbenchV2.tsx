@@ -152,9 +152,21 @@ const extractSourcesFromText = (text: string): GroundingSource[] => {
 };
 
 const QUICK_PROMPTS = [
-  { id: 'claim', label: 'Claim template', snippet: 'Define the causal claim, mechanism, confounders, and one falsifier.' },
-  { id: 'intervention', label: 'Add intervention', snippet: 'Run intervention framing: do(X)=..., expected delta on Y, and identifiability assumptions.' },
-  { id: 'counterfactual', label: 'Ask counterfactual', snippet: 'Generate one counterfactual test and explain necessity vs sufficiency.' },
+  {
+    id: 'growth-drop',
+    label: 'Growth dropped after campaign',
+    snippet: 'Scenario: Growth dropped after a new campaign. Build a causal map of likely drivers, top confounders, and the first 3 diagnostics to run this week.',
+  },
+  {
+    id: 'conversion-intervention',
+    label: 'Improve conversion rate',
+    snippet: 'Scenario: Conversion fell from 3.2% to 2.4%. Propose one controlled intervention, expected delta on conversion, risk checks, and success criteria.',
+  },
+  {
+    id: 'policy-change-audit',
+    label: 'Audit policy change impact',
+    snippet: 'Scenario: A policy change was rolled out. Audit whether claimed impact is causal, list required evidence, and give one falsifier test.',
+  },
 ] as const;
 
 type QuickPromptId = (typeof QUICK_PROMPTS)[number]['id'];
@@ -182,7 +194,7 @@ export function ChatWorkbenchV2() {
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
-  const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('claim');
+  const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
@@ -829,10 +841,10 @@ export function ChatWorkbenchV2() {
               onToggleEvidenceRail={toggleEvidenceRail}
               placeholder={
                 operatorMode === 'intervene'
-                  ? 'Specify do(X)=..., expected Y delta, and required controls...'
+                  ? 'Describe the action you want to take, expected impact, and guardrails...'
                   : operatorMode === 'audit'
-                    ? 'Request citation-grounded claim audit with uncertainty and falsifier...'
-                    : 'State your hypothesis, mechanism, and desired intervention...'
+                    ? 'Paste the claim to validate, evidence available, and what could disprove it...'
+                    : 'Describe the real-world situation, what changed, and what outcome you need...'
               }
             />
             </div>
