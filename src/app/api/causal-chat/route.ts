@@ -119,7 +119,20 @@ function sanitizeAutomatedScientistTone(text: string): string {
     /the stream that entered your valley[^\n]*/gi,
   ];
 
+  // Hard block low-signal recommendation boilerplate in attachment-first mode.
+  const forbiddenRecommendationLines = [
+    /^recommendation\s*:?.*$/gim,
+    /^to complete this task, please verify:?.*$/gim,
+    /^if you have access to the pdf,.*$/gim,
+    /^re-?upload if the document.*$/gim,
+    /^the file format allows text extraction.*$/gim,
+  ];
+
   for (const pattern of forbiddenPhrases) {
+    sanitized = sanitized.replace(pattern, "");
+  }
+
+  for (const pattern of forbiddenRecommendationLines) {
     sanitized = sanitized.replace(pattern, "");
   }
 
@@ -653,7 +666,19 @@ ${scientificSummaryForContext}
 POLICY:
 - Treat attachment-derived summaries as high-priority grounding for numeric claims.
 - If extraction warnings exist, mention uncertainty and avoid overclaiming causality.
-- Use Automated Scientist tone only: no Taoist framing, no valley/river/stream/water metaphors, no philosophical persona language.`;
+- Use Automated Scientist tone only: no Taoist framing, no valley/river/stream/water metaphors, no philosophical persona language.
+
+OUTPUT CONTRACT (MANDATORY):
+- Section 1: "Extracted Numbers with Context"
+  - List every available numeric candidate from attachment extraction in this format:
+    - value=<number> | context=<nearby snippet> | confidence=<high|medium|low>
+  - If no substantive numerics are available, output exactly one bullet:
+    - NONE | reason=<insufficient extractable numeric evidence>
+- Section 2: "Three Claims with Uncertainty Labels"
+  - Provide exactly 3 claims tied only to extracted numerics/context.
+  - If evidence is insufficient, each claim must start with "Unable to construct" and state why.
+- Do NOT add a recommendation section.
+- Do NOT ask the user to re-upload, manually verify, or provide additional sample sentences.`;
         }
 
         if (factTrigger.shouldSearch) {
