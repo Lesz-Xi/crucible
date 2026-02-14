@@ -117,10 +117,10 @@ function MessageBubble({
         >
           {/* Markdown Content */}
           <div className={cn(
-            "prose prose-sm max-w-none leading-relaxed break-words transition-all duration-300 font-serif text-lg leading-loose tracking-wide",
+            "prose prose-sm max-w-[820px] leading-relaxed break-words transition-all duration-300 font-sans text-base tracking-normal",
             // Markdown Customization
-            "prose-headings:font-serif prose-headings:font-normal prose-headings:text-wabi-sumi",
-            "prose-p:text-base prose-p:leading-8",
+            "prose-headings:font-sans prose-headings:font-semibold prose-headings:text-wabi-sumi",
+            "prose-p:text-[16px] prose-p:leading-[1.62]",
             "prose-a:text-wabi-clay prose-a:no-underline prose-a:font-medium hover:prose-a:underline",
             "prose-code:font-mono prose-code:text-xs prose-code:bg-black/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none",
             "prose-pre:bg-[#1e1e1e] prose-pre:text-gray-100 prose-pre:shadow-inner prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl",
