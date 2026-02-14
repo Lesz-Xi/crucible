@@ -48,24 +48,49 @@ export interface PipelineOptions {
 function parseProseNumericSeries(markdown: string): number[] {
     if (!markdown || typeof markdown !== "string") return [];
 
-    const matches = Array.from(markdown.matchAll(/(-?\d+(?:\.\d+)?)(\s*%?)/g));
-    const values: number[] = [];
+    const candidates: number[] = [];
 
-    for (const match of matches) {
-        const raw = Number(match[1]);
-        if (!Number.isFinite(raw)) continue;
-
-        const hasPercent = (match[2] || "").includes("%");
-        const isLikelyYear = raw >= 1900 && raw <= 2100 && !hasPercent;
-        const isLikelyNoise = Math.abs(raw) > 1_000_000;
-
-        if (isLikelyYear || isLikelyNoise) continue;
-
-        values.push(raw);
-        if (values.length >= 40) break;
+    // Range patterns: 84-92, 84–92, 84 to 92
+    for (const match of markdown.matchAll(/(-?\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(-?\d+(?:\.\d+)?)/gi)) {
+        const a = Number(match[1]);
+        const b = Number(match[2]);
+        if (Number.isFinite(a)) candidates.push(a);
+        if (Number.isFinite(b)) candidates.push(b);
+        if (Number.isFinite(a) && Number.isFinite(b)) candidates.push((a + b) / 2);
     }
 
-    return values;
+    // Slash metrics: 0.82/0.76, F1/AUC-like pairs
+    for (const match of markdown.matchAll(/(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)/g)) {
+        const a = Number(match[1]);
+        const b = Number(match[2]);
+        if (Number.isFinite(a)) candidates.push(a);
+        if (Number.isFinite(b)) candidates.push(b);
+    }
+
+    // Number + optional decimal + optional percent/unit prefix/suffix
+    for (const match of markdown.matchAll(/(?:(?:p|r|f1|auc|accuracy|precision|recall|latency|loss|rmse|mae|mape)\s*[:=]?\s*)?(-?\d+(?:\.\d+)?)(\s*%?)/gi)) {
+        const raw = Number(match[1]);
+        if (!Number.isFinite(raw)) continue;
+        candidates.push(raw);
+    }
+
+    const filtered: number[] = [];
+    const seen = new Set<string>();
+
+    for (const raw of candidates) {
+        const isLikelyYear = raw >= 1900 && raw <= 2100;
+        const isLikelyNoise = Math.abs(raw) > 1_000_000;
+        if (isLikelyYear || isLikelyNoise) continue;
+
+        const roundedKey = raw.toFixed(4);
+        if (seen.has(roundedKey)) continue;
+        seen.add(roundedKey);
+
+        filtered.push(raw);
+        if (filtered.length >= 80) break;
+    }
+
+    return filtered;
 }
 
 function buildProseDataPoints(ingestionId: string, markdown: string): CreateDataPointInput[] {
@@ -80,7 +105,7 @@ function buildProseDataPoints(ingestionId: string, markdown: string): CreateData
         yValue: value,
         metadata: {
             source: "prose_numeric_extraction",
-            extractionVersion: "1.0.0",
+            extractionVersion: "2.0.0",
         },
     }));
 }

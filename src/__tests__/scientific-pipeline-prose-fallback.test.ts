@@ -23,7 +23,7 @@ vi.mock('@/lib/extractors/metadata-extractor', () => ({
 }));
 
 vi.mock('@/lib/extractors/pdf-to-markdown', () => ({
-  convertPDFToMarkdown: async () => 'Results: precision improved to 84.5% and recall reached 79.2 with latency 12.3 ms.',
+  convertPDFToMarkdown: async () => 'Results: precision/recall=84.5/79.2, F1 ranged 81-86, latency 12.3 ms.',
 }));
 
 vi.mock('@/lib/compute/scientific-compute-engine', () => ({
@@ -48,5 +48,6 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(saveDataPoints).toHaveBeenCalled();
     expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
     expect(result.warnings.join(' ')).toContain('prose numeric extraction fallback');
+    expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.0.0')).toBe(true);
   });
 });
