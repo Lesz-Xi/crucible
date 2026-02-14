@@ -63,4 +63,30 @@ describe("chat-scientific-bridge", () => {
     expect(runMock).not.toHaveBeenCalled();
     expect(result.analyses).toHaveLength(0);
   });
+
+  it("suppresses citation-like numeric evidence from context summary", async () => {
+    runMock.mockResolvedValue({
+      ingestionId: "ing-2",
+      status: "completed",
+      summary: { tableCount: 0, trustedTableCount: 0, dataPointCount: 2 },
+      warnings: [],
+      provenance: {
+        ingestionId: "ing-2",
+        sourceTableIds: [],
+        dataPointIds: ["d1", "d2"],
+        methodVersion: "1.0.0",
+      },
+      numericEvidence: [
+        { value: 2, source: "prose_numeric_extraction", contextSnippet: "[2] Esposito, J. (2024) Real-Time Monitoring..." },
+        { value: 6, source: "prose_numeric_extraction", contextSnippet: "[6] Pentyala, D. K. (2024) AI for Fault Detection..." },
+      ],
+      observability: { fileName: "a.pdf", durationMs: 10, status: "completed", warningsCount: 0 },
+    });
+
+    const result = await processChatAttachments([attachment()], "user-1");
+
+    expect(result.summaryForContext).toContain("suppressed citation/ordinal-only numerics");
+    expect(result.summaryForContext).not.toContain("value=2");
+    expect(result.summaryForContext).not.toContain("value=6");
+  });
 });

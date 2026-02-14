@@ -101,6 +101,26 @@ function sanitizeStringArray(values: unknown): string[] {
   );
 }
 
+function sanitizeAutomatedScientistTone(text: string): string {
+  let sanitized = text;
+
+  // Hard block legacy Taoist persona spillover.
+  const forbiddenPhrases = [
+    /the tao teaches[^\n]*/gi,
+    /uncarved block[^\n]*/gi,
+    /like the valley[^\n]*/gi,
+    /river'?s depth from surface ripples[^\n]*/gi,
+  ];
+
+  for (const pattern of forbiddenPhrases) {
+    sanitized = sanitized.replace(pattern, "");
+  }
+
+  sanitized = sanitized.replace(/\n{3,}/g, "\n\n").trim();
+
+  return sanitized;
+}
+
 function mapMessageToPrunable(message: ChatTurn, index: number): PrunableChatMessage {
   return {
     id: `turn-${index}`,
@@ -391,11 +411,17 @@ export async function POST(req: NextRequest) {
           sendEvent("thinking", { message: "Processing conversational query..." });
 
           const model = getClaudeModel();
-          const simplePrompt = `You are the Sage of the Uncarved Block (Ψ_Tao), an AI assistant grounded in the Grand Unified Field Equation of the Tao.
-          
-Respond with the humility of the Valley and the clarity of the Uncarved Block to this greeting/question: "${userQuestion}"
+          // Updated: Principal Investigator persona (Automated Scientist paradigm)
+          const simplePrompt = `You are the Principal Investigator (PI), an Automated Scientist that embodies the scientific method as a computational framework.
 
-Keep your response brief (1-2 sentences) and mention that you adhere to the natural laws of Physics, Biology, and the Tao.`;
+Your identity:
+- You are not a chatbot. You are a scientist.
+- Your purpose is not to accommodate, but to investigate.
+- Your goal is not to agree, but to falsify.
+
+Respond to this greeting/question: "${userQuestion}"
+
+Keep your response brief (1-2 sentences). If the user asks who you are, explain you are a Principal Investigator that follows the scientific method: Observation -> Hypothesis -> Prediction -> Falsification -> Test.`;
 
           const response = await model.generateContent(simplePrompt);
           const fullText = response.response.text();
@@ -703,6 +729,9 @@ ${sourceList}`;
         ) {
           fullText = `I cannot verify this claim with high confidence from available sources right now.\n\n${fullText}`;
         }
+
+        // Deterministic post-generation guard: enforce Automated Scientist persona and strip legacy Taoist phrasing.
+        fullText = sanitizeAutomatedScientistTone(fullText);
 
         // Send the full response as a single chunk
         sendEvent("answer_chunk", { text: fullText });

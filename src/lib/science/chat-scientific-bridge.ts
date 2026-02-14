@@ -44,6 +44,18 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
+function isCitationLikeNumericEvidence(value: number, snippet: string): boolean {
+  const text = (snippet || "").toLowerCase();
+  const hasMetricSignal = /%|\bms\b|\bsec\b|\bseconds\b|\bauc\b|\bf1\b|\brmse\b|\bmae\b|\bmape\b|\baccuracy\b|\bprecision\b|\brecall\b|\blatency\b|\bloss\b|±/.test(text);
+  const citationContext = /(\[[0-9]{1,3}\]|\([0-9]{1,3}\)|\breferences?\b|\bbibliograph\w*\b|\bet al\.|\bdoi\b|\bssrn\b|\barxiv\b)/.test(text);
+  const tinyOrdinal = Number.isInteger(value) && value >= 1 && value <= 12;
+
+  if (hasMetricSignal) return false;
+  if (citationContext) return true;
+  if (tinyOrdinal && /\b(section|chapter|figure|table|source)\b/.test(text)) return true;
+  return false;
+}
+
 function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
   if (analyses.length === 0) return "";
 
@@ -64,13 +76,15 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
       );
     }
 
-    const numericEvidence = entry.numericEvidence || [];
+    const numericEvidence = (entry.numericEvidence || []).filter((item) => !isCitationLikeNumericEvidence(item.value, item.contextSnippet || ""));
     if (numericEvidence.length > 0) {
       lines.push("Numeric evidence samples:");
       numericEvidence.slice(0, 8).forEach((item) => {
         const snippet = item.contextSnippet ? ` | context: ${item.contextSnippet}` : "";
         lines.push(`- value=${item.value} source=${item.source}${snippet}`);
       });
+    } else if ((entry.numericEvidence || []).length > 0) {
+      lines.push("Numeric evidence samples: suppressed citation/ordinal-only numerics.");
     }
 
     lines.push("---");
