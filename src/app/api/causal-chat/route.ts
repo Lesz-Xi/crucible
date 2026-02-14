@@ -559,11 +559,35 @@ ${sourceList}`;
         fullText = result.response.text();
         chunkCount = 1;
 
-        if (factTrigger.shouldSearch && groundingSources.length > 0 && !/\[\d+\]/.test(fullText)) {
-          const sourcesFooter = groundingSources
-            .map((source) => `[${source.rank}] ${source.title} — ${source.link}`)
-            .join("\n");
-          fullText = `${fullText}\n\nSources:\n${sourcesFooter}`;
+        if (factTrigger.shouldSearch && groundingSources.length > 0) {
+          const citationMatches = fullText.match(/\[(\d+)\]/g) || [];
+          const citedIds = new Set<number>(
+            citationMatches
+              .map((token) => Number(token.replace(/[^0-9]/g, "")))
+              .filter((value) => Number.isFinite(value) && value > 0)
+          );
+
+          if (citedIds.size === 0) {
+            const sourcesFooter = groundingSources
+              .map((source) => `[${source.rank}] ${source.title} — ${source.link}`)
+              .join("\n");
+            fullText = `${fullText}\n\nSources:\n${sourcesFooter}`;
+          } else {
+            const citedList = groundingSources.filter((source) => citedIds.has(source.rank));
+            const additionalList = groundingSources.filter((source) => !citedIds.has(source.rank));
+
+            const usedLine = citedList.length > 0
+              ? `Sources used: ${citedList.map((source) => `[${source.rank}]`).join(" ")}`
+              : "";
+            const additionalLine = additionalList.length > 0
+              ? `Additional retrieved (not directly cited): ${additionalList.map((source) => `[${source.rank}]`).join(" ")}`
+              : "";
+
+            const reconciliation = [usedLine, additionalLine].filter(Boolean).join("\n");
+            if (reconciliation) {
+              fullText = `${fullText}\n\n${reconciliation}`;
+            }
+          }
         }
 
         if (

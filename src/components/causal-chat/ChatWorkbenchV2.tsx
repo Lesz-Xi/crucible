@@ -116,6 +116,16 @@ const isRealDomain = (value: string | null | undefined): value is string =>
 const isRealModelKey = (value: string | null | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0 && value !== 'default';
 
+const extractCitedRanksFromText = (text: string): Set<number> => {
+  const matches = text.match(/\[(\d+)\]/g) || [];
+  const ranks = new Set<number>();
+  for (const token of matches) {
+    const rank = Number(token.replace(/[^0-9]/g, ''));
+    if (Number.isFinite(rank) && rank > 0) ranks.add(rank);
+  }
+  return ranks;
+};
+
 const extractSourcesFromText = (text: string): GroundingSource[] => {
   const lines = text.split('\n');
   const sources: GroundingSource[] = [];
@@ -286,8 +296,11 @@ export function ChatWorkbenchV2() {
 
     const latestAssistantText = [...loadedMessages].reverse().find((m) => m.role === 'assistant')?.content || '';
     const restoredSources = extractSourcesFromText(latestAssistantText);
-    setGroundingSources(restoredSources);
-    setGroundingStatus(restoredSources.length > 0 ? 'ready' : 'idle');
+    const citedRanks = extractCitedRanksFromText(latestAssistantText);
+    const citedOnly = citedRanks.size > 0 ? restoredSources.filter((source) => citedRanks.has(source.rank)) : restoredSources;
+    const finalRestoredSources = citedOnly.length > 0 ? citedOnly : restoredSources;
+    setGroundingSources(finalRestoredSources);
+    setGroundingStatus(finalRestoredSources.length > 0 ? 'ready' : 'idle');
     setGroundingError(null);
     setUsedGroundingFallback(restoredSources.length > 0);
     setFactualConfidence(null);
@@ -543,14 +556,25 @@ export function ChatWorkbenchV2() {
           )
         );
 
+        const citedRanks = extractCitedRanksFromText(assistantContentRef.current || '');
+
         setGroundingSources((previous) => {
-          if (previous.length > 0) return previous;
+          if (previous.length > 0) {
+            if (citedRanks.size > 0) {
+              const citedOnly = previous.filter((source) => citedRanks.has(source.rank));
+              return citedOnly.length > 0 ? citedOnly : previous;
+            }
+            return previous;
+          }
+
           const parsed = extractSourcesFromText(assistantContentRef.current || '');
           if (parsed.length > 0) {
+            const citedOnly = citedRanks.size > 0 ? parsed.filter((source) => citedRanks.has(source.rank)) : parsed;
+            const finalSources = citedOnly.length > 0 ? citedOnly : parsed;
             setGroundingStatus('ready');
             setGroundingError(null);
             setUsedGroundingFallback(true);
-            return parsed;
+            return finalSources;
           }
           return previous;
         });
