@@ -111,6 +111,66 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
 const DEFAULT_TIMEOUT_MS = 30_000;
 const METHOD_VERSION = "1.0.0";
 
+function snippetAt(text: string, index: number, radius = 90): string {
+    const start = Math.max(0, index - radius);
+    const end = Math.min(text.length, index + radius);
+    return text.slice(start, end).replace(/\s+/g, " ").trim();
+}
+
+function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumericEvidenceItem[] {
+    if (!markdown || typeof markdown !== "string") return [];
+
+    const out: ScientificNumericEvidenceItem[] = [];
+    const seen = new Set<string>();
+
+    const push = (value: number, snippet: string) => {
+        if (!Number.isFinite(value)) return;
+        const key = `${value.toFixed(6)}|${snippet.slice(0, 120)}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        out.push({
+            value,
+            source: "prose",
+            contextSnippet: snippet,
+        });
+    };
+
+    // Digit-form numerics
+    for (const match of markdown.matchAll(/-?\d+(?:\.\d+)?/g)) {
+        const value = Number(match[0]);
+        const idx = match.index || 0;
+        push(value, snippetAt(markdown, idx));
+        if (out.length >= 120) break;
+    }
+
+    // Word-form numerics (basic deterministic map)
+    const wordMap: Record<string, number> = {
+        one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+        seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+        thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+        eighteen: 18, nineteen: 19, twenty: 20,
+    };
+
+    const wordPattern = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b/gi;
+    for (const match of markdown.matchAll(wordPattern)) {
+        const word = String(match[0]).toLowerCase();
+        const value = wordMap[word];
+        if (typeof value !== "number") continue;
+        const idx = match.index || 0;
+        const snippet = snippetAt(markdown, idx);
+
+        // Keep only likely quantitative contexts to avoid narrative noise.
+        if (!/(hour|minute|second|day|week|month|year|team|areas?|references?|sections?|page|count|times?|reduced|increase|decrease|latency|accuracy|precision|recall|f1|auc|metric)/i.test(snippet)) {
+            continue;
+        }
+
+        push(value, snippet);
+        if (out.length >= 180) break;
+    }
+
+    return out;
+}
+
 export class DefaultScientificAnalysisService implements ScientificAnalysisService {
     /**
      * Contract §1: Run analysis for a single PDF.
@@ -214,8 +274,8 @@ export class DefaultScientificAnalysisService implements ScientificAnalysisServi
             `[ScientificAnalysis] file=${fileName} status=${status} durationMs=${durationMs} warnings=${result.warnings.length}`,
         );
 
-        const numericEvidence: ScientificNumericEvidenceItem[] = result.dataPoints
-            .slice(0, 15)
+        const dataPointEvidence: ScientificNumericEvidenceItem[] = result.dataPoints
+            .slice(0, 40)
             .map((dp) => ({
                 value: dp.yValue,
                 variableXName: dp.variableXName,
@@ -231,6 +291,19 @@ export class DefaultScientificAnalysisService implements ScientificAnalysisServi
                         ? dp.metadata.contextSnippet
                         : undefined,
             }));
+
+        const markdownEvidence = extractExplicitNumericsFromMarkdown(result.markdown).slice(0, 120);
+
+        const seenEvidence = new Set<string>();
+        const numericEvidence: ScientificNumericEvidenceItem[] = [];
+        for (const item of [...dataPointEvidence, ...markdownEvidence]) {
+            if (typeof item.value !== "number" || !Number.isFinite(item.value)) continue;
+            const key = `${item.value.toFixed(6)}|${(item.contextSnippet || "").slice(0, 100)}`;
+            if (seenEvidence.has(key)) continue;
+            seenEvidence.add(key);
+            numericEvidence.push(item);
+            if (numericEvidence.length >= 120) break;
+        }
 
         return {
             ingestionId: result.ingestion.id,

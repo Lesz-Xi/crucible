@@ -64,29 +64,32 @@ describe("chat-scientific-bridge", () => {
     expect(result.analyses).toHaveLength(0);
   });
 
-  it("suppresses citation-like numeric evidence from context summary", async () => {
+  it("includes all explicit numerics with categories and separates claim-eligible candidates", async () => {
     runMock.mockResolvedValue({
       ingestionId: "ing-2",
       status: "completed",
-      summary: { tableCount: 0, trustedTableCount: 0, dataPointCount: 2 },
+      summary: { tableCount: 0, trustedTableCount: 0, dataPointCount: 3 },
       warnings: [],
       provenance: {
         ingestionId: "ing-2",
         sourceTableIds: [],
-        dataPointIds: ["d1", "d2"],
+        dataPointIds: ["d1", "d2", "d3"],
         methodVersion: "1.0.0",
       },
       numericEvidence: [
         { value: 2, source: "prose_numeric_extraction", contextSnippet: "[2] Esposito, J. (2024) Real-Time Monitoring..." },
-        { value: 6, source: "prose_numeric_extraction", contextSnippet: "[6] Pentyala, D. K. (2024) AI for Fault Detection..." },
+        { value: 2025, source: "prose_numeric_extraction", contextSnippet: "World Journal of Advanced Research and Reviews, 2025" },
+        { value: 0.82, source: "prose_numeric_extraction", contextSnippet: "model achieved 82% accuracy on validation" },
       ],
       observability: { fileName: "a.pdf", durationMs: 10, status: "completed", warningsCount: 0 },
     });
 
     const result = await processChatAttachments([attachment()], "user-1");
 
-    expect(result.summaryForContext).toContain("suppressed citation/ordinal-only numerics");
-    expect(result.summaryForContext).not.toContain("value=2");
-    expect(result.summaryForContext).not.toContain("value=6");
+    expect(result.summaryForContext).toContain("Extracted numbers with context (all explicit numerics)");
+    expect(result.summaryForContext).toContain("value=2 | category=reference_index");
+    expect(result.summaryForContext).toContain("value=2025 | category=citation_year");
+    expect(result.summaryForContext).toContain("value=0.82 | category=potential_metric");
+    expect(result.summaryForContext).toContain("Claim-eligible numeric candidates:");
   });
 });

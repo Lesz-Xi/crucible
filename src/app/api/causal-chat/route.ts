@@ -669,14 +669,19 @@ POLICY:
 - Use Automated Scientist tone only: no Taoist framing, no valley/river/stream/water metaphors, no philosophical persona language.
 
 OUTPUT CONTRACT (MANDATORY):
-- Section 1: "Extracted Numbers with Context"
-  - List every available numeric candidate from attachment extraction in this format:
-    - value=<number> | context=<nearby snippet> | confidence=<high|medium|low>
-  - If no substantive numerics are available, output exactly one bullet:
+- Section 1: "All Explicit Numbers with Context"
+  - Include all available numeric candidates from extraction, including bibliographic/structural/reference numbers.
+  - Use format:
+    - value=<number> | category=<potential_metric|bibliographic|structural|citation_year|reference_index> | context=<nearby snippet> | confidence=<high|medium|low>
+  - If none are available, output exactly one bullet:
     - NONE | reason=<insufficient extractable numeric evidence>
-- Section 2: "Three Claims with Uncertainty Labels"
-  - Provide exactly 3 claims tied only to extracted numerics/context.
-  - If evidence is insufficient, each claim must start with "Unable to construct" and state why.
+- Section 2: "Claim-Eligible Numerics"
+  - List only entries categorized as potential_metric.
+  - If none: output "NONE".
+- Section 3: "Three Claims with Uncertainty Labels"
+  - Provide exactly 3 claims tied only to Section 1/2 numerics and context.
+  - If only bibliographic/structural numerics are available, claims must explicitly be non-performance claims.
+  - If evidence is insufficient for metric claims, each claim must start with "Unable to construct" and state why.
 - Do NOT add a recommendation section.
 - Do NOT ask the user to re-upload, manually verify, or provide additional sample sentences.`;
         }

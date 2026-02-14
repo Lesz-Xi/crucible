@@ -44,16 +44,33 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
-function isCitationLikeNumericEvidence(value: number, snippet: string): boolean {
-  const text = (snippet || "").toLowerCase();
-  const hasMetricSignal = /%|\bms\b|\bsec\b|\bseconds\b|\bauc\b|\bf1\b|\brmse\b|\bmae\b|\bmape\b|\baccuracy\b|\bprecision\b|\brecall\b|\blatency\b|\bloss\b|±/.test(text);
-  const citationContext = /(\[[0-9]{1,3}\]|\([0-9]{1,3}\)|\breferences?\b|\bbibliograph\w*\b|\bet al\.|\bdoi\b|\bssrn\b|\barxiv\b)/.test(text);
-  const tinyOrdinal = Number.isInteger(value) && value >= 1 && value <= 12;
+type NumericEvidenceCategory =
+  | "potential_metric"
+  | "bibliographic"
+  | "structural"
+  | "citation_year"
+  | "reference_index";
 
-  if (hasMetricSignal) return false;
-  if (citationContext) return true;
-  if (tinyOrdinal && /\b(section|chapter|figure|table|source)\b/.test(text)) return true;
-  return false;
+function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
+  const text = (snippet || "").toLowerCase();
+
+  if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
+  if (/\b(19|20)\d{2}\b/.test(String(value)) && /(et al\.|\(|\)|references?|journal|copyright|received|accepted|revised)/.test(text)) {
+    return "citation_year";
+  }
+  if (/(doi|ssrn|arxiv|world journal|volume|issue|pages?|copyright|received|accepted|revised)/.test(text)) {
+    return "bibliographic";
+  }
+  if (/\b(section|chapter|page|figure|table|\d+\s*\/\s*\d+)\b/.test(text)) {
+    return "structural";
+  }
+
+  return "potential_metric";
+}
+
+function confidenceForCategory(category: NumericEvidenceCategory): "high" | "medium" | "low" {
+  if (category === "potential_metric") return "medium";
+  return "low";
 }
 
 function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
@@ -76,15 +93,26 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
       );
     }
 
-    const numericEvidence = (entry.numericEvidence || []).filter((item) => !isCitationLikeNumericEvidence(item.value, item.contextSnippet || ""));
+    const numericEvidence = entry.numericEvidence || [];
     if (numericEvidence.length > 0) {
-      lines.push("Numeric evidence samples:");
-      numericEvidence.slice(0, 8).forEach((item) => {
-        const snippet = item.contextSnippet ? ` | context: ${item.contextSnippet}` : "";
-        lines.push(`- value=${item.value} source=${item.source}${snippet}`);
+      lines.push("Extracted numbers with context (all explicit numerics):");
+      numericEvidence.slice(0, 20).forEach((item) => {
+        const category = classifyNumericEvidence(item.value, item.contextSnippet || "");
+        const confidence = confidenceForCategory(category);
+        const snippet = item.contextSnippet ? item.contextSnippet : "(no snippet available)";
+        lines.push(`- value=${item.value} | category=${category} | confidence=${confidence} | source=${item.source} | context=${snippet}`);
       });
-    } else if ((entry.numericEvidence || []).length > 0) {
-      lines.push("Numeric evidence samples: suppressed citation/ordinal-only numerics.");
+
+      const claimEligible = numericEvidence.filter((item) => classifyNumericEvidence(item.value, item.contextSnippet || "") === "potential_metric");
+      if (claimEligible.length > 0) {
+        lines.push("Claim-eligible numeric candidates:");
+        claimEligible.slice(0, 10).forEach((item) => {
+          const snippet = item.contextSnippet ? item.contextSnippet : "(no snippet available)";
+          lines.push(`- value=${item.value} | context=${snippet}`);
+        });
+      } else {
+        lines.push("Claim-eligible numeric candidates: NONE");
+      }
     }
 
     lines.push("---");
