@@ -561,7 +561,7 @@
 .lab-scroll-region {
   overflow: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(139, 94, 60, 0.45) transparent;
+  scrollbar-color: rgba(196, 196, 196, 0.7) transparent;
 }
 
 .lab-scroll-region::-webkit-scrollbar {
@@ -570,7 +570,7 @@
 }
 
 .lab-scroll-region::-webkit-scrollbar-thumb {
-  background: rgba(139, 94, 60, 0.35);
+  background: rgba(196, 196, 196, 0.62);
   border-radius: 999px;
 }
 
@@ -967,6 +967,14 @@
 .dark .lab-empty-state {
   background: color-mix(in srgb, var(--lab-bg) 74%, #000 26%);
   border-color: rgba(255, 255, 255, 0.18);
+}
+
+.dark .lab-scroll-region {
+  scrollbar-color: rgba(211, 211, 211, 0.75) transparent;
+}
+
+.dark .lab-scroll-region::-webkit-scrollbar-thumb {
+  background: rgba(211, 211, 211, 0.68);
 }
 
 body {
