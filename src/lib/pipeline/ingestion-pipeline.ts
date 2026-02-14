@@ -170,19 +170,9 @@ export async function runIngestionPipeline(
         throw new Error("Failed to create ingestion record.");
     }
 
-    // If already completed, return early (idempotent)
+    // If already completed, reprocess to avoid stale/empty cached artifacts from prior parser failures.
     if (ingestion.status === "completed") {
-        warnings.push("Ingestion already completed; returning cached result.");
-        return {
-            ingestion,
-            metadata: {},
-            markdown: "",
-            tables: { trusted: [], flagged: [] },
-            dataPoints: [],
-            computeRun: null,
-            reasoningGraph: { nodes: [], edges: [], claims: [], summary: "Cached." },
-            warnings,
-        };
+        warnings.push("Ingestion already completed; reprocessing with latest extractor pipeline.");
     }
 
     // Mark as processing
