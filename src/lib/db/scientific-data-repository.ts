@@ -5,7 +5,7 @@
 // scientific_data_points, and compute_runs.
 // =============================================================
 
-import { createServerSupabaseClient } from "../supabase/server";
+import { createServerSupabaseAdminClient } from "../supabase/server-admin";
 import {
     DocumentIngestion,
     CreateIngestionInput,
@@ -96,7 +96,7 @@ export class ScientificDataRepository {
         userId: string
     ): Promise<DocumentIngestion | null> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
 
             // Check for existing ingestion with same hash (idempotent)
             const { data: existing } = await supabase
@@ -151,7 +151,7 @@ export class ScientificDataRepository {
         errorMessage?: string
     ): Promise<boolean> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const update: Record<string, unknown> = {
                 status,
                 updated_at: new Date().toISOString(),
@@ -181,7 +181,7 @@ export class ScientificDataRepository {
      */
     async getIngestion(ingestionId: string): Promise<DocumentIngestion | null> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("document_ingestions")
                 .select("*")
@@ -204,7 +204,7 @@ export class ScientificDataRepository {
         limit = 20
     ): Promise<DocumentIngestion[]> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("document_ingestions")
                 .select("*")
@@ -234,7 +234,7 @@ export class ScientificDataRepository {
         if (tables.length === 0) return [];
 
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const rows = tables.map((t) => ({
                 ingestion_id: t.ingestionId,
                 page_number: t.pageNumber,
@@ -270,7 +270,7 @@ export class ScientificDataRepository {
         minConfidence = 0.0
     ): Promise<ExtractedTable[]> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("extracted_tables")
                 .select("*")
@@ -301,7 +301,7 @@ export class ScientificDataRepository {
         if (points.length === 0) return [];
 
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const rows = points.map((p) => ({
                 ingestion_id: p.ingestionId ?? null,
                 source_table_id: p.sourceTableId ?? null,
@@ -335,7 +335,7 @@ export class ScientificDataRepository {
      */
     async getDataPoints(ingestionId: string): Promise<ScientificDataPoint[]> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("scientific_data_points")
                 .select("*")
@@ -363,7 +363,7 @@ export class ScientificDataRepository {
         userId: string
     ): Promise<ComputeRun | null> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("compute_runs")
                 .insert({
@@ -394,7 +394,7 @@ export class ScientificDataRepository {
      */
     async getComputeRuns(ingestionId: string): Promise<ComputeRun[]> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("compute_runs")
                 .select("*")
@@ -417,7 +417,7 @@ export class ScientificDataRepository {
      */
     async findComputeRunByHash(hash: string): Promise<ComputeRun | null> {
         try {
-            const supabase = await createServerSupabaseClient();
+            const supabase = createServerSupabaseAdminClient();
             const { data, error } = await supabase
                 .from("compute_runs")
                 .select("*")
