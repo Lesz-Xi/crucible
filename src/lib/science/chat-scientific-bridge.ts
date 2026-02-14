@@ -58,10 +58,10 @@ function classifyNumericEvidence(value: number, snippet: string): NumericEvidenc
   if (/\b(19|20)\d{2}\b/.test(String(value)) && /(et al\.|\(|\)|references?|journal|copyright|received|accepted|revised)/.test(text)) {
     return "citation_year";
   }
-  if (/(doi|ssrn|arxiv|world journal|volume|issue|pages?|copyright|received|accepted|revised)/.test(text)) {
+  if (/(doi|ssrn|arxiv|world journal|volume|issue|pages?|copyright|received|accepted|revised|creative commons|license)/.test(text)) {
     return "bibliographic";
   }
-  if (/\b(section|chapter|page|figure|table|\d+\s*\/\s*\d+)\b/.test(text)) {
+  if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+)\b/.test(text)) {
     return "structural";
   }
 

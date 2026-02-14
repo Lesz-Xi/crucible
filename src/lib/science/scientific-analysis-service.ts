@@ -137,9 +137,22 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
 
     // Digit-form numerics
     for (const match of markdown.matchAll(/-?\d+(?:\.\d+)?/g)) {
-        const value = Number(match[0]);
+        const raw = match[0];
+        const value = Number(raw);
         const idx = match.index || 0;
-        push(value, snippetAt(markdown, idx));
+        const end = idx + raw.length;
+        const prev = idx > 0 ? markdown[idx - 1] : "";
+        const next = end < markdown.length ? markdown[end] : "";
+        const snippet = snippetAt(markdown, idx);
+
+        // Skip DOI decimal fragments like ".2.1521" tokenized as "2.1521".
+        const looksDoiContext = /doi\.org|\bdoi\b/i.test(snippet);
+        const isEmbeddedInDotChain = prev === "." || next === ".";
+        if (looksDoiContext && isEmbeddedInDotChain) {
+            continue;
+        }
+
+        push(value, snippet);
         if (out.length >= 120) break;
     }
 
