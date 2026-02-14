@@ -268,43 +268,48 @@ function detectTablesOnPage(
 export async function extractTablesFromPDF(
     buffer: ArrayBuffer
 ): Promise<RawTableResult[]> {
-    const pdfjsLib = await loadPdfJs();
+    try {
+        const pdfjsLib = await loadPdfJs();
 
-    const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
-    const pdf = await loadingTask.promise;
+        const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
+        const pdf = await loadingTask.promise;
 
-    const allTables: RawTableResult[] = [];
+        const allTables: RawTableResult[] = [];
 
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
 
-        // Map pdfjs text items to our TextItem format
-        const items: TextItem[] = textContent.items
-            .filter((item: any) => item.str && item.str.trim())
-            .map((item: any) => ({
-                str: item.str,
-                x: item.transform?.[4] ?? 0,       // x-position from transform matrix
-                y: item.transform?.[5] ?? 0,       // y-position from transform matrix
-                width: item.width ?? 0,
-                height: item.height ?? item.transform?.[0] ?? 12,
-                fontName: item.fontName ?? "",
-            }));
+            // Map pdfjs text items to our TextItem format
+            const items: TextItem[] = textContent.items
+                .filter((item: any) => item.str && item.str.trim())
+                .map((item: any) => ({
+                    str: item.str,
+                    x: item.transform?.[4] ?? 0,       // x-position from transform matrix
+                    y: item.transform?.[5] ?? 0,       // y-position from transform matrix
+                    width: item.width ?? 0,
+                    height: item.height ?? item.transform?.[0] ?? 12,
+                    fontName: item.fontName ?? "",
+                }));
 
-        if (items.length === 0) continue;
+            if (items.length === 0) continue;
 
-        // Detect tables on this page
-        const pageTables = detectTablesOnPage(items, pageNum);
+            // Detect tables on this page
+            const pageTables = detectTablesOnPage(items, pageNum);
 
-        // Assign sequential table indexes per page
-        pageTables.forEach((table, idx) => {
-            table.tableIndex = idx;
-        });
+            // Assign sequential table indexes per page
+            pageTables.forEach((table, idx) => {
+                table.tableIndex = idx;
+            });
 
-        allTables.push(...pageTables);
+            allTables.push(...pageTables);
+        }
+
+        return allTables;
+    } catch (error) {
+        console.warn("[TableExtractor] PDF.js unavailable; returning no extracted tables:", error);
+        return [];
     }
-
-    return allTables;
 }
 
 /**

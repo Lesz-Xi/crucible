@@ -5,6 +5,7 @@
 // =============================================================
 
 import "./polyfill";
+import { extractText, getMeta } from "unpdf";
 import { buildPdfDocumentOptions, loadPdfJs } from "./pdfjs-loader";
 import type { DocumentMetadata } from "../../types/scientific-data";
 
@@ -96,69 +97,92 @@ function parseAuthors(authorStr: string): string[] {
 export async function extractMetadataFromPDF(
     buffer: ArrayBuffer
 ): Promise<DocumentMetadata> {
-    const pdfjsLib = await loadPdfJs();
+    try {
+        const pdfjsLib = await loadPdfJs();
 
-    const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
-    const pdf = await loadingTask.promise;
+        const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
+        const pdf = await loadingTask.promise;
 
-    // ── Pass 1: PDF Metadata Dict ──
-    const meta = await pdf.getMetadata();
-    const info = (meta?.info ?? {}) as Record<string, unknown>;
+        // ── Pass 1: PDF Metadata Dict ──
+        const meta = await pdf.getMetadata();
+        const info = (meta?.info ?? {}) as Record<string, unknown>;
 
-    const result: DocumentMetadata = {
-        title: (info.Title as string) || undefined,
-        authors: info.Author ? parseAuthors(info.Author as string) : undefined,
-        keywords: info.Keywords
-            ? (info.Keywords as string).split(/[,;]/).map((k: string) => k.trim()).filter(Boolean)
-            : undefined,
-        pageCount: pdf.numPages,
-    };
+        const result: DocumentMetadata = {
+            title: (info.Title as string) || undefined,
+            authors: info.Author ? parseAuthors(info.Author as string) : undefined,
+            keywords: info.Keywords
+                ? (info.Keywords as string).split(/[,;]/).map((k: string) => k.trim()).filter(Boolean)
+                : undefined,
+            pageCount: pdf.numPages,
+        };
 
-    // ── Pass 2: Regex Enrichment from first 2 pages ──
-    const pagesToScan = Math.min(2, pdf.numPages);
-    let firstPagesText = "";
+        // ── Pass 2: Regex Enrichment from first 2 pages ──
+        const pagesToScan = Math.min(2, pdf.numPages);
+        let firstPagesText = "";
 
-    for (let pageNum = 1; pageNum <= pagesToScan; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-            .map((item: any) => item.str || "")
-            .join(" ");
-        firstPagesText += pageText + "\n\n";
-    }
+        for (let pageNum = 1; pageNum <= pagesToScan; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items
+                .map((item: any) => item.str || "")
+                .join(" ");
+            firstPagesText += pageText + "\n\n";
+        }
 
-    // Enrich with regex-extracted fields
-    if (!result.title && firstPagesText.length > 0) {
-        // Heuristic: first substantial line is often the title
-        const lines = firstPagesText.split("\n").filter((l) => l.trim().length > 10);
-        if (lines.length > 0) {
-            const candidate = lines[0].trim();
-            if (candidate.length < 300) {
-                result.title = candidate;
+        // Enrich with regex-extracted fields
+        if (!result.title && firstPagesText.length > 0) {
+            // Heuristic: first substantial line is often the title
+            const lines = firstPagesText.split("\n").filter((l) => l.trim().length > 10);
+            if (lines.length > 0) {
+                const candidate = lines[0].trim();
+                if (candidate.length < 300) {
+                    result.title = candidate;
+                }
             }
         }
-    }
 
-    result.doi = result.doi || extractDOI(firstPagesText);
-    result.abstract = result.abstract || extractAbstract(firstPagesText);
-    result.publicationDate = result.publicationDate || extractDate(firstPagesText);
-    result.journal = result.journal || extractJournal(firstPagesText);
+        result.doi = result.doi || extractDOI(firstPagesText);
+        result.abstract = result.abstract || extractAbstract(firstPagesText);
+        result.publicationDate = result.publicationDate || extractDate(firstPagesText);
+        result.journal = result.journal || extractJournal(firstPagesText);
 
-    if (!result.keywords || result.keywords.length === 0) {
-        result.keywords = extractKeywords(firstPagesText);
-    }
+        if (!result.keywords || result.keywords.length === 0) {
+            result.keywords = extractKeywords(firstPagesText);
+        }
 
-    if (!result.authors || result.authors.length === 0) {
-        // Try to detect author block between title and abstract
-        const titleEnd = firstPagesText.indexOf(result.title || "") + (result.title?.length || 0);
-        const abstractStart = firstPagesText.toLowerCase().indexOf("abstract");
-        if (titleEnd > 0 && abstractStart > titleEnd) {
-            const authorBlock = firstPagesText.slice(titleEnd, abstractStart).trim();
-            if (authorBlock.length > 3 && authorBlock.length < 500) {
-                result.authors = parseAuthors(authorBlock);
+        if (!result.authors || result.authors.length === 0) {
+            // Try to detect author block between title and abstract
+            const titleEnd = firstPagesText.indexOf(result.title || "") + (result.title?.length || 0);
+            const abstractStart = firstPagesText.toLowerCase().indexOf("abstract");
+            if (titleEnd > 0 && abstractStart > titleEnd) {
+                const authorBlock = firstPagesText.slice(titleEnd, abstractStart).trim();
+                if (authorBlock.length > 3 && authorBlock.length < 500) {
+                    result.authors = parseAuthors(authorBlock);
+                }
             }
         }
-    }
 
-    return result;
+        return result;
+    } catch (error) {
+        console.warn("[MetadataExtractor] Falling back to unpdf metadata/text extraction:", error);
+        const bytes = new Uint8Array(buffer);
+        const [meta, textResult] = await Promise.all([
+            getMeta(bytes).catch(() => null),
+            extractText(bytes, { mergePages: true }).catch(() => null),
+        ]);
+
+        const info = (meta?.info ?? {}) as Record<string, unknown>;
+        const text = typeof textResult?.text === "string" ? textResult.text : "";
+
+        return {
+            title: (info.Title as string) || undefined,
+            authors: info.Author ? parseAuthors(String(info.Author)) : undefined,
+            doi: extractDOI(text),
+            abstract: extractAbstract(text),
+            journal: extractJournal(text),
+            publicationDate: extractDate(text),
+            keywords: extractKeywords(text),
+            pageCount: textResult?.totalPages || undefined,
+        };
+    }
 }

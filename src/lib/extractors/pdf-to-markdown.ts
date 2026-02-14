@@ -5,6 +5,7 @@
 // =============================================================
 
 import "./polyfill";
+import { extractText } from "unpdf";
 import { buildPdfDocumentOptions, loadPdfJs } from "./pdfjs-loader";
 
 // ── Types ────────────────────────────────────────────────────
@@ -110,85 +111,93 @@ function groupIntoLines(
 export async function convertPDFToMarkdown(
     buffer: ArrayBuffer
 ): Promise<string> {
-    const pdfjsLib = await loadPdfJs();
+    try {
+        const pdfjsLib = await loadPdfJs();
 
-    const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
-    const pdf = await loadingTask.promise;
+        const loadingTask = pdfjsLib.getDocument(buildPdfDocumentOptions(buffer));
+        const pdf = await loadingTask.promise;
 
-    const markdownParts: string[] = [];
+        const markdownParts: string[] = [];
 
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
 
-        // Build annotated text items
-        const items: AnnotatedTextItem[] = textContent.items
-            .filter((item: any) => item.str && item.str.trim())
-            .map((item: any) => ({
-                str: item.str,
-                x: item.transform?.[4] ?? 0,
-                y: item.transform?.[5] ?? 0,
-                fontSize: Math.abs(item.transform?.[0] ?? 12),
-                fontName: item.fontName ?? "",
-            }));
+            // Build annotated text items
+            const items: AnnotatedTextItem[] = textContent.items
+                .filter((item: any) => item.str && item.str.trim())
+                .map((item: any) => ({
+                    str: item.str,
+                    x: item.transform?.[4] ?? 0,
+                    y: item.transform?.[5] ?? 0,
+                    fontSize: Math.abs(item.transform?.[0] ?? 12),
+                    fontName: item.fontName ?? "",
+                }));
 
-        if (items.length === 0) continue;
+            if (items.length === 0) continue;
 
-        const bodySize = detectBodyFontSize(items);
-        const lines = groupIntoLines(items);
+            const bodySize = detectBodyFontSize(items);
+            const lines = groupIntoLines(items);
 
-        let lastY = Infinity;
+            let lastY = Infinity;
 
-        for (const line of lines) {
-            // Detect paragraph gap
-            const lineY = line[0].y;
-            const gap = Math.abs(lastY - lineY);
+            for (const line of lines) {
+                // Detect paragraph gap
+                const lineY = line[0].y;
+                const gap = Math.abs(lastY - lineY);
 
-            if (gap > PARAGRAPH_GAP && markdownParts.length > 0) {
+                if (gap > PARAGRAPH_GAP && markdownParts.length > 0) {
+                    markdownParts.push("");
+                }
+                lastY = lineY;
+
+                // Build line text with formatting
+                const lineText = line
+                    .map((item) => {
+                        let text = item.str.trim();
+                        if (!text) return "";
+
+                        // Apply inline formatting
+                        if (isBold(item.fontName) && isItalic(item.fontName)) {
+                            text = `***${text}***`;
+                        } else if (isBold(item.fontName)) {
+                            text = `**${text}**`;
+                        } else if (isItalic(item.fontName)) {
+                            text = `*${text}*`;
+                        }
+                        return text;
+                    })
+                    .join(" ")
+                    .trim();
+
+                if (!lineText) continue;
+
+                // Detect heading from first item's font size
+                const headingLevel = getHeadingLevel(line[0].fontSize, bodySize);
+                if (headingLevel > 0) {
+                    const prefix = "#".repeat(headingLevel);
+                    // Remove bold markers from headings (redundant)
+                    const cleanHeading = lineText.replace(/\*\*/g, "");
+                    markdownParts.push(`${prefix} ${cleanHeading}`);
+                } else {
+                    markdownParts.push(lineText);
+                }
+            }
+
+            // Page separator
+            if (pageNum < pdf.numPages) {
+                markdownParts.push("");
+                markdownParts.push("---");
                 markdownParts.push("");
             }
-            lastY = lineY;
-
-            // Build line text with formatting
-            const lineText = line
-                .map((item) => {
-                    let text = item.str.trim();
-                    if (!text) return "";
-
-                    // Apply inline formatting
-                    if (isBold(item.fontName) && isItalic(item.fontName)) {
-                        text = `***${text}***`;
-                    } else if (isBold(item.fontName)) {
-                        text = `**${text}**`;
-                    } else if (isItalic(item.fontName)) {
-                        text = `*${text}*`;
-                    }
-                    return text;
-                })
-                .join(" ")
-                .trim();
-
-            if (!lineText) continue;
-
-            // Detect heading from first item's font size
-            const headingLevel = getHeadingLevel(line[0].fontSize, bodySize);
-            if (headingLevel > 0) {
-                const prefix = "#".repeat(headingLevel);
-                // Remove bold markers from headings (redundant)
-                const cleanHeading = lineText.replace(/\*\*/g, "");
-                markdownParts.push(`${prefix} ${cleanHeading}`);
-            } else {
-                markdownParts.push(lineText);
-            }
         }
 
-        // Page separator
-        if (pageNum < pdf.numPages) {
-            markdownParts.push("");
-            markdownParts.push("---");
-            markdownParts.push("");
-        }
+        return markdownParts.join("\n");
+    } catch (error) {
+        console.warn("[PDFMarkdown] Falling back to unpdf text extraction:", error);
+        const bytes = new Uint8Array(buffer);
+        const textResult = await extractText(bytes, { mergePages: true }).catch(() => null);
+        if (!textResult || typeof textResult.text !== "string") return "";
+        return textResult.text;
     }
-
-    return markdownParts.join("\n");
 }
