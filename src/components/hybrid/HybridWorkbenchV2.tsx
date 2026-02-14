@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
@@ -8,9 +7,6 @@ import {
   BookOpen,
   CheckCircle2,
   Clock3,
-  FlaskConical,
-  Scale,
-  Sparkles,
   TrendingUp,
 } from 'lucide-react';
 import { ContextRail } from '@/components/workbench/ContextRail';
@@ -436,12 +432,6 @@ export function HybridWorkbenchV2() {
       }
       contextRail={
         <ContextRail title="Input Rail" subtitle="Source inventory, focus constraints, and execution">
-          <div className="mb-4 flex flex-wrap gap-2">
-            <Link href="/chat" className="lab-nav-pill" data-active="false"><Sparkles className="h-4 w-4" />Chat</Link>
-            <Link href="/hybrid" className="lab-nav-pill" data-active="true"><FlaskConical className="h-4 w-4" />Hybrid</Link>
-            <Link href="/legal" className="lab-nav-pill" data-active="false"><Scale className="h-4 w-4" />Legal</Link>
-          </div>
-
           <HybridInputPanelV2
             files={files}
             companies={companies}

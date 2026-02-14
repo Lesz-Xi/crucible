@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { BookOpen, Clock3, Gavel, Scale, Sparkles } from 'lucide-react';
+import { BookOpen, Clock3 } from 'lucide-react';
 import type { LegalCase } from '@/types/legal';
 import { getAnalysisHistory, loadAnalysisFromHistory, saveAnalysisToHistory, type LegalHistoryEntry } from '@/lib/services/legal-history';
 import { ContextRail } from '@/components/workbench/ContextRail';
@@ -207,12 +206,6 @@ export function LegalWorkbenchV2() {
       }
       contextRail={
         <ContextRail title="Case Intake" subtitle="Document parsing and legal context setup">
-          <div className="mb-4 flex flex-wrap gap-2">
-            <Link href="/chat" className="lab-nav-pill" data-active="false"><Sparkles className="h-4 w-4" />Chat</Link>
-            <Link href="/hybrid" className="lab-nav-pill" data-active="false"><Gavel className="h-4 w-4" />Hybrid</Link>
-            <Link href="/legal" className="lab-nav-pill" data-active="true"><Scale className="h-4 w-4" />Legal</Link>
-          </div>
-
           <LegalIntakePanelV2
             documentNames={documentNames}
             caseTitle={caseTitle}
