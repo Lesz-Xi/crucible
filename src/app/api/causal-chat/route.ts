@@ -679,6 +679,7 @@ OUTPUT CONTRACT (MANDATORY):
   - List only entries categorized as potential_metric.
   - If none: output "NONE".
 - Section 3: "Three Claims with Uncertainty Labels"
+  - First line of Section 3 must be: "Evidence class: <bibliographic/structural only|mixed|metric-bearing>".
   - Provide exactly 3 claims tied only to Section 1/2 numerics and context.
   - If only bibliographic/structural numerics are available, claims must explicitly be non-performance claims.
   - If evidence is insufficient for metric claims, each claim must start with "Unable to construct" and state why.
