@@ -37,11 +37,19 @@ export interface ClaudeModel {
   generateContent(prompt: string): Promise<{ response: { text: () => string } }>;
 }
 
+function extractTextFromMessageContent(content: Array<{ type: string; text?: string }>): string {
+  return content
+    .filter((block) => block?.type === "text" && typeof block.text === "string")
+    .map((block) => block.text as string)
+    .join("\n")
+    .trim();
+}
+
 // Concrete Adapter
 class ClaudeAdapter implements ClaudeModel {
   private model: string;
 
-  constructor(model: string = "claude-sonnet-4-20250514") {
+  constructor(model: string = "claude-sonnet-4-5-20250929") {
     this.model = model;
   }
 
@@ -52,17 +60,47 @@ class ClaudeAdapter implements ClaudeModel {
     while (attempts < maxAttempts) {
       try {
         const client = getAnthropicClient();
-        const msg = await client.messages.create({
-          model: this.model,
-          max_tokens: 8192,
-          messages: [{ role: "user", content: prompt }],
-        });
 
-        const textContent = msg.content[0].type === 'text' ? msg.content[0].text : "";
+        const messages: Array<{ role: "user" | "assistant"; content: string }> = [
+          { role: "user", content: prompt },
+        ];
+
+        let assembledText = "";
+        let continuationHops = 0;
+        const maxContinuationHops = 1;
+
+        while (true) {
+          const msg = await client.messages.create({
+            model: this.model,
+            max_tokens: 8192,
+            messages,
+          });
+
+          const chunk = extractTextFromMessageContent(msg.content as Array<{ type: string; text?: string }>);
+          if (chunk) {
+            assembledText = assembledText ? `${assembledText}\n${chunk}` : chunk;
+          }
+
+          if (msg.stop_reason !== "max_tokens" || continuationHops >= maxContinuationHops) {
+            if (msg.stop_reason === "max_tokens") {
+              console.warn("[Anthropic] Response hit max_tokens; returning truncated-safe output after continuation cap.");
+            }
+            break;
+          }
+
+          continuationHops += 1;
+          console.warn(`[Anthropic] stop_reason=max_tokens, requesting continuation hop ${continuationHops}/${maxContinuationHops}`);
+
+          messages.push({ role: "assistant", content: chunk || assembledText || "" });
+          messages.push({
+            role: "user",
+            content: "Continue exactly where you left off. Do not repeat prior text. Complete the response succinctly.",
+          });
+        }
 
         return {
           response: {
-            text: () => textContent,
+            text: () => assembledText,
           },
         };
       } catch (error) {
