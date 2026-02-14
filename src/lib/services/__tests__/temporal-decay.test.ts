@@ -5,7 +5,7 @@
  * and weighted similarity adjustments.
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import {
     calculateTemporalWeight,
     parsePublicationYear,

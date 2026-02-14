@@ -27,6 +27,7 @@
     "governance:law-falsification": "npx --yes tsx scripts/evaluate-law-falsification.ts",
     "governance:hybrid-novelty-proof": "npx --yes tsx scripts/evaluate-hybrid-novelty-proof.ts",
     "governance:persistent-memory-integrity": "npx --yes tsx scripts/evaluate-persistent-memory-integrity.ts",
+    "audit:migrations": "npx --yes tsx scripts/check-migration-state.ts",
     "agent:bootstrap": "bash ../.agent/scripts/agent-bootstrap.sh"
   },
   "dependencies": {
