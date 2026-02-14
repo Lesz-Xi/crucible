@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const saveDataPoints = vi.fn(async (rows: any[]) => rows.map((r, i) => ({ id: `d-${i + 1}`, ...r })));
 
@@ -23,7 +23,7 @@ vi.mock('@/lib/extractors/metadata-extractor', () => ({
 }));
 
 vi.mock('@/lib/extractors/pdf-to-markdown', () => ({
-  convertPDFToMarkdown: async () => 'Results: precision/recall=84.5/79.2, F1 ranged 81-86, latency 12.3 ms.',
+  convertPDFToMarkdown: vi.fn(),
 }));
 
 vi.mock('@/lib/compute/scientific-compute-engine', () => ({
@@ -40,8 +40,16 @@ vi.mock('@/lib/compute/graph-reasoning-engine', () => ({
 }));
 
 import { runIngestionPipeline } from '@/lib/pipeline/ingestion-pipeline';
+import { convertPDFToMarkdown } from '@/lib/extractors/pdf-to-markdown';
+
+const convertPDFToMarkdownMock = vi.mocked(convertPDFToMarkdown);
 
 describe('scientific ingestion pipeline prose fallback', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    convertPDFToMarkdownMock.mockResolvedValue('Results: precision/recall=84.5/79.2, F1 ranged 81-86, latency 12.3 ms.');
+  });
+
   it('extracts numeric points from prose when tables are unavailable', async () => {
     const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
 
@@ -49,5 +57,16 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(result.dataPoints.length).toBeGreaterThanOrEqual(2);
     expect(result.warnings.join(' ')).toContain('prose numeric extraction fallback');
     expect(result.dataPoints.some((dp: any) => dp.metadata?.extractionVersion === '2.1.0')).toBe(true);
+  });
+
+  it('suppresses bibliographic-only numerics in prose fallback', async () => {
+    convertPDFToMarkdownMock.mockResolvedValue(
+      'World Journal of Advanced Research and Reviews, 2025, 26(02), 874-879. DOI 10.30574/wjarr.2025.26.2.1521. Creative Commons Attribution License 4.0.',
+    );
+
+    const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
+
+    expect(result.dataPoints.length).toBe(0);
+    expect(result.warnings.join(' ')).toContain('Fewer than 2 numeric data points extracted');
   });
 });

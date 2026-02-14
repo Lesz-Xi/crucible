@@ -50,10 +50,21 @@ interface ProseNumericHit {
     contextSnippet: string;
 }
 
+const BIBLIOGRAPHIC_CONTEXT_PATTERN = /(journal|doi|issn|volume|issue|pages?|copyright|license|received|revised|accepted|publication history|creativecommons|author\(s\)|corresponding author)/i;
+const METRIC_CONTEXT_PATTERN = /(accuracy|precision|recall|f1|auc|latency|ms|seconds?|error|loss|rmse|mae|mape|improv(e|ed|ement)|reduc(e|ed|tion)|increas(e|ed)|baseline|compared|outperform|performance)/i;
+
 function getContextSnippet(text: string, index: number, radius = 80): string {
     const start = Math.max(0, index - radius);
     const end = Math.min(text.length, index + radius);
     return text.slice(start, end).replace(/\s+/g, " ").trim();
+}
+
+function scoreContextSnippet(snippet: string): number {
+    let score = 0;
+    if (METRIC_CONTEXT_PATTERN.test(snippet)) score += 4;
+    if (/%|\bms\b|\bsec\b|\bseconds\b/i.test(snippet)) score += 1;
+    if (BIBLIOGRAPHIC_CONTEXT_PATTERN.test(snippet)) score -= 5;
+    return score;
 }
 
 function parseProseNumericSeries(markdown: string): ProseNumericHit[] {
@@ -104,10 +115,21 @@ function parseProseNumericSeries(markdown: string): ProseNumericHit[] {
         seen.add(roundedKey);
 
         filtered.push(hit);
-        if (filtered.length >= 80) break;
+        if (filtered.length >= 120) break;
     }
 
-    return filtered;
+    // Rank by context quality: prioritize performance/result metrics, suppress bibliographic numerics.
+    const ranked = filtered
+        .map((hit) => ({ hit, score: scoreContextSnippet(hit.contextSnippet) }))
+        .sort((a, b) => b.score - a.score);
+
+    const strong = ranked.filter((item) => item.score > 0).map((item) => item.hit);
+    if (strong.length > 0) {
+        return strong.slice(0, 80);
+    }
+
+    // If all hits are bibliographic/noise contexts, return none to avoid fabricated quantitative grounding.
+    return [];
 }
 
 function buildProseDataPoints(ingestionId: string, markdown: string): CreateDataPointInput[] {
