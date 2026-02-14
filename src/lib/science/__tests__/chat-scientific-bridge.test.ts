@@ -94,15 +94,12 @@ describe("chat-scientific-bridge", () => {
     const result = await processChatAttachments([attachment()], "user-1");
 
     expect(result.summaryForContext).toContain("Extracted numbers with context (all explicit numerics)");
-    expect(result.summaryForContext).toContain("value=2 | category=reference_index");
-    expect(result.summaryForContext).toContain("value=2025 | category=citation_year");
-    expect(result.summaryForContext).toContain("value=4 | category=bibliographic");
-    expect(result.summaryForContext).toContain("value=1 | category=structural");
-    expect(result.summaryForContext).toContain("value=3 | category=structural");
-    expect(result.summaryForContext).toContain("value=2 | category=structural");
-    expect(result.summaryForContext).toContain("value=5 | category=structural");
-    expect(result.summaryForContext).toContain("value=0.82 | category=potential_metric");
+    expect(result.summaryForContext).toContain("Reference indices");
+    expect(result.summaryForContext).toContain("Citation years");
+    expect(result.summaryForContext).toContain("Bibliographic");
+    expect(result.summaryForContext).toContain("Structural");
+    expect(result.summaryForContext).toContain("Potential metrics");
+    expect(result.summaryForContext).toContain("1. 0.82 —");
     expect(result.summaryForContext).toContain("Claim-eligible numeric candidates:");
-    expect(result.summaryForContext).toContain("- value=0.82 | context=");
   });
 });

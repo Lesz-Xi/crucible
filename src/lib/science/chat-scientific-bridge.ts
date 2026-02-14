@@ -134,20 +134,28 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
         "reference_index",
       ];
 
+      const labelMap: Record<NumericEvidenceCategory, string> = {
+        potential_metric: "Potential metrics",
+        structural: "Structural",
+        bibliographic: "Bibliographic",
+        citation_year: "Citation years",
+        reference_index: "Reference indices",
+      };
+
       for (const category of categoryOrder) {
         const bucket = deduped.filter((row) => row.category === category).slice(0, 8);
         if (bucket.length === 0) continue;
-        lines.push(`${category}:`);
-        for (const row of bucket) {
-          lines.push(`- value=${row.item.value} | category=${row.category} | confidence=${row.confidence} | context=${row.snippet}`);
-        }
+        lines.push(`${labelMap[category]} (${bucket.length}):`);
+        bucket.forEach((row, i) => {
+          lines.push(`${i + 1}. ${row.item.value} — ${row.snippet} (${row.confidence} confidence)`);
+        });
       }
 
       const claimEligible = deduped.filter((row) => row.category === "potential_metric");
       if (claimEligible.length > 0) {
         lines.push("Claim-eligible numeric candidates:");
-        claimEligible.slice(0, 8).forEach((row) => {
-          lines.push(`- value=${row.item.value} | context=${row.snippet}`);
+        claimEligible.slice(0, 8).forEach((row, i) => {
+          lines.push(`${i + 1}. ${row.item.value} — ${row.snippet} (${row.confidence} confidence)`);
         });
       } else {
         lines.push("Claim-eligible numeric candidates: NONE");

@@ -671,12 +671,13 @@ POLICY:
 OUTPUT CONTRACT (MANDATORY):
 - Section 1: "All Explicit Numbers with Context"
   - Include all available numeric candidates from extraction, including bibliographic/structural/reference numbers.
-  - Use format:
-    - value=<number> | category=<potential_metric|bibliographic|structural|citation_year|reference_index> | context=<nearby snippet> | confidence=<high|medium|low>
+  - Group by category using readable headings: Potential metrics, Structural, Bibliographic, Citation years, Reference indices.
+  - Use compact bullet format per item:
+    - <index>. <number> — <nearby snippet> (<low|medium|high confidence>)
   - If none are available, output exactly one bullet:
-    - NONE | reason=<insufficient extractable numeric evidence>
+    - NONE — insufficient extractable numeric evidence
 - Section 2: "Claim-Eligible Numerics"
-  - List only entries categorized as potential_metric.
+  - List only entries categorized as potential_metric, using the same readable bullet format.
   - If none: output "NONE".
 - Section 3: "Three Claims with Uncertainty Labels"
   - First line of Section 3 must be: "Evidence class: <bibliographic/structural only|mixed|metric-bearing>".
