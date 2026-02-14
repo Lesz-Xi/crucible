@@ -75,21 +75,21 @@
 /* Dark Mode - Obsidian foundations */
 .dark {
   /* Codex-like obsidian theme */
-  --obsidian-900: #4A4A4A;
+  --obsidian-900: #454545;
   --stone-700: #f3f4f6;
-  --ash-200: #5a5a5a;
-  --paper-050: #535353;
+  --ash-200: #545454;
+  --paper-050: #4e4e4e;
 
   --moss-500: #6fb08f;
   --oxide-500: #d18f67;
   --mist-400: #a9b0bb;
 
   /* Legacy overrides */
-  --background: #4A4A4A;
+  --background: #454545;
   --foreground: #f3f4f6;
-  --bg-primary: #4A4A4A;
-  --bg-secondary: #535353;
-  --bg-card: rgba(74, 74, 74, 0.92);
+  --bg-primary: #454545;
+  --bg-secondary: #4e4e4e;
+  --bg-card: rgba(69, 69, 69, 0.92);
   --text-primary: #f3f4f6;
   --text-secondary: #a9b0bb;
   --text-tertiary: #7f8794;
@@ -97,7 +97,7 @@
   --border-subtle: #2a2f38;
 
   /* Backward-compat tokens with readable contrast in dark */
-  --wabi-washi: #4A4A4A;
+  --wabi-washi: #454545;
   --wabi-sumi: #f3f4f6;
   --wabi-patina: #a9b0bb;
   --wabi-clay: #d18f67;
@@ -106,9 +106,9 @@
   --wabi-stone: #8f96a3;
 
   /* Automated Scientist dark tokens */
-  --lab-bg: #4A4A4A;
-  --lab-bg-elevated: #535353;
-  --lab-panel: rgba(74, 74, 74, 0.9);
+  --lab-bg: #454545;
+  --lab-bg-elevated: #4e4e4e;
+  --lab-panel: rgba(69, 69, 69, 0.9);
   --lab-border: rgba(255, 255, 255, 0.16);
   --lab-text-primary: #e7e9ee;
   --lab-text-secondary: #b1b6c0;
