@@ -137,4 +137,4 @@ Chat attachment flow is now functionally wired and processing events are emitted
 - **Trustworthiness:** Improved but not fully closed ⚠️
 - **DB governance consistency:** Pending migration ⚠️
 
-**Overall status:** **Near-ready with one required DB migration + one validation pass.**
+**Overall status:** **Near-ready with one required DB migration + one validation pass.** (DONE)
