@@ -92,4 +92,15 @@ describe('scientific ingestion pipeline prose fallback', () => {
     expect(result.dataPoints.length).toBe(0);
     expect(result.warnings.join(' ')).toContain('Fewer than 2 numeric data points extracted');
   });
+
+  it('suppresses citation/reference numerics', async () => {
+    convertPDFToMarkdownMock.mockResolvedValue(
+      'References [1] Adenekan (2024)... [2] Esposito (2024)... Available at SSRN 4859958. International Journal 2(4), 8-44.',
+    );
+
+    const result = await runIngestionPipeline(new ArrayBuffer(8), 'paper.pdf', 'user-1');
+
+    expect(result.dataPoints.length).toBe(0);
+    expect(result.warnings.join(' ')).toContain('Fewer than 2 numeric data points extracted');
+  });
 });

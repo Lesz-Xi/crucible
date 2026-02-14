@@ -58,6 +58,7 @@ interface ProseNumericLanes {
 const BIBLIOGRAPHIC_CONTEXT_PATTERN = /(journal|doi|issn|volume|issue|pages?|copyright|license|received|revised|accepted|publication history|creativecommons|author\(s\)|corresponding author)/i;
 const METRIC_CONTEXT_PATTERN = /(accuracy|precision|recall|f1|auc|latency|ms|seconds?|error|loss|rmse|mae|mape|improv(e|ed|ement)|reduc(e|ed|tion)|increas(e|ed)|baseline|compared|outperform|performance)/i;
 const SECTION_ORDINAL_CONTEXT_PATTERN = /(section|introduction|background|methodology|methods|results|discussion|conclusion|chapter|part\s+\d+)/i;
+const CITATION_CONTEXT_PATTERN = /(references?|\[\d+\]|\(\d{4}\)|et\s+al\.|available\s+at|ssrn|researchgate|vol\.|no\.|pp\.|international journal|conference|proceedings)/i;
 
 function getContextSnippet(text: string, index: number, radius = 80): string {
     const start = Math.max(0, index - radius);
@@ -120,11 +121,13 @@ function parseProseNumericSeries(markdown: string): ProseNumericLanes {
         const hasMetricUnitNearby = /%|\bms\b|\bsec\b|\bseconds\b|\bx\b|±/i.test(snippet);
         const hasMetricTermNearby = METRIC_CONTEXT_PATTERN.test(snippet);
         const isSectionLike = SECTION_ORDINAL_CONTEXT_PATTERN.test(snippet);
+        const isCitationLike = CITATION_CONTEXT_PATTERN.test(snippet);
 
-        const isBrokenFragment = snippet.length < 24 || /^["'\-\s\d\.]+$/.test(snippet);
+        const isBrokenFragment = snippet.length < 24 || /^["'\-\s\d\.\[\]\(\)]+$/.test(snippet);
 
         if (isLikelyYear || isLikelyNoise) continue;
         if (isBrokenFragment) continue;
+        if (isCitationLike && !hasMetricTermNearby && !hasMetricUnitNearby) continue;
         if (isSectionLike && !hasMetricTermNearby) continue;
         if (isSmallOrdinal && !hasMetricUnitNearby && !hasMetricTermNearby) continue;
 
@@ -143,7 +146,12 @@ function parseProseNumericSeries(markdown: string): ProseNumericLanes {
 
     const strong = ranked.filter((item) => item.score > 0).map((item) => item.hit).slice(0, 80);
     const weak = ranked
-        .filter((item) => item.score <= 0 && !BIBLIOGRAPHIC_CONTEXT_PATTERN.test(item.hit.contextSnippet))
+        .filter(
+            (item) =>
+                item.score <= 0 &&
+                !BIBLIOGRAPHIC_CONTEXT_PATTERN.test(item.hit.contextSnippet) &&
+                !CITATION_CONTEXT_PATTERN.test(item.hit.contextSnippet),
+        )
         .map((item) => item.hit)
         .slice(0, 40);
 
