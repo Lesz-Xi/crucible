@@ -86,6 +86,10 @@ describe("chat-scientific-bridge", () => {
         { value: 3, source: "prose_numeric_extraction", contextSnippet: "Latency spikes bring about three main side effects" },
         { value: 5, source: "prose_numeric_extraction", contextSnippet: "A deep analysis investigates model implementation within five critical areas" },
         { value: 5, source: "prose_numeric_extraction", contextSnippet: "AI observability tools need staff from five separate teams" },
+        { value: 3, source: "prose_numeric_extraction", contextSnippet: "RCA time reduced from three hours to fifteen minutes" },
+        { value: 15, source: "prose_numeric_extraction", contextSnippet: "RCA time reduced from three hours to fifteen minutes" },
+        { value: 1000000000, source: "prose_numeric_extraction", contextSnippet: "operations total billions of events daily" },
+        { value: 1000000000000000, source: "prose_numeric_extraction", contextSnippet: "daily data processing amounts of petabytes" },
         { value: 0.82, source: "prose_numeric_extraction", contextSnippet: "model achieved 82% accuracy on validation" },
       ],
       observability: { fileName: "a.pdf", durationMs: 10, status: "completed", warningsCount: 0 },
@@ -99,7 +103,9 @@ describe("chat-scientific-bridge", () => {
     expect(result.summaryForContext).toContain("Bibliographic");
     expect(result.summaryForContext).toContain("Structural");
     expect(result.summaryForContext).toContain("Potential metrics");
-    expect(result.summaryForContext).toContain("1. 0.82 —");
+    expect(result.summaryForContext).toContain("three hours to fifteen");
+    expect(result.summaryForContext).toContain("billions of events");
+    expect(result.summaryForContext).toContain("data processing amounts");
     expect(result.summaryForContext).toContain("Claim-eligible numeric candidates:");
   });
 });

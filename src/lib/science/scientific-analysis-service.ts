@@ -123,6 +123,25 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
     const out: ScientificNumericEvidenceItem[] = [];
     const seen = new Set<string>();
 
+    const wordMap: Record<string, number> = {
+        one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
+        seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+        thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
+        eighteen: 18, nineteen: 19, twenty: 20,
+    };
+
+    const parseNumberToken = (token: string): number | null => {
+        const normalized = token.toLowerCase().trim();
+        if (/^\d+(?:\.\d+)?$/.test(normalized)) {
+            const n = Number(normalized);
+            return Number.isFinite(n) ? n : null;
+        }
+        if (Object.prototype.hasOwnProperty.call(wordMap, normalized)) {
+            return wordMap[normalized];
+        }
+        return null;
+    };
+
     const push = (value: number, snippet: string) => {
         if (!Number.isFinite(value)) return;
         const key = `${value.toFixed(6)}|${snippet.slice(0, 120)}`;
@@ -134,6 +153,43 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
             contextSnippet: snippet,
         });
     };
+
+    // Strong pattern: before→after duration improvements (e.g., three hours to fifteen minutes)
+    const numberToken = "(?:\\d+(?:\\.\\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)";
+    const durationPattern = new RegExp(`\\b(${numberToken})\\s+(seconds?|minutes?|hours?|days?)\\s+(?:to|->|→)\\s+(${numberToken})\\s+(seconds?|minutes?|hours?|days?)\\b`, "gi");
+    for (const match of markdown.matchAll(durationPattern)) {
+        const idx = match.index || 0;
+        const snippet = snippetAt(markdown, idx);
+        const fromValue = parseNumberToken(String(match[1]));
+        const toValue = parseNumberToken(String(match[3]));
+        if (fromValue !== null) push(fromValue, snippet);
+        if (toValue !== null) push(toValue, snippet);
+    }
+
+    // Strong pattern: scale quantifiers (e.g., billions of events)
+    const scalePattern = new RegExp(`\\b(${numberToken})?\\s*(thousand|thousands|million|millions|billion|billions|trillion|trillions|petabyte|petabytes)\\s+(?:of\\s+)?(events?|records?|requests?|transactions?|data)?\\b`, "gi");
+    const scaleMultiplier: Record<string, number> = {
+        thousand: 1_000,
+        thousands: 1_000,
+        million: 1_000_000,
+        millions: 1_000_000,
+        billion: 1_000_000_000,
+        billions: 1_000_000_000,
+        trillion: 1_000_000_000_000,
+        trillions: 1_000_000_000_000,
+        petabyte: 1_000_000_000_000_000,
+        petabytes: 1_000_000_000_000_000,
+    };
+    for (const match of markdown.matchAll(scalePattern)) {
+        const idx = match.index || 0;
+        const snippet = snippetAt(markdown, idx);
+        const base = parseNumberToken(String(match[1] || "one")) ?? 1;
+        const scale = String(match[2]).toLowerCase();
+        const multiplier = scaleMultiplier[scale];
+        if (multiplier) {
+            push(base * multiplier, snippet);
+        }
+    }
 
     // Digit-form numerics
     for (const match of markdown.matchAll(/\d+(?:\.\d+)?/g)) {
@@ -160,17 +216,10 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
         }
 
         push(value, snippet);
-        if (out.length >= 120) break;
+        if (out.length >= 140) break;
     }
 
-    // Word-form numerics (basic deterministic map)
-    const wordMap: Record<string, number> = {
-        one: 1, two: 2, three: 3, four: 4, five: 5, six: 6,
-        seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
-        thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17,
-        eighteen: 18, nineteen: 19, twenty: 20,
-    };
-
+    // Word-form numerics (single tokens)
     const wordPattern = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)\b/gi;
     for (const match of markdown.matchAll(wordPattern)) {
         const word = String(match[0]).toLowerCase();
@@ -180,7 +229,7 @@ function extractExplicitNumericsFromMarkdown(markdown: string): ScientificNumeri
         const snippet = snippetAt(markdown, idx);
 
         // Keep only likely quantitative contexts to avoid narrative noise.
-        if (!/(hour|minute|second|day|week|month|year|team|areas?|references?|sections?|page|count|times?|reduced|increase|decrease|latency|accuracy|precision|recall|f1|auc|metric)/i.test(snippet)) {
+        if (!/(hour|minute|second|day|week|month|year|team|areas?|references?|sections?|page|count|times?|reduced|increase|decrease|latency|accuracy|precision|recall|f1|auc|metric|events?|petabytes?)/i.test(snippet)) {
             continue;
         }
 

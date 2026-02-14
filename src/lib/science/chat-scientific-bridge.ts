@@ -54,7 +54,8 @@ type NumericEvidenceCategory =
 function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
   const text = (snippet || "").toLowerCase();
 
-  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b|\bdecreas(e|ed)\b|\bbaseline\b|\bversus\b|\bfrom\b\s+\w+\s+to\s+\w+/.test(text);
+  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b|\bdecreas(e|ed)\b|\bbaseline\b|\bversus\b|\bfrom\b\s+\w+\s+to\s+\w+|\bbillions?\s+of\s+events\b|\bpetabytes?\b/.test(text);
+  const strongOutcomePattern = /\bfrom\s+(?:\w+\s+){0,2}(?:hours?|minutes?|seconds?)\s+to\s+(?:\w+\s+){0,2}(?:hours?|minutes?|seconds?)\b|\bbillions?\s+of\s+events\b|\bpetabytes?\b/.test(text);
   const structuralEnumeration = /\b(main side effects?|critical areas?|separate teams?|references?|sections?|chapters?|categories?|components?)\b/.test(text);
 
   if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
@@ -67,8 +68,8 @@ function classifyNumericEvidence(value: number, snippet: string): NumericEvidenc
   if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+|\bm\d+\b|\bec\d+\b|\bs\d+\b)\b/.test(text)) {
     return "structural";
   }
-  // Structural enumerations override metric signals (e.g., "three main side effects" near latency text).
-  if (structuralEnumeration) {
+  // Structural enumerations override metric signals unless strong outcome evidence is present.
+  if (structuralEnumeration && !strongOutcomePattern) {
     return "structural";
   }
 
