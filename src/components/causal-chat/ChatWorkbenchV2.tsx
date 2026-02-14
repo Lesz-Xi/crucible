@@ -80,6 +80,14 @@ const quantizeConfidence = (value: number): number => {
   return 0.95;
 };
 
+const AUTOMATED_SCIENTIST_STAGES = [
+  'Observation framing',
+  'Hypothesis synthesis',
+  'Prediction drafting',
+  'Falsification checks',
+  'Test-plan compilation',
+] as const;
+
 const parseInterventionPayload = (input: string): {
   node_id: string;
   value: string;
@@ -254,6 +262,7 @@ export function ChatWorkbenchV2() {
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
+  const [loadingStageIndex, setLoadingStageIndex] = useState(0);
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
@@ -301,6 +310,19 @@ export function ChatWorkbenchV2() {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setLoadingStageIndex(0);
+      return;
+    }
+
+    const timer = window.setInterval(() => {
+      setLoadingStageIndex((current) => (current + 1) % AUTOMATED_SCIENTIST_STAGES.length);
+    }, 1200);
+
+    return () => window.clearInterval(timer);
+  }, [isLoading]);
 
   const applySessionHistory = useCallback((sessionId: string, historyMessages: SessionHistoryMessage[]) => {
     const filteredMessages = historyMessages
@@ -918,7 +940,33 @@ export function ChatWorkbenchV2() {
                       <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
                     )}
                     {message.isStreaming ? (
-                      <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">Streaming response...</p>
+                      <div className="mt-3 rounded-xl border border-[var(--lab-border)] bg-[color-mix(in_srgb,var(--lab-panel)_86%,transparent)] px-3 py-2">
+                        <div className="mb-2 flex items-center justify-between">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--lab-text-secondary)]">
+                            Automated Scientist Pipeline
+                          </p>
+                          <div className="flex items-center gap-1.5" aria-hidden>
+                            {[0, 1, 2].map((dot) => (
+                              <span
+                                key={dot}
+                                className="h-1.5 w-1.5 rounded-full bg-[var(--lab-accent-earth)] animate-pulse"
+                                style={{ animationDelay: `${dot * 180}ms` }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--lab-border)_70%,transparent)]">
+                          <div
+                            className="h-full w-1/3 rounded-full bg-[var(--lab-accent-moss)] transition-transform duration-700 ease-out"
+                            style={{ transform: `translateX(${loadingStageIndex * 100}%)` }}
+                          />
+                        </div>
+
+                        <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
+                          {AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}...
+                        </p>
+                      </div>
                     ) : null}
                   </article>
                 ))
