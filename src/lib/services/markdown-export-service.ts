@@ -133,6 +133,55 @@ function renderConfidenceFactors(factors: ConfidenceFactors | undefined): string
 `;
 }
 
+function renderCausalOutput(idea: NovelIdea): string {
+  const output = idea.causalOutput as any;
+  if (!output) return "";
+
+  const lines: string[] = [
+    '#### Causal Status Banner',
+    `- **Status:** ${sanitizeText(output.statusBanner?.status) || 'N/A'}`,
+    `- **Justification:** ${sanitizeText(output.statusBanner?.justification) || 'N/A'}`,
+    '',
+    '#### Causal Claim',
+    `${sanitizeText(output.causalClaim) || 'N/A'}`,
+    '',
+    '#### Supporting Structure (SCM-Bound)',
+    `- **Model Ref:** ${sanitizeText(output.supportingStructure?.modelRef) || 'N/A'}`,
+    `- **Variables:** ${Array.isArray(output.supportingStructure?.variables) ? output.supportingStructure.variables.join(', ') : 'N/A'}`,
+    '',
+    '#### Intervention Layer',
+    `- **Class:** ${sanitizeText(output.interventionLayer?.class) || 'N/A'}`,
+    '',
+    '#### Counterfactual Layer',
+    `- **Necessity:** ${sanitizeText(output.counterfactualLayer?.necessity) || 'N/A'}`,
+    `- **Sufficiency:** ${sanitizeText(output.counterfactualLayer?.sufficiency) || 'N/A'}`,
+    '',
+    '#### Assumptions & Confounders',
+  ];
+
+  const assumptions = Array.isArray(output.assumptionsAndConfounders)
+    ? output.assumptionsAndConfounders
+    : [];
+  if (assumptions.length === 0) {
+    lines.push('- N/A');
+  } else {
+    assumptions.slice(0, 5).forEach((item: any) => {
+      lines.push(`- ${sanitizeText(item.assumption) || 'N/A'}`);
+    });
+  }
+
+  lines.push('', '#### Unresolved Gaps');
+  const gaps = Array.isArray(output.unresolvedGaps) ? output.unresolvedGaps : [];
+  if (gaps.length === 0) {
+    lines.push('- None');
+  } else {
+    gaps.slice(0, 6).forEach((gap: string) => lines.push(`- ${sanitizeText(gap)}`));
+  }
+
+  lines.push('', '#### Next Scientific Action', `${sanitizeText(output.nextScientificAction) || 'N/A'}`, '');
+  return lines.join('\n');
+}
+
 /**
  * Render a single Novel Idea
  */
@@ -160,6 +209,10 @@ function renderNovelIdea(idea: NovelIdea, index: number): string {
   
   if (idea.noveltyAssessment) {
     lines.push("**Novelty Assessment:**", `> ${sanitizeText(idea.noveltyAssessment)}`, "");
+  }
+
+  if (idea.causalOutput) {
+    lines.push(renderCausalOutput(idea));
   }
   
   // Add confidence factors table

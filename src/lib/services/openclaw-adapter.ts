@@ -72,19 +72,25 @@ export class OpenClawAdapter {
 
         const payload = message.payload as any;
 
-        // Extract search results from payload
-        const searchData = payload.results as OpenClawSearchResult;
-        if (!searchData || !searchData.results || searchData.results.length === 0) {
+        // Support both payload shapes:
+        // A) { query, results: [...] }
+        // B) { results: { query, results: [...] } }
+        const searchData: OpenClawSearchResult = Array.isArray(payload?.results)
+            ? { query: payload?.query || '', results: payload.results }
+            : (payload?.results as OpenClawSearchResult);
+
+        if (!searchData || !Array.isArray(searchData.results) || searchData.results.length === 0) {
             console.log('[OpenClawAdapter] No results in response');
             return [];
         }
 
-        console.log(`[OpenClawAdapter] Processing ${searchData.results.length} search results for query: "${searchData.query}"`);
+        const normalizedQuery = searchData.query || payload?.query || '';
+        console.log(`[OpenClawAdapter] Processing ${searchData.results.length} search results for query: "${normalizedQuery}"`);
 
         // Score and transform each result
         const scoredResults: ScoredSearchResult[] = [];
         for (const result of searchData.results) {
-            const scored = await this.scoreResult(searchData.query, result);
+            const scored = await this.scoreResult(normalizedQuery, result);
             scoredResults.push(scored);
         }
 

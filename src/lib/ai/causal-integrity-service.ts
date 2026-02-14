@@ -42,7 +42,9 @@ export class CausalIntegrityService {
   private static STRUCTURAL_CONNECTIVES = [
     /because/i, /therefore/i, /thus/i, /consequently/i, /due to/i, /as a result/i,
     /leads to/i, /results in/i, /caused by/i, /implies that/i, /so that/i,
-    /if .* then/i, /enables/i, /prevent/i, /allows/i, /requires/i, /drives/i
+    /if .* then/i, /if .* (would|could|should)/i,
+    /suggests/i, /indicat(es|ing)/i, /under .* assumptions?/i,
+    /enables/i, /prevent/i, /allows/i, /requires/i, /drives/i
   ];
 
   private static CAUSAL_CHAIN_PATTERNS = [
@@ -77,8 +79,10 @@ export class CausalIntegrityService {
     let label: 'Association' | 'Intervention' | 'Counterfactual' = 'Association';
     let confidence = 0.4;
 
-    const counterfactualQualified = hasCounterfactual && (hasStructure || hasCausalChain || hasOperator);
-    const interventionQualified = hasOperator && (hasStructure || hasCausalChain);
+    const counterfactualQualified =
+      hasCounterfactual && (hasStructure || hasCausalChain || hasOperator || counterfactualEvidence.length >= 2);
+    const interventionQualified =
+      hasOperator && (hasStructure || hasCausalChain || operatorEvidence.length >= 1);
 
     if (counterfactualQualified && !hasPenalty) {
       score = 3;
@@ -121,7 +125,7 @@ export class CausalIntegrityService {
     // Contextual prior: gently bias toward expected rung without overriding hard penalties.
     if (!hasPenalty && context?.expectedRung) {
       if (context.expectedRung >= 3 && hasCounterfactual) {
-        if (score < 3 && (hasStructure || hasOperator || hasCausalChain)) {
+        if (score < 3) {
           score = 3;
           label = 'Counterfactual';
           confidence = this.clamp(confidence + 0.08, 0.45, 0.86);
@@ -176,7 +180,19 @@ export class CausalIntegrityService {
         mechanisms.push(candidate);
       }
     }
-    return mechanisms;
+
+    const lowered = text.toLowerCase();
+    if (/correlation|associated with|linked to|statistical association/.test(lowered)) {
+      mechanisms.push('association signal');
+    }
+    if (/do\(|intervention|manipulat|treatment|adjustment set|confounder/.test(lowered)) {
+      mechanisms.push('intervention pathway');
+    }
+    if (/counterfactual|would have|had .* been|but[- ]for|what would happen if/.test(lowered)) {
+      mechanisms.push('counterfactual pathway');
+    }
+
+    return Array.from(new Set(mechanisms));
   }
 
   private clamp(value: number, min: number, max: number): number {
