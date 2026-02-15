@@ -1078,24 +1078,27 @@ export function ChatWorkbenchV2() {
                 }
               />
             ) : (
-              <div className="flex items-center gap-2 px-6 pb-3 pt-2">
-                <button
-                  type="button"
-                  className="lab-button-secondary !px-3 !py-1.5 text-xs"
-                  onClick={toggleFocusMode}
-                  title="Exit reading mode"
-                >
-                  <Focus className="h-3.5 w-3.5" />
-                  Exit reading mode
-                </button>
-                <button
-                  type="button"
-                  className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
-                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                  title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                >
-                  {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-                </button>
+              <div className="px-6 pb-3 pt-2">
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-white/35 px-2 py-1.5 backdrop-blur-xl dark:bg-white/10">
+                  <button
+                    type="button"
+                    className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
+                    onClick={toggleFocusMode}
+                    title="Exit reading mode"
+                    aria-label="Exit reading mode"
+                  >
+                    <Focus className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
+                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                    title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                    aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                  >
+                    {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
               </div>
             )}
             </div>
