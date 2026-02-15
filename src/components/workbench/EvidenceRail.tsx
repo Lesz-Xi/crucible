@@ -11,7 +11,7 @@ export interface EvidenceRailProps {
 export function EvidenceRail({ title, subtitle, children }: EvidenceRailProps) {
   return (
     <div className="flex h-full flex-col">
-      <header className="border-b border-[var(--lab-border)] bg-white/45 px-4 py-4">
+      <header className="border-b border-[var(--lab-border)] bg-[var(--lab-panel)] px-4 py-4">
         <p className="lab-section-title">{title}</p>
         {subtitle ? <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{subtitle}</p> : null}
       </header>

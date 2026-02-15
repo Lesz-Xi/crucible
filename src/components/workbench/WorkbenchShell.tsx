@@ -38,7 +38,7 @@ export function WorkbenchShell({
 
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
-  const panelHeight = isChatFeature ? 'calc(100svh - 2px)' : 'calc(100svh - 112px)';
+  const panelHeight = isChatFeature ? 'calc(100svh - 1px)' : 'calc(100svh - 112px)';
 
   return (
     <AppDashboardShell readingMode={readingMode}>
@@ -48,18 +48,18 @@ export function WorkbenchShell({
         <div
           className={cn(
             'mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8',
-            isChatFeature ? 'max-w-none pb-0 pt-0 pl-0 md:pl-0 lg:pl-0' : 'pb-5 pt-2',
+            isChatFeature ? 'max-w-none pb-0 pt-0 pl-0 pr-0 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0' : 'pb-5 pt-2',
           )}
         >
-          <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden')} style={{ height: panelHeight }}>{primary}</main>
-            {evidenceRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
+          <div className={cn('hidden lg:grid', isChatFeature ? 'lg:gap-0' : 'lg:gap-4')} style={{ gridTemplateColumns: desktopGridCols }}>
+            {contextRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
+            {evidenceRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
           </div>
 
-          <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden')} style={{ height: panelHeight }}>{primary}</main>
+          <div className={cn('hidden md:grid lg:hidden', isChatFeature ? 'md:gap-0' : 'md:gap-4')} style={{ gridTemplateColumns: tabletGridCols }}>
+            {contextRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
           </div>
 
           <div className="md:hidden">

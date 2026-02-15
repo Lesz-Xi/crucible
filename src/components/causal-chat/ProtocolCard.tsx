@@ -17,13 +17,13 @@ export function ProtocolCard({ title, description, icon: Icon, onClick, variant 
       onClick={onClick}
       className={cn(
         "group relative flex flex-col items-start gap-3 p-5 text-left transition-all duration-300",
-        "rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-secondary)] hover:border-[var(--lab-text-secondary)] hover:shadow-md",
-        variant === 'featured' && "bg-gradient-to-br from-[var(--lab-bg-secondary)] to-[var(--lab-bg-tertiary)] border-indigo-500/20"
+        "rounded-xl border border-[var(--lab-border)] bg-[var(--lab-panel)] hover:border-[var(--lab-text-secondary)]",
+        variant === 'featured' && "bg-[var(--lab-panel)]"
       )}
     >
       <div className={cn(
         "flex h-10 w-10 items-center justify-center rounded-lg transition-colors group-hover:scale-110",
-        "bg-[var(--lab-bg-primary)] border border-[var(--lab-border)] shadow-sm text-[var(--lab-text-primary)]"
+        "bg-[var(--lab-panel)] border border-[var(--lab-border)] text-[var(--lab-text-primary)]"
       )}>
         <Icon className="h-5 w-5" />
       </div>
