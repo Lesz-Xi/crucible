@@ -532,8 +532,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: 999px;
-  padding: 8px 12px;
+  border-radius: 14px;
+  padding: 8px 14px;
   border: 1px solid var(--lab-border);
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(10px) saturate(130%);
@@ -1269,10 +1269,7 @@
 .dark .feature-legal,
 .dark .edu-page,
 .dark .lab-shell {
-  background:
-    radial-gradient(circle at 12% 6%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 86% 8%, rgba(255, 255, 255, 0.035) 0%, transparent 44%),
-    #121212 !important;
+  background: #121212 !important;
 }
 
 .dark .lab-shell::before {
@@ -1290,8 +1287,8 @@
 .dark .lab-metric-tile,
 .dark .edu-card,
 .dark .edu-card-soft {
-  background: var(--glass-dark) !important;
-  border-color: var(--glass-border-dark) !important;
+  background: var(--lab-panel) !important;
+  border-color: var(--lab-border) !important;
   backdrop-filter: blur(24px) saturate(150%);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   box-shadow: var(--glass-shadow-dark) !important;

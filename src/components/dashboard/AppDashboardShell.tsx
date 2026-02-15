@@ -17,11 +17,14 @@ import {
   GraduationCap,
   Home,
   LogOut,
+  Menu,
   MessageSquare,
   PanelLeftClose,
   PanelLeftOpen,
   Moon,
   Plus,
+  Scale,
+  Settings,
   Sun,
   Trash2,
   UserCircle2,
@@ -42,9 +45,11 @@ interface ChatSidebarSession {
 }
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/hybrid', label: 'Hybrid', icon: Bot },
+];
+
+const RELICS_ITEMS = [
   { href: '/legal', label: 'Legal', icon: Gavel },
   { href: '/education', label: 'Educational', icon: GraduationCap },
 ];
@@ -58,6 +63,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
   const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
   const [researchExpanded, setResearchExpanded] = useState(true);
+  const [relicsOpen, setRelicsOpen] = useState(false);
   const [researchThreadIds, setResearchThreadIds] = useState<string[]>([]);
   const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
   const isChatRoute = pathname?.startsWith('/chat');
@@ -204,7 +210,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
               </button>
             </div>
 
-            <nav className="space-y-1">
+            <nav className={cn("flex flex-wrap gap-2", collapsed ? "flex-col" : "flex-row")}>
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -212,7 +218,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="lab-nav-pill"
+                    className="lab-nav-pill !px-3.5 !py-2.5"
                     data-active={active ? 'true' : 'false'}
                     title={collapsed ? item.label : undefined}
                   >
@@ -221,6 +227,46 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   </Link>
                 );
               })}
+
+              <div className="relative">
+                <button
+                  type="button"
+                  className={cn(
+                    "lab-nav-pill !px-3.5 !py-2.5",
+                    relicsOpen ? "border-[var(--lab-accent-earth)]" : ""
+                  )}
+                  onClick={() => setRelicsOpen(!relicsOpen)}
+                  title={collapsed ? "Relics" : undefined}
+                >
+                  <Menu className="h-4 w-4" />
+                  {collapsed ? null : <span>Relics</span>}
+                  {!collapsed && <ChevronDown className={cn("h-3 w-3 transition-transform", relicsOpen ? "rotate-180" : "")} />}
+                </button>
+
+                {relicsOpen && (
+                  <div className={cn(
+                    "absolute z-[60] mt-2 min-w-[160px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-1.5 shadow-xl",
+                    collapsed ? "left-full ml-2 top-0" : "left-0 top-full"
+                  )}>
+                    {RELICS_ITEMS.map((sub) => {
+                      const SubIcon = sub.icon;
+                      const subActive = pathname === sub.href;
+                      return (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          onClick={() => setRelicsOpen(false)}
+                          className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[var(--lab-text-secondary)] hover:bg-[var(--lab-bg-elevated)] hover:text-[var(--lab-text-primary)] transition-colors"
+                          data-active={subActive}
+                        >
+                          <SubIcon className="h-4 w-4" />
+                          <span>{sub.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </nav>
 
             {isChatRoute && !collapsed ? (
