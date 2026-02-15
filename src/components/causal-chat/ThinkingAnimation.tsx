@@ -61,7 +61,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
           key={stageLabel}
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-sm font-medium text-[#F5E6D3] font-mono tracking-wide"
+          className="text-sm font-medium text-[#44403C] font-mono tracking-wide"
         >
           {stageLabel}
           <motion.span
@@ -71,7 +71,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
             ...
           </motion.span>
         </motion.p>
-        <p className="text-xs text-[#F5E6D3]/60 font-sans">
+        <p className="text-xs text-[#78716C] font-sans">
           Automated Scientist Engine v2.1
         </p>
       </div>
@@ -82,7 +82,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
           <motion.div
             key={index}
             animate={{
-              backgroundColor: index === stageIndex ? '#F5E6D3' : index < stageIndex ? '#D4C4A8' : '#44403c',
+              backgroundColor: index === stageIndex ? '#44403C' : index < stageIndex ? '#78716C' : '#D6D3D1',
               scale: index === stageIndex ? 1.2 : 1,
             }}
             className="w-1.5 h-1.5 rounded-full"
