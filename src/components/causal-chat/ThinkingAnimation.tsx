@@ -41,7 +41,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute inset-0 rounded-full bg-indigo-500/20 blur-xl"
+          className="absolute inset-0 rounded-full bg-[#F5E6D3]/20 blur-xl"
         />
         <motion.div
           key={stageIndex}
@@ -49,9 +49,9 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.8, opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="relative z-10 p-3 rounded-xl bg-slate-900/50 border border-indigo-500/30 backdrop-blur-sm"
+          className="relative z-10 p-3 rounded-xl bg-[#1a1a1a]/80 border border-[#F5E6D3]/30 backdrop-blur-sm"
         >
-          <CurrentIcon className="w-6 h-6 text-indigo-400" />
+          <CurrentIcon className="w-6 h-6 text-[#F5E6D3]" />
         </motion.div>
       </div>
 
@@ -61,7 +61,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
           key={stageLabel}
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-sm font-medium text-slate-300 font-mono tracking-wide"
+          className="text-sm font-medium text-[#F5E6D3] font-mono tracking-wide"
         >
           {stageLabel}
           <motion.span
@@ -71,7 +71,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
             ...
           </motion.span>
         </motion.p>
-        <p className="text-xs text-slate-500 font-sans">
+        <p className="text-xs text-[#F5E6D3]/60 font-sans">
           Automated Scientist Engine v2.1
         </p>
       </div>
@@ -82,7 +82,7 @@ export function ThinkingAnimation({ stageLabel, stageIndex }: ThinkingAnimationP
           <motion.div
             key={index}
             animate={{
-              backgroundColor: index === stageIndex ? '#818cf8' : index < stageIndex ? '#4f46e5' : '#334155',
+              backgroundColor: index === stageIndex ? '#F5E6D3' : index < stageIndex ? '#D4C4A8' : '#44403c',
               scale: index === stageIndex ? 1.2 : 1,
             }}
             className="w-1.5 h-1.5 rounded-full"
