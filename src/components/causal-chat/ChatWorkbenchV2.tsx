@@ -36,6 +36,8 @@ import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
+import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
+import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
 
 interface WorkbenchMessage {
   id: string;
@@ -43,6 +45,7 @@ interface WorkbenchMessage {
   content: string;
   createdAt: Date;
   isStreaming?: boolean;
+  scientificAnalysis?: ScientificAnalysisResponse;
 }
 
 interface AssistantEventPayload {
@@ -63,6 +66,7 @@ interface AssistantEventPayload {
   topDomains?: string[];
   level?: FactualConfidenceResult["level"];
   claimId?: string;
+  analysis?: ScientificAnalysisResponse;
 }
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
@@ -652,6 +656,18 @@ export function ChatWorkbenchV2() {
           confidence: quantizeConfidence(typeof payload.confidence === 'number' ? payload.confidence : 0),
         };
         lastDensityRef.current = streamingDensity;
+        return;
+      }
+
+      if (eventName === 'scientific_extraction_complete') {
+         if (payload.analysis) {
+             setMessages((previous) =>
+               previous.map((message) =>
+                 message.id === assistantMessageId ? { ...message, scientificAnalysis: payload.analysis } : message
+               )
+             );
+         }
+         return;
       }
 
       if (eventName === 'causal_density_final' && typeof payload.score === 'number') {
@@ -1029,6 +1045,11 @@ export function ChatWorkbenchV2() {
                       <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
                       <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
                     </div>
+                    {message.role === 'assistant' && message.scientificAnalysis && (
+                      <div className="mb-4 max-w-2xl">
+                        <ScientificTableCard analysis={message.scientificAnalysis} />
+                      </div>
+                    )}
                     {message.role === 'assistant' ? (
                       <div className="lab-chat-prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>

@@ -29,9 +29,13 @@ import { processChatAttachments, type ChatAttachment } from "@/lib/science/chat-
 import type { ScientificAnalysisResponse } from "@/lib/science/scientific-analysis-service";
 import { buildAttachmentSequentialThinkingReport } from "@/lib/science/sequential-thinking-assembler";
 
+import { getRecentScientificEvidence } from "@/lib/science/epistemic-data-bridge";
+
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
 let causalDensityColumnAvailable: boolean | null = null;
+
+
 
 function buildDomainClassificationInput(messages: ChatTurn[], userQuestion: string): string {
   const recentUserContext = messages
@@ -296,10 +300,10 @@ async function loadRecentAttachmentMemory(
   for (const row of data as Array<{ content?: string | null; causal_graph?: unknown }>) {
     const graph = row.causal_graph as
       | {
-          persistent_memory_meta?: {
-            attachmentMemory?: { fileNames?: string[] };
-          };
-        }
+        persistent_memory_meta?: {
+          attachmentMemory?: { fileNames?: string[] };
+        };
+      }
       | null
       | undefined;
     const memoryNames = graph?.persistent_memory_meta?.attachmentMemory?.fileNames;
@@ -479,10 +483,7 @@ export async function POST(req: NextRequest) {
               if (event.type === "complete") {
                 sendEvent("scientific_extraction_complete", {
                   fileName: event.fileName,
-                  status: event.analysis.status,
-                  summary: event.analysis.summary,
-                  warnings: event.analysis.warnings,
-                  provenance: event.analysis.provenance,
+                  analysis: event.analysis,
                 });
               }
               if (event.type === "failed") {
@@ -774,6 +775,13 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
           scientificAnalysis = bridgeResult.analyses;
           scientificSummaryForContext = bridgeResult.summaryForContext;
           scientificWarnings = bridgeResult.warnings;
+        } else if (user?.id) {
+          try {
+            const history = await getRecentScientificEvidence(user.id, 5);
+            recentAttachmentFileNames = history.map(h => h.fileName);
+          } catch (err) {
+            console.error("Failed to fetch recent scientific evidence:", err);
+          }
         }
 
         let finalPrompt = systemPrompt;
