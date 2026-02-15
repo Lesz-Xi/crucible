@@ -1391,33 +1391,38 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Chat workbench: enforce solid surfaces (no glass/overlay glitch) */
+/* Chat workbench: Apple-like obsidian glass aligned to sidebar tone */
 .dark .feature-chat.lab-shell {
-  background: #09090b !important;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
+    linear-gradient(180deg, #0a0b10 0%, #09090b 100%) !important;
 }
 
 .dark .feature-chat.lab-shell::before {
-  display: none !important;
-  background: none !important;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 55%, rgba(255, 255, 255, 0.06) 100%) !important;
 }
 
 .dark .feature-chat .lab-panel,
 .dark .feature-chat .lab-panel-elevated,
 .dark .feature-chat .lab-card,
 .dark .feature-chat .lab-card-interactive {
-  background: #39393A !important;
-  border-color: #4a4a4b !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
+  background: rgba(17, 18, 24, 0.58) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(22px) saturate(145%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 .dark .feature-chat .scientific-protocol-card {
-  background: #39393A !important;
-  border-color: #4a4a4b !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  box-shadow: none !important;
+  background: rgba(14, 16, 22, 0.62) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
 }
 
 body {
