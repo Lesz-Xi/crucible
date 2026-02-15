@@ -58,13 +58,13 @@
   --font-playfair: "Playfair Display", serif;
 
   /* 2041 Automated Scientist (feature namespace) */
-  --lab-bg: #FFFAFA;
-  --lab-bg-elevated: #F5F5F7;
-  --lab-panel: rgba(255, 255, 255, 0.82);
-  --lab-border: rgba(42, 38, 33, 0.10);
-  --lab-text-primary: #2A2621;
-  --lab-text-secondary: #57534E;
-  --lab-text-tertiary: #A8A29E;
+  --lab-bg: #edf1f5;
+  --lab-bg-elevated: #e7ecf1;
+  --lab-panel: rgba(255, 255, 255, 0.58);
+  --lab-border: rgba(73, 84, 99, 0.16);
+  --lab-text-primary: #232a33;
+  --lab-text-secondary: #4a5766;
+  --lab-text-tertiary: #7c8794;
   --lab-accent-clay: #9E7E6B;
   --lab-accent-earth: #8B5E3C;
   --lab-accent-moss: #5F7555;
@@ -85,11 +85,11 @@
   --mist-400: #a9b0bb;
 
   /* Legacy overrides */
-  --background: #1E1E24;
+  --background: #121212;
   --foreground: #f3f4f6;
-  --bg-primary: #1E1E24;
-  --bg-secondary: #26262e;
-  --bg-card: rgba(30, 30, 36, 0.92);
+  --bg-primary: #121212;
+  --bg-secondary: #1a1a1a;
+  --bg-card: rgba(255, 255, 255, 0.07);
   --text-primary: #f3f4f6;
   --text-secondary: #a9b0bb;
   --text-tertiary: #7f8794;
@@ -106,14 +106,14 @@
   --wabi-stone: #8f96a3;
 
   /* Automated Scientist dark tokens */
-  --shadow-grey: #1E1E24;
-  --lab-bg: #1E1E24;
-  --lab-bg-elevated: #26262e;
-  --lab-panel: rgba(30, 30, 36, 0.9);
-  --lab-border: rgba(255, 255, 255, 0.16);
-  --lab-text-primary: #e7e9ee;
-  --lab-text-secondary: #b1b6c0;
-  --lab-text-tertiary: #828894;
+  --shadow-grey: #121212;
+  --lab-bg: #121212;
+  --lab-bg-elevated: #1a1a1a;
+  --lab-panel: rgba(255, 255, 255, 0.08);
+  --lab-border: rgba(255, 255, 255, 0.18);
+  --lab-text-primary: #f1f3f5;
+  --lab-text-secondary: #c2c8cf;
+  --lab-text-tertiary: #8d96a1;
   --lab-accent-clay: #8f877f;
   --lab-accent-earth: #d7d2ca;
   --lab-accent-moss: #9a9389;
@@ -294,11 +294,20 @@
    ======================================== */
 
 .lab-shell {
+  position: relative;
   background:
-    radial-gradient(circle at 14% 8%, rgba(158, 126, 107, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 86% 6%, rgba(95, 117, 85, 0.08) 0%, transparent 38%),
-    var(--lab-bg);
+    radial-gradient(circle at 12% 10%, rgba(255, 255, 255, 0.34) 0%, transparent 44%),
+    radial-gradient(circle at 84% 8%, rgba(255, 255, 255, 0.22) 0%, transparent 40%),
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-bg) 90%, #ffffff 10%) 0%, var(--lab-bg) 100%);
   color: var(--lab-text-primary);
+}
+
+.lab-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 44%, rgba(255, 255, 255, 0.12) 100%);
 }
 
 /* Feature hierarchy weights */
@@ -331,12 +340,13 @@
   border-radius: 16px;
   border: 1px solid var(--lab-border);
   background: var(--lab-panel);
-  backdrop-filter: blur(8px);
-  box-shadow: var(--lab-shadow-soft);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 10px 28px rgba(22, 28, 36, 0.12);
 }
 
 .lab-panel-elevated {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(245, 245, 244, 0.70) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.44) 100%);
 }
 
 .lab-chip-mono {
@@ -396,8 +406,10 @@
 .lab-card-interactive {
   border-radius: 18px;
   border: 1px solid var(--lab-border);
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: var(--lab-shadow-soft);
+  background: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+  box-shadow: 0 8px 24px rgba(24, 30, 38, 0.10);
 }
 
 .lab-card {
@@ -456,7 +468,9 @@
 .lab-button-secondary {
   color: var(--lab-text-primary);
   border: 1px solid var(--lab-border);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.46);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
 
 .lab-button-secondary[data-active="true"] {
@@ -521,6 +535,9 @@
   border-radius: 999px;
   padding: 8px 12px;
   border: 1px solid var(--lab-border);
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
   color: var(--lab-text-secondary);
   font-family: var(--font-geist-sans), sans-serif;
   font-size: 13px;
@@ -537,9 +554,11 @@
 .lab-metric-tile {
   border-radius: 14px;
   border: 1px solid var(--lab-border);
-  background: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.50);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
   padding: 12px;
-  box-shadow: 0 4px 12px rgba(42, 38, 33, 0.05);
+  box-shadow: 0 6px 16px rgba(24, 30, 38, 0.10);
 }
 
 .lab-panel-heading {
@@ -924,9 +943,15 @@
 /* --- Dashboard/Workbench dark refinements (v2) --- */
 .dark .lab-shell {
   background:
-    radial-gradient(circle at 12% 4%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
-    radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 46%),
-    linear-gradient(180deg, var(--lab-bg) 0%, color-mix(in srgb, var(--lab-bg) 88%, #000 12%) 100%);
+    radial-gradient(circle at 10% 6%, rgba(255, 255, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.04) 0%, transparent 44%),
+    linear-gradient(180deg, #121212 0%, color-mix(in srgb, #121212 92%, #000 8%) 100%);
+}
+
+.dark .lab-shell::before {
+  background:
+    radial-gradient(circle at 24% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.015) 52%, rgba(255, 255, 255, 0.08) 100%);
 }
 
 .dark .feature-chat .lab-panel-elevated {
@@ -966,32 +991,34 @@
 
 .dark .lab-panel,
 .dark .lab-panel-elevated {
-  background: color-mix(in srgb, var(--lab-panel) 94%, #000 6%);
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.44);
 }
 
 .dark .lab-panel-elevated {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--lab-bg-elevated) 92%, #fff 8%) 0%, color-mix(in srgb, var(--lab-bg) 92%, #000 8%) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
 }
 
 .dark .lab-card,
 .dark .lab-card-interactive,
 .dark .lab-metric-tile,
 .dark .lab-kpi-card {
-  background: color-mix(in srgb, var(--lab-panel) 92%, #000 8%);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
 .dark .lab-button-secondary {
-  background: color-mix(in srgb, var(--lab-bg-elevated) 88%, #000 12%);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .dark .lab-button-secondary[data-active="true"] {
   color: #f3f4f6;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(211, 211, 211, 0.24);
+  border-color: rgba(255, 255, 255, 0.30);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .dark .lab-button-primary:focus-visible,
@@ -1010,20 +1037,20 @@
 .dark .lab-input,
 .dark .lab-select,
 .dark .lab-textarea {
-  background: color-mix(in srgb, var(--lab-bg) 92%, #000 8%);
-  border-color: rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .dark .lab-nav-pill {
-  background: color-mix(in srgb, var(--lab-bg-elevated) 86%, #000 14%);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .dark .lab-nav-pill[data-active="true"] {
   color: #f3f4f6;
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(211, 211, 211, 0.24);
+  border-color: rgba(255, 255, 255, 0.30);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .dark .lab-chip-mono {
