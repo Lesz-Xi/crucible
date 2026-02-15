@@ -121,6 +121,8 @@ function sanitizeAutomatedScientistTone(text: string): string {
     /tracing individual roots before seeing the forest[^\n]*/gi,
     /let me gather what flows through this document[^\n]*/gi,
     /walked the path of extraction[^\n]*/gi,
+    /[#\s]*Extraction Report[^\n]*/gi,
+    /^(\s*[-*_]\s*){3,}$/gm,
   ];
 
   // Hard block low-signal recommendation boilerplate in attachment-first mode.

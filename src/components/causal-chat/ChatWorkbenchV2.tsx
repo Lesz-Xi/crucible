@@ -538,13 +538,13 @@ export function ChatWorkbenchV2() {
     (eventName: string, data: unknown, assistantMessageId: string) => {
       const payload = (data || {}) as AssistantEventPayload;
 
-      if (eventName === 'domain_classified' && payload.primary) {
+      if (eventName === 'domain_classified' && isRealDomain(payload.primary)) {
         setCurrentDomain(payload.primary);
         currentDomainRef.current = payload.primary;
         return;
       }
 
-      if (eventName === 'provenance' && payload.model_key) {
+      if (eventName === 'provenance' && isRealModelKey(payload.model_key)) {
         setCurrentModelKey(payload.model_key);
         currentModelKeyRef.current = payload.model_key;
         return;
@@ -906,6 +906,9 @@ export function ChatWorkbenchV2() {
     setAttachments((previous) => previous.filter((item) => item.name !== name));
   }, []);
 
+  const domainDisplay = isRealDomain(currentDomain) ? currentDomain : 'unavailable';
+  const modelDisplay = isRealModelKey(currentModelKey) ? currentModelKey : 'unavailable';
+
   return (
     <WorkbenchShell
       className="feature-chat"
@@ -987,7 +990,7 @@ export function ChatWorkbenchV2() {
                 <p className="lab-section-title !mb-0">Causal Density</p>
               </div>
               <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{lastDensity ? `L${lastDensity.score}` : 'N/A'}</p>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{lastDensity ? `${lastDensity.label} (${Math.round(lastDensity.confidence * 100)}% · estimated)` : 'Awaiting scored output'}</p>
+              <p className="text-sm text-[var(--lab-text-secondary)]">{lastDensity ? `${lastDensity.label} (${Math.round(lastDensity.confidence * 100)}% · model-derived)` : 'Awaiting scored output'}</p>
             </div>
 
             <div className="lab-metric-tile">
@@ -995,7 +998,7 @@ export function ChatWorkbenchV2() {
                 <Network className="h-4 w-4 text-[var(--lab-accent-moss)]" />
                 <p className="lab-section-title !mb-0">Domain</p>
               </div>
-              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{currentDomain}</p>
+              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
             </div>
 
             <div className="lab-metric-tile">
@@ -1003,7 +1006,7 @@ export function ChatWorkbenchV2() {
                 <Microscope className="h-4 w-4 text-[var(--lab-accent-earth)]" />
                 <p className="lab-section-title !mb-0">Model Provenance</p>
               </div>
-              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{currentModelKey}</p>
+              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{modelDisplay}</p>
             </div>
 
             <div className="lab-metric-tile">
