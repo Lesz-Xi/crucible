@@ -92,12 +92,15 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
   const createFolder = () => {
     const name = prompt("Enter folder name:");
-    if (name) {
-      const nextFolderId = crypto.randomUUID();
-      setFolders(prev => [...prev, { id: nextFolderId, name }]);
-      setFolderOpenState((prev) => ({ ...prev, [nextFolderId]: true }));
-      setActiveFolderId(nextFolderId);
-    }
+    if (!name) return;
+
+    const nextFolderId = crypto.randomUUID();
+    setFolders((prev) => [...prev, { id: nextFolderId, name }]);
+    setFolderOpenState((prev) => ({ ...prev, [nextFolderId]: true }));
+    setActiveFolderId(nextFolderId);
+
+    // Immediately create first file and open a new chat session.
+    createFolderFile(nextFolderId, undefined, true);
   };
 
   const toggleFolder = (folderId: string) => {
@@ -134,6 +137,21 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
       ...prev,
       [folderId]: (prev[folderId] ?? []).filter((file) => file.id !== fileId),
     }));
+  };
+
+  const removeFolder = (folderId: string) => {
+    setFolders((prev) => prev.filter((folder) => folder.id !== folderId));
+    setFolderFiles((prev) => {
+      const next = { ...prev };
+      delete next[folderId];
+      return next;
+    });
+    setFolderOpenState((prev) => {
+      const next = { ...prev };
+      delete next[folderId];
+      return next;
+    });
+    setActiveFolderId((current) => (current === folderId ? null : current));
   };
 
   useEffect(() => {
@@ -393,29 +411,42 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     </button>
                   </div>
 
-                  <div className="pt-4 pb-2">
-                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">History</p>
+                  <div className="pt-4 pb-1">
+                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">Folders</p>
                   </div>
                 </div>
 
                 <div className="lab-scroll-region-minimal h-[68vh] space-y-0.5 pt-1 overflow-y-auto pr-1">
                   {/* Folders Section */}
                   {folders.map(folder => (
-                    <div key={folder.id} className="mb-1">
-                      <button 
-                         type="button"
-                         className={cn(
-                           "flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors",
-                           activeFolderId === folder.id
-                             ? "bg-[var(--lab-bg-secondary)] text-[var(--lab-text-primary)]"
-                             : "text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]"
-                         )}
-                         onClick={() => toggleFolder(folder.id)}
+                    <div key={folder.id} className="group mb-1">
+                      <div
+                        className={cn(
+                          "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
+                          activeFolderId === folder.id
+                            ? "bg-[var(--lab-bg-secondary)] text-[var(--lab-text-primary)]"
+                            : "text-[var(--lab-text-secondary)] hover:bg-[var(--lab-bg-secondary)] hover:text-[var(--lab-text-primary)]",
+                        )}
                       >
-                        {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                        <span className="truncate">{folder.name}</span>
-                        <span className="ml-auto text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
-                      </button>
+                        <button
+                          type="button"
+                          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                          onClick={() => toggleFolder(folder.id)}
+                        >
+                          {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                          <span className="truncate">{folder.name}</span>
+                        </button>
+                        <span className="text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
+                        <button
+                          type="button"
+                          className="rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                          onClick={() => removeFolder(folder.id)}
+                          aria-label="Delete folder"
+                          title="Delete folder"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
                       
                       {folderOpenState[folder.id] && (
                         <div className="ml-2 pl-2 border-l border-[var(--lab-border)] mt-0.5 space-y-0.5">
@@ -453,6 +484,9 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   ))}
 
                   {/* Threads List */}
+                  <div className="pt-3 pb-1">
+                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">History</p>
+                  </div>
                   {filteredThreads.slice(0, 48).map((session) => {
                     const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
                     return (
