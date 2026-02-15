@@ -1391,38 +1391,38 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Chat workbench: Apple-like obsidian glass aligned to sidebar tone */
+/* Chat workbench: Codex-style neutral dark glass */
 .dark .feature-chat.lab-shell {
   background:
-    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
-    linear-gradient(180deg, #0a0b10 0%, #09090b 100%) !important;
+    radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 38%),
+    linear-gradient(180deg, #0d0f13 0%, #0b0d11 100%) !important;
 }
 
 .dark .feature-chat.lab-shell::before {
-  background: linear-gradient(150deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 55%, rgba(255, 255, 255, 0.06) 100%) !important;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.008) 55%, rgba(255, 255, 255, 0.04) 100%) !important;
 }
 
 .dark .feature-chat .lab-panel,
 .dark .feature-chat .lab-panel-elevated,
 .dark .feature-chat .lab-card,
 .dark .feature-chat .lab-card-interactive {
-  background: rgba(17, 18, 24, 0.58) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
-  backdrop-filter: blur(22px) saturate(145%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+  background: rgba(20, 23, 29, 0.70) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
   box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    0 10px 28px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 .dark .feature-chat .scientific-protocol-card {
-  background: rgba(14, 16, 22, 0.62) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(24px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+  background: rgba(18, 21, 27, 0.72) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
   box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 body {
