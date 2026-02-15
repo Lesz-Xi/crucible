@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
     const { data: history, error: historyError } = await supabase
       .from("causal_chat_sessions")
-      .select("id, title, updated_at")
+      .select("id, title, updated_at, domain_classified")
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false })
       .limit(20);

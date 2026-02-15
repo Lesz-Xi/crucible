@@ -147,6 +147,40 @@ function sanitizeAutomatedScientistTone(text: string): string {
   return sanitized;
 }
 
+function enforceAttachmentOutputContractShape(text: string): string {
+  const normalized = text.replace(/\r\n/g, "\n").trim();
+
+  const s1 = normalized.search(/Section\s*1\s*:/i);
+  const s2 = normalized.search(/Section\s*2\s*:/i);
+  const s3 = normalized.search(/Section\s*3\s*:/i);
+
+  if (s1 === -1 || s2 === -1 || s3 === -1 || !(s1 < s2 && s2 < s3)) {
+    // No reliable contract sections found; return original sanitized text.
+    return normalized;
+  }
+
+  const section1 = normalized.slice(s1, s2).trim();
+  const section2 = normalized.slice(s2, s3).trim();
+  let section3 = normalized.slice(s3).trim();
+
+  // Drop any trailing raw JSON object dump after Section 3.
+  const jsonStart = section3.search(/\n\s*\{\s*"observation"/i);
+  if (jsonStart !== -1) {
+    section3 = section3.slice(0, jsonStart).trim();
+  }
+
+  // Remove leaked scaffold phase blocks if present inside section text.
+  const stripPhaseBlocks = (input: string) =>
+    input
+      .replace(/Phase:\s*(Observation|Hypothesis|Prediction|Experiment|Falsification Criteria|Next Step)[\s\S]*?(?=Section\s*[123]\s*:|$)/gi, "")
+      .replace(/RESPONSE STRUCTURE \(MANDATORY\)[\s\S]*?(?=Section\s*1\s*:|$)/gi, "")
+      .trim();
+
+  return [stripPhaseBlocks(section1), stripPhaseBlocks(section2), stripPhaseBlocks(section3)]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 function mapMessageToPrunable(message: ChatTurn, index: number): PrunableChatMessage {
   return {
     id: `turn-${index}`,
@@ -776,8 +810,13 @@ ${sourceList}`;
           fullText = `I cannot verify this claim with high confidence from available sources right now.\n\n${fullText}`;
         }
 
-        // Deterministic post-generation guard: enforce Automated Scientist persona and strip legacy Taoist phrasing.
+        // Deterministic post-generation guard: enforce Automated Scientist persona and strip legacy phrasing.
         fullText = sanitizeAutomatedScientistTone(fullText);
+
+        // Deterministic contract gate for attachment-first responses: keep only Section 1/2/3 payload.
+        if (normalizedAttachments.length > 0) {
+          fullText = enforceAttachmentOutputContractShape(fullText);
+        }
 
         // Send the full response as a single chunk
         sendEvent("answer_chunk", { text: fullText });
@@ -918,7 +957,8 @@ ${sourceList}`;
               id: sessionId,
               user_id: user.id,
               title: userQuestion.slice(0, 50) + (userQuestion.length > 50 ? "..." : ""),
-              updated_at: new Date().toISOString()
+              updated_at: new Date().toISOString(),
+              domain_classified: classification.primary
             }, { onConflict: "id" });
 
           if (sessionError) {

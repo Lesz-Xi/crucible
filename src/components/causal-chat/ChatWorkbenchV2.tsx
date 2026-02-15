@@ -2,12 +2,25 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  ArrowDown,
+  ArrowRight,
+  ChevronDown,
+  FileText,
   FlaskConical,
+  MessageSquare,
   Microscope,
   Network,
+  Plus,
+  Scale,
+  Send,
   ShieldCheck,
   Sparkles,
+  StopCircle,
+  Upload,
+  X,
 } from 'lucide-react';
+import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
+import { CausalGauges } from '@/components/workbench/CausalGauges';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -178,7 +191,11 @@ interface SessionHistoryMessage {
 }
 
 const isRealDomain = (value: string | null | undefined): value is string =>
-  typeof value === 'string' && value.trim().length > 0 && value !== 'unclassified';
+  typeof value === 'string' &&
+  value.trim().length > 0 &&
+  value !== 'unclassified' &&
+  value !== 'abstract' &&
+  value !== 'unknown';
 
 const isRealModelKey = (value: string | null | undefined): value is string =>
   typeof value === 'string' && value.trim().length > 0 && value !== 'default';
@@ -920,9 +937,45 @@ export function ChatWorkbenchV2() {
           <div className="flex h-full min-h-0 flex-col">
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
-                <div className="lab-empty-state !border-0 !bg-transparent p-3 shadow-none">
-                  <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Good day, Chief.</p>
-                  <p className="mt-2 text-sm">Start with a hypothesis, then pressure-test it with causal structure.</p>
+                <div className="mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="mb-8 text-center">
+                    <h1 className="font-serif text-3xl font-medium tracking-tight text-[var(--lab-text-primary)] mb-2">
+                      Scientific Workbench
+                    </h1>
+                    <p className="text-[var(--lab-text-secondary)]">
+                      Select a research protocol to begin your inquiry.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
+                    <ProtocolCard
+                      title="Causal Discovery"
+                      description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
+                      icon={Microscope}
+                      onClick={() => {
+                        setOperatorMode('explore');
+                        setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
+                      }}
+                    />
+                    <ProtocolCard
+                      title="Intervention Planning"
+                      description="Simulate do-calculus interventions (do(X)=y) to predict system behavior."
+                      icon={FlaskConical}
+                      onClick={() => {
+                        setOperatorMode('intervene');
+                        setPrompt('I need to simulate an intervention. Here is the scenario:');
+                      }}
+                    />
+                    <ProtocolCard
+                      title="Counterfactual Audit"
+                      description="Verify specific claims against the causal graph logic and evidence."
+                      icon={Scale}
+                      onClick={() => {
+                        setOperatorMode('audit');
+                        setPrompt('Verify this claim against the known causal graph:');
+                      }}
+                    />
+                  </div>
                 </div>
               ) : (
                 messages.map((message) => (
@@ -983,38 +1036,19 @@ export function ChatWorkbenchV2() {
       }
       evidenceRail={
         <EvidenceRail title="Evidence Rail" subtitle="Live causal posture and provenance">
-          <div className="space-y-3">
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                <p className="lab-section-title !mb-0">Causal Density</p>
-              </div>
-              <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{lastDensity ? `L${lastDensity.score}` : 'N/A'}</p>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{lastDensity ? `${lastDensity.label} (${Math.round(lastDensity.confidence * 100)}% · model-derived)` : 'Awaiting scored output'}</p>
-            </div>
-
+          <CausalGauges
+            density={lastDensity}
+            posture={alignmentPosture}
+            modelKey={modelDisplay}
+          />
+          
+          <div className="mt-6 space-y-4 border-t border-[var(--lab-border)] pt-6">
             <div className="lab-metric-tile">
               <div className="mb-2 flex items-center gap-2">
                 <Network className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Domain</p>
+                <p className="lab-section-title !mb-0">Active Domain</p>
               </div>
               <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
-            </div>
-
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Microscope className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                <p className="lab-section-title !mb-0">Model Provenance</p>
-              </div>
-              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{modelDisplay}</p>
-            </div>
-
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Alignment Posture</p>
-              </div>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{alignmentPosture}</p>
             </div>
 
             {latestClaimId ? (

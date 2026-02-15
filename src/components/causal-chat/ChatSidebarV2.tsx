@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Clock3, Loader2, MessageSquare, Plus, Scale, Sparkles, Trash2 } from 'lucide-react';
+import { BookOpen, Clock3, FlaskConical, LayoutGrid, Loader2, MessageSquare, Microscope, Network, Plus, Scale, Sparkles, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { AuthButton } from '@/components/auth/AuthButton';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
@@ -12,6 +12,7 @@ export interface ChatSidebarSession {
   id: string;
   title: string;
   updated_at: string;
+  domain_classified?: string;
 }
 
 export interface ChatSidebarV2Props {
@@ -64,6 +65,31 @@ export function ChatSidebarV2({ onNewThread, onLoadSession }: ChatSidebarV2Props
     setDeletingId(null);
   };
 
+  const domainGroups = useMemo(() => {
+    const groups: Record<string, ChatSidebarSession[]> = {};
+    sessions.forEach(session => {
+        // Fallback or explicit extraction of domain would be here.
+        // For now, simulating domain grouping if supported by backend or future expansion.
+        // Since session object doesn't have domain yet in interface, we'll use a heuristic or mock.
+        // The implementation plan says "Use domain_classified from session history".
+        // Let's check the interface. It's missing domain_classified.
+        // We'll update the interface first.
+        const domain = (session as any).domain_classified || 'Unclassified';
+        if (!groups[domain]) groups[domain] = [];
+        groups[domain].push(session);
+    });
+    return groups;
+  }, [sessions]);
+
+  const getDomainIcon = (domain: string) => {
+      const lower = domain.toLowerCase();
+      if (lower.includes('economic') || lower.includes('market')) return <Network className="h-3.5 w-3.5" />;
+      if (lower.includes('legal') || lower.includes('policy')) return <Scale className="h-3.5 w-3.5" />;
+      if (lower.includes('bio') || lower.includes('health')) return <Microscope className="h-3.5 w-3.5" />;
+      if (lower.includes('physic')) return <FlaskConical className="h-3.5 w-3.5" />;
+      return <BookOpen className="h-3.5 w-3.5" />;
+  };
+
   return (
     <div className="flex h-full flex-col">
       <div className="border-b border-[var(--lab-border)] p-4">
@@ -89,38 +115,56 @@ export function ChatSidebarV2({ onNewThread, onLoadSession }: ChatSidebarV2Props
         </div>
       </div>
 
-      <div className="lab-scroll-region flex-1 p-4">
-        <p className="lab-section-title mb-3">Recent Threads</p>
+      <div className="lab-scroll-region flex-1 p-3">
+        <p className="lab-section-title mb-4 px-2">Research Streams</p>
 
         {loading ? (
-          <div className="lab-empty-state text-sm">Loading history...</div>
+          <div className="lab-empty-state text-xs px-2">Syncing lab notebook...</div>
         ) : sessions.length === 0 ? (
-          <div className="lab-empty-state text-sm">No recent history for this account.</div>
+          <div className="lab-empty-state text-xs px-2">No active research content.</div>
         ) : (
-          <div className="space-y-2">
-            {sessions.map((session) => (
-              <div key={session.id} className="lab-card-interactive group !p-3">
-                <button
-                  type="button"
-                  className="w-full text-left"
-                  onClick={() => onLoadSession(session.id)}
-                >
-                  <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled session'}</p>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                    <Clock3 className="h-3.5 w-3.5" />
-                    {new Date(session.updated_at).toLocaleString()}
-                  </p>
-                </button>
 
-                <button
-                  type="button"
-                  className={cn('lab-button-secondary mt-2 w-full !py-1.5 text-xs', deletingId === session.id && 'opacity-60')}
-                  onClick={() => void deleteSession(session.id)}
-                  disabled={deletingId === session.id}
-                >
-                  {deletingId === session.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-                  Delete
-                </button>
+          <div className="space-y-6">
+            {Object.entries(domainGroups).map(([domain, groupSessions]) => (
+              <div key={domain}>
+                <div className="mb-2 flex items-center gap-2 px-2 text-[10px] font-bold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-80">
+                  {getDomainIcon(domain)}
+                  {domain}
+                </div>
+                <div className="space-y-1">
+                  {groupSessions.map((session) => (
+                    <div key={session.id} className="group relative rounded-md hover:bg-[var(--lab-bg-secondary)] transition-colors">
+                      <button
+                        type="button"
+                        className="w-full text-left px-3 py-2"
+                        onClick={() => onLoadSession(session.id)}
+                      >
+                        <p className="truncate text-xs font-medium text-[var(--lab-text-secondary)] group-hover:text-[var(--lab-text-primary)] transition-colors">
+                            {session.title || 'Untitled Experiment'}
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-[var(--lab-text-tertiary)] font-mono opacity-70">
+                          {new Date(session.updated_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </p>
+                      </button>
+
+                      <button
+                        type="button"
+                        className={cn(
+                          'absolute right-1 top-2 p-1.5 opacity-0 group-hover:opacity-100 transition-all rounded hover:bg-[var(--lab-bg-tertiary)] text-[var(--lab-text-tertiary)] hover:text-red-500',
+                          deletingId === session.id && 'opacity-100 text-red-500'
+                        )}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            void deleteSession(session.id);
+                        }}
+                        disabled={deletingId === session.id}
+                        title="Archive Thread"
+                      >
+                        {deletingId === session.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
