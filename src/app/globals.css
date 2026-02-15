@@ -1363,8 +1363,9 @@
   cursor: pointer;
 }
 
+
 .sidebar-history-item:hover {
-  background: #2b2b2b;
+  background: var(--lab-bg-secondary); /* Use semantic variable instead of hardcoded #2b2b2b */
   color: var(--lab-text-primary);
 }
 

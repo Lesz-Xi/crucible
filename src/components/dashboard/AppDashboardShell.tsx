@@ -71,6 +71,24 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   const isChatRoute = pathname?.startsWith('/chat');
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  
+  // Phase L: Mock Folder State (to be replaced by DB)
+  const [folders, setFolders] = useState<{id: string, name: string}[]>([]);
+  const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
+
+  const createFolder = () => {
+    const name = prompt("Enter folder name:");
+    if (name) {
+      setFolders(prev => [...prev, { id: crypto.randomUUID(), name }]);
+    }
+  };
+
+  const toggleFolder = (folderId: string) => {
+    setFolderOpenState(prev => ({
+      ...prev,
+      [folderId]: !prev[folderId]
+    }));
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -234,6 +252,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 );
               })}
 
+              {/* Relics Menu - Moved to align with other nav items */}
               <div className="relative">
                 <button
                   type="button"
@@ -278,17 +297,34 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             {isChatRoute && !collapsed ? (
               <div className="mt-6 flex-1 overflow-hidden">
                 <div className="px-1 space-y-1">
-                  <button
-                    type="button"
-                    className="sidebar-history-item !py-2.5 !font-medium"
-                    onClick={() => {
-                      router.push('/chat?new=1');
-                      window.dispatchEvent(new Event('newChat'));
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span>New chat</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      className="sidebar-history-item !py-2.5 !font-medium flex-1"
+                      onClick={() => {
+                        router.push('/chat?new=1');
+                        window.dispatchEvent(new Event('newChat'));
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>New chat</span>
+                    </button>
+                    
+                    <button
+                      type="button"
+                      className="sidebar-history-item !py-2.5 !px-2.5 !w-auto"
+                      onClick={() => {
+                        // Create a mock folder for now since DB migration failed
+                        const newFolderId = crypto.randomUUID();
+                        // This would typically dispatch an event or call a service to create a folder
+                        // For Phase L UI-first, we'll implement a simple alert or mock
+                        createFolder();
+                      }}
+                      title="New Folder"
+                    >
+                      <FolderPlus className="h-4 w-4" />
+                    </button>
+                  </div>
 
                   <div className="pt-4 pb-2">
                     <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">History</p>
@@ -296,6 +332,28 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 </div>
 
                 <div className="lab-scroll-region-minimal h-[68vh] space-y-0.5 pt-1 overflow-y-auto pr-1">
+                  {/* Folders Section */}
+                  {folders.map(folder => (
+                    <div key={folder.id} className="mb-1">
+                      <button 
+                         type="button"
+                         className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
+                         onClick={() => toggleFolder(folder.id)}
+                      >
+                        {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                        <span className="truncate">{folder.name}</span>
+                        <span className="ml-auto text-[10px] opacity-50">0</span>
+                      </button>
+                      
+                      {folderOpenState[folder.id] && (
+                        <div className="ml-2 pl-2 border-l border-[var(--lab-border)] mt-0.5 space-y-0.5">
+                           <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Threads List */}
                   {filteredThreads.slice(0, 48).map((session) => {
                     const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
                     return (
