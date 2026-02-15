@@ -11,9 +11,10 @@ interface CausalGaugesProps {
   } | null;
   posture: string;
   modelKey: string;
+  provenanceAvailable?: boolean;
 }
 
-export function CausalGauges({ density, posture, modelKey }: CausalGaugesProps) {
+export function CausalGauges({ density, posture, modelKey, provenanceAvailable = true }: CausalGaugesProps) {
   const isSecure = posture.includes('Gate cleared') || posture.includes('No unaudited');
   const isBlocked = posture.includes('Gate blocked') || posture.includes('downgraded');
 
@@ -118,34 +119,43 @@ export function CausalGauges({ density, posture, modelKey }: CausalGaugesProps) 
           <GitMerge className="h-3 w-3" />
           Model Provenance
         </div>
-        
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-            <Database className="h-4 w-4" />
-          </div>
-          <div className="flex-1 space-y-0.5">
-            <p className="text-xs font-bold text-[var(--lab-text-primary)]">
-              {modelKey === 'default' ? 'Anthropic Claude 3.5' : modelKey}
-            </p>
-            <p className="text-[10px] text-[var(--lab-text-tertiary)] font-mono">
-              v{modelKey === 'default' ? 'sonnet' : 'custom'} • Active Reasoner
-            </p>
-          </div>
-        </div>
+        {provenanceAvailable ? (
+          <>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                <Database className="h-4 w-4" />
+              </div>
+              <div className="flex-1 space-y-0.5">
+                <p className="text-xs font-bold text-[var(--lab-text-primary)]">
+                  {modelKey === "default" ? "Anthropic Claude 3.5" : modelKey}
+                </p>
+                <p className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">
+                  provenance event emitted
+                </p>
+              </div>
+            </div>
 
-        {/* Provenance Chain */}
-        <div className="relative pl-3 ml-1 space-y-3 border-l border-[var(--lab-border)]">
-           <div className="relative group">
-             <div className="absolute -left-[17px] top-1 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_2px_var(--lab-bg-secondary)]" />
-             <p className="text-[10px] font-medium text-[var(--lab-text-secondary)]">Input Guardrails</p>
-             <p className="text-[10px] text-[var(--lab-text-tertiary)]">Sanitized & Checked</p>
-           </div>
-           <div className="relative group">
-             <div className="absolute -left-[17px] top-1 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_2px_var(--lab-bg-secondary)]" />
-             <p className="text-[10px] font-medium text-[var(--lab-text-secondary)]">Trace Integrity</p>
-             <p className="text-[10px] text-[var(--lab-text-tertiary)]">Hash: verified</p>
-           </div>
-        </div>
+            <div className="relative ml-1 space-y-3 border-l border-[var(--lab-border)] pl-3">
+              <div className="group relative">
+                <div className="absolute -left-[17px] top-1 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_2px_var(--lab-bg-secondary)]" />
+                <p className="text-[10px] font-medium text-[var(--lab-text-secondary)]">Input Guardrails</p>
+                <p className="text-[10px] text-[var(--lab-text-tertiary)]">Sanitized and checked</p>
+              </div>
+              <div className="group relative">
+                <div className="absolute -left-[17px] top-1 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_2px_var(--lab-bg-secondary)]" />
+                <p className="text-[10px] font-medium text-[var(--lab-text-secondary)]">Trace Integrity</p>
+                <p className="text-[10px] text-[var(--lab-text-tertiary)]">Session provenance available</p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="rounded-md border border-[var(--lab-border)] bg-[var(--lab-bg-primary)] p-3">
+            <p className="text-xs font-semibold text-[var(--lab-text-primary)]">unavailable</p>
+            <p className="mt-1 text-[11px] text-[var(--lab-text-secondary)]">
+              No verified model provenance was emitted for this run.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

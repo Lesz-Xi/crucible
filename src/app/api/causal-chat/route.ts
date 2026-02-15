@@ -27,6 +27,7 @@ import { SessionService } from "@/lib/services/session-service";
 import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
 import { processChatAttachments, type ChatAttachment } from "@/lib/science/chat-scientific-bridge";
 import type { ScientificAnalysisResponse } from "@/lib/science/scientific-analysis-service";
+import { buildAttachmentSequentialThinkingReport } from "@/lib/science/sequential-thinking-assembler";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -248,6 +249,69 @@ function inferExpectedRungHint(
   return 1;
 }
 
+function extractAttachmentNamesFromAssistantContent(content: string): string[] {
+  if (typeof content !== "string" || content.length === 0) return [];
+  const lines = content.split("\n");
+  const out: string[] = [];
+  let inSourceBlock = false;
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (/^source files\s*:/i.test(line)) {
+      inSourceBlock = true;
+      continue;
+    }
+    if (!inSourceBlock) continue;
+    if (!line.startsWith("-")) break;
+    const name = line.replace(/^-+\s*/, "").trim();
+    if (name) out.push(name);
+  }
+
+  return Array.from(new Set(out));
+}
+
+async function loadRecentAttachmentMemory(
+  supabase: SupabaseClient | null,
+  sessionId: string | null | undefined,
+): Promise<string[]> {
+  if (!supabase || !sessionId) return [];
+
+  const { data, error } = await supabase
+    .from("causal_chat_messages")
+    .select("content, causal_graph")
+    .eq("session_id", sessionId)
+    .eq("role", "assistant")
+    .order("created_at", { ascending: false })
+    .limit(12);
+
+  if (error || !Array.isArray(data)) return [];
+
+  const names = new Set<string>();
+
+  for (const row of data as Array<{ content?: string | null; causal_graph?: unknown }>) {
+    const graph = row.causal_graph as
+      | {
+          persistent_memory_meta?: {
+            attachmentMemory?: { fileNames?: string[] };
+          };
+        }
+      | null
+      | undefined;
+    const memoryNames = graph?.persistent_memory_meta?.attachmentMemory?.fileNames;
+    if (Array.isArray(memoryNames)) {
+      memoryNames
+        .filter((name): name is string => typeof name === "string" && name.trim().length > 0)
+        .forEach((name) => names.add(name));
+    }
+
+    const fromContent = extractAttachmentNamesFromAssistantContent(typeof row.content === "string" ? row.content : "");
+    fromContent.forEach((name) => names.add(name));
+    if (names.size > 0) break;
+  }
+
+  return Array.from(names);
+}
+
 export async function POST(req: NextRequest) {
   let supabase: SupabaseClient | null = null;
   let user: { id: string } | null = null;
@@ -384,6 +448,7 @@ export async function POST(req: NextRequest) {
       };
       let compactionReceipt: CompactionReceipt | null = null;
       let scientificAnalysis: ScientificAnalysisResponse[] = [];
+      let recentAttachmentFileNames: string[] = [];
 
       const scientificPromise = normalizedAttachments.length > 0
         ? (async () => {
@@ -485,6 +550,10 @@ export async function POST(req: NextRequest) {
               .persistPruningDecisions(sessionId, pruningResult.decisions)
               .catch((error) => console.warn("[CausalChat] Failed to persist pruning decisions:", error));
           }
+        }
+
+        if (normalizedAttachments.length === 0 && sessionId && supabase) {
+          recentAttachmentFileNames = await loadRecentAttachmentMemory(supabase, sessionId);
         }
 
         // FAST-PATH: Detect simple conversational queries (greetings, identity, pleasantries)
@@ -758,6 +827,17 @@ OUTPUT CONTRACT (MANDATORY):
 - Do NOT ask the user to re-upload, manually verify, or provide additional sample sentences.`;
         }
 
+        if (normalizedAttachments.length === 0 && recentAttachmentFileNames.length > 0) {
+          finalPrompt = `${finalPrompt}
+
+RECENT ATTACHMENT MEMORY (same session):
+- Latest uploaded files: ${recentAttachmentFileNames.join(", ")}
+
+MEMORY POLICY:
+- If user asks about previously uploaded PDF title/name, answer directly from this memory.
+- Do not claim missing attachment history when this memory is present.`;
+        }
+
         if (factTrigger.shouldSearch) {
           const sourceList =
             groundingSources.length > 0
@@ -843,8 +923,10 @@ ${sourceList}`;
         // Deterministic post-generation guard: enforce Automated Scientist persona and strip legacy phrasing.
         fullText = sanitizeAutomatedScientistTone(fullText);
 
-        // Deterministic contract gate for attachment-first responses: keep only Section 1/2/3 payload.
+        // Deterministic sequential-thinking contract assembler for attachment-first responses:
+        // Section 1 -> Section 2 -> Section 3 are computed in-code to prevent drift/leakage.
         if (normalizedAttachments.length > 0) {
+          fullText = buildAttachmentSequentialThinkingReport(scientificAnalysis, scientificWarnings);
           fullText = enforceAttachmentOutputContractShape(fullText);
           fullText = polishContractPresentation(fullText);
         }
@@ -1004,6 +1086,16 @@ ${sourceList}`;
 
             // Save Assistant Message with causal density
             const finalDensity = analyzer.getCurrentAnalysis();
+            const attachmentMemoryFileNames = Array.from(
+              new Set(
+                [
+                  ...recentAttachmentFileNames,
+                  ...scientificAnalysis
+                    .map((entry) => entry.observability?.fileName)
+                    .filter((name): name is string => typeof name === "string" && name.trim().length > 0),
+                ].filter((name) => name.trim().length > 0),
+              ),
+            );
             const persistedGraphPayload =
               graphPayload && typeof graphPayload === "object"
                 ? {
@@ -1012,6 +1104,10 @@ ${sourceList}`;
                     compactionReceipt,
                     retrievalFusionDebug,
                     latticeBroadcastSummary,
+                    attachmentMemory: {
+                      fileNames: attachmentMemoryFileNames,
+                      updatedAt: new Date().toISOString(),
+                    },
                   },
                 }
                 : graphPayload;

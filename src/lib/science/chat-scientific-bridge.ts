@@ -1,4 +1,9 @@
 import { DefaultScientificAnalysisService, type ScientificAnalysisResponse } from "./scientific-analysis-service";
+import {
+  classifyNumericEvidence,
+  trimContextSnippet,
+  type NumericEvidenceCategory,
+} from "./sequential-thinking-assembler";
 
 export interface ChatAttachment {
   name: string;
@@ -44,76 +49,9 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
-type NumericEvidenceCategory =
-  | "potential_metric"
-  | "bibliographic"
-  | "structural"
-  | "citation_year"
-  | "reference_index";
-
-function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
-  const text = (snippet || "").toLowerCase();
-
-  const metricSignal = /%|\bms\b|\bseconds?\b|\bminutes?\b|\bhours?\b|\brate\b|\bcount\b|\bn=\s*\d+|\baccuracy\b|\bprecision\b|\brecall\b|\bf1\b|\bauc\b|\blatency\b|\bimprov(e|ed|ement)\b|\breduc(e|ed|tion)\b|\bincreas(e|ed)\b|\bdecreas(e|ed)\b|\bbaseline\b|\bversus\b|\bfrom\b\s+\w+\s+to\s+\w+|\bbillions?\s+of\s+events\b|\bpetabytes?\b/.test(text);
-  const strongOutcomePattern = /\bfrom\s+(?:\w+\s+){0,2}(?:hours?|minutes?|seconds?)\s+to\s+(?:\w+\s+){0,2}(?:hours?|minutes?|seconds?)\b|\bbillions?\s+of\s+events\b|\bpetabytes?\b/.test(text);
-  const structuralEnumeration = /\b(main side effects?|critical areas?|separate teams?|references?|sections?|chapters?|categories?|components?)\b/.test(text);
-
-  if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
-  if (/\b(19|20)\d{2}\b/.test(String(value)) && /(et al\.|\(|\)|references?|journal|copyright|received|accepted|revised)/.test(text)) {
-    return "citation_year";
-  }
-  if (/(doi|ssrn|arxiv|world journal|volume|issue|pages?|copyright|received|accepted|revised|creative commons|license)/.test(text)) {
-    return "bibliographic";
-  }
-  if (/\b(section|chapter|page|figure|table|introduction|challenges|solutions|ethical|conclusion|\d+\s*\/\s*\d+|\bm\d+\b|\bec\d+\b|\bs\d+\b)\b/.test(text)) {
-    return "structural";
-  }
-  // Structural enumerations override metric signals unless strong outcome evidence is present.
-  if (structuralEnumeration && !strongOutcomePattern) {
-    return "structural";
-  }
-
-  return metricSignal ? "potential_metric" : "structural";
-}
-
 function confidenceForCategory(category: NumericEvidenceCategory): "high" | "medium" | "low" {
   if (category === "potential_metric") return "medium";
   return "low";
-}
-
-function trimContextSnippet(snippet: string, max = 180): string {
-  let clean = snippet.replace(/\s+/g, " ").trim();
-
-  // Heuristic cleanup for clipped leading fragments from fixed-window extraction.
-  // Examples: "le. This article ...", "gineering, AnnArbor ..."
-  clean = clean
-    .replace(/^[a-z]{1,4}\.\s+/, "")
-    .replace(/^[a-z]{3,}(?=,\s+[A-Z])/, "")
-    .replace(/^[-–,:;\s]+/, "")
-    .trim();
-
-  // If snippet starts with a lowercase fragment token, drop first token.
-  if (/^[a-z][a-z'-]*\s/.test(clean)) {
-    const firstSpace = clean.indexOf(" ");
-    if (firstSpace > 0 && firstSpace < 20) {
-      clean = clean.slice(firstSpace + 1).trim();
-    }
-  }
-
-  // If snippet ends mid-word, trim trailing partial token.
-  if (/[a-zA-Z]$/.test(clean) && !/[.!?]$/.test(clean)) {
-    const lastSpace = clean.lastIndexOf(" ");
-    if (lastSpace > clean.length - 24) {
-      clean = clean.slice(0, lastSpace).trim();
-    }
-  }
-
-  if (clean.length <= max) return clean;
-
-  const sliced = clean.slice(0, max - 1);
-  const boundary = Math.max(sliced.lastIndexOf("."), sliced.lastIndexOf(";"), sliced.lastIndexOf(","), sliced.lastIndexOf(" "));
-  const stable = boundary > 40 ? sliced.slice(0, boundary).trim() : sliced.trim();
-  return `${stable}…`;
 }
 
 function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
@@ -124,6 +62,9 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
     lines.push(
       `Attachment #${idx + 1}: status=${entry.status}, tables=${entry.summary.tableCount}, trusted=${entry.summary.trustedTableCount}, data_points=${entry.summary.dataPointCount}`,
     );
+    if (entry.observability?.fileName) {
+      lines.push(`File: ${entry.observability.fileName}`);
+    }
 
     const warningPreview = entry.warnings.slice(0, 2);
     if (warningPreview.length > 0) {

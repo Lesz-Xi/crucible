@@ -1043,6 +1043,7 @@ export function ChatWorkbenchV2() {
             density={lastDensity}
             posture={alignmentPosture}
             modelKey={modelDisplay}
+            provenanceAvailable={modelDisplay !== "unavailable"}
           />
           
           <div className="mt-6 space-y-4 border-t border-[var(--lab-border)] pt-6">
