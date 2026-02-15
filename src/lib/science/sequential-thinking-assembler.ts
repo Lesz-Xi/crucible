@@ -27,13 +27,89 @@ interface AggregatedNumericEvidence {
 const WORD_NUMBER =
   "(?:\\d+(?:\\.\\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)";
 const TEMPORAL_DELTA_REGEX = new RegExp(
-  `\\b${WORD_NUMBER}\\s+(seconds?|minutes?|hours?|days?)\\s+(?:to|->|→)\\s+${WORD_NUMBER}\\s+(seconds?|minutes?|hours?|days?)\\b`,
+  `\\b(${WORD_NUMBER})\\s+(seconds?|minutes?|hours?|days?)\\s+(?:to|->|→)\\s+(${WORD_NUMBER})\\s+(seconds?|minutes?|hours?|days?)\\b`,
   "i",
 );
 const SCALE_QUANTIFIER_REGEX = new RegExp(
-  `\\b(?:${WORD_NUMBER}\\s+)?(?:thousand|thousands|million|millions|billion|billions|trillion|trillions|petabyte|petabytes)\\b(?:\\s+of\\s+(?:events?|records?|requests?|transactions?|data))?`,
+  `\\b(${WORD_NUMBER})?\\s*(thousand|thousands|million|millions|billion|billions|trillion|trillions|petabyte|petabytes)\\b(?:\\s+of\\s+(?:events?|records?|requests?|transactions?|data))?`,
   "i",
 );
+
+const WORD_TO_NUMBER: Record<string, number> = {
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+  eleven: 11,
+  twelve: 12,
+  thirteen: 13,
+  fourteen: 14,
+  fifteen: 15,
+  sixteen: 16,
+  seventeen: 17,
+  eighteen: 18,
+  nineteen: 19,
+  twenty: 20,
+};
+
+function parseNumberishToken(token: string | undefined): number | null {
+  if (!token) return null;
+  const normalized = token.toLowerCase().trim();
+  if (/^\d+(?:\.\d+)?$/.test(normalized)) {
+    const n = Number(normalized);
+    return Number.isFinite(n) ? n : null;
+  }
+  if (Object.prototype.hasOwnProperty.call(WORD_TO_NUMBER, normalized)) {
+    return WORD_TO_NUMBER[normalized];
+  }
+  return null;
+}
+
+function extractReferenceIndexValues(text: string): number[] {
+  const matches = text.match(/\[(\d{1,3})\]/g) || [];
+  const values = new Set<number>();
+  for (const token of matches) {
+    const n = Number(token.replace(/[^0-9]/g, ""));
+    if (Number.isFinite(n)) values.add(n);
+  }
+  return [...values];
+}
+
+function extractTemporalValues(text: string): number[] {
+  const m = text.match(TEMPORAL_DELTA_REGEX);
+  if (!m) return [];
+  const a = parseNumberishToken(m[1]);
+  const b = parseNumberishToken(m[3]);
+  return [a, b].filter((v): v is number => typeof v === "number" && Number.isFinite(v));
+}
+
+function extractScaleValues(text: string): number[] {
+  const m = text.match(SCALE_QUANTIFIER_REGEX);
+  if (!m) return [];
+  const base = parseNumberishToken(m[1]) ?? 1;
+  const scale = (m[2] || "").toLowerCase();
+  const multiplier: Record<string, number> = {
+    thousand: 1_000,
+    thousands: 1_000,
+    million: 1_000_000,
+    millions: 1_000_000,
+    billion: 1_000_000_000,
+    billions: 1_000_000_000,
+    trillion: 1_000_000_000_000,
+    trillions: 1_000_000_000_000,
+    petabyte: 1_000_000_000_000_000,
+    petabytes: 1_000_000_000_000_000,
+  };
+  const mul = multiplier[scale];
+  if (!mul) return [];
+  return [base * mul];
+}
 
 export function trimContextSnippet(snippet: string, max = 180): string {
   let clean = snippet.replace(/\s+/g, " ").trim();
@@ -107,15 +183,23 @@ function confidenceForCategory(category: NumericEvidenceCategory, snippet: strin
 export function classifyNumericEvidence(value: number, snippet: string): NumericEvidenceCategory {
   const text = (snippet || "").toLowerCase();
 
-  if (/\[[0-9]{1,3}\]/.test(text)) return "reference_index";
-  if (Number.isInteger(value) && /\b(19|20)\d{2}\b/.test(String(value)) && hasCitationCue(text)) return "citation_year";
+  const referenceValues = extractReferenceIndexValues(text);
+  if (referenceValues.includes(value)) return "reference_index";
 
-  // Precedence lock (critical): temporal deltas + scale quantifiers are metric-bearing.
-  if (TEMPORAL_DELTA_REGEX.test(text)) return "potential_metric";
-  if (SCALE_QUANTIFIER_REGEX.test(text)) return "potential_metric";
+  if (Number.isInteger(value) && /\b(19|20)\d{2}\b/.test(String(value)) && hasCitationCue(text)) {
+    return "citation_year";
+  }
+
+  const temporalValues = extractTemporalValues(text);
+  if (temporalValues.includes(value)) return "potential_metric";
+
+  const scaleValues = extractScaleValues(text);
+  if (scaleValues.includes(value)) return "potential_metric";
 
   // Precedence lock (critical): section/structure references stay structural.
   if (hasSectionReference(text)) return "structural";
+
+  // Bibliographic cues dominate unless this exact value is part of a metric pattern.
   if (hasBibliographicCue(text)) return "bibliographic";
 
   // Structural enumerations override weak metric hints.
@@ -185,8 +269,7 @@ function formatValue(value: number): string {
 
 function formatEvidenceLine(row: AggregatedNumericEvidence): string {
   const snippetText = row.snippets.join(" | ");
-  const occurrenceText = row.occurrences > 1 ? ` (appears ${row.occurrences}x)` : "";
-  return `- ${formatValue(row.value)} — ${snippetText}${occurrenceText} (${row.confidence} confidence)`;
+  return `- ${formatValue(row.value)} — ${snippetText} (${row.confidence} confidence)`;
 }
 
 function buildClaimLines(
@@ -257,7 +340,7 @@ export function buildAttachmentSequentialThinkingReport(
     section1Lines.push("- NONE — insufficient extractable numeric evidence");
   } else {
     for (const category of categoryOrder) {
-      const bucket = rows.filter((row) => row.category === category);
+      const bucket = rows.filter((row) => row.category === category).slice(0, 8);
       if (bucket.length === 0) continue;
       section1Lines.push(labelMap[category]);
       bucket.forEach((row) => section1Lines.push(formatEvidenceLine(row)));
@@ -274,7 +357,7 @@ export function buildAttachmentSequentialThinkingReport(
   if (claimEligible.length === 0) {
     section2Lines.push("NONE");
   } else {
-    claimEligible.forEach((row) => section2Lines.push(formatEvidenceLine(row)));
+    claimEligible.slice(0, 6).forEach((row) => section2Lines.push(formatEvidenceLine(row)));
   }
 
   const nonMetricCount = rows.filter((row) => row.category !== "potential_metric").length;
