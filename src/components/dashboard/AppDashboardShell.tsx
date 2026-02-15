@@ -13,6 +13,7 @@ import {
   FolderMinus,
   Folder,
   FolderPlus,
+  FileText,
   Gavel,
   GraduationCap,
   Home,
@@ -46,6 +47,17 @@ interface ChatSidebarSession {
   updated_at: string;
 }
 
+interface SidebarFolder {
+  id: string;
+  name: string;
+}
+
+interface SidebarFolderFile {
+  id: string;
+  name: string;
+  createdAt: string;
+}
+
 const NAV_ITEMS = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/hybrid', label: 'Hybrid', icon: Bot },
@@ -73,28 +85,75 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   const [mounted, setMounted] = useState(false);
   
   // Phase L: Mock Folder State (to be replaced by DB)
-  const [folders, setFolders] = useState<{id: string, name: string}[]>([]);
+  const [folders, setFolders] = useState<SidebarFolder[]>([]);
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
+  const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
   const createFolder = () => {
     const name = prompt("Enter folder name:");
     if (name) {
-      setFolders(prev => [...prev, { id: crypto.randomUUID(), name }]);
+      const nextFolderId = crypto.randomUUID();
+      setFolders(prev => [...prev, { id: nextFolderId, name }]);
+      setFolderOpenState((prev) => ({ ...prev, [nextFolderId]: true }));
+      setActiveFolderId(nextFolderId);
     }
   };
 
   const toggleFolder = (folderId: string) => {
+    setActiveFolderId((current) => (current === folderId ? null : folderId));
     setFolderOpenState(prev => ({
       ...prev,
       [folderId]: !prev[folderId]
     }));
   };
 
+  const createFolderFile = (folderId: string, defaultName?: string) => {
+    const proposed = defaultName ?? `Untitled file ${(folderFiles[folderId]?.length ?? 0) + 1}`;
+    const name = prompt('Enter file name:', proposed);
+    if (!name) return;
+    const nextFile: SidebarFolderFile = {
+      id: crypto.randomUUID(),
+      name,
+      createdAt: new Date().toISOString(),
+    };
+    setFolderFiles((prev) => ({
+      ...prev,
+      [folderId]: [...(prev[folderId] ?? []), nextFile],
+    }));
+    setFolderOpenState((prev) => ({ ...prev, [folderId]: true }));
+    setActiveFolderId(folderId);
+  };
+
   useEffect(() => {
     setMounted(true);
     const saved = window.localStorage.getItem('wuweism-dashboard-sidebar');
     if (saved === 'collapsed') setCollapsed(true);
+
+    try {
+      const savedFolders = window.localStorage.getItem('chat-folders-v1');
+      const savedFolderFiles = window.localStorage.getItem('chat-folder-files-v1');
+      if (savedFolders) {
+        const parsedFolders = JSON.parse(savedFolders) as SidebarFolder[];
+        if (Array.isArray(parsedFolders)) setFolders(parsedFolders);
+      }
+      if (savedFolderFiles) {
+        const parsedFolderFiles = JSON.parse(savedFolderFiles) as Record<string, SidebarFolderFile[]>;
+        if (parsedFolderFiles && typeof parsedFolderFiles === 'object') setFolderFiles(parsedFolderFiles);
+      }
+    } catch {
+      setFolders([]);
+      setFolderFiles({});
+    }
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem('chat-folders-v1', JSON.stringify(folders));
+  }, [folders]);
+
+  useEffect(() => {
+    window.localStorage.setItem('chat-folder-files-v1', JSON.stringify(folderFiles));
+  }, [folderFiles]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -302,6 +361,9 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       type="button"
                       className="sidebar-history-item !py-2.5 !font-medium flex-1"
                       onClick={() => {
+                        if (activeFolderId) {
+                          createFolderFile(activeFolderId);
+                        }
                         router.push('/chat?new=1');
                         window.dispatchEvent(new Event('newChat'));
                       }}
@@ -314,10 +376,6 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       type="button"
                       className="sidebar-history-item !py-2.5 !px-2.5 !w-auto"
                       onClick={() => {
-                        // Create a mock folder for now since DB migration failed
-                        const newFolderId = crypto.randomUUID();
-                        // This would typically dispatch an event or call a service to create a folder
-                        // For Phase L UI-first, we'll implement a simple alert or mock
                         createFolder();
                       }}
                       title="New Folder"
@@ -337,17 +395,40 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     <div key={folder.id} className="mb-1">
                       <button 
                          type="button"
-                         className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
+                         className={cn(
+                           "flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors",
+                           activeFolderId === folder.id
+                             ? "bg-[var(--lab-bg-secondary)] text-[var(--lab-text-primary)]"
+                             : "text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]"
+                         )}
                          onClick={() => toggleFolder(folder.id)}
                       >
                         {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
                         <span className="truncate">{folder.name}</span>
-                        <span className="ml-auto text-[10px] opacity-50">0</span>
+                        <span className="ml-auto text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
                       </button>
                       
                       {folderOpenState[folder.id] && (
                         <div className="ml-2 pl-2 border-l border-[var(--lab-border)] mt-0.5 space-y-0.5">
-                           <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
+                          <button
+                            type="button"
+                            className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium opacity-70 hover:opacity-100 hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
+                            onClick={() => createFolderFile(folder.id)}
+                            title="Create file in folder"
+                          >
+                            <Plus className="h-3 w-3" />
+                            <span>New file</span>
+                          </button>
+                          {(folderFiles[folder.id] ?? []).length === 0 ? (
+                            <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
+                          ) : (
+                            (folderFiles[folder.id] ?? []).map((file) => (
+                              <div key={file.id} className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
+                                <FileText className="h-3.5 w-3.5 opacity-70" />
+                                <span className="truncate" title={file.name}>{file.name}</span>
+                              </div>
+                            ))
+                          )}
                         </div>
                       )}
                     </div>
