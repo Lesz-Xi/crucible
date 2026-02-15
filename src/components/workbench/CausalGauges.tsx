@@ -18,10 +18,8 @@ export function CausalGauges({ density, posture, modelKey, provenanceAvailable =
   const isSecure = posture.includes('Gate cleared') || posture.includes('No unaudited');
   const isBlocked = posture.includes('Gate blocked') || posture.includes('downgraded');
 
-  const quantizedScore = density?.score ? Math.round(density.score * 10) / 10 : 0;
-  // Arc length for r=70 is 2*PI*70 ≈ 440
-  const totalLength = 440;
-  const progressOffset = totalLength - (totalLength * (quantizedScore || 0)) / 100;
+  const rung = density?.score === 3 ? 3 : density?.score === 2 ? 2 : density?.score === 1 ? 1 : null;
+  const rungLabel = rung === 3 ? 'Counterfactual' : rung === 2 ? 'Intervention' : rung === 1 ? 'Association' : 'Awaiting scored output';
 
   return (
     <div className="space-y-6 select-none animate-in fade-in duration-500">
@@ -44,50 +42,40 @@ export function CausalGauges({ density, posture, modelKey, provenanceAvailable =
           )}
         </div>
 
-        <div className="relative flex items-center justify-center py-4 bg-[var(--lab-bg-secondary)] rounded-lg border border-[var(--lab-border)]">
-          {/* SVG Gauge */}
-          <div className="relative h-32 w-32">
-            <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 160 160">
-              {/* Background Circle */}
-              <circle
-                cx="80"
-                cy="80"
-                r="70"
-                fill="none"
-                stroke="var(--lab-border)"
-                strokeWidth="8"
-                className="opacity-20"
-              />
-              {/* Progress Circle */}
-              <circle
-                cx="80"
-                cy="80"
-                r="70"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="8"
-                strokeDasharray={totalLength}
-                strokeDashoffset={progressOffset}
-                strokeLinecap="round"
-                className={cn(
-                  "transition-all duration-1000 ease-out",
-                  quantizedScore > 80 ? "text-emerald-500" :
-                  quantizedScore > 50 ? "text-blue-500" :
-                  "text-slate-400"
-                )}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold tracking-tighter tabular-nums text-[var(--lab-text-primary)]">
-                {quantizedScore || 'N/A'}
-              </span>
-              <span className="text-[10px] uppercase text-[var(--lab-text-tertiary)] pt-1">Density</span>
-            </div>
+        <div className="rounded-lg border border-[var(--lab-border)] bg-[var(--lab-bg-secondary)] p-3">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { level: 1, short: 'L1', label: 'Association' },
+              { level: 2, short: 'L2', label: 'Intervention' },
+              { level: 3, short: 'L3', label: 'Counterfactual' },
+            ].map((item) => {
+              const active = rung === item.level;
+              return (
+                <div
+                  key={item.level}
+                  className={cn(
+                    'rounded-md border px-2 py-2 text-center transition-all',
+                    active
+                      ? 'border-[var(--lab-accent-earth)] bg-[color-mix(in_srgb,var(--lab-accent-earth)_12%,transparent)]'
+                      : 'border-[var(--lab-border)] bg-transparent',
+                  )}
+                >
+                  <p className={cn('text-sm font-bold', active ? 'text-[var(--lab-text-primary)]' : 'text-[var(--lab-text-secondary)]')}>
+                    {item.short}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-[var(--lab-text-tertiary)]">{item.label}</p>
+                </div>
+              );
+            })}
           </div>
+
+          <p className="mt-3 text-center text-xs font-semibold text-[var(--lab-text-primary)]">
+            {rung ? `Active rung: L${rung}` : 'Active rung: unavailable'}
+          </p>
         </div>
-        
+
         <p className="mt-2 text-center text-xs text-[var(--lab-text-secondary)] font-medium">
-          {density?.label || 'Awaiting scored output'}
+          {rungLabel}
         </p>
       </section>
 
