@@ -8,8 +8,8 @@
   /* Core Palette - Mineral & Paper */
   --obsidian-900: #111310;  /* Deep surfaces, not pure black */
   --stone-700: #4D534A;     /* Primary text on light */
-  --ash-200: #D4D2C8;       /* Neutral containers */
-  --paper-050: #F5F2E8;     /* Warm off-white */
+  --ash-200: #E5E7EB;       /* Neutral containers - Cool Gray 200 */
+  --paper-050: #FFFAFA;     /* White Snow */
   
   /* Accents - Earth & Oxide */
   --moss-500: #5F7555;      /* Success, novelty, growth */
@@ -20,7 +20,7 @@
   --background: var(--paper-050);
   --foreground: var(--stone-700);
   --bg-primary: var(--paper-050);
-  --bg-secondary: #F0EDE3;  /* Slightly darker paper */
+  --bg-secondary: #F5F5F7;  /* Cool Gray */
   --bg-card: rgba(255, 255, 255, 0.6);
   --text-primary: var(--stone-700);
   --text-secondary: var(--mist-400);
@@ -58,8 +58,8 @@
   --font-playfair: "Playfair Display", serif;
 
   /* 2041 Automated Scientist (feature namespace) */
-  --lab-bg: #FAFAF9;
-  --lab-bg-elevated: #F5F5F4;
+  --lab-bg: #FFFAFA;
+  --lab-bg-elevated: #F5F5F7;
   --lab-panel: rgba(255, 255, 255, 0.82);
   --lab-border: rgba(42, 38, 33, 0.10);
   --lab-text-primary: #2A2621;
@@ -129,7 +129,7 @@
 .wabi-glass-panel {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(212, 210, 200, 0.4); /* ash-200 with alpha */
+  border: 1px solid rgba(229, 231, 235, 0.4); /* ash-200 with alpha */
   box-shadow: var(--shadow-ambient);
 }
 
@@ -140,9 +140,9 @@
 
 /* Card glass effect - per Wabi-Sabi 2041 spec */
 .bg-glass-card {
-  background: rgba(245, 242, 232, 0.7); /* paper-050 with transparency */
+  background: rgba(255, 250, 250, 0.7); /* paper-050 with transparency */
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(212, 210, 200, 0.3);
+  border: 1px solid rgba(229, 231, 235, 0.3);
   box-shadow: var(--shadow-ambient);
 }
 
