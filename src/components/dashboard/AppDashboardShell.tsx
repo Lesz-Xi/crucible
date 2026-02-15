@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 
 interface AppDashboardShellProps {
   children: ReactNode;
+  readingMode?: boolean;
 }
 
 interface ChatSidebarSession {
@@ -73,7 +74,7 @@ function MenuToggleIcon({ collapsed }: { collapsed: boolean }) {
   );
 }
 
-export function AppDashboardShell({ children }: AppDashboardShellProps) {
+export function AppDashboardShell({ children, readingMode = false }: AppDashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -210,6 +211,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
   return (
     <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
       <div className="flex min-h-screen">
+        {!readingMode ? (
         <aside className={cn(
           'relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
           collapsed ? 'w-[74px]' : 'w-[286px]',
@@ -449,6 +451,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
             </div>
           </div>
         </aside>
+        ) : null}
 
         <div className="min-w-0 flex-1">{children}</div>
       </div>

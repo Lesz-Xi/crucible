@@ -12,6 +12,7 @@ export interface WorkbenchShellProps {
   className?: string;
   contextRailOpen?: boolean;
   evidenceRailOpen?: boolean;
+  readingMode?: boolean;
 }
 
 export function WorkbenchShell({
@@ -22,6 +23,7 @@ export function WorkbenchShell({
   className,
   contextRailOpen = true,
   evidenceRailOpen = true,
+  readingMode = false,
 }: WorkbenchShellProps) {
   const [mobileTab, setMobileTab] = useState<'context' | 'primary' | 'evidence'>('primary');
 
@@ -38,7 +40,7 @@ export function WorkbenchShell({
   const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 20px)' : 'calc(100svh - 112px)';
 
   return (
-    <AppDashboardShell>
+    <AppDashboardShell readingMode={readingMode}>
       <div className={cn('lab-shell min-h-screen w-full', className)}>
         {statusStrip}
 

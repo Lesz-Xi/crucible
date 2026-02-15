@@ -967,6 +967,7 @@ export function ChatWorkbenchV2() {
       className="feature-chat"
       contextRailOpen={false}
       evidenceRailOpen={evidenceRailOpen}
+      readingMode={focusMode}
       contextRail={<div />}
       primary={
         <PrimaryCanvas>
