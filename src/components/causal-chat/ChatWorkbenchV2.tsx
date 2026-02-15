@@ -27,7 +27,7 @@ import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
-import { ObsidianPulseLoader } from '@/components/causal-chat/ObsidianPulseLoader';
+import { ThinkingAnimation } from '@/components/causal-chat/ThinkingAnimation';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
@@ -997,7 +997,10 @@ export function ChatWorkbenchV2() {
                       <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
                     )}
                     {message.isStreaming ? (
-                      <ObsidianPulseLoader stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]} />
+                      <ThinkingAnimation
+                        stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}
+                        stageIndex={loadingStageIndex}
+                      />
                     ) : null}
                   </article>
                 ))
