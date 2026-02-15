@@ -181,6 +181,36 @@ function enforceAttachmentOutputContractShape(text: string): string {
     .join("\n\n");
 }
 
+function polishContractPresentation(text: string): string {
+  let out = text;
+
+  // Remove accidental empty fenced blocks that render as blank rounded shapes.
+  out = out.replace(/```\s*```/g, "");
+  out = out.replace(/\n{3,}/g, "\n\n");
+
+  // Ensure key section and sub-section labels are bold for readability.
+  const labels = [
+    "Section 1: All Explicit Numbers with Context",
+    "Section 2: Claim-Eligible Numerics",
+    "Section 3: Three Claims with Uncertainty Labels",
+    "Potential Metrics",
+    "Structural",
+    "Bibliographic",
+    "Citation Years",
+    "Reference Indices",
+    "Evidence class",
+    "Testable Prediction",
+    "Falsification Criteria",
+  ];
+
+  for (const label of labels) {
+    const pattern = new RegExp(`(^|\\n)(${label.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")})(:?)`, "gi");
+    out = out.replace(pattern, (_m, prefix, core, colon) => `${prefix}**${core}${colon || ""}**`);
+  }
+
+  return out.trim();
+}
+
 function mapMessageToPrunable(message: ChatTurn, index: number): PrunableChatMessage {
   return {
     id: `turn-${index}`,
@@ -816,6 +846,7 @@ ${sourceList}`;
         // Deterministic contract gate for attachment-first responses: keep only Section 1/2/3 payload.
         if (normalizedAttachments.length > 0) {
           fullText = enforceAttachmentOutputContractShape(fullText);
+          fullText = polishContractPresentation(fullText);
         }
 
         // Send the full response as a single chunk

@@ -766,6 +766,12 @@
   padding: 0;
 }
 
+/* Guard against empty markdown code fences rendering as blank rounded bars. */
+.lab-chat-prose pre:empty,
+.lab-chat-prose pre code:empty {
+  display: none;
+}
+
 .dark .lab-chat-prose h2 {
   border-top-color: rgba(255, 255, 255, 0.14);
 }
