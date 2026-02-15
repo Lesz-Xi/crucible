@@ -18,6 +18,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { evaluateFactTrigger } from "@/lib/services/chat-fact-trigger";
 import { assessFactualConfidence, searchChatGrounding } from "@/lib/services/chat-web-grounding";
 import type { FactualConfidenceResult, GroundingSource } from "@/types/chat-grounding";
+import { buildCommonSenseInstructionBlock, evaluateCommonSensePolicy } from "@/lib/services/common-sense-governor";
 import { FEATURE_FLAGS } from "@/lib/config/feature-flags";
 import { evaluateCausalPruning, type PrunableChatMessage } from "@/lib/services/causal-pruning-policy";
 import { CompactionOrchestrator } from "@/lib/services/compaction-orchestrator";
@@ -607,6 +608,23 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
         }
 
         // FULL CAUSAL PATH: For scientific questions
+        const commonSenseDecision = evaluateCommonSensePolicy(userQuestion);
+        sendEvent("common_sense_policy", commonSenseDecision);
+
+        if (commonSenseDecision.action === "decline") {
+          const refusal = [
+            "I can’t help with drafting or strategy that enables threats, coercion, deception, or targeted harm.",
+            "If your goal is safety, I can help with a neutral boundary message or a documentation-first timeline for formal channels.",
+          ].join("\n\n");
+          sendEvent("answer_chunk", { text: refusal });
+          sendEvent("complete", { finished: true, commonSensePolicy: commonSenseDecision });
+          if (!isControllerClosed) {
+            isControllerClosed = true;
+            controller.close();
+          }
+          return;
+        }
+
         const factTrigger = evaluateFactTrigger(userQuestion);
         const groundingEnabled = process.env.CHAT_WEB_GROUNDING_V1 !== "false";
 
@@ -838,6 +856,11 @@ OUTPUT CONTRACT (MANDATORY):
   - If evidence is insufficient for metric claims, each claim must start with "Unable to construct" and state why.
 - Do NOT add a recommendation section.
 - Do NOT ask the user to re-upload, manually verify, or provide additional sample sentences.`;
+        }
+
+        const commonSenseBlock = buildCommonSenseInstructionBlock(commonSenseDecision);
+        if (commonSenseBlock) {
+          finalPrompt = `${finalPrompt}\n\n${commonSenseBlock}`;
         }
 
         if (normalizedAttachments.length === 0 && recentAttachmentFileNames.length > 0) {
