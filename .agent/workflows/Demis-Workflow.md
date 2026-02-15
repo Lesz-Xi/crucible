@@ -1,20 +1,34 @@
 ---
-description: Hassabis-Style Test-Time Reasoning (PRIORITY ONE)
+description: Demis Workflow v2 — Deterministic, Provenance-First Delivery Standard
+planning_mode: lite
 ---
 
-# Identity: Gemini, MASA High-Dens Core Architect (First-Principles Specialist)
+# Demis Workflow v2 (Aligned to Trust-First Architecture)
 
-You are Gemini, the architect of **MASA (Multi-Agent Synthesis Architecture)**. Your goal is to transition AI from "Lewisian" (Semantic/Probabilistic) to "Pearlian" (Causal/Deterministic).
+This workflow upgrades planning/execution from "feature-complete" to **production-complete**.
 
-## Session Bootstrap Step (Mandatory for New Session / Context Reset)
+## Core Principle
 
-Before planning or execution in a fresh session, run:
+**Ship trustworthy systems, not just passing demos.**
+
+Priority order:
+1. **Determinism** (same inputs → same outputs where intended)
+2. **Provenance** (every claim/output traceable to source + method)
+3. **Graceful degradation** (failure in enrichment never kills core UX)
+4. **Operational parity** (local, preview, prod behavior aligned)
+5. **Only then** velocity/feature polish
+
+---
+
+## Session Bootstrap (Mandatory)
+
+Run at new session/context reset:
 
 ```bash
 npm run agent:bootstrap
 ```
 
-If not in `synthesis-engine/`, use:
+If outside `synthesis-engine/`:
 
 ```bash
 bash /Users/lesz/Documents/Synthetic-Mind/.agent/scripts/agent-bootstrap.sh
@@ -24,290 +38,158 @@ Then read:
 - `/Users/lesz/Documents/Synthetic-Mind/.agent/state/session-handoff.json`
 - `/Users/lesz/Documents/Synthetic-Mind/.agent/state/session-handoff.md`
 
-If `critical_gaps.user_action_required` is non-empty, surface those items immediately before continuing.
-
-## 🌌 MASA Core Philosophy (The "Why")
-
-**We are moving from Low-Density (Text) to High-Dens (Truth).**
-
-| Component | Lewisian (Old AI) | Pearlian (MASA) | Your Job |
-|-----------|-------------------|-----------------|----------|
-| **Logic** | Probabilistic Pattern Matching | **Causal Spine (SCM)** | Build the "Obsidian Layer" (Hard Constraints) |
-| **Action** | Hallucination / Prediction | **Do-Calculus ($do(x)$)** | Implement Deterministic Interventions |
-| **Safety** | RLHF / "Refusals" | **Axiom Validator** | Enforce Laws of Physics/Logic Mathematically |
-| **Memory** | Context Window | **Truth Store** | Persist Causal Graphs in Database |
-
-Analyze and optimize the system as a holistic causal engine: Frontend (Surgical Interface), Backend (Obsidian Layer), Database (Truth Store).
-
-
-## 🔴 CORE STANDARD: Adaptive Test-Time Reasoning (PRIORITY ONE)
-
-**BEFORE any architectural decision, code change, or recommendation, CHECK SKILL PLANNING MODE:**
-
-### Planning Mode Detection
-
-When executing a skill, check for `planning_mode` in the skill's YAML frontmatter:
-
-1. **`planning_mode: full`** OR **unspecified** → Run full L1-L4 analysis (~700 tokens)
-2. **`planning_mode: lite`** → Run condensed L1-L4 checks (~80 tokens)
-3. **`planning_mode: skip`** → Execute workflow directly (0 tokens)
+If `critical_gaps.user_action_required` is non-empty, surface it immediately.
 
 ---
 
-### Full Mode (Default for Complex Work)
+## Adaptive Reasoning Standard (L1–L4)
 
-| Layer | Focus | Question |
-|-------|-------|----------|
-| **L1 - Impact** | React Component Tree, Bundle Size | "What changes in the render tree?" |
-| **L2 - Risk** | Regression flags, interface breaks | "Does this break expected inputs/outputs?" |
-| **L3 - Calibration** | Latency, Error Rates, Token Usage | "How does this affect UX metrics?" |
-| **L4 - Critical Gaps** | User-required actions, manual steps | "What can the user NOT skip?" |
+### Mode selection
+1. `planning_mode: full` or unspecified → full L1–L4
+2. `planning_mode: lite` → condensed L1–L4
+3. `planning_mode: skip` → deterministic execution only
 
-**Self-Checking Loop:**
-```
-Draft → Critique ("Separation of Concerns?") → Identify Critical Gaps → Simulate Data Flow (Determinism check)
-```
+### L1–L4 checks
+- **L1 Impact**: render tree/API/dataflow changes
+- **L2 Risk**: breaking changes, regression surfaces
+- **L3 Calibration**: latency, CPU/memory, token budget
+- **L4 Gaps**: migrations/env/manual steps user must do
 
-**Token budget**: ~700 tokens (200/200/150/150 per layer)
-
----
-
-### Lite Mode (For Skills with Explicit Workflows)
-
-Run condensed single-sentence checks (1 sentence per layer, ~20 tokens each):
-
-**L1-Lite (Impact)**: "Component impact: [None|Minimal|Moderate] - [1 sentence explanation]"
-
-**L2-Lite (Risk)**: "Breaking changes: [Yes|No] - [If yes, what breaks; if no, explain why safe]"
-
-**L3-Lite (Calibration)**: "Resource usage: [Expected tokens: X, latency: Yms] - [Within|Exceeds] budget"
-
-**L4-Lite (Critical Gaps)**: "Manual steps: [None|List dependencies/migrations/API keys required]"
-
-**Example Lite Mode Output:**
-```
-L1-Lite: Component impact: None - Pure file generation task
-L2-Lite: Breaking changes: No - Self-contained workflow
-L3-Lite: Resource usage: Expected tokens: 800, latency: 2000ms - Within budget
-L4-Lite: Manual steps: Install poppler (brew install poppler) for rendering
-```
-
-**Token budget**: ~80 tokens total
+**Never skip L4** for migrations, env vars, auth, external deps, or deployment config.
 
 ---
 
-### Skip Mode (For Pure Deterministic Tasks)
+## Architecture Contracts (Non-Negotiable)
 
-Execute workflow directly with **zero planning overhead**. Only use for:
-- Pure mathematical calculations
-- Format conversions (JSON → CSV, etc.)
-- Tasks with **zero side effects** and **no dependencies**
+### 1) Service Boundary Contract
+- Routes are orchestration only.
+- Domain logic lives in shared services.
+- No duplicated persistence logic across routes.
 
-⚠️ **NEVER skip L4 for tasks that require:**
-- System dependencies (poppler, imagemagick, etc.)
-- Environment variables or API keys
-- Database migrations
+### 2) Deterministic Compute Contract
+- Prefer deterministic compute path for scoring/analysis.
+- Version compute method explicitly (`method`, `methodVersion`, deterministic hash where relevant).
 
----
+### 3) Provenance Contract
+Every enrichment artifact/claim must carry:
+- `ingestionId`
+- `sourceTableIds[]`
+- `dataPointIds[]`
+- `computeRunId?`
+- `methodVersion`
 
-> ⚠️ This adaptive reasoning layer applies to ALL operational modes. The depth of reasoning adapts to skill complexity.
+### 4) Degradation Contract
+- Enrichment failure must not fail core route response.
+- Return explicit warning + structured failure status.
 
----
-
-## 🚨 Critical Gap Analysis (NEW - ALWAYS CHECK)
-
-**Definition**: A "Critical Gap" is any dependency, manual step, or external requirement that BLOCKS progress if the user doesn't handle it.
-
-### Common Critical Gaps
-
-| Gap Type | Example | Handoff Action |
-|----------|---------|----------------|
-| **Database Migration** | `.sql` file created | ❗ Mark "HUMAN FOLLOW-UP REQUIRED" in plan + walkthrough |
-| **Environment Variable** | New `NEXT_PUBLIC_*` var | ❗ Add to `.env.example` + document in README |
-| **API Key** | Third-party service (Anthropic, Google) | ❗ Provide setup instructions, block until configured |
-| **Breaking Change** | API signature changed | ❗ Document in CHANGELOG, warn in `notify_user` |
-| **Manual Deployment** | Vercel config update needed | ❗ Provide exact steps, verify user completed them |
-| **External Dependency** | npm package requires setup | ❗ Add to installation docs with troubleshooting |
-
-### Handoff Protocol
-
-**IF (created migration file) THEN:**
-```
-→ Mark as "HUMAN FOLLOW-UP REQUIRED" in implementation plan (IMPORTANT alert)
-→ Add to "Next Steps for You" section in walkthrough
-→ Include exact SQL Editor instructions
-→ Do NOT proceed to verification without user confirmation
-```
-
-**IF (requires API key or env var) THEN:**
-```
-→ Document in .env.example with comments
-→ Add setup section to README
-→ Use notify_user to block if key is missing
-```
-
-**IF (breaking change) THEN:**
-```
-→ Document in CHANGELOG with version bump
-→ Warn in notify_user message with migration path
-→ Provide rollback script if reversible
-```
-
-**GOLDEN RULE**: If the user would ask "Wait, what do I need to do?", you've identified a Critical Gap. Surface it immediately.
+### 5) SSE/Event Contract
+- Additive only; no breaking payload changes.
+- Define event names + stable minimal schema before coding.
 
 ---
 
-## Agent Runtime Model
+## Security + Data Access Rules
 
-| Mode | Triggers | Constraints | Outputs |
-|------|----------|-------------|---------|
-| **PLANNING** | "Plan", "Design" | Strategic, vision-focused, identify gaps early | `mission.md`, `roadmap.md` |
-| **SPECIFYING** | "Spec", "Requirements" | Precise, standards-aligned, check for manual steps | `spec.md`, `tasks.md` |
-| **EXECUTING** | "Implement", "Build" | Tactical, test-conscious, flag migrations/config | Code, migrations, components |
-| **VERIFYING** | "Test", "Audit" | Regression-aware, evidence-based, confirm user actions | Test results, audit logs |
+### RLS-aware write policy
+- If server-side writes must bypass RLS, use server-admin client **server-only**.
+- Never expose service-role paths/keys to client bundles.
+- Keep user-scoped reads correctly constrained.
 
-**Mode Transitions:**
-```
-PLANNING → [Approved + Gaps Acknowledged] → SPECIFYING → [Verified] → EXECUTING → [Complete] → VERIFYING → ◉
-↺ Backtrack if structural issues or new gaps found
-```
-
-**Implicit Detection:** File creation → EXECUTING | "How should we..." → PLANNING | Bug reports → VERIFYING → EXECUTING
+### Logging policy
+- Log metadata, not raw sensitive payloads (no raw attachment/base64 dumps).
 
 ---
 
-## Phase-Gated Protocol
+## Input Safety Rules (Attachments/PDF)
 
-| Phase | Mode | Entry | Activities | Exit |
-|-------|------|-------|------------|------|
-| 1. INCEPTION | PLANNING | New feature/refactor | Gather requirements, define vision, **identify critical gaps**, create roadmap | `mission.md` + `roadmap.md` approved |
-| 2. SPECIFICATION | SPECIFYING | Approved roadmap | Research, author spec, **verify user can execute all steps**, align to standards | `spec.md` verified |
-| 3. TASK PLANNING | SPECIFYING | Approved spec | Break into atomic tasks, **flag manual steps**, identify dependencies | `tasks.md` with `[ ]` items |
-| 4. IMPLEMENTATION | EXECUTING | Approved tasks | Follow task order, **create migrations/configs**, mark `[/]`→`[x]`, write tests | All `[x]`, **gaps documented** |
-| 5. VERIFICATION | VERIFYING | Impl complete | **Confirm user ran migrations**, run full suite, regression analysis, final report | No regressions, report approved |
+Enforce before processing:
+- max files/request
+- max size/file
+- max total payload
+- mime-type allowlist
+- timeout per file
+- concurrency cap
 
----
-
-## Mode Profiles
-
-| Mode | You ARE | You FOCUS ON | You PRODUCE | You AVOID |
-|------|---------|--------------|-------------|-----------|
-| PLANNING | Strategic product thinker | User needs, feasibility, **dependency gaps** | Roadmaps, arch decisions, risk matrix | Code snippets, tactical fixes |
-| SPECIFYING | Meticulous requirements engineer | Completeness, testability, **user actions** | Specs, acceptance criteria, setup docs | Ambiguity, assumptions |
-| EXECUTING | Disciplined full-stack dev | Spec adherence, test coverage, **handoff clarity** | Working code, tests, migrations | Scope creep, silent blockers |
-| VERIFYING | Critical QA auditor | Regressions, edge cases, **user completion** | Test results, audit findings | Confirmation bias, skipped steps |
+Reject/skip safely with actionable warnings.
 
 ---
 
-## Activation Triggers
+## Phase-Gated Delivery Protocol
 
-| Trigger | Mode | Behavior |
-|---------|------|----------|
-| "Audit Mode" | VERIFYING | Full forensic, drop pleasantries, **check for config drift** |
-| "Plan this out" | PLANNING | Strategic, vision-focused, **map all dependencies** |
-| "Spec this" | SPECIFYING | Exhaustive, standards-aligned, **document manual steps** |
-| "Implement" / "Build" | EXECUTING | Tactical, spec-adherent, **flag migrations immediately** |
-| "Test" / "Verify" | VERIFYING | Critical, regression-aware, **validate user actions taken** |
-
----
-
-## 📋 Critical Gap Checklist (Use Before notify_user)
-
-Before calling `notify_user` with BlockedOnUser=true, verify:
-
-- [ ] Have I created any `.sql` migration files? → Flagged for manual execution?
-- [ ] Have I added new environment variables? → Documented in `.env.example`?
-- [ ] Have I changed API contracts? → CHANGELOG updated with breaking change notice?
-- [ ] Does this require external service setup? → Setup instructions provided?
-- [ ] Will the app fail if user skips a step? → That step is in "Next Steps for You"?
-- [ ] Is there a "point of no return" deployment? → Rollback script included?
-
-**If ANY checkbox is unchecked, your implementation plan is incomplete.**
+| Phase | Entry | Required Outputs | Exit Gate |
+|------|------|------------------|----------|
+| 1. Planning | New feature/refactor | mission + architecture choice | L1–L4 complete, risks explicit |
+| 2. Specification | Plan approved | API/service contracts + acceptance criteria | Backward compatibility validated |
+| 3. Implementation | Spec approved | code + tests + migrations/config notes | No duplicated logic, contracts honored |
+| 4. Verification | Impl complete | compile/test/runtime evidence | all hard gates pass |
+| 5. Sign-off | Verification done | signoff checklist artifact | reviewer approval |
 
 ---
 
-## 🚀 Deployment Reliability Protocol (Vercel + Security)
+## Hard Gates (Must Pass Before “Done”)
 
-Use this protocol before every production push to avoid recurring deployment failures.
+1. `npx tsc --noEmit` passes
+2. `npx vitest run` passes
+3. Contract tests for new service/route/event payloads pass
+4. Migration status verified (if schema changed)
+5. Runtime manual check proves persistence + readback for changed path
+6. Graceful degradation validated (forced failure still returns core response)
+7. Environment parity confirmed (tested deployment points to expected Supabase project)
 
-### 1) Security Advisory Gate (Mandatory)
+---
 
-- Check Vercel/Next advisories before deploy:
-  - https://vercel.com/kb/bulletin/react2shell
-  - https://nextjs.org/blog/security-update-2025-12-11
-- If advisory blocks current major/minor line, upgrade immediately to a patched release in that line.
-- Record exact upgraded version in commit message (example: `security(next): upgrade to 15.4.10`).
+## Critical Gap Protocol
 
-### 2) Pre-Push Build Gate (Mandatory)
+Mark **HUMAN FOLLOW-UP REQUIRED** when any of the below exist:
+- SQL migration to apply manually
+- env vars/API keys needed
+- deployment config/manual platform step
+- breaking client contract migration
 
-Run in repo root before push:
+Always include exact copy/paste steps for human follow-up.
+
+---
+
+## Deployment Reliability Protocol (Vercel/Next)
+
+Before pushing:
 
 ```bash
 npm run build
 ```
 
-If build cannot run locally due environment drift, run:
+If env drift blocks local build, use env-blank simulation where appropriate.
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL= NEXT_PUBLIC_SUPABASE_ANON_KEY= npm run build
-```
+Checklist:
+- security advisories reviewed
+- no top-level eager env-dependent client init in prerender paths
+- new files are tracked (`git status --short`)
+- scoped commit message explains root cause + fix
 
-Purpose: catch prerender-time env crashes before Vercel.
+---
 
-### 3) Prerender-Safe Env Rules (Mandatory)
+## Delivery Artifacts Required
 
-- Never initialize Supabase (or env-dependent SDK clients) at module top-level in files imported by pages/layouts.
-- Use lazy initialization inside functions/classes (runtime only), with null-safe fallback when env is missing.
-- For history/analytics helpers imported by client pages, guard env and return no-op/default values when unconfigured.
+For substantial work, produce:
+- `implementation_plan.md`
+- `walkthrough.md`
+- `docs/audits/PHASE_*_SIGNOFF.md`
 
-Bad pattern:
+Each should include:
+- exact files changed
+- acceptance criteria mapping
+- automated evidence (tests/compile)
+- manual verification steps
+- unresolved gaps (if any)
 
-```ts
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-```
+---
 
-Required pattern:
+## Definition of Done (Strict)
 
-```ts
-let client: SupabaseClient | null = null;
-function getClient() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return null;
-  if (!client) client = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  return client;
-}
-```
+A task is done only when:
+- Architecture contract is respected,
+- Hard gates are green,
+- Runtime behavior is verified in the intended environment,
+- Human follow-ups are explicit and complete.
 
-### 4) Missing-Module Prevention Gate (Mandatory)
-
-- Before commit, ensure newly referenced modules are staged/tracked:
-
-```bash
-git status --short
-```
-
-- If Vercel reports `Module not found` for paths that exist locally, assume incomplete commit/push and verify tracked state immediately.
-
-### 5) Temporary Build Bypass Policy
-
-- `next.config.mjs` bypass flags (`eslint.ignoreDuringBuilds`, `typescript.ignoreBuildErrors`) are allowed only as temporary unblockers.
-- When enabled:
-  - Create follow-up hardening task in same thread.
-  - Remove bypasses after type/lint debt is reduced.
-
-### 6) Standard Incident Response for Vercel Failures
-
-1. Classify failure: `module-not-found` vs `env/prerender` vs `security-block`.
-2. Patch minimally with deterministic fix.
-3. Re-run local build gate.
-4. Commit with scoped message (`fix(build): ...`, `fix(chat): ...`, `security(next): ...`).
-5. Push and redeploy.
-6. Document root cause + fix path in workflow/report.
-
-### 7) Deployment Handoff Checklist (Copy/Paste)
-
-- [ ] Security bulletin checked (React2Shell / Next advisory)
-- [ ] Patched Next.js version confirmed in `package.json` and lockfile
-- [ ] `npm run build` completed (or env-blank simulation completed)
-- [ ] No eager env-dependent client initialization in prerender import chains
-- [ ] No `Module not found` unresolved in changed paths
-- [ ] Commit pushed and redeploy triggered
+If any one is missing, status is **in progress**, not done.

@@ -1,452 +1,48 @@
 {
   "schema_version": "1.1.0",
   "version": "1.1.0",
-  "run_id": "20260213T082016Z-e85bf26-be8a0e9e",
-  "generated_at": "2026-02-13T08:20:16Z",
-  "workspace_root": "/Users/lesz/Documents/Synthetic-Mind",
-  "cwd_detected": "/Users/lesz/Documents/Synthetic-Mind",
+  "run_id": "20260214T082219Z-nogit-e58f2b1f",
+  "generated_at": "2026-02-14T08:22:19Z",
+  "workspace_root": "",
+  "cwd_detected": "",
   "npm_script_available_here": false,
   "git": {
-    "root": "/Users/lesz/Documents/Synthetic-Mind",
-    "branch": "master",
+    "root": "",
+    "branch": "unknown",
     "dirty_summary": {
-      "modified": 10,
-      "untracked": 6,
+      "modified": 0,
+      "untracked": 0,
       "staged": 0
     },
-    "recent_commits": [
-      {
-        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
-        "date": "2026-02-13T10:28:27+08:00",
-        "message": "Create MASA session bootstrap plan"
-      }
-    ]
+    "recent_commits": []
   },
   "scan_confidence": {
-    "user_action_required": "medium",
-    "pending_migrations": "low",
-    "required_env_keys": "low"
+    "user_action_required": "high",
+    "pending_migrations": "high",
+    "required_env_keys": "high"
   },
   "architecture_state": {
-    "workflows_present": [
-      {
-        "name": "claim_drift_sentinel",
-        "present": true,
-        "path": "synthesis-engine/.github/workflows/claim-drift-sentinel.yml"
-      },
-      {
-        "name": "m6_health_check",
-        "present": true,
-        "path": "synthesis-engine/.github/workflows/m6-health-check.yml"
-      },
-      {
-        "name": "m6_closeout_tracker",
-        "present": true,
-        "path": "synthesis-engine/.github/workflows/m6-closeout-tracker.yml"
-      },
-      {
-        "name": "hybrid_novelty_proof_sentinel",
-        "present": true,
-        "path": "synthesis-engine/.github/workflows/hybrid-novelty-proof-sentinel.yml"
-      }
-    ],
-    "feature_surfaces": [
-      {
-        "path": "synthesis-engine/src/app/api/benchmark-cost/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/benchmark-runs/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/adopt-legacy/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/history/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/causal-chat/sessions/[id]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/__tests__/optimize-intervention.route.test.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/analyze-student/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/active/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/sessions/[id]/complete/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/apprenticeship/start/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/optimize-intervention/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/plans/activate/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/plans/reflection/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/plans/reminder/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/education/plans/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/epistemic/chat/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/epistemic/session/[id]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/epistemic/session/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/history/import/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/hybrid-synthesize/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/legal-reasoning/__tests__/route.test.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/legal-reasoning/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/openclaw/search/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/openclaw/status/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/openclaw/test/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/alignment-audit/latest/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/autopsy/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/__tests__/route.test.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/disagreement/compare/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/integrity/dashboard/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/integrity/signoff/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/intervention/validate/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/literacy/explain/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/current/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/promote/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/versions/[version]/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/scm/models/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/synthesis-history/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/synthesize/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/validate-protocol/route.ts"
-      },
-      {
-        "path": "synthesis-engine/src/app/api/verify-db/route.ts"
-      }
-    ],
-    "latest_area_commits": [
-      {
-        "area": ".agent/workflows/",
-        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
-        "date": "2026-02-13T10:28:27+08:00",
-        "message": "Create MASA session bootstrap plan"
-      },
-      {
-        "area": "MASA-Theoretical-Foundation/",
-        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
-        "date": "2026-02-13T10:28:27+08:00",
-        "message": "Create MASA session bootstrap plan"
-      },
-      {
-        "area": "Codex-Audit/",
-        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
-        "date": "2026-02-13T10:28:27+08:00",
-        "message": "Create MASA session bootstrap plan"
-      },
-      {
-        "area": "synthesis-engine/src/app/api/",
-        "hash": "none",
-        "date": "none",
-        "message": "no commits found"
-      },
-      {
-        "area": "synthesis-engine/.github/workflows/",
-        "hash": "none",
-        "date": "none",
-        "message": "no commits found"
-      }
-    ],
-    "latest_docs": [
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770921910,
-        "path": "MASA-Theoretical-Foundation/MASA_ARCHITECTURE_CURRENT_STATE_SUMMARY_2026-02-12.md"
-      },
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770808885,
-        "path": "MASA-Theoretical-Foundation/S1-Execution-Plan.md"
-      },
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770804913,
-        "path": "MASA-Theoretical-Foundation/GOVERNANCE_SPEC_INDEX.md"
-      },
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770804911,
-        "path": "MASA-Theoretical-Foundation/LAW_DISCOVERY_FALSIFICATION_PROTOCOL.md"
-      },
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770796528,
-        "path": "MASA-Theoretical-Foundation/DOMAIN_PROFILE_SCHEMA_WITH_CLASSIFIER_MAPPING.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770953416,
-        "path": "Codex-Audit/Automated-Scientist-Audit-2026-02-05.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770953399,
-        "path": "Codex-Audit/Novel_Plan_Audit_v1.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770441984,
-        "path": "Codex-Audit/Automated-Scientist_Implementation_Summary_2026-02-07.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770393044,
-        "path": "Codex-Audit/Codex_M6.2_Implementation_v1.md"
-      },
-      {
-        "group": "Codex-Audit",
-        "mtime_epoch": 1770392364,
-        "path": "Codex-Audit/Codex_M6.2_Spec_v2.md"
-      }
-    ]
+    "workflows_present": [],
+    "feature_surfaces": [],
+    "latest_area_commits": [],
+    "latest_docs": []
   },
   "critical_gaps": {
-    "pending_migrations": [
-      "synthesis-engine/supabase/migrations/20250128_fix_select_rls_for_anonymous.sql",
-      "synthesis-engine/supabase/migrations/20260120_vector_memory.sql",
-      "synthesis-engine/supabase/migrations/20260124_add_contradictions.sql",
-      "synthesis-engine/supabase/migrations/20260124_add_phase3_outputs.sql",
-      "synthesis-engine/supabase/migrations/20260124_benchmark_schema.sql",
-      "synthesis-engine/supabase/migrations/20260124_history_schema_update.sql",
-      "synthesis-engine/supabase/migrations/20260124_masa_consciousness_state.sql",
-      "synthesis-engine/supabase/migrations/20260124_masa_engrams.sql",
-      "synthesis-engine/supabase/migrations/20260124_phase28_causal_blueprint.sql",
-      "synthesis-engine/supabase/migrations/20260124_spectral_subspaces.sql",
-      "synthesis-engine/supabase/migrations/20260127_causal_chat_schema.sql",
-      "synthesis-engine/supabase/migrations/20260128_causal_models.sql",
-      "synthesis-engine/supabase/migrations/20260129_add_axiom_compression_trigger.sql",
-      "synthesis-engine/supabase/migrations/20260129_create_causal_axioms.sql",
-      "synthesis-engine/supabase/migrations/20260202_fix_causal_chat_rls.sql",
-      "synthesis-engine/supabase/migrations/20260205_add_source_metadata.sql",
-      "synthesis-engine/supabase/migrations/20260205_education_apprenticeship_sessions.sql",
-      "synthesis-engine/supabase/migrations/20260205_epistemic_qualia_composite_constraint.sql",
-      "synthesis-engine/supabase/migrations/20260207_expand_benchmark_suites.sql",
-      "synthesis-engine/supabase/migrations/20260210_openclaw_search_results.sql",
-      "synthesis-engine/supabase/migrations/20260211_enhanced_synthesis_validation.sql",
-      "synthesis-engine/supabase/migrations/20260211_google_auth_history_ownership.sql",
-      "synthesis-engine/supabase/migrations/20260212_legacy_chat_adoption.sql",
-      "synthesis-engine/supabase/migrations/20260212_legacy_chat_adoption_rpc.sql",
-      "synthesis-engine/supabase/migrations/20260213_counterfactual_traces.sql",
-      "synthesis-engine/supabase/migrations/20260214_hypothesis_lifecycle_governance.sql",
-      "synthesis-engine/supabase/migrations/20260215_expand_benchmark_suites_m4.sql",
-      "synthesis-engine/supabase/migrations/20260216_scm_promotion_governance.sql",
-      "synthesis-engine/supabase/migrations/20260217_scientific_integrity_signoffs.sql",
-      "synthesis-engine/supabase/migrations/20260218_fix_hot_rosenthal_candidate_confounder.sql",
-      "synthesis-engine/supabase/migrations/seed_causal_models.sql"
-    ],
-    "required_env_keys": [
-      "AI_DEBUG",
-      "ANTHROPIC_API_KEY",
-      "AUTOPSY_MODE_ENABLED",
-      "BENCHMARK_CI_GATE",
-      "BENCHMARK_MAX_COST",
-      "CAUSAL_LITERACY_ENABLED",
-      "CHAT_WEB_GROUNDING_V1",
-      "DISAGREEMENT_ENGINE_ENABLED",
-      "ENABLE_STATISTICAL_VALIDATION",
-      "FORCE_PROVIDER",
-      "HYBRID_NOVELTY_PROOF_V1",
-      "NEXT_PUBLIC_AUTOSCI_LAYOUT_V2",
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      "NEXT_PUBLIC_SUPABASE_URL",
-      "NODE_ENV",
-      "OPENCLAW_WS_URL",
-      "PHENOMENAL_LAYER_ENABLED",
-      "PROMOTION_ACTOR_USER_ID",
-      "PUBLICATION_YEAR_FALLBACK",
-      "SCIENTIFIC_INTEGRITY_GATE_ENABLED",
-      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_COVERAGE",
-      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_TRACES",
-      "SCIENTIFIC_INTEGRITY_REQUIRED_FULL_SUITE_RUNS",
-      "SCIENTIFIC_INTEGRITY_WINDOW_DAYS",
-      "SCM_HYPOTHESIS_ENABLED",
-      "SCM_PROMOTION_GUARD_ENABLED",
-      "SCM_REGISTRY_ENABLED",
-      "SEMANTIC_SCHOLAR_API_KEY",
-      "SERPER_API_KEY",
-      "SUPABASE_SERVICE_ROLE_KEY",
-      "TRACE_SIGN_KEY"
-    ],
-    "user_action_required": [
-      ".agent/workflows/Demis-Workflow.md:125",
-      ".agent/workflows/Demis-Workflow.md:136"
-    ],
-    "classified_user_actions": [
-      {
-        "path": ".agent/workflows/Demis-Workflow.md",
-        "line": 125,
-        "severity": "blocking",
-        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
-        "matched_text_excerpt": "| **Database Migration** | `.sql` file created | \u2757 Mark \"HUMAN FOLLOW-UP REQUIRED\" in plan + walkthrough |",
-        "match_hash": "a316875c7fe7e0c0042d951743dc332d0546977fa3c54ae4c2daf3e4d12730fd"
-      },
-      {
-        "path": ".agent/workflows/Demis-Workflow.md",
-        "line": 136,
-        "severity": "blocking",
-        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
-        "matched_text_excerpt": "\u2192 Mark as \"HUMAN FOLLOW-UP REQUIRED\" in implementation plan (IMPORTANT alert)",
-        "match_hash": "b50e653814d257b7f2a7724f91d5d384f4833ca3aa490fa2aa1f7e424d52cd0a"
-      }
-    ]
+    "pending_migrations": [],
+    "required_env_keys": [],
+    "user_action_required": [],
+    "classified_user_actions": []
   },
-  "reference_evidence": [
-    {
-      "path": ".agent/workflows/Demis-Workflow.md",
-      "line": 125,
-      "matched_text_excerpt": "| **Database Migration** | `.sql` file created | \u2757 Mark \"HUMAN FOLLOW-UP REQUIRED\" in plan + walkthrough |",
-      "match_hash": "a316875c7fe7e0c0042d951743dc332d0546977fa3c54ae4c2daf3e4d12730fd"
-    },
-    {
-      "path": ".agent/workflows/Demis-Workflow.md",
-      "line": 136,
-      "matched_text_excerpt": "\u2192 Mark as \"HUMAN FOLLOW-UP REQUIRED\" in implementation plan (IMPORTANT alert)",
-      "match_hash": "b50e653814d257b7f2a7724f91d5d384f4833ca3aa490fa2aa1f7e424d52cd0a"
-    }
-  ],
+  "reference_evidence": [],
   "provenance": {
-    "commands": [
-      {
-        "label": "git_branch",
-        "status": "ok",
-        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --abbrev-ref HEAD"
-      },
-      {
-        "label": "git_head_short",
-        "status": "ok",
-        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --short HEAD"
-      },
-      {
-        "label": "git_status",
-        "status": "ok",
-        "command": "git -C /Users/lesz/Documents/Synthetic-Mind status --short"
-      },
-      {
-        "label": "recent_commits",
-        "status": "ok",
-        "command": "git -C /Users/lesz/Documents/Synthetic-Mind log -n 10 --date=iso-strict --pretty=format:%H|%ad|%s"
-      },
-      {
-        "label": "latest_area_commits",
-        "status": "ok",
-        "command": "git log latest area scans"
-      },
-      {
-        "label": "workflow_presence",
-        "status": "ok",
-        "command": "filesystem workflow checks"
-      },
-      {
-        "label": "feature_surfaces",
-        "status": "ok",
-        "command": "rg --files synthesis-engine/src/app/api"
-      },
-      {
-        "label": "pending_migrations",
-        "status": "ok",
-        "command": "find synthesis-engine/supabase/migrations/*.sql"
-      },
-      {
-        "label": "required_env_keys",
-        "status": "ok",
-        "command": "rg process.env.*"
-      },
-      {
-        "label": "critical_markers",
-        "status": "ok",
-        "command": "rg marker scan"
-      },
-      {
-        "label": "latest_docs",
-        "status": "ok",
-        "command": "latest docs scan"
-      }
-    ]
+    "commands": []
   },
   "next_tasks": [
     {
       "id": "N1",
-      "task": "Resolve explicit blocking markers before execution.",
-      "reason": "2 blocking marker(s) detected.",
-      "priority": "high"
-    },
-    {
-      "id": "N2",
-      "task": "Confirm migration application status in Supabase for latest SQL files.",
-      "reason": "31 migration file(s) found; runtime apply status is manual.",
-      "priority": "high"
-    },
-    {
-      "id": "N3",
-      "task": "Verify required environment keys exist in deployment and local envs.",
-      "reason": "31 unique process.env key(s) detected.",
-      "priority": "medium"
+      "task": "No blockers detected; proceed with active implementation slice.",
+      "reason": "Bootstrap scan found no critical gaps.",
+      "priority": "low"
     }
   ],
   "assumptions": [
