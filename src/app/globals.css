@@ -1405,8 +1405,16 @@
 .dark .feature-chat .lab-panel-elevated,
 .dark .feature-chat .lab-card,
 .dark .feature-chat .lab-card-interactive {
-  background: #09090b !important;
-  border-color: #27272a !important;
+  background: #686963 !important;
+  border-color: #7a7b75 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.dark .feature-chat .scientific-protocol-card {
+  background: #686963 !important;
+  border-color: #7a7b75 !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;

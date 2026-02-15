@@ -16,7 +16,7 @@ export function ProtocolCard({ title, description, icon: Icon, onClick, variant 
     <button
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col items-start gap-3 p-5 text-left transition-all duration-300",
+        "scientific-protocol-card group relative flex flex-col items-start gap-3 p-5 text-left transition-all duration-300",
         "rounded-xl border border-[var(--lab-border)] bg-[var(--lab-panel)] hover:border-[var(--lab-text-secondary)]",
         variant === 'featured' && "bg-[var(--lab-panel)]"
       )}

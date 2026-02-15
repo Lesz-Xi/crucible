@@ -280,8 +280,8 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads, researchThreadIds]);
 
   return (
-    <div className="lab-glass-system min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
-      <div className="flex min-h-screen">
+    <div className={cn('lab-glass-system w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>
+      <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(
           'glass-sidebar relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
@@ -556,7 +556,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
         </aside>
         ) : null}
 
-        <div className="min-w-0 flex-1 min-h-screen">{children}</div>
+        <div className={cn('min-w-0 flex-1', isChatRoute ? 'h-screen' : 'min-h-screen')}>{children}</div>
       </div>
     </div>
   );
