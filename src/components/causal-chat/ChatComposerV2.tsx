@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent } from 'react';
-import { ChevronDown, Eye, EyeOff, FlaskConical, Loader2, Paperclip, Send, SlidersHorizontal, Square } from 'lucide-react';
+import { ChevronDown, Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, SlidersHorizontal, Square } from 'lucide-react';
 
 interface QuickPromptOption {
   id: string;
@@ -30,6 +30,8 @@ export interface ChatComposerV2Props {
   onQuickPromptSelect?: (id: string, snippet: string) => void;
   evidenceRailOpen?: boolean;
   onToggleEvidenceRail?: () => void;
+  focusMode?: boolean;
+  onToggleFocusMode?: () => void;
   attachments?: ComposerAttachment[];
   onAddAttachments?: (files: File[]) => void;
   onRemoveAttachment?: (name: string) => void;
@@ -50,6 +52,8 @@ export function ChatComposerV2({
   onQuickPromptSelect,
   evidenceRailOpen = true,
   onToggleEvidenceRail,
+  focusMode = false,
+  onToggleFocusMode,
   attachments = [],
   onAddAttachments,
   onRemoveAttachment,
@@ -180,6 +184,16 @@ Scenarios
             title={evidenceRailOpen ? 'Hide evidence rail' : 'Show evidence rail'}
           >
             {evidenceRailOpen ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+          </button>
+
+          <button
+            type="button"
+            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            onClick={onToggleFocusMode}
+            title={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+            aria-pressed={focusMode}
+          >
+            <Focus className="h-3.5 w-3.5" />
           </button>
         </div>
 

@@ -577,8 +577,8 @@
 .lab-chat-prose {
   color: var(--lab-text-primary);
   font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.74;
+  font-size: 17px;
+  line-height: 1.76;
   max-width: 88ch;
   text-wrap: pretty;
 }
@@ -682,9 +682,10 @@
 }
 
 .lab-chat-prose li {
-  margin: 0.4rem 0;
+  margin: 0.42rem 0;
   color: var(--lab-text-primary);
   padding-left: 0.1rem;
+  font-size: 1.03em;
 }
 
 .lab-chat-prose li > p {
@@ -702,15 +703,15 @@
 }
 
 .lab-chat-prose h1 {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
 }
 
 .lab-chat-prose h2 {
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
 }
 
 .lab-chat-prose h3 {
-  font-size: 1rem;
+  font-size: 1.075rem;
 }
 
 .lab-chat-prose h2 {

@@ -342,8 +342,9 @@ export function buildAttachmentSequentialThinkingReport(
   const section1Lines: string[] = ["Section 1: All Explicit Numbers with Context"];
 
   if (fileNames.length > 0) {
-    section1Lines.push("Source files:");
+    section1Lines.push("**Source files**:");
     fileNames.forEach((name) => section1Lines.push(`- ${name}`));
+    section1Lines.push("");
   }
 
   const hasAnyRows = rows.length > 0;
@@ -354,8 +355,9 @@ export function buildAttachmentSequentialThinkingReport(
     for (const category of categoryOrder) {
       const bucket = rows.filter((row) => row.category === category).slice(0, 3);
       if (bucket.length === 0) continue;
-      section1Lines.push(labelMap[category]);
+      section1Lines.push(`### ${labelMap[category]}`);
       bucket.forEach((row) => section1Lines.push(formatEvidenceLine(row)));
+      section1Lines.push("");
     }
   }
 

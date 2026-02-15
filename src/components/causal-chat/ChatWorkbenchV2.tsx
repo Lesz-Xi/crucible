@@ -278,6 +278,7 @@ export function ChatWorkbenchV2() {
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
+  const [focusMode, setFocusMode] = useState(false);
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
@@ -311,6 +312,12 @@ export function ChatWorkbenchV2() {
     const savedEvidenceRail = window.localStorage.getItem('chat-v3-evidence-rail');
     if (savedEvidenceRail === 'closed') setEvidenceRailOpen(false);
 
+    const savedFocusMode = window.localStorage.getItem('chat-v3-focus-mode');
+    if (savedFocusMode === 'on') {
+      setFocusMode(true);
+      setEvidenceRailOpen(false);
+    }
+
     const onKeyDown = (event: KeyboardEvent) => {
       const isMetaToggle = (event.metaKey || event.ctrlKey) && !event.altKey;
       if (!isMetaToggle) return;
@@ -320,6 +327,19 @@ export function ChatWorkbenchV2() {
         setEvidenceRailOpen((current) => {
           const next = !current;
           window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
+          return next;
+        });
+      }
+
+      if (event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        setFocusMode((current) => {
+          const next = !current;
+          window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
+          if (next) {
+            setEvidenceRailOpen(false);
+            window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
+          }
           return next;
         });
       }
@@ -897,6 +917,22 @@ export function ChatWorkbenchV2() {
     setEvidenceRailOpen((current) => {
       const next = !current;
       window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
+      if (next) {
+        setFocusMode(false);
+        window.localStorage.setItem('chat-v3-focus-mode', 'off');
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleFocusMode = useCallback(() => {
+    setFocusMode((current) => {
+      const next = !current;
+      window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
+      if (next) {
+        setEvidenceRailOpen(false);
+        window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
+      }
       return next;
     });
   }, []);
@@ -1021,6 +1057,8 @@ export function ChatWorkbenchV2() {
               onQuickPromptSelect={handleQuickPrompt}
               evidenceRailOpen={evidenceRailOpen}
               onToggleEvidenceRail={toggleEvidenceRail}
+              focusMode={focusMode}
+              onToggleFocusMode={toggleFocusMode}
               attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
               onAddAttachments={handleAddAttachments}
               onRemoveAttachment={handleRemoveAttachment}
