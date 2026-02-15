@@ -9,7 +9,6 @@
  * - Given that X happened and Y happened
  * - What is the probability that Y would NOT have happened if X had NOT happened?
  * 
- * Taoist Wisdom: "The valley receives all streams, but only some streams carved the valley."
  * Not all correlations are causations - the but-for test distinguishes them.
  * 
  * Phase 28.Legal: Pearl's Counterfactual Layer for Legal Reasoning
@@ -225,7 +224,7 @@ export class ButForAnalyzer {
         confident: true,
         result: 'neither',
         confidence: 0.85,
-        scenario: `Mere presence at the scene does not establish causation. The valley receives all streams, but only some streams carved the valley.`,
+        scenario: `Mere presence at the scene does not establish causation. Presence alone is not a causal mechanism.`,
         reasoning: `Correlation trap detected: Defendant's presence does not causally link to the harm without specific action.`,
       };
     }
@@ -285,8 +284,7 @@ ${action.actor ? `**ACTOR:** ${action.actor}` : ''}
      - 0.5 = Uncertain
      - 0.0 = Action unlikely to cause this harm
 
-## TAOIST PRINCIPLE:
-"The valley receives all streams, but only some streams carved the valley."
+## CAUSAL DISCIPLINE:
 Not all correlations are causations. Be rigorous in distinguishing mere presence from actual causation.
 
 ## OUTPUT (JSON only, no markdown):

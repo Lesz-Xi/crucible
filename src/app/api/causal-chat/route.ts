@@ -117,6 +117,10 @@ function sanitizeAutomatedScientistTone(text: string): string {
     /natural flow of evidence extraction[^\n]*/gi,
     /like water seeking its course[^\n]*/gi,
     /the stream that entered your valley[^\n]*/gi,
+    /you have walked the path[^\n]*/gi,
+    /tracing individual roots before seeing the forest[^\n]*/gi,
+    /let me gather what flows through this document[^\n]*/gi,
+    /walked the path of extraction[^\n]*/gi,
   ];
 
   // Hard block low-signal recommendation boilerplate in attachment-first mode.
