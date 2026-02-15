@@ -1,18 +1,22 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTheme } from 'next-themes';
 import {
   ArrowDown,
   ArrowRight,
   ChevronDown,
   FileText,
+  Focus,
   FlaskConical,
+  Moon,
   MessageSquare,
   Microscope,
   Network,
   Plus,
   Scale,
   Send,
+  Sun,
   ShieldCheck,
   Sparkles,
   StopCircle,
@@ -282,6 +286,7 @@ export function ChatWorkbenchV2() {
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
+  const { resolvedTheme, setTheme } = useTheme();
   const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
@@ -1045,32 +1050,54 @@ export function ChatWorkbenchV2() {
             </div>
 
             <div className="mt-auto">
-            <ChatComposerV2
-              value={prompt}
-              onChange={setPrompt}
-              onSend={handleSend}
-              onStop={handleStop}
-              isLoading={isLoading}
-              operatorMode={operatorMode}
-              onOperatorModeChange={setOperatorMode}
-              quickPrompts={QUICK_PROMPTS}
-              selectedQuickPromptId={selectedQuickPrompt}
-              onQuickPromptSelect={handleQuickPrompt}
-              evidenceRailOpen={evidenceRailOpen}
-              onToggleEvidenceRail={toggleEvidenceRail}
-              focusMode={focusMode}
-              onToggleFocusMode={toggleFocusMode}
-              attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
-              onAddAttachments={handleAddAttachments}
-              onRemoveAttachment={handleRemoveAttachment}
-              placeholder={
-                operatorMode === 'intervene'
-                  ? 'Describe the action you want to take, expected impact, and guardrails...'
-                  : operatorMode === 'audit'
-                    ? 'Paste the claim to validate, evidence available, and what could disprove it...'
-                    : 'Describe the real-world situation, what changed, and what outcome you need...'
-              }
-            />
+            {!focusMode ? (
+              <ChatComposerV2
+                value={prompt}
+                onChange={setPrompt}
+                onSend={handleSend}
+                onStop={handleStop}
+                isLoading={isLoading}
+                operatorMode={operatorMode}
+                onOperatorModeChange={setOperatorMode}
+                quickPrompts={QUICK_PROMPTS}
+                selectedQuickPromptId={selectedQuickPrompt}
+                onQuickPromptSelect={handleQuickPrompt}
+                evidenceRailOpen={evidenceRailOpen}
+                onToggleEvidenceRail={toggleEvidenceRail}
+                focusMode={focusMode}
+                onToggleFocusMode={toggleFocusMode}
+                attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
+                onAddAttachments={handleAddAttachments}
+                onRemoveAttachment={handleRemoveAttachment}
+                placeholder={
+                  operatorMode === 'intervene'
+                    ? 'Describe the action you want to take, expected impact, and guardrails...'
+                    : operatorMode === 'audit'
+                      ? 'Paste the claim to validate, evidence available, and what could disprove it...'
+                      : 'Describe the real-world situation, what changed, and what outcome you need...'
+                }
+              />
+            ) : (
+              <div className="flex items-center gap-2 px-6 pb-3 pt-2">
+                <button
+                  type="button"
+                  className="lab-button-secondary !px-3 !py-1.5 text-xs"
+                  onClick={toggleFocusMode}
+                  title="Exit reading mode"
+                >
+                  <Focus className="h-3.5 w-3.5" />
+                  Exit reading mode
+                </button>
+                <button
+                  type="button"
+                  className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
+                  onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                  title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                </button>
+              </div>
+            )}
             </div>
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>

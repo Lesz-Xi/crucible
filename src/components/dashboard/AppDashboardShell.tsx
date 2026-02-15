@@ -17,8 +17,9 @@ import {
   GraduationCap,
   Home,
   LogOut,
-  Menu,
   MessageSquare,
+  PanelLeftClose,
+  PanelLeftOpen,
   Moon,
   Plus,
   Sun,
@@ -47,32 +48,6 @@ const NAV_ITEMS = [
   { href: '/legal', label: 'Legal', icon: Gavel },
   { href: '/education', label: 'Educational', icon: GraduationCap },
 ];
-
-// Custom Menu Icon inspired by Google Material "Menu Open"
-function MenuToggleIcon({ collapsed }: { collapsed: boolean }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-      <path
-        d="M13 8l-4 4 4 4"
-        className={cn(
-          "origin-center transition-transform duration-300",
-          collapsed ? "rotate-180" : "rotate-0"
-        )}
-      />
-    </svg>
-  );
-}
 
 export function AppDashboardShell({ children, readingMode = false }: AppDashboardShellProps) {
   const pathname = usePathname();
@@ -225,7 +200,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 </div>
               )}
               <button type="button" className="lab-button-secondary !px-2.5 !py-2" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                <MenuToggleIcon collapsed={collapsed} />
+                {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
               </button>
             </div>
 
@@ -420,7 +395,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       {userEmail || 'Account'}
                     </span>
                   )}
-                  {collapsed ? null : <Menu className="h-4 w-4" />}
+                  {collapsed ? null : <ChevronDown className="h-4 w-4" />}
                 </button>
 
                 {accountOpen ? (
