@@ -97,7 +97,7 @@ describe("chat-scientific-bridge", () => {
 
     const result = await processChatAttachments([attachment()], "user-1");
 
-    expect(result.summaryForContext).toContain("Extracted numbers with context (all explicit numerics)");
+    expect(result.summaryForContext).toContain("Potential metrics");
     expect(result.summaryForContext).toContain("Reference indices");
     expect(result.summaryForContext).toContain("Citation years");
     expect(result.summaryForContext).toContain("Bibliographic");

@@ -182,10 +182,17 @@ function buildContextSummary(analyses: ScientificAnalysisResponse[]): string {
       }
 
       const claimEligible = deduped.filter((row) => row.category === "potential_metric");
-
+      if (claimEligible.length > 0) {
+        lines.push("Claim-eligible numeric candidates:");
+        claimEligible.slice(0, 8).forEach((row, i) => {
+          lines.push(`${i + 1}. ${row.item.value} — ${row.snippet} (${row.confidence} confidence)`);
+        });
+      } else {
+        lines.push("Claim-eligible numeric candidates: NONE");
+      }
     }
 
-
+    lines.push("---");
   });
 
   return lines.join("\n");
