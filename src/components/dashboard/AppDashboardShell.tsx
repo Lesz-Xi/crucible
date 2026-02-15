@@ -108,7 +108,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     }));
   };
 
-  const createFolderFile = (folderId: string, defaultName?: string) => {
+  const createFolderFile = (folderId: string, defaultName?: string, startNewChat = false) => {
     const proposed = defaultName ?? `Untitled file ${(folderFiles[folderId]?.length ?? 0) + 1}`;
     const name = prompt('Enter file name:', proposed);
     if (!name) return;
@@ -123,6 +123,17 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     }));
     setFolderOpenState((prev) => ({ ...prev, [folderId]: true }));
     setActiveFolderId(folderId);
+    if (startNewChat) {
+      router.push('/chat?new=1');
+      window.dispatchEvent(new Event('newChat'));
+    }
+  };
+
+  const removeFolderFile = (folderId: string, fileId: string) => {
+    setFolderFiles((prev) => ({
+      ...prev,
+      [folderId]: (prev[folderId] ?? []).filter((file) => file.id !== fileId),
+    }));
   };
 
   useEffect(() => {
@@ -361,9 +372,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       type="button"
                       className="sidebar-history-item !py-2.5 !font-medium flex-1"
                       onClick={() => {
-                        if (activeFolderId) {
-                          createFolderFile(activeFolderId);
-                        }
+                        if (activeFolderId) createFolderFile(activeFolderId);
                         router.push('/chat?new=1');
                         window.dispatchEvent(new Event('newChat'));
                       }}
@@ -413,7 +422,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                           <button
                             type="button"
                             className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium opacity-70 hover:opacity-100 hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
-                            onClick={() => createFolderFile(folder.id)}
+                            onClick={() => createFolderFile(folder.id, undefined, true)}
                             title="Create file in folder"
                           >
                             <Plus className="h-3 w-3" />
@@ -423,9 +432,18 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                             <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
                           ) : (
                             (folderFiles[folder.id] ?? []).map((file) => (
-                              <div key={file.id} className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
+                              <div key={file.id} className="group flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
                                 <FileText className="h-3.5 w-3.5 opacity-70" />
                                 <span className="truncate" title={file.name}>{file.name}</span>
+                                <button
+                                  type="button"
+                                  className="ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                                  onClick={() => removeFolderFile(folder.id, file.id)}
+                                  aria-label="Remove file"
+                                  title="Remove file"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
                               </div>
                             ))
                           )}
@@ -538,7 +556,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
         </aside>
         ) : null}
 
-        <div className="min-w-0 flex-1">{children}</div>
+        <div className="min-w-0 flex-1 min-h-screen">{children}</div>
       </div>
     </div>
   );
