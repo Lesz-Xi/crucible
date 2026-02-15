@@ -184,11 +184,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads, researchThreadIds]);
 
   return (
-    <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
+    <div className="lab-glass-system min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
       <div className="flex min-h-screen">
         {!readingMode ? (
         <aside className={cn(
-          'relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
+          'glass-sidebar relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
           collapsed ? 'w-[74px]' : 'w-[286px]',
         )}>
           <div className="flex h-full flex-col p-3">
@@ -224,11 +224,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             </nav>
 
             {isChatRoute && !collapsed ? (
-              <section className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-3">
+              <section className="mt-3 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-2.5">
                 <div className="space-y-1.5">
                   <button
                     type="button"
-                    className="lab-nav-pill w-full justify-start !py-2.5"
+                    className="lab-nav-pill w-full justify-start !py-2"
                     onClick={() => {
                       router.push('/chat?new=1');
                       window.dispatchEvent(new Event('newChat'));
@@ -238,14 +238,14 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     <span>New chat</span>
                   </button>
 
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setSidebarMode('threads')} data-active={sidebarMode === 'threads' ? 'true' : 'false'}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2" onClick={() => setSidebarMode('threads')} data-active={sidebarMode === 'threads' ? 'true' : 'false'}>
                     <MessageSquare className="h-4 w-4" />
                     <span>Threads</span>
                     <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
                       {filteredThreads.length}
                     </span>
                   </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2.5" onClick={() => setSidebarMode('research')} data-active={sidebarMode === 'research' ? 'true' : 'false'}>
+                  <button type="button" className="lab-nav-pill w-full justify-start !py-2" onClick={() => setSidebarMode('research')} data-active={sidebarMode === 'research' ? 'true' : 'false'}>
                     <Folder className="h-4 w-4" />
                     <span>Research</span>
                     <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">

@@ -37,7 +37,7 @@ export function WorkbenchShell({
 
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
-  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 20px)' : 'calc(100svh - 112px)';
+  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 8px)' : 'calc(100svh - 112px)';
 
   return (
     <AppDashboardShell readingMode={readingMode}>
