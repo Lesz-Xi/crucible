@@ -60,38 +60,10 @@ function MenuToggleIcon({ collapsed }: { collapsed: boolean }) {
       strokeLinejoin="round"
       className="h-4 w-4"
     >
-      {/* Top and Bottom lines are static */}
       <line x1="3" y1="6" x2="21" y2="6" />
       <line x1="3" y1="18" x2="21" y2="18" />
-      
-      {/* Middle Chevron - Rotates based on collapsed state */}
       <path
-        d={collapsed ? "M9 12l5 5l-5 5" : "M15 12l-5 5l5 5"} // Simple path switch for now, let's use transform
-        className={cn(
-          "origin-center transition-transform duration-300",
-          collapsed ? "rotate-180 -translate-x-0.5" : "rotate-0 translate-x-0.5"
-        )}
-      />
-      {/* Actually, let's just draw the chevron explicitly for both states to be cleaner */}
-      <path
-        d="M14 12L10 16L14 20" // Down-Right pointing? No.
-        className="hidden" // Placeholder
-      />
-      
-      {/* 
-        Correct Path for "Left Pointing Chevron" (Open State):
-        Center is roughly 12,12.
-        M 15 9 L 9 12 L 15 15
-      */}
-      <path
-            d="M8.5 12L14.5 9V15L8.5 12Z" 
-            fill="currentColor" 
-            className="hidden" 
-      />
-
-      {/* Let's try a standard chevron path */}
-      <path
-        d="M13 8l-4 4 4 4" // Left pointing ( < )
+        d="M13 8l-4 4 4 4"
         className={cn(
           "origin-center transition-transform duration-300",
           collapsed ? "rotate-180" : "rotate-0"
