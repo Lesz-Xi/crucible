@@ -39,7 +39,7 @@ export function ProtocolCard({ title, description, icon: Icon, onClick, variant 
       </div>
 
       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
+        <div className="h-1.5 w-1.5 rounded-full bg-[var(--lab-accent-earth)] shadow-[0_0_8px_rgba(139,94,60,0.6)]" />
       </div>
     </button>
   );
