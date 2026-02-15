@@ -52,8 +52,8 @@ function IOSChevronIcon({ direction = 'left' }: { direction?: 'left' | 'right' }
     <span
       aria-hidden
       className={cn(
-        'inline-block h-4 w-4 border-t-[2.6px] border-r-[2.6px] border-current',
-        direction === 'left' ? '-rotate-135' : 'rotate-45',
+        'inline-block h-3.5 w-3.5 border-t-[2px] border-r-[2px] border-current transition-transform duration-200',
+        direction === 'left' ? '-rotate-[135deg] translate-x-[2px]' : 'rotate-45 -translate-x-[2px]',
       )}
     />
   );
