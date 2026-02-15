@@ -85,11 +85,11 @@
   --mist-400: #a9b0bb;
 
   /* Legacy overrides */
-  --background: #454545;
+  --background: #1E1E24;
   --foreground: #f3f4f6;
-  --bg-primary: #454545;
-  --bg-secondary: #4e4e4e;
-  --bg-card: rgba(69, 69, 69, 0.92);
+  --bg-primary: #1E1E24;
+  --bg-secondary: #26262e;
+  --bg-card: rgba(30, 30, 36, 0.92);
   --text-primary: #f3f4f6;
   --text-secondary: #a9b0bb;
   --text-tertiary: #7f8794;
@@ -106,9 +106,10 @@
   --wabi-stone: #8f96a3;
 
   /* Automated Scientist dark tokens */
-  --lab-bg: #454545;
-  --lab-bg-elevated: #4e4e4e;
-  --lab-panel: rgba(69, 69, 69, 0.9);
+  --shadow-grey: #1E1E24;
+  --lab-bg: #1E1E24;
+  --lab-bg-elevated: #26262e;
+  --lab-panel: rgba(30, 30, 36, 0.9);
   --lab-border: rgba(255, 255, 255, 0.16);
   --lab-text-primary: #e7e9ee;
   --lab-text-secondary: #b1b6c0;
@@ -941,6 +942,26 @@
 .dark .feature-legal .lab-panel-elevated {
   border-color: rgba(255, 255, 255, 0.11);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.38);
+}
+
+/* Shadow Grey dark unification across four features */
+.dark .feature-chat,
+.dark .feature-hybrid,
+.dark .feature-legal,
+.dark .edu-page {
+  background: var(--shadow-grey);
+}
+
+.dark .feature-chat .lab-panel-elevated,
+.dark .feature-hybrid .lab-panel-elevated,
+.dark .feature-legal .lab-panel-elevated,
+.dark .edu-card,
+.dark .edu-card-soft {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--shadow-grey) 90%, #2a2a34 10%) 0%,
+    color-mix(in srgb, var(--shadow-grey) 96%, #000 4%) 100%
+  );
 }
 
 .dark .lab-panel,

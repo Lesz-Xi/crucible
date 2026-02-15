@@ -279,8 +279,41 @@ function selectPrimarySnippet(row: AggregatedNumericEvidence): string {
   return scored[0]?.s || row.snippets[0];
 }
 
+function cleanSnippetForDisplay(snippet: string, category: NumericEvidenceCategory): string {
+  let out = snippet.replace(/\s+/g, " ").trim();
+
+  // Strip common bibliography/header noise that pollutes user-facing summaries.
+  out = out
+    .replace(/world journal of advanced research and reviews[^.]*\.?/gi, "")
+    .replace(/international journal of social trends[^.]*\.?/gi, "")
+    .replace(/publication history:[^.]*\.?/gi, "")
+    .replace(/article doi:[^.]*\.?/gi, "")
+    .replace(/references?\s*\[[^\]]+\][^.]*\.?/gi, "")
+    .replace(/\b\d{4},\s*\d+\(\d+\),\s*\d+\s*-\s*\d+\b/g, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^[-–,:;\s]+/, "")
+    .trim();
+
+  if (category === "potential_metric") {
+    const sentenceCandidates = out
+      .split(/(?<=[.!?])\s+/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const metricSentence = sentenceCandidates.find(
+      (s) =>
+        /\b(from\s+\w+\s+hours?\s+to\s+\w+\s+minutes?|thousands?|millions?|billions?|petabytes?|latency|events?|minutes?|hours?|%|\bms\b)\b/i.test(s) &&
+        !/world journal|publication history|creative commons|doi|references?/i.test(s),
+    );
+
+    if (metricSentence) out = metricSentence;
+  }
+
+  return trimContextSnippet(out, 180);
+}
+
 function formatEvidenceLine(row: AggregatedNumericEvidence): string {
-  const snippetText = selectPrimarySnippet(row);
+  const snippetText = cleanSnippetForDisplay(selectPrimarySnippet(row), row.category);
   return `- ${formatValue(row.value)} — ${snippetText} (${row.confidence} confidence)`;
 }
 

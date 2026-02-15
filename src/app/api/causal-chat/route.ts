@@ -187,6 +187,10 @@ function polishContractPresentation(text: string): string {
 
   // Remove accidental empty fenced blocks that render as blank rounded shapes.
   out = out.replace(/```\s*```/g, "");
+
+  // Force section-line separations to avoid merged heading strings.
+  out = out.replace(/(Section\s*1\s*:[^\n]*?)\s+Source files\s*:/gi, "$1\n\nSource files:");
+  out = out.replace(/(Section\s*3\s*:[^\n]*?)\s+Evidence class\s*:/gi, "$1\n\nEvidence class:");
   out = out.replace(/\n{3,}/g, "\n\n");
 
   // Ensure key section and sub-section labels are bold for readability.
@@ -194,11 +198,12 @@ function polishContractPresentation(text: string): string {
     "Section 1: All Explicit Numbers with Context",
     "Section 2: Claim-Eligible Numerics",
     "Section 3: Three Claims with Uncertainty Labels",
-    "Potential Metrics",
+    "Source files",
+    "Potential metrics",
     "Structural",
     "Bibliographic",
-    "Citation Years",
-    "Reference Indices",
+    "Citation years",
+    "Reference indices",
     "Evidence class",
     "Testable Prediction",
     "Falsification Criteria",
