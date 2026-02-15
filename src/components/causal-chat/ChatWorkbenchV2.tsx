@@ -1014,7 +1014,7 @@ export function ChatWorkbenchV2() {
             </header>
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
-                <div className="mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="scientific-workbench-main mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="mb-8 text-center">
                     <h1 className="font-serif text-3xl font-medium tracking-tight text-[var(--lab-text-primary)] mb-2">
                       Scientific Workbench
