@@ -22,12 +22,14 @@ import {
   StopCircle,
   Upload,
   X,
+  PanelLeft,
 } from 'lucide-react';
 import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import { CausalGauges } from '@/components/workbench/CausalGauges';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
@@ -287,6 +289,7 @@ export function ChatWorkbenchV2() {
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
+  const [contextRailOpen, setContextRailOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
@@ -993,13 +996,22 @@ export function ChatWorkbenchV2() {
   return (
     <WorkbenchShell
       className="feature-chat"
-      contextRailOpen={false}
       evidenceRailOpen={evidenceRailOpen}
       readingMode={focusMode}
       contextRail={<div />}
       primary={
         <PrimaryCanvas>
           <div className="flex h-full min-h-0 flex-col">
+            <header className="flex h-12 items-center border-b border-[var(--lab-border)] bg-transparent px-4">
+              <button
+                type="button"
+                onClick={() => setContextRailOpen(!contextRailOpen)}
+                className="lab-button-icon"
+                title={contextRailOpen ? 'Close sidebar' : 'Open sidebar'}
+              >
+                <PanelLeft className={cn("h-4 w-4 transition-colors", contextRailOpen ? "text-[var(--lab-text-secondary)]" : "text-[var(--lab-text-tertiary)]")} />
+              </button>
+            </header>
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
                 <div className="mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -1107,7 +1119,7 @@ export function ChatWorkbenchV2() {
               />
             ) : (
               <div className="px-6 pb-3 pt-2">
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-white/35 px-2 py-1.5 backdrop-blur-xl dark:bg-white/10">
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-white/35 px-2 py-1.5 backdrop-blur-xl dark:bg-[#27272a]">
                   <button
                     type="button"
                     className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
@@ -1238,6 +1250,7 @@ export function ChatWorkbenchV2() {
           </div>
         </EvidenceRail>
       }
+      contextRailOpen={contextRailOpen}
     />
   );
 }

@@ -28,18 +28,17 @@ export function ProtocolCard({ title, description, icon: Icon, onClick, variant 
         <Icon className="h-5 w-5" />
       </div>
 
-      <div className="space-y-1.5 flex-1">
-        <h3 className="font-semibold text-[var(--lab-text-primary)] flex items-center gap-2">
+      <div className="space-y-2 flex-1">
+        <h3 className="font-semibold text-[var(--lab-text-primary)]">
           {title}
-          <ArrowRight className="h-3.5 w-3.5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0 text-[var(--lab-text-tertiary)]" />
         </h3>
-        <p className="text-sm text-[var(--lab-text-secondary)] leading-relaxed">
+        <p className="text-sm text-[var(--lab-text-secondary)] leading-relaxed transition-colors group-hover:text-[var(--lab-text-primary)]">
           {description}
         </p>
       </div>
 
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="h-1.5 w-1.5 rounded-full bg-[var(--lab-accent-earth)] shadow-[0_0_8px_rgba(139,94,60,0.6)]" />
+      <div className="absolute top-5 right-5 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0">
+        <ArrowRight className="h-5 w-5 text-[var(--lab-text-tertiary)]" />
       </div>
     </button>
   );

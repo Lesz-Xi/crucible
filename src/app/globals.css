@@ -75,55 +75,55 @@
 /* Dark Mode - Obsidian foundations */
 .dark {
   /* Codex-like obsidian theme */
-  --obsidian-900: #454545;
-  --stone-700: #f3f4f6;
-  --ash-200: #545454;
-  --paper-050: #4e4e4e;
+  --obsidian-900: #09090b; /* Zinc 950 */
+  --stone-700: #fafafa;    /* Zinc 50 */
+  --ash-200: #27272a;      /* Zinc 800 */
+  --paper-050: #18181b;    /* Zinc 900 */
 
-  --moss-500: #6fb08f;
-  --oxide-500: #d18f67;
-  --mist-400: #a9b0bb;
+  --moss-500: #4ade80;     /* Accents pop more in dark */
+  --oxide-500: #fb923c;
+  --mist-400: #a1a1aa;     /* Zinc 400 */
 
   /* Legacy overrides */
-  --background: #121212;
-  --foreground: #f3f4f6;
-  --bg-primary: #121212;
-  --bg-secondary: #1a1a1a;
-  --bg-card: rgba(255, 255, 255, 0.07);
-  --text-primary: #f3f4f6;
-  --text-secondary: #a9b0bb;
-  --text-tertiary: #7f8794;
-  --text-muted: #a9b0bb;
-  --border-subtle: #2a2f38;
+  --background: #09090b;
+  --foreground: #fafafa;
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-card: rgba(24, 24, 27, 0.6); /* Zinc 900 alpha */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a; /* Zinc 500 */
+  --text-muted: #52525b;    /* Zinc 600 */
+  --border-subtle: #27272a;
 
   /* Backward-compat tokens with readable contrast in dark */
-  --wabi-washi: #454545;
-  --wabi-sumi: #f3f4f6;
-  --wabi-patina: #a9b0bb;
-  --wabi-clay: #d18f67;
-  --wabi-moss: #6fb08f;
-  --wabi-rust: #d18f67;
-  --wabi-stone: #8f96a3;
+  --wabi-washi: #09090b;
+  --wabi-sumi: #fafafa;
+  --wabi-patina: #a1a1aa;
+  --wabi-clay: #fb923c;
+  --wabi-moss: #4ade80;
+  --wabi-rust: #f87171;
+  --wabi-stone: #52525b;
 
   /* Automated Scientist dark tokens - Claude-inspired */
-  --shadow-grey: #0a0a0a;
-  --lab-bg: #171717; /* Deeper, solid dark */
-  --lab-bg-elevated: #212121;
-  --lab-panel: #171717; /* Solid background for sidebar */
-  --lab-border: rgba(255, 255, 255, 0.08); /* Minimalist border */
-  --lab-text-primary: #e3e3e3;
-  --lab-text-secondary: #b4b4b4;
-  --lab-text-tertiary: #808080;
-  --lab-accent-clay: #8f877f;
-  --lab-accent-earth: #d7d2ca;
-  --lab-accent-moss: #9a9389;
-  --lab-shadow-soft: 0 12px 28px rgba(0, 0, 0, 0.36);
-  --lab-shadow-lift: 0 20px 42px rgba(0, 0, 0, 0.44);
+  --shadow-grey: #000000;
+  --lab-bg: #09090b;       /* Obsidian Base */
+  --lab-bg-elevated: #18181b; /* Obsidian Surface */
+  --lab-panel: #09090b;
+  --lab-border: #27272a;   /* Solid border, no alpha for crispness */
+  --lab-text-primary: #e4e4e7; /* Zinc 200 - not pure white */
+  --lab-text-secondary: #a1a1aa;
+  --lab-text-tertiary: #71717a;
+  --lab-accent-clay: #a1a1aa;
+  --lab-accent-earth: #d4d4d8;
+  --lab-accent-moss: #71717a;
+  --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
   
   /* Shadow adjustments for dark */
-  --shadow-ambient: 0 8px 24px rgba(0, 0, 0, 0.24);
-  --shadow-lift: 0 12px 32px rgba(0, 0, 0, 0.32);
-  --shadow-deep: 0 16px 48px rgba(0, 0, 0, 0.48);
+  --shadow-ambient: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-deep: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 /* Utility Classes */
@@ -135,8 +135,8 @@
 }
 
 .dark .wabi-glass-panel {
-  background: rgba(17, 19, 16, 0.8);
-  border-color: rgba(63, 63, 60, 0.4);
+  background: rgba(24, 24, 27, 0.9);
+  border-color: #27272a;
 }
 
 /* Card glass effect - per Wabi-Sabi 2041 spec */
@@ -148,8 +148,8 @@
 }
 
 .dark .bg-glass-card {
-  background: rgba(17, 19, 16, 0.7); /* obsidian-900 with transparency */
-  border-color: rgba(63, 63, 60, 0.3);
+  background: rgba(24, 24, 27, 0.8); /* Zinc 900 with alpha */
+  border-color: #27272a;
 }
 
 /* ========================================
@@ -1287,16 +1287,16 @@
 .dark .lab-metric-tile,
 .dark .edu-card,
 .dark .edu-card-soft {
-  background: var(--lab-panel) !important;
-  border-color: var(--lab-border) !important;
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-  box-shadow: var(--glass-shadow-dark) !important;
+  background: #09090b !important; /* Zinc 950 Solid */
+  border-color: #27272a !important; /* Zinc 800 Solid */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .dark .lab-panel-elevated,
 .dark .edu-card {
-  background: linear-gradient(180deg, var(--glass-dark-strong) 0%, rgba(255, 255, 255, 0.06) 100%) !important;
+  background: #18181b !important; /* Zinc 900 Solid */
 }
 
 .dark .lab-button-secondary,
@@ -1305,8 +1305,8 @@
 .dark .lab-select,
 .dark .lab-textarea,
 .dark .lab-chip-mono {
-  background: rgba(255, 255, 255, 0.10) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: #27272a !important; /* Zinc 800 Solid */
+  border-color: #3f3f46 !important; /* Zinc 700 Solid */
 }
 
 /* Sidebar compact glass refinement */
