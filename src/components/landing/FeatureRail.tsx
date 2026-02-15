@@ -8,6 +8,7 @@ interface LandingFeature {
   accentClass: string;
   toneClass: string;
   layoutClass: string;
+  hoverTextClass: string;
 }
 
 const FEATURES: LandingFeature[] = [
@@ -19,6 +20,7 @@ const FEATURES: LandingFeature[] = [
     accentClass: "text-wabi-moss",
     toneClass: "from-wabi-moss/10",
     layoutClass: "md:col-span-4 lg:col-span-3 lg:mt-10 lg:min-h-[208px]",
+    hoverTextClass: "group-hover:text-wabi-moss",
   },
   {
     label: "Legal",
@@ -28,6 +30,7 @@ const FEATURES: LandingFeature[] = [
     accentClass: "text-wabi-rust",
     toneClass: "from-wabi-rust/10",
     layoutClass: "md:col-span-4 lg:col-span-6 lg:-mt-4 lg:min-h-[236px]",
+    hoverTextClass: "group-hover:text-wabi-rust",
   },
   {
     label: "Learn",
@@ -37,6 +40,7 @@ const FEATURES: LandingFeature[] = [
     accentClass: "text-wabi-clay",
     toneClass: "from-wabi-sand/20",
     layoutClass: "md:col-span-4 lg:col-span-3 lg:mt-10 lg:min-h-[208px]",
+    hoverTextClass: "group-hover:text-wabi-clay",
   },
 ];
 
@@ -72,7 +76,7 @@ export function FeatureRail() {
                 {feature.subtitle}
               </p>
               <div className="mt-5 h-px w-14 bg-gradient-to-r from-[var(--border-subtle)] to-transparent" />
-              <p className="mt-4 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <p className={`mt-4 text-sm leading-relaxed text-[var(--text-secondary)] transition-colors duration-300 ${feature.hoverTextClass}`}>
                 {feature.description}
               </p>
             </article>
