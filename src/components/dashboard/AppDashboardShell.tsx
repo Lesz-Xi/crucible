@@ -19,11 +19,13 @@ import {
   LogOut,
   Menu,
   MessageSquare,
+  MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
   Moon,
   Plus,
   Scale,
+  Search,
   Settings,
   Sun,
   Trash2,
@@ -201,13 +203,17 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             <div className="mb-3 flex items-center justify-between gap-2">
               {collapsed ? null : (
                 <div>
-                  <p className="font-serif text-[28px] leading-none tracking-tight">Wu-Weism</p>
-                  <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--lab-text-secondary)]">Workspace</p>
+                  <p className="font-serif text-[24px] leading-tight tracking-tight text-[var(--lab-text-primary)]">Wu-Weism</p>
                 </div>
               )}
-              <button type="button" className="lab-button-secondary !px-2.5 !py-2" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-              </button>
+              <div className="flex items-center gap-1">
+                <button type="button" className="lab-button-secondary !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" aria-label="Search">
+                  <Search className="h-4 w-4" />
+                </button>
+                <button type="button" className="lab-button-secondary !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                  {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <nav className={cn("flex flex-wrap gap-2", collapsed ? "flex-col" : "flex-row")}>
@@ -233,7 +239,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   type="button"
                   className={cn(
                     "lab-nav-pill !px-3.5 !py-2.5",
-                    relicsOpen ? "border-[var(--lab-accent-earth)]" : ""
+                    relicsOpen ? "!bg-[#2b2b2b]" : ""
                   )}
                   onClick={() => setRelicsOpen(!relicsOpen)}
                   title={collapsed ? "Relics" : undefined}
@@ -270,11 +276,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             </nav>
 
             {isChatRoute && !collapsed ? (
-              <section className="mt-3 min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/55 p-2.5">
-                <div className="space-y-1.5">
+              <div className="mt-6 flex-1 overflow-hidden">
+                <div className="px-1 space-y-1">
                   <button
                     type="button"
-                    className="lab-nav-pill w-full justify-start !py-2"
+                    className="sidebar-history-item !py-2.5 !font-medium"
                     onClick={() => {
                       router.push('/chat?new=1');
                       window.dispatchEvent(new Event('newChat'));
@@ -284,129 +290,48 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     <span>New chat</span>
                   </button>
 
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2" onClick={() => setSidebarMode('threads')} data-active={sidebarMode === 'threads' ? 'true' : 'false'}>
-                    <MessageSquare className="h-4 w-4" />
-                    <span>Threads</span>
-                    <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
-                      {filteredThreads.length}
-                    </span>
-                  </button>
-                  <button type="button" className="lab-nav-pill w-full justify-start !py-2" onClick={() => setSidebarMode('research')} data-active={sidebarMode === 'research' ? 'true' : 'false'}>
-                    <Folder className="h-4 w-4" />
-                    <span>Research</span>
-                    <span className="ml-auto rounded-full border border-[var(--lab-border)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--lab-text-tertiary)]">
-                      {filteredResearchThreads.length}
-                    </span>
-                  </button>
+                  <div className="pt-4 pb-2">
+                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">History</p>
+                  </div>
                 </div>
 
-                <div className="lab-scroll-region mt-4 h-[44vh] space-y-3 pr-1">
-                  {sidebarMode === 'research' ? (
-                    <div>
-                      <p className="mb-2 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Research ({filteredResearchThreads.length})</p>
-                      <button
-                        type="button"
-                        className="lab-button-secondary mb-2 w-full justify-start !py-2 text-xs"
-                        onClick={() => {
-                          setSidebarMode('threads');
-                          router.push('/chat?new=1&context=research');
-                          window.dispatchEvent(new Event('newChat'));
-                        }}
+                <div className="lab-scroll-region-minimal h-[68vh] space-y-0.5 pt-1 overflow-y-auto pr-1">
+                  {filteredThreads.slice(0, 48).map((session) => {
+                    const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
+                    return (
+                      <div 
+                        key={session.id} 
+                        className={cn(
+                          "group sidebar-history-item relative",
+                          isActive && "sidebar-history-item-active"
+                        )}
                       >
-                        <Plus className="h-3.5 w-3.5" />
-                        New research query
-                      </button>
-                      <div className="mb-2 rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]/70 p-2">
-                        <button
-                          type="button"
-                          className="lab-nav-pill w-full justify-start !px-2 !py-1 text-xs"
-                          onClick={() => setResearchExpanded((current) => !current)}
+                        <button 
+                          type="button" 
+                          className="flex-1 truncate text-left" 
+                          onClick={() => openThread(session.id)}
+                          title={session.title || 'Untitled thread'}
                         >
-                          {researchExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-                          <Folder className="h-3.5 w-3.5" />
-                          <span className="truncate">Research</span>
+                          {session.title || 'Untitled thread'}
                         </button>
-                        {researchExpanded ? (
-                          <div className="mt-1 space-y-1">
-                            {filteredResearchThreads.slice(0, 24).map((session) => (
-                              <div key={session.id} className="flex items-center gap-1 px-1 py-0.5">
-                                <button type="button" className="min-w-0 flex-1 truncate px-1 py-1 text-left text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)]" onClick={() => openThread(session.id)}>
-                                  {session.title || 'Untitled thread'}
-                                </button>
-                                <button
-                                  type="button"
-                                  className="lab-button-secondary !px-1.5 !py-1"
-                                  onClick={() => removeFromResearch(session.id)}
-                                  aria-label="Remove from Research"
-                                  title="Remove from Research"
-                                >
-                                  <FolderMinus className="h-3.5 w-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  className="lab-button-secondary !px-1.5 !py-1"
-                                  onClick={() => void handleDeleteThread(session.id)}
-                                  aria-label="Delete thread"
-                                  title="Delete thread"
-                                  disabled={deletingThreadId === session.id}
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                            ))}
-                            {filteredResearchThreads.length === 0 ? <p className="px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">No research queries yet. Add from Threads or start a new research query.</p> : null}
-                          </div>
-                        ) : null}
+                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            type="button"
+                            className="p-1 hover:bg-white/10 rounded-md"
+                            onClick={() => void handleDeleteThread(session.id)}
+                            aria-label="Delete thread"
+                            title="Delete thread"
+                            disabled={deletingThreadId === session.id}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="mb-1 text-[11px] uppercase tracking-[0.1em] text-[var(--lab-text-tertiary)]">Threads ({filteredThreads.length})</p>
-                      <div className="space-y-2">
-                        {filteredThreads.slice(0, 24).map((session) => (
-                          <div key={session.id} className="lab-card-interactive w-full !p-2 text-left">
-                            <div className="flex items-start justify-between gap-2">
-                              <button type="button" className="min-w-0 flex-1 text-left" onClick={() => openThread(session.id)}>
-                                <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{session.title || 'Untitled thread'}</p>
-                                <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                                  <Clock3 className="h-3.5 w-3.5" />
-                                  {new Date(session.updated_at).toLocaleString()}
-                                </p>
-                              </button>
-                              <button
-                                type="button"
-                                className="lab-button-secondary !px-2 !py-1 text-[11px]"
-                                onClick={() =>
-                                  setResearchThreadIds((current) =>
-                                    current.includes(session.id)
-                                      ? current.filter((id) => id !== session.id)
-                                      : [session.id, ...current]
-                                  )
-                                }
-                                aria-label={researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
-                                title={researchThreadIds.includes(session.id) ? 'Remove from Research' : 'Add to Research'}
-                              >
-                                {researchThreadIds.includes(session.id) ? <FolderCheck className="h-3.5 w-3.5" /> : <FolderPlus className="h-3.5 w-3.5" />}
-                              </button>
-                              <button
-                                type="button"
-                                className="lab-button-secondary !px-2 !py-1 text-[11px]"
-                                onClick={() => void handleDeleteThread(session.id)}
-                                aria-label="Delete thread"
-                                title="Delete thread"
-                                disabled={deletingThreadId === session.id}
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      {recentThreads.length === 0 ? <div className="lab-empty-state mt-2 text-xs">No thread history for this account.</div> : null}
-                    </div>
-                  )}
+                    );
+                  })}
+                  {recentThreads.length === 0 ? <div className="px-3 py-4 text-xs italic opacity-40">No threads yet.</div> : null}
                 </div>
-              </section>
+              </div>
             ) : null}
 
             <div className={cn('mt-auto space-y-2', isChatRoute && !collapsed ? 'pt-8' : '')}>

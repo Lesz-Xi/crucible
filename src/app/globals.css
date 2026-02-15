@@ -105,15 +105,15 @@
   --wabi-rust: #d18f67;
   --wabi-stone: #8f96a3;
 
-  /* Automated Scientist dark tokens */
-  --shadow-grey: #121212;
-  --lab-bg: #121212;
-  --lab-bg-elevated: #1a1a1a;
-  --lab-panel: rgba(255, 255, 255, 0.08);
-  --lab-border: rgba(255, 255, 255, 0.18);
-  --lab-text-primary: #f1f3f5;
-  --lab-text-secondary: #c2c8cf;
-  --lab-text-tertiary: #8d96a1;
+  /* Automated Scientist dark tokens - Claude-inspired */
+  --shadow-grey: #0a0a0a;
+  --lab-bg: #171717; /* Deeper, solid dark */
+  --lab-bg-elevated: #212121;
+  --lab-panel: #171717; /* Solid background for sidebar */
+  --lab-border: rgba(255, 255, 255, 0.08); /* Minimalist border */
+  --lab-text-primary: #e3e3e3;
+  --lab-text-secondary: #b4b4b4;
+  --lab-text-tertiary: #808080;
   --lab-accent-clay: #8f877f;
   --lab-accent-earth: #d7d2ca;
   --lab-accent-moss: #9a9389;
@@ -1340,7 +1340,54 @@
 .dark .glass-sidebar .lab-nav-pill,
 .dark .glass-sidebar .lab-card-interactive,
 .dark .glass-sidebar .lab-button-secondary {
-  background: rgba(255, 255, 255, 0.10) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+.dark .glass-sidebar .lab-nav-pill:hover,
+.dark .glass-sidebar .lab-card-active,
+.dark .glass-sidebar .lab-button-secondary:hover {
+  background: #2b2b2b !important;
+}
+
+.sidebar-history-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--lab-text-secondary);
+  transition: all 150ms ease;
+  cursor: pointer;
+}
+
+.sidebar-history-item:hover {
+  background: #2b2b2b;
+  color: var(--lab-text-primary);
+}
+
+.sidebar-history-item-active {
+  background: #2f2f2f;
+  color: var(--lab-text-primary);
+}
+
+.lab-scroll-region-minimal::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lab-scroll-region-minimal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lab-scroll-region-minimal::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.lab-scroll-region-minimal:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 body {
