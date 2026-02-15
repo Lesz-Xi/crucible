@@ -267,8 +267,20 @@ function formatValue(value: number): string {
   return Number(value.toFixed(6)).toString();
 }
 
+function selectPrimarySnippet(row: AggregatedNumericEvidence): string {
+  if (row.snippets.length === 0) return "(no snippet available)";
+  // Prefer snippet with explicit units/metric cues, otherwise shortest readable snippet.
+  const scored = row.snippets.map((s) => {
+    const metricCue = /%|\bms\b|\bminutes?\b|\bhours?\b|\bbillions?\b|\bthousands?\b|\bpetabytes?\b/i.test(s) ? 2 : 0;
+    const structuralPenalty = /world journal|references|publication history|copyright|doi/i.test(s) ? -1 : 0;
+    return { s, score: metricCue + structuralPenalty };
+  });
+  scored.sort((a, b) => b.score - a.score || a.s.length - b.s.length);
+  return scored[0]?.s || row.snippets[0];
+}
+
 function formatEvidenceLine(row: AggregatedNumericEvidence): string {
-  const snippetText = row.snippets.join(" | ");
+  const snippetText = selectPrimarySnippet(row);
   return `- ${formatValue(row.value)} — ${snippetText} (${row.confidence} confidence)`;
 }
 
@@ -340,7 +352,7 @@ export function buildAttachmentSequentialThinkingReport(
     section1Lines.push("- NONE — insufficient extractable numeric evidence");
   } else {
     for (const category of categoryOrder) {
-      const bucket = rows.filter((row) => row.category === category).slice(0, 8);
+      const bucket = rows.filter((row) => row.category === category).slice(0, 3);
       if (bucket.length === 0) continue;
       section1Lines.push(labelMap[category]);
       bucket.forEach((row) => section1Lines.push(formatEvidenceLine(row)));
@@ -348,8 +360,7 @@ export function buildAttachmentSequentialThinkingReport(
   }
 
   if (warnings.length > 0) {
-    section1Lines.push("Extraction warnings:");
-    warnings.slice(0, 3).forEach((warning) => section1Lines.push(`- ${warning}`));
+    section1Lines.push(`Extraction warnings (compact): ${warnings.length} signal(s) detected.`);
   }
 
   const claimEligible = rows.filter((row) => row.category === "potential_metric");
@@ -357,7 +368,7 @@ export function buildAttachmentSequentialThinkingReport(
   if (claimEligible.length === 0) {
     section2Lines.push("NONE");
   } else {
-    claimEligible.slice(0, 6).forEach((row) => section2Lines.push(formatEvidenceLine(row)));
+    claimEligible.slice(0, 4).forEach((row) => section2Lines.push(formatEvidenceLine(row)));
   }
 
   const nonMetricCount = rows.filter((row) => row.category !== "potential_metric").length;
