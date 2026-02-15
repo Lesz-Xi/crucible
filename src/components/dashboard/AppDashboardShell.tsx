@@ -20,8 +20,6 @@ import {
   Menu,
   MessageSquare,
   Moon,
-  PanelLeftClose,
-  PanelLeftOpen,
   Plus,
   Sun,
   Trash2,
@@ -48,6 +46,18 @@ const NAV_ITEMS = [
   { href: '/legal', label: 'Legal', icon: Gavel },
   { href: '/education', label: 'Educational', icon: GraduationCap },
 ];
+
+function IOSChevronIcon({ direction = 'left' }: { direction?: 'left' | 'right' }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'inline-block h-4 w-4 border-t-[2.6px] border-r-[2.6px] border-current',
+        direction === 'left' ? '-rotate-135' : 'rotate-45',
+      )}
+    />
+  );
+}
 
 export function AppDashboardShell({ children }: AppDashboardShellProps) {
   const pathname = usePathname();
@@ -199,7 +209,7 @@ export function AppDashboardShell({ children }: AppDashboardShellProps) {
                 </div>
               )}
               <button type="button" className="lab-button-secondary !px-2.5 !py-2" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+                {collapsed ? <IOSChevronIcon direction="right" /> : <IOSChevronIcon direction="left" />}
               </button>
             </div>
 
