@@ -26,6 +26,7 @@ export function WorkbenchShell({
   readingMode = false,
 }: WorkbenchShellProps) {
   const [mobileTab, setMobileTab] = useState<'context' | 'primary' | 'evidence'>('primary');
+  const isChatFeature = className?.includes('feature-chat') ?? false;
 
   const desktopGridCols = contextRailOpen && evidenceRailOpen
     ? '320px minmax(720px,1fr) 360px'
@@ -37,23 +38,28 @@ export function WorkbenchShell({
 
   const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
 
-  const panelHeight = className?.includes('feature-chat') ? 'calc(100svh - 8px)' : 'calc(100svh - 112px)';
+  const panelHeight = isChatFeature ? 'calc(100svh - 2px)' : 'calc(100svh - 112px)';
 
   return (
     <AppDashboardShell readingMode={readingMode}>
       <div className={cn('lab-shell min-h-screen w-full', className)}>
         {statusStrip}
 
-        <div className={cn('mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8', className?.includes('feature-chat') ? 'pb-0 pt-1' : 'pb-5 pt-2')}>
+        <div
+          className={cn(
+            'mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8',
+            isChatFeature ? 'max-w-none pb-0 pt-0 pl-0 md:pl-0 lg:pl-0' : 'pb-5 pt-2',
+          )}
+        >
           <div className="hidden lg:grid lg:gap-4" style={{ gridTemplateColumns: desktopGridCols }}>
             {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className="lab-panel-elevated overflow-hidden" style={{ height: panelHeight }}>{primary}</main>
+            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden')} style={{ height: panelHeight }}>{primary}</main>
             {evidenceRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
           </div>
 
           <div className="hidden md:grid lg:hidden md:gap-4" style={{ gridTemplateColumns: tabletGridCols }}>
             {contextRailOpen ? <aside className="lab-panel overflow-hidden" style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className="lab-panel-elevated overflow-hidden" style={{ height: panelHeight }}>{primary}</main>
+            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden')} style={{ height: panelHeight }}>{primary}</main>
           </div>
 
           <div className="md:hidden">
@@ -67,9 +73,9 @@ export function WorkbenchShell({
               ) : null}
             </div>
 
-            {contextRailOpen && mobileTab === 'context' ? <section className="lab-panel-elevated">{contextRail}</section> : null}
-            {mobileTab === 'primary' ? <section className="lab-panel-elevated">{primary}</section> : null}
-            {evidenceRailOpen && mobileTab === 'evidence' ? <section className="lab-panel-elevated">{evidenceRail}</section> : null}
+            {contextRailOpen && mobileTab === 'context' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{contextRail}</section> : null}
+            {mobileTab === 'primary' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{primary}</section> : null}
+            {evidenceRailOpen && mobileTab === 'evidence' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{evidenceRail}</section> : null}
           </div>
         </div>
       </div>
