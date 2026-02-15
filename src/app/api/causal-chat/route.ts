@@ -1135,6 +1135,7 @@ ${sourceList}`;
               scm_tier2_used: scmContext.tier2?.getConstraints(),
               confidence_score: classification.confidence,
               causal_graph: persistedGraphPayload,
+              scientific_analysis: scientificAnalysis || null,
             };
             if (canPersistDensity) {
               assistantPayload.causal_density = finalDensity;

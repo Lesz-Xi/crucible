@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/client';
 import type { CausalDensityResult } from '@/lib/ai/causal-integrity-service';
+import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 
 export interface Message {
   id: string;
@@ -15,6 +16,7 @@ export interface Message {
   causalDensity?: CausalDensityResult;
   modelKey?: string;
   modelVersion?: string;
+  scientificAnalysis?: ScientificAnalysisResponse;
 }
 
 /**
@@ -77,10 +79,10 @@ export class ChatPersistence {
     }
 
     console.log('[ChatPersistence] Creating session for user:', userId || 'ANONYMOUS', 'with message:', firstMessage.substring(0, 50));
-    
+
     // Generate title from first message (first 50 chars)
-    const title = firstMessage.length > 50 
-      ? firstMessage.substring(0, 47) + '...' 
+    const title = firstMessage.length > 50
+      ? firstMessage.substring(0, 47) + '...'
       : firstMessage;
 
     const { data, error } = await this.getSupabase()
@@ -114,7 +116,7 @@ export class ChatPersistence {
 
     console.log('[ChatPersistence] Saving', message.role, 'message to session:', sessionId);
     console.log('[ChatPersistence] Message content preview:', message.content.substring(0, 100));
-    
+
     const canPersistDensity = await this.verifyCausalDensityColumn();
     const payload: Record<string, unknown> = {
       session_id: sessionId,
@@ -127,6 +129,7 @@ export class ChatPersistence {
       causal_graph: message.causalGraph,
       model_key: message.modelKey,
       model_version: message.modelVersion,
+      scientific_analysis: message.scientificAnalysis || null,
     };
     if (canPersistDensity && message.causalDensity) {
       payload.causal_density = message.causalDensity;
@@ -158,7 +161,7 @@ export class ChatPersistence {
     }
 
     console.log('[ChatPersistence] ✅ Message saved successfully:', data);
-    
+
     // Update session timestamp
     await this.touchSession(sessionId);
   }
@@ -293,6 +296,7 @@ export class ChatPersistence {
       causal_density: message.causalDensity || null,
       model_key: message.modelKey || null,
       model_version: message.modelVersion || null,
+      scientific_analysis: message.scientificAnalysis || null,
     });
     session.updated_at = new Date().toISOString();
     this.writeLocalStore(store);
@@ -341,6 +345,7 @@ export class ChatPersistence {
         causal_density: CausalDensityResult | null;
         model_key: string | null;
         model_version: string | null;
+        scientific_analysis: ScientificAnalysisResponse | null;
       }>;
     }>;
   } {
@@ -378,6 +383,7 @@ export class ChatPersistence {
             causal_density: CausalDensityResult | null;
             model_key: string | null;
             model_version: string | null;
+            scientific_analysis: ScientificAnalysisResponse | null;
           }>;
         }>;
       };

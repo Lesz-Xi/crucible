@@ -38,6 +38,7 @@ import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
+import { ScientificEvidenceList } from '@/components/causal-chat/ScientificEvidenceList';
 
 interface WorkbenchMessage {
   id: string;
@@ -291,8 +292,9 @@ export function ChatWorkbenchV2() {
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
   const { resolvedTheme, setTheme } = useTheme();
-  const abortControllerRef = useRef<AbortController | null>(null);
   const assistantContentRef = useRef<string>('');
+  const scientificAnalysisRef = useRef<ScientificAnalysisResponse | undefined>(undefined);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
 
   const resetThread = useCallback(() => {
@@ -305,7 +307,10 @@ export function ChatWorkbenchV2() {
     setCurrentModelKey('default');
     currentModelKeyRef.current = 'default';
     setLastDensity(null);
+    // Clear refs for new generation
+    assistantContentRef.current = '';
     lastDensityRef.current = null;
+    scientificAnalysisRef.current = undefined;
     setGroundingSources([]);
     setGroundingStatus('idle');
     setGroundingError(null);
@@ -660,14 +665,15 @@ export function ChatWorkbenchV2() {
       }
 
       if (eventName === 'scientific_extraction_complete') {
-         if (payload.analysis) {
-             setMessages((previous) =>
-               previous.map((message) =>
-                 message.id === assistantMessageId ? { ...message, scientificAnalysis: payload.analysis } : message
-               )
-             );
-         }
-         return;
+        if (payload.analysis) {
+          scientificAnalysisRef.current = payload.analysis;
+          setMessages((previous) =>
+            previous.map((message) =>
+              message.id === assistantMessageId ? { ...message, scientificAnalysis: payload.analysis } : message
+            )
+          );
+        }
+        return;
       }
 
       if (eventName === 'causal_density_final' && typeof payload.score === 'number') {
@@ -889,6 +895,7 @@ export function ChatWorkbenchV2() {
                 detectedMechanisms: [],
               }
             : undefined,
+          scientificAnalysis: scientificAnalysisRef.current,
         });
       }
 
@@ -1144,6 +1151,8 @@ export function ChatWorkbenchV2() {
               </div>
               <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
             </div>
+
+            <ScientificEvidenceList />
 
             {latestClaimId ? (
               <div className="lab-metric-tile">
