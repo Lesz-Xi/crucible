@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
   ArrowDown,
@@ -268,6 +269,7 @@ type QuickPromptId = (typeof QUICK_PROMPTS)[number]['id'];
 
 export function ChatWorkbenchV2() {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -547,27 +549,22 @@ export function ChatWorkbenchV2() {
   );
 
   useEffect(() => {
-    const syncFromUrl = () => {
-      const params = new URLSearchParams(window.location.search);
-      const urlSessionId = params.get('sessionId');
-      const isNew = params.get('new') === '1';
+    const urlSessionId = searchParams.get('sessionId');
+    const isNew = searchParams.get('new') === '1';
 
-      if (isNew) {
-        resetThread();
+    if (isNew) {
+      resetThread();
+      if (typeof window !== 'undefined') {
         const cleanPath = window.location.pathname;
         window.history.replaceState({}, '', cleanPath);
-        return;
       }
+      return;
+    }
 
-      if (urlSessionId && urlSessionId !== dbSessionId) {
-        void loadSession(urlSessionId);
-      }
-    };
-
-    syncFromUrl();
-    window.addEventListener('popstate', syncFromUrl);
-    return () => window.removeEventListener('popstate', syncFromUrl);
-  }, [dbSessionId, loadSession, resetThread]);
+    if (urlSessionId && urlSessionId !== dbSessionId) {
+      void loadSession(urlSessionId);
+    }
+  }, [dbSessionId, loadSession, resetThread, searchParams]);
 
   useEffect(() => {
     const onLoadSessionEvent = (event: Event) => {
