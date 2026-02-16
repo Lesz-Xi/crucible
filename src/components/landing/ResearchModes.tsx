@@ -12,11 +12,11 @@ export function ResearchModes() {
           <div className="absolute -inset-1 bg-gradient-to-br from-wabi-rust/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           
           <div 
-            className="relative h-full bg-glass-card backdrop-blur-sm border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
+            className="relative h-full lg-card bg-glass-card border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
           >
             <div>
               <div className="flex justify-between items-start mb-10">
-                <div className="p-3 rounded-full bg-wabi-rust/5">
+                <div className="lg-control p-3 rounded-full bg-wabi-rust/5">
                    <User className="w-6 h-6 text-wabi-rust" strokeWidth={1.5} />
                 </div>
                 <span className="font-serif text-2xl italic text-wabi-sand/50">01</span>
@@ -33,13 +33,13 @@ export function ResearchModes() {
 
               <div className="space-y-4 mb-10">
                 <div className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
+                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
                       <Lock className="w-3 h-3 text-wabi-rust" />
                    </div>
                    <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Encrypted Session</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
+                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
                       <div className="w-1.5 h-1.5 rounded-full bg-wabi-rust"></div>
                    </div>
                    <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Unfiltered Inference</span>
@@ -48,7 +48,7 @@ export function ResearchModes() {
             </div>
 
             <Link href="/chat" className="w-full">
-              <button className="w-full py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] group-hover:bg-[var(--text-secondary)] transition-colors relative overflow-hidden">
+              <button className="lg-control w-full py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] group-hover:bg-[var(--text-secondary)] transition-colors relative overflow-hidden">
                  <span className="relative z-10">Enter Deep Work</span>
               </button>
             </Link>
@@ -61,11 +61,11 @@ export function ResearchModes() {
            <div className="absolute -inset-1 bg-gradient-to-br from-wabi-moss/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
            <div 
-            className="relative h-full bg-glass-card backdrop-blur-sm border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
+            className="relative h-full lg-card bg-glass-card border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
           >
             <div>
               <div className="flex justify-between items-start mb-10">
-                <div className="p-3 rounded-full bg-wabi-moss/10">
+                <div className="lg-control p-3 rounded-full bg-wabi-moss/10">
                    <Users className="w-6 h-6 text-wabi-moss" strokeWidth={1.5} />
                 </div>
                 <span className="font-serif text-2xl italic text-wabi-sand/50">02</span>
@@ -82,13 +82,13 @@ export function ResearchModes() {
 
               <div className="space-y-4 mb-10">
                 <div className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
+                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
                       <Share2 className="w-3 h-3 text-wabi-moss" />
                    </div>
                    <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Epistemic Validation</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
+                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
                       <div className="w-1.5 h-1.5 rounded-full bg-wabi-moss"></div>
                    </div>
                    <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Audit Trail</span>
@@ -97,7 +97,7 @@ export function ResearchModes() {
             </div>
 
             <Link href="/epistemic" className="w-full">
-              <button className="w-full py-4 bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all">
+              <button className="lg-control w-full py-4 bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all">
                  Start Joint Audit
               </button>
             </Link>

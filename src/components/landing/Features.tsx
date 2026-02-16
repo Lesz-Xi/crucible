@@ -47,14 +47,14 @@ export function Features() {
              return (
                <div
                  key={idx}
-                 className="group relative p-8 rounded-[22px] border border-[var(--border-subtle)]/70 bg-[var(--bg-secondary)]/78 backdrop-blur-sm shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5"
+                 className="group lg-card relative p-8 rounded-[22px] border border-[var(--border-subtle)]/70 bg-[var(--bg-secondary)]/78 shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5"
                >
                  <div className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${feature.toneClass} to-transparent`} />
                  <div className="absolute top-6 right-6 opacity-15 group-hover:opacity-30 transition-opacity duration-[180ms]">
                     <Sparkles className="w-6 h-6 text-[var(--text-primary)]" />
                  </div>
 
-                 <div className="w-14 h-14 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/45 flex items-center justify-center mb-6 shadow-sm transition-transform duration-[220ms] ease-out group-hover:scale-[1.04]">
+                 <div className="lg-control w-14 h-14 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/45 flex items-center justify-center mb-6 shadow-sm transition-transform duration-[220ms] ease-out group-hover:scale-[1.04]">
                     <Icon className={`w-6 h-6 ${feature.iconClass}`} />
                  </div>
 

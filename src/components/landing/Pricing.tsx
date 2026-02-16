@@ -23,7 +23,7 @@ export function Pricing() {
         {/* Card Side */}
         <div className="relative">
            <div className="absolute -inset-1 bg-gradient-to-br from-wabi-clay/10 to-wabi-moss/10 rounded-[2.5rem] blur-xl opacity-50" />
-           <div className="relative bg-glass-card backdrop-blur-sm border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 shadow-wabi transition-colors duration-500">
+           <div className="relative lg-card bg-glass-card border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 shadow-wabi transition-colors duration-500">
               <div className="flex justify-between items-start mb-8">
                  <div>
                     <h3 className="font-serif text-2xl text-[var(--text-primary)]">Scholar</h3>
@@ -38,7 +38,7 @@ export function Pricing() {
               <div className="space-y-4 mb-10">
                  {["Unlimited synthesis queries", "PDF & Context analysis", "Novelty calibration metrics", "Export to LaTeX / Markdown"].map((item, i) => (
                     <div key={i} className="flex items-center gap-3">
-                       <div className="w-5 h-5 rounded-full bg-[var(--bg-primary)] flex items-center justify-center">
+                       <div className="lg-control w-5 h-5 rounded-full bg-[var(--bg-primary)] flex items-center justify-center">
                           <Check className="w-3 h-3 text-wabi-moss" />
                        </div>
                        <span className="text-sm text-[var(--text-primary)]">{item}</span>
@@ -46,7 +46,7 @@ export function Pricing() {
                  ))}
               </div>
 
-              <button className="w-full py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full font-mono text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+              <button className="lg-control w-full py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full font-mono text-xs uppercase tracking-widest transition-opacity hover:opacity-90">
                  Begin Research
               </button>
            </div>

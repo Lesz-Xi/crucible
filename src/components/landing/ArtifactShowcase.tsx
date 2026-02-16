@@ -47,7 +47,7 @@ export function ArtifactShowcase() {
          {artifacts.map((item, i) => (
             <motion.div
                key={i}
-               className="group relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[320px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+               className="group lg-card relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[320px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
                initial={{ opacity: 0, y: 20 }}
                whileInView={{ opacity: 1, y: 0 }}
                transition={{ duration: 0.6, delay: item.delay }}
@@ -58,7 +58,7 @@ export function ArtifactShowcase() {
                
                {/* Top Meta */}
                <div className="relative z-10 flex justify-between items-start mb-8">
-                  <div className={`p-3 rounded-sm ${item.color} backdrop-blur-sm`}>
+                  <div className={`lg-control p-3 rounded-sm ${item.color}`}>
                      <item.icon className="w-6 h-6" strokeWidth={1.5} />
                   </div>
                   <span className="font-mono text-[10px] uppercase tracking-widest text-wabi-ink/30 group-hover:text-wabi-ink/50 transition-colors">
@@ -77,10 +77,10 @@ export function ArtifactShowcase() {
                </div>
 
                {/* Bottom Action */}
-               <div className="relative z-10 mt-8 flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 group-hover:text-wabi-sumi transition-colors duration-300 cursor-pointer">
+               <button type="button" className="relative z-10 mt-8 lg-control flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 transition-colors duration-300 group-hover:text-wabi-sumi">
                   <span>View Sample</span>
                   <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-               </div>
+               </button>
             </motion.div>
          ))}
       </div>

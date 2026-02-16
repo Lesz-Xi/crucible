@@ -198,13 +198,12 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
       try {
         const response = await fetch('/api/causal-chat/history');
         if (!response.ok) {
-          setRecentThreads([]);
-          return;
+          throw new Error(`History fetch failed: ${response.status}`);
         }
         const payload = (await response.json()) as { history?: ChatSidebarSession[] };
         setRecentThreads(Array.isArray(payload.history) ? payload.history : []);
       } catch {
-        setRecentThreads([]);
+        // Keep existing history visible on transient failures.
       }
     };
 
@@ -218,8 +217,18 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     } catch {
       setResearchThreadIds([]);
     }
+    const onFocus = () => void loadHistory();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') void loadHistory();
+    };
     window.addEventListener('historyImported', loadHistory);
-    return () => window.removeEventListener('historyImported', loadHistory);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('historyImported', loadHistory);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
   }, [isChatRoute]);
 
   useEffect(() => {
@@ -250,8 +259,13 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   };
 
   const openThread = (sessionId: string) => {
+    const currentParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const currentSessionId = currentParams.get('sessionId');
+    if (pathname?.startsWith('/chat') && currentSessionId === sessionId) {
+      window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
+      return;
+    }
     router.push(`/chat?sessionId=${sessionId}`);
-    window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
   };
 
   const removeFromResearch = (sessionId: string) => {
@@ -298,11 +312,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads, researchThreadIds]);
 
   return (
-    <div className={cn('lab-glass-system w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'chat-theme-shell h-screen' : 'min-h-screen')}>
+    <div className={cn('lab-glass-system lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'chat-theme-shell h-screen' : 'min-h-screen')}>
       <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(
-          'glass-sidebar relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
+          'glass-sidebar lg-sidebar relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
           collapsed ? 'w-[74px]' : 'w-[286px]',
         )}>
           <div className="flex h-full flex-col p-3">
@@ -313,10 +327,10 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 </div>
               )}
               <div className="flex items-center gap-1">
-                <button type="button" className="lab-button-secondary !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" aria-label="Search">
+                <button type="button" className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" aria-label="Search">
                   <Search className="h-4 w-4" />
                 </button>
-                <button type="button" className="lab-button-secondary !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" onClick={toggleSidebar} aria-label="Toggle sidebar">
+                <button type="button" className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" onClick={toggleSidebar} aria-label="Toggle sidebar">
                   {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
                 </button>
               </div>
@@ -330,7 +344,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="lab-nav-pill !px-3.5 !py-2.5"
+                    className="lab-nav-pill lg-control !px-3.5 !py-2.5"
                     data-active={active ? 'true' : 'false'}
                     title={collapsed ? item.label : undefined}
                   >
@@ -358,7 +372,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
                 {relicsOpen && (
                   <div className={cn(
-                    "absolute z-[60] mt-2 min-w-[160px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-1.5 shadow-xl",
+                    "absolute z-[60] mt-2 min-w-[160px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-1.5 shadow-xl lg-dropdown",
                     collapsed ? "left-full ml-2 top-0" : "left-0 top-full"
                   )}>
                     {RELICS_ITEMS.map((sub) => {
@@ -369,7 +383,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                           key={sub.href}
                           href={sub.href}
                           onClick={() => setRelicsOpen(false)}
-                          className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[var(--lab-text-secondary)] hover:bg-[var(--lab-bg-elevated)] hover:text-[var(--lab-text-primary)] transition-colors"
+                          className="lg-control flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[var(--lab-text-secondary)] transition-colors hover:bg-[var(--lab-bg-elevated)] hover:text-[var(--lab-text-primary)]"
                           data-active={subActive}
                         >
                           <SubIcon className="h-4 w-4" />
@@ -388,7 +402,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      className="sidebar-history-item !py-2.5 !font-medium flex-1"
+                      className="sidebar-history-item lg-control !py-2.5 !font-medium flex-1"
                       onClick={() => {
                         if (activeFolderId) createFolderFile(activeFolderId);
                         router.push('/chat?new=1');
@@ -401,7 +415,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     
                     <button
                       type="button"
-                      className="sidebar-history-item !py-2.5 !px-2.5 !w-auto"
+                      className="sidebar-history-item lg-control !py-2.5 !px-2.5 !w-auto"
                       onClick={() => {
                         createFolder();
                       }}
@@ -430,7 +444,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       >
                         <button
                           type="button"
-                          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                          className="lg-control flex min-w-0 flex-1 items-center gap-2 rounded-md text-left"
                           onClick={() => toggleFolder(folder.id)}
                         >
                           {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
@@ -439,7 +453,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                         <span className="text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
                         <button
                           type="button"
-                          className="rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                          className="lg-control rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
                           onClick={() => removeFolder(folder.id)}
                           aria-label="Delete folder"
                           title="Delete folder"
@@ -452,7 +466,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                         <div className="ml-2 pl-2 border-l border-[var(--lab-border)] mt-0.5 space-y-0.5">
                           <button
                             type="button"
-                            className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium opacity-70 hover:opacity-100 hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
+                            className="lg-control flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium opacity-70 hover:opacity-100 hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
                             onClick={() => createFolderFile(folder.id, undefined, true)}
                             title="Create file in folder"
                           >
@@ -463,12 +477,12 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                             <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
                           ) : (
                             (folderFiles[folder.id] ?? []).map((file) => (
-                              <div key={file.id} className="group flex items-center gap-1.5 px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
+                              <div key={file.id} className="group lg-control flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
                                 <FileText className="h-3.5 w-3.5 opacity-70" />
                                 <span className="truncate" title={file.name}>{file.name}</span>
                                 <button
                                   type="button"
-                                  className="ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                                  className="lg-control ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
                                   onClick={() => removeFolderFile(folder.id, file.id)}
                                   aria-label="Remove file"
                                   title="Remove file"
@@ -505,10 +519,10 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                         >
                           {session.title || 'Untitled thread'}
                         </button>
-                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                           <button
                             type="button"
-                            className="p-1 hover:bg-white/10 rounded-md"
+                            className="lg-control rounded-md p-1 hover:bg-white/10"
                             onClick={() => void handleDeleteThread(session.id)}
                             aria-label="Delete thread"
                             title="Delete thread"
@@ -529,7 +543,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
               {isChatRoute && !collapsed ? <div className="lab-divider-gradient mb-2" /> : null}
               <button
                 type="button"
-                className="lab-nav-pill w-full"
+                className="lab-nav-pill lg-control w-full"
                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
                 title={collapsed ? 'Toggle theme' : undefined}
               >
@@ -537,7 +551,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 {collapsed ? null : <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
               </button>
 
-              <Link href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="lab-nav-pill" title={collapsed ? 'Documentation' : undefined}>
+              <Link href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="lab-nav-pill lg-control" title={collapsed ? 'Documentation' : undefined}>
                 <BookOpen className="h-4 w-4" />
                 {collapsed ? null : <span>Documentation</span>}
               </Link>
@@ -545,7 +559,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
               <div className="relative">
                 <button
                   type="button"
-                  className="lab-nav-pill w-full"
+                  className="lab-nav-pill lg-control w-full"
                   onClick={() => setAccountOpen((v) => !v)}
                   title={collapsed ? 'Account' : undefined}
                 >
@@ -562,14 +576,14 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
                 {accountOpen ? (
                   <div className={cn(
-                    'absolute z-50 min-w-[190px] rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-xl',
+                    'absolute z-50 min-w-[190px] rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-xl lg-dropdown',
                     collapsed ? 'bottom-12 left-0' : 'bottom-12 right-0',
                   )}>
                     <div className="mb-1 px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">Signed in</div>
                     <div className="mb-2 truncate px-2 text-xs text-[var(--lab-text-secondary)]">{userEmail || 'Anonymous session'}</div>
                     <button
                       type="button"
-                      className="lab-nav-pill w-full"
+                      className="lab-nav-pill lg-control w-full"
                       onClick={() => {
                         setAccountOpen(false);
                         router.push('/chat');
@@ -578,7 +592,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       <UserCircle2 className="h-4 w-4" />
                       <span>Workspace</span>
                     </button>
-                    <button type="button" className="lab-nav-pill mt-1 w-full" onClick={() => void handleSignOut()}>
+                    <button type="button" className="lab-nav-pill lg-control mt-1 w-full" onClick={() => void handleSignOut()}>
                       <LogOut className="h-4 w-4" />
                       <span>Sign out</span>
                     </button>

@@ -1,4 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import { MessageSquare, Scale, GraduationCap } from "lucide-react";
+import { LiquidSegmentedControl } from "@/components/ui/liquid-segmented-control";
+import { LiquidSlider } from "@/components/ui/liquid-slider";
 
 interface LandingFeature {
   label: "Chat" | "Legal" | "Learn";
@@ -45,11 +50,34 @@ const FEATURES: LandingFeature[] = [
 ];
 
 export function FeatureRail() {
+  const [segment, setSegment] = useState<"for-you" | "library">("for-you");
+  const [intensity, setIntensity] = useState(58);
+
   return (
     <section
       aria-label="Primary product features"
       className="relative z-10 max-w-7xl mx-auto px-6 pt-6 md:pt-10 lg:pt-14 pb-24 md:pb-32"
     >
+      <div className="max-w-6xl mx-auto mb-10 rounded-[20px] lg-card p-5 md:p-6">
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">Liquid Segmented</p>
+            <LiquidSegmentedControl
+              value={segment}
+              onChange={setSegment}
+              options={[
+                { value: "for-you", label: "For You" },
+                { value: "library", label: "Library" },
+              ]}
+            />
+          </div>
+          <div>
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">Glass Intensity</p>
+            <LiquidSlider value={intensity} onChange={setIntensity} min={0} max={100} />
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-6xl mx-auto grid items-end gap-x-5 gap-y-6 md:gap-y-10 md:grid-cols-12 lg:gap-x-7">
         {FEATURES.map((feature) => {
           const Icon = feature.icon;
@@ -57,7 +85,7 @@ export function FeatureRail() {
             <article
               key={feature.label}
               className={[
-                "group relative rounded-[14px] border border-[var(--border-subtle)]/90 bg-[var(--bg-secondary)]/88 backdrop-blur-sm p-6 md:p-7 min-h-[188px]",
+                "group lg-card relative rounded-[14px] border border-[var(--border-subtle)]/90 bg-[var(--bg-secondary)]/88 p-6 md:p-7 min-h-[188px]",
                 "shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5",
                 feature.layoutClass,
               ].join(" ")}

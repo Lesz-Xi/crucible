@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
 
 // ... existing code ...
 
@@ -43,11 +44,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const liquidGlassEnabled = process.env.NEXT_PUBLIC_THEME_LIQUID_GLASS_V2 === "true";
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased ${liquidGlassEnabled ? "liquid-glass-v2" : ""}`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -55,6 +57,7 @@ export default function RootLayout({
             storageKey="wu-weism-theme"
             disableTransitionOnChange
           >
+            {liquidGlassEnabled ? <LiquidGlassRuntime /> : null}
             {children}
           </ThemeProvider>
       </body>

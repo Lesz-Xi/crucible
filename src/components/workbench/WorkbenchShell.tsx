@@ -42,7 +42,7 @@ export function WorkbenchShell({
 
   return (
     <AppDashboardShell readingMode={readingMode}>
-      <div className={cn('lab-shell min-h-screen w-full', className)}>
+      <div className={cn('lab-shell lg-shell min-h-screen w-full', className)}>
         {statusStrip}
 
         <div
@@ -52,30 +52,30 @@ export function WorkbenchShell({
           )}
         >
           <div className={cn('hidden lg:grid', isChatFeature ? 'lg:gap-0' : 'lg:gap-4')} style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-            {evidenceRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
+            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
+            {evidenceRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
           </div>
 
           <div className={cn('hidden md:grid lg:hidden', isChatFeature ? 'md:gap-0' : 'md:gap-4')} style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel' : 'lab-panel-elevated', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
+            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
           </div>
 
           <div className="md:hidden">
             <div className={cn('mb-3 grid gap-2', contextRailOpen && evidenceRailOpen ? 'grid-cols-3' : contextRailOpen || evidenceRailOpen ? 'grid-cols-2' : 'grid-cols-1')}>
               {contextRailOpen ? (
-                <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
+                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
               ) : null}
-              <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
+              <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
               {evidenceRailOpen ? (
-                <button type="button" className="lab-nav-pill justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
+                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
               ) : null}
             </div>
 
-            {contextRailOpen && mobileTab === 'context' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{contextRail}</section> : null}
-            {mobileTab === 'primary' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{primary}</section> : null}
-            {evidenceRailOpen && mobileTab === 'evidence' ? <section className={isChatFeature ? 'lab-panel' : 'lab-panel-elevated'}>{evidenceRail}</section> : null}
+            {contextRailOpen && mobileTab === 'context' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{contextRail}</section> : null}
+            {mobileTab === 'primary' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{primary}</section> : null}
+            {evidenceRailOpen && mobileTab === 'evidence' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{evidenceRail}</section> : null}
           </div>
         </div>
       </div>

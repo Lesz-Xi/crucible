@@ -301,8 +301,12 @@ export function ChatWorkbenchV2() {
   const scientificAnalysisRef = useRef<ScientificAnalysisResponse | undefined>(undefined);
   const abortControllerRef = useRef<AbortController | null>(null);
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
+  const loadRequestIdRef = useRef(0);
+  const loadAbortControllerRef = useRef<AbortController | null>(null);
 
   const resetThread = useCallback(() => {
+    loadRequestIdRef.current += 1;
+    loadAbortControllerRef.current?.abort();
     setMessages([]);
     setPrompt('');
     setError(null);
@@ -366,6 +370,12 @@ export function ChatWorkbenchV2() {
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      loadAbortControllerRef.current?.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -462,22 +472,28 @@ export function ChatWorkbenchV2() {
 
   const loadSession = useCallback(
     async (sessionId: string) => {
+      const requestId = ++loadRequestIdRef.current;
+      loadAbortControllerRef.current?.abort();
+      const controller = new AbortController();
+      loadAbortControllerRef.current = controller;
       setError(null);
 
       const cached = sessionCacheRef.current.get(sessionId);
       if (cached) {
         applySessionHistory(sessionId, cached);
+        setIsLoading(false);
       } else {
         setIsLoading(true);
       }
 
       try {
-        const response = await fetch(`/api/causal-chat/history?id=${sessionId}`);
+        const response = await fetch(`/api/causal-chat/history?id=${sessionId}`, { signal: controller.signal });
         if (!response.ok) {
           throw new Error('Failed to load session.');
         }
 
         const payload = (await response.json()) as { messages?: SessionHistoryMessage[] };
+        if (requestId !== loadRequestIdRef.current) return;
         const historyMessages = payload.messages || [];
         sessionCacheRef.current.set(sessionId, historyMessages);
         applySessionHistory(sessionId, historyMessages);
@@ -539,10 +555,17 @@ export function ChatWorkbenchV2() {
           }
         })();
       } catch (loadError) {
+        if (loadError instanceof DOMException && loadError.name === 'AbortError') {
+          return;
+        }
         const message = loadError instanceof Error ? loadError.message : 'Unable to load session';
-        setError(message);
+        if (requestId === loadRequestIdRef.current) {
+          setError(message);
+        }
       } finally {
-        setIsLoading(false);
+        if (requestId === loadRequestIdRef.current) {
+          setIsLoading(false);
+        }
       }
     },
     [applySessionHistory, groundingSources.length]

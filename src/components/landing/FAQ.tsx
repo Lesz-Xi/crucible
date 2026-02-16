@@ -39,10 +39,10 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
    const [isOpen, setIsOpen] = useState(false);
 
    return (
-      <div className="border border-wabi-sand/30 bg-white/40 backdrop-blur-sm rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
+      <div className="lg-card border border-wabi-sand/30 bg-white/40 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
          <button 
            onClick={() => setIsOpen(!isOpen)}
-           className="w-full flex items-center justify-between p-6 text-left"
+           className="lg-control w-full flex items-center justify-between p-6 text-left"
          >
             <span className="font-serif text-lg text-wabi-sumi">{question}</span>
             {isOpen ? <Minus className="w-4 h-4 text-wabi-clay" /> : <Plus className="w-4 h-4 text-wabi-stone" />}

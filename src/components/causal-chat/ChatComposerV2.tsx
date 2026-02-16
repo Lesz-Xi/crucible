@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent } from 'react';
-import { ChevronDown, Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, SlidersHorizontal, Square } from 'lucide-react';
+import { ChevronDown, Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, Square } from 'lucide-react';
+import { LiquidSegmentedControl } from '@/components/ui/liquid-segmented-control';
 
 interface QuickPromptOption {
   id: string;
@@ -60,7 +61,6 @@ export function ChatComposerV2({
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
   const [shortcutMenuOpen, setShortcutMenuOpen] = useState(false);
-  const [modeMenuOpen, setModeMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,35 +113,17 @@ export function ChatComposerV2({
             Attach
           </button>
 
-          <div className="relative">
-            <button
-              type="button"
-              className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
-              onClick={() => setModeMenuOpen((current) => !current)}
-              title="Response mode"
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              {modeLabel[operatorMode]}
-              <ChevronDown className="h-3.5 w-3.5" />
-            </button>
-            {modeMenuOpen ? (
-              <div className="absolute left-0 z-20 mb-2 w-44 -translate-y-full rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-lg">
-                {(['explore', 'intervene', 'audit'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    className="lab-card-interactive mb-1 w-full !p-2 text-left text-sm"
-                    data-active={operatorMode === mode ? 'true' : 'false'}
-                    onClick={() => {
-                      onOperatorModeChange(mode);
-                      setModeMenuOpen(false);
-                    }}
-                  >
-                    {modeLabel[mode]}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+          <div className="w-[220px]">
+            <LiquidSegmentedControl
+              ariaLabel="Response mode"
+              value={operatorMode}
+              onChange={(mode) => onOperatorModeChange(mode)}
+              options={[
+                { value: 'explore', label: modeLabel.explore },
+                { value: 'intervene', label: modeLabel.intervene },
+                { value: 'audit', label: modeLabel.audit },
+              ]}
+            />
           </div>
 
           {quickPrompts.length > 0 ? (
