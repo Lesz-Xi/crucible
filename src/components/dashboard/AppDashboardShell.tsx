@@ -59,6 +59,7 @@ interface SidebarFolderFile {
 }
 
 const NAV_ITEMS = [
+  { href: '/mission-control', label: 'Mission', icon: Home },
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/hybrid', label: 'Hybrid', icon: Bot },
 ];
@@ -69,6 +70,7 @@ const RELICS_ITEMS = [
 ];
 
 export function AppDashboardShell({ children, readingMode = false }: AppDashboardShellProps) {
+  const liquidGlassEnabled = process.env.NEXT_PUBLIC_THEME_LIQUID_GLASS_V2 !== 'false';
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -312,7 +314,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads, researchThreadIds]);
 
   return (
-    <div className={cn('lab-glass-system lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'chat-theme-shell h-screen' : 'min-h-screen')}>
+    <div className={cn('lab-glass-system lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? (liquidGlassEnabled ? 'h-screen' : 'chat-theme-shell h-screen') : 'min-h-screen')}>
       <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(

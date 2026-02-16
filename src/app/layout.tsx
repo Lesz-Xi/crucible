@@ -44,7 +44,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const liquidGlassEnabled = process.env.NEXT_PUBLIC_THEME_LIQUID_GLASS_V2 === "true";
+  const liquidGlassEnabled = process.env.NEXT_PUBLIC_THEME_LIQUID_GLASS_V2 !== "false";
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
