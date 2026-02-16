@@ -1490,9 +1490,13 @@
 }
 
 .dark .chat-theme-shell .glass-sidebar {
-  background: var(--codex-surface-dark) !important;
-  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: #cad2c5 !important;
+  border-color: #aeb8ab !important;
   border-width: 0.5px !important;
+  --lab-text-primary: #1f2a2e;
+  --lab-text-secondary: #3c4b52;
+  --lab-text-tertiary: #607076;
+  --lab-border: rgba(47, 62, 70, 0.28);
 }
 
 .dark .chat-theme-shell .feature-chat.lab-shell {
@@ -1505,8 +1509,8 @@
 .dark .chat-theme-shell .feature-chat .lab-card-interactive,
 .dark .chat-theme-shell .feature-chat .scientific-protocol-card,
 .dark .chat-theme-shell .feature-chat .scientific-workbench-main {
-  background: #1a1a1a !important;
-  border-color: rgba(255, 255, 255, 0.09) !important;
+  background: #2f3e46 !important;
+  border-color: #3f525d !important;
   border-width: 0.5px !important;
 }
 
