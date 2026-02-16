@@ -1001,6 +1001,15 @@ ${sourceList}`;
               } else if (tc.name === "verify_law_compliance") {
                 const { claim } = tc.input as any;
                 output = await scientificGateway.verify(claim);
+              } else if (tc.name === "fetch_protein_structure") {
+                const { pdbId } = tc.input as any;
+                output = await scientificGateway.fetchProteinStructure(pdbId);
+              } else if (tc.name === "analyze_protein_sequence") {
+                const { sequence } = tc.input as any;
+                output = await scientificGateway.analyzeProteinSequence(sequence);
+              } else if (tc.name === "dock_ligand") {
+                const { pdbId, smiles, seed } = tc.input as any;
+                output = await scientificGateway.dockLigand(pdbId, smiles, seed);
               }
             } catch (err: any) {
               output = { error: err.message || String(err) };

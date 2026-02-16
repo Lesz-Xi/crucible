@@ -271,7 +271,7 @@ export class ScientificGateway {
             },
             {
                 name: "verify_law_compliance",
-                description: "Check if a scientific claim violates fundamental physical laws (Conservation of Energy, Thermodynamics, etc.). Use this to validate any generated scientific claims.",
+                description: "Check if a scientific claim violates fundamental physical laws (Conservation of Energy, Thermodynamics, etc.). Use this to verify any scientific claim.",
                 input_schema: {
                     type: "object",
                     properties: {
@@ -279,7 +279,152 @@ export class ScientificGateway {
                     },
                     required: ["claim"]
                 }
+            },
+            {
+                name: "fetch_protein_structure",
+                description: "Fetch a protein structure (PDB format) from the RCSB Polymer Data Bank. Use this to visualize biomolecules. Returns the raw PDB string.",
+                input_schema: {
+                    type: "object",
+                    properties: {
+                        pdbId: { type: "string", description: "The 4-character PDB ID (e.g., '1CRN', '4HHB')." }
+                    },
+                    required: ["pdbId"]
+                }
+            },
+            {
+                name: "analyze_protein_sequence",
+                description: "Calculate physicochemical properties of a protein sequence using Biopython. Returns Molecular Weight, Isoelectric Point, and Instability Index.",
+                input_schema: {
+                    type: "object",
+                    properties: {
+                        sequence: { type: "string", description: "The amino acid sequence (e.g., 'MVLSPADKT...')." }
+                    },
+                    required: ["sequence"]
+                }
+            },
+            {
+                name: "dock_ligand",
+                description: "Perform a molecular docking simulation to estimate the binding affinity of a ligand (SMILES) to a receptor (PDB). Returns a deterministic affinity score (kcal/mol) based on the seed. Phase 2 Stub.",
+                input_schema: {
+                    type: "object",
+                    properties: {
+                        pdbId: { type: "string", description: "The PDB ID of the receptor." },
+                        smiles: { type: "string", description: "The SMILES string of the ligand." },
+                        seed: { type: "number", description: "Random seed for deterministic reproduction." }
+                    },
+                    required: ["pdbId", "smiles", "seed"]
+                }
             }
         ];
+    }
+
+    /**
+     * Fetch a protein structure from RCSB.
+     * used when: User asks to see/visualize a protein.
+     */
+    async fetchProteinStructure(pdbId: string): Promise<{ success: boolean; data?: string; error?: string }> {
+        try {
+            const response = await fetch(`https://files.rcsb.org/download/${pdbId.toUpperCase()}.pdb`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch PDB ${pdbId}: ${response.statusText}`);
+            }
+            const data = await response.text();
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }
+
+    /**
+     * Analyze a protein sequence using Biopython (via Pyodide).
+     * used when: User asks for properties of a sequence.
+     */
+    async analyzeProteinSequence(sequence: string): Promise<{ success: boolean; data?: any; error?: string }> {
+        // Sanitize sequence (remove whitespace, newlines)
+        const cleanSeq = sequence.replace(/\s+/g, '').toUpperCase();
+
+        // Python script to run in Pyodide
+        const pythonCode = `
+from Bio.SeqUtils import molecular_weight
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+import json
+import sys
+
+try:
+    seq_str = "${cleanSeq}"
+    analysed_seq = ProteinAnalysis(seq_str)
+
+    result = {
+        "molecular_weight": molecular_weight(seq_str, seq_type="protein"),
+        "aromaticity": analysed_seq.aromaticity(),
+        "instability_index": analysed_seq.instability_index(),
+        "isoelectric_point": analysed_seq.isoelectric_point(),
+        "gravy": analysed_seq.gravy(),
+        "amino_acid_percent": analysed_seq.get_amino_acids_percent()
+    }
+
+    print(json.dumps(result))
+except Exception as e:
+    print(f"Error: {str(e)}", file=sys.stderr)
+`;
+
+        const validation = await validateProtocol(pythonCode);
+
+        if (validation.success && validation.stdout) {
+            try {
+                // Parse the JSON output from Python
+                // Find the JSON object in stdout (in case of other prints)
+                const jsonMatch = validation.stdout.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    const data = JSON.parse(jsonMatch[0]);
+                    return { success: true, data };
+                } else {
+                    return { success: false, error: "Failed to parse Python output" };
+                }
+            } catch (e) {
+                return { success: false, error: "Invalid JSON from Python execution" };
+            }
+        } else {
+            return { success: false, error: validation.error || validation.stderr || "Pyodide execution failed" };
+        }
+    }
+
+    /**
+     * Deterministic Docking Stub (Phase 2)
+     * used when: User asks to dock a ligand.
+     */
+    async dockLigand(pdbId: string, smiles: string, seed: number): Promise<{ success: boolean; data?: any; error?: string }> {
+        try {
+            // 1. Deterministic Calculation (Hash)
+            const inputString = `${pdbId}-${smiles}-${seed}`;
+            let hash = 0;
+            for (let i = 0; i < inputString.length; i++) {
+                const char = inputString.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+
+            // 2. Map hash to scientific range (-5.0 to -12.0 kcal/mol)
+            // Normalize hash to 0-1
+            const normalized = (Math.abs(hash) % 1000) / 1000;
+            const affinity = -5.0 - (normalized * 7.0); // Range: -5.0 to -12.0
+            const rmsd = (normalized * 2.5).toFixed(2); // Range: 0.0 to 2.5
+
+            // 3. Fake Poses (just metadata for now)
+            const result = {
+                affinity_kcal_mol: parseFloat(affinity.toFixed(2)),
+                rmsd: parseFloat(rmsd),
+                poses: [
+                    { rank: 1, score: affinity.toFixed(2), rmsd: 0 },
+                    { rank: 2, score: (affinity + 0.5).toFixed(2), rmsd: rmsd }
+                ],
+                engine: "Vina-Stub-v1 (Deterministic)",
+                seed: seed
+            };
+
+            return { success: true, data: result };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
     }
 }

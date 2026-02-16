@@ -68,25 +68,25 @@ async function getPyodide(): Promise<PyodideInterface | null> {
   if (!pyodideAvailable) {
     return null;
   }
-  
+
   if (pyodideInstance) {
     return pyodideInstance;
   }
-  
+
   if (pyodideLoading) {
     return pyodideLoading;
   }
-  
+
   console.log('[ProtocolValidator] Loading Pyodide...');
-  
+
   try {
     // In Node.js, omit indexURL - pyodide npm package handles loading automatically
     // Specifying CDN indexURL causes path concatenation errors in server environments
     pyodideLoading = loadPyodide().then(async (instance) => {
       // Load scientific packages via micropip
       console.log('[ProtocolValidator] Loading scientific packages...');
-      await instance.loadPackage(['numpy', 'scipy']);
-      
+      await instance.loadPackage(['numpy', 'scipy', 'biopython']);
+
       // Try to load networkx (may not be available in Pyodide)
       try {
         await instance.loadPackage('networkx');
@@ -94,7 +94,7 @@ async function getPyodide(): Promise<PyodideInterface | null> {
       } catch {
         console.warn('[ProtocolValidator] NetworkX not available, graphs will fail');
       }
-      
+
       console.log('[ProtocolValidator] Pyodide ready');
       return instance;
     }).catch((error) => {
@@ -102,10 +102,10 @@ async function getPyodide(): Promise<PyodideInterface | null> {
       pyodideAvailable = false;
       return null;
     });
-    
+
     pyodideInstance = await pyodideLoading;
     return pyodideInstance;
-    
+
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.warn('[ProtocolValidator] Pyodide initialization failed:', errorMessage);
@@ -126,10 +126,10 @@ export async function validateProtocol(
   timeoutMs: number = 30000
 ): Promise<ValidationResult> {
   const startTime = Date.now();
-  
+
   try {
     const pyodide = await getPyodide();
-    
+
     // Graceful degradation: if Pyodide unavailable, skip validation
     if (!pyodide) {
       return {
@@ -140,11 +140,11 @@ export async function validateProtocol(
         error: 'Pyodide not available in this environment - protocol validation skipped'
       };
     }
-    
+
     // Capture stdout
     let stdout = '';
     let stderr = '';
-    
+
     // Set up output capture
     pyodide.runPython(`
 import sys
@@ -154,32 +154,32 @@ _stderr_capture = StringIO()
 sys.stdout = _stdout_capture
 sys.stderr = _stderr_capture
 `);
-    
+
     // Execute with timeout
     const executionPromise = pyodide.runPythonAsync(protocolCode);
-    
+
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Execution timeout')), timeoutMs);
     });
-    
+
     await Promise.race([executionPromise, timeoutPromise]);
-    
+
     // Capture outputs
     stdout = pyodide.runPython(`_stdout_capture.getvalue()`) as string;
     stderr = pyodide.runPython(`_stderr_capture.getvalue()`) as string;
-    
+
     // Reset stdout/stderr for next run
     pyodide.runPython(`
 sys.stdout = sys.__stdout__
 sys.stderr = sys.__stderr__
 `);
-    
+
     // Try to extract metrics from output
     const metrics = parseMetrics(stdout);
-    
+
     // Phase 3: Run Sanity Gate evaluation
     const feasibilityScore = SanityGate.evaluate(protocolCode);
-    
+
     return {
       success: true,
       stdout,
@@ -188,11 +188,11 @@ sys.stderr = sys.__stderr__
       feasibilityScore,
       executionTimeMs: Date.now() - startTime
     };
-    
+
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error('[ProtocolValidator] Execution failed:', errorMessage);
-    
+
     return {
       success: false,
       stdout: '',
@@ -209,32 +209,32 @@ sys.stderr = sys.__stderr__
  */
 function parseMetrics(stdout: string): ValidationResult['metrics'] {
   const metrics: ValidationResult['metrics'] = {};
-  
+
   // Match p-value patterns
   const pValueMatch = stdout.match(/p[_-]?value[:\s]+([0-9.e-]+)/i);
   if (pValueMatch) {
     metrics.pValue = parseFloat(pValueMatch[1]);
   }
-  
+
   // Match Bayes factor patterns
   const bfMatch = stdout.match(/bayes[_\s]?factor[:\s]+([0-9.e+-]+)/i);
   if (bfMatch) {
     metrics.bayesFactor = parseFloat(bfMatch[1]);
   }
-  
+
   // Match sample size patterns
   const sampleMatch = stdout.match(/(?:sample[_\s]?size|n)[:\s=]+(\d+)/i);
   if (sampleMatch) {
     metrics.sampleSize = parseInt(sampleMatch[1], 10);
   }
-  
+
   // Determine if conclusion is valid (p < 0.05 or BF > 3)
   if (metrics.pValue !== undefined) {
     metrics.conclusionValid = metrics.pValue < 0.05;
   } else if (metrics.bayesFactor !== undefined) {
     metrics.conclusionValid = metrics.bayesFactor > 3;
   }
-  
+
   return Object.keys(metrics).length > 0 ? metrics : undefined;
 }
 
@@ -249,7 +249,7 @@ result = np.mean([1, 2, 3, 4, 5])
 print(f"Mean: {result}")
 print(f"p-value: 0.03")
 `);
-    
+
     console.log('[ProtocolValidator] Test result:', result);
     return result.success && result.stdout.includes('Mean: 3.0');
   } catch (error) {

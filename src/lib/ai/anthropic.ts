@@ -84,7 +84,7 @@ function extractToolCallsFromMessageContent(content: Array<Anthropic.ContentBloc
 class ClaudeAdapter implements ClaudeModel {
   private model: string;
 
-  constructor(model: string = "claude-3-5-sonnet-20241022") { // Upgraded to Sonnet 3.5 (Newest)
+  constructor(model: string = "claude-4-5-sonnet-20260217") { // Upgraded to Sonnet 4.5 (Newest)
     this.model = model;
   }
 
