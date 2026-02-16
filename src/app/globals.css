@@ -1607,24 +1607,24 @@
 }
 
 .dark .liquid-glass-v2 {
-  --lg-bg-base: #111317;
-  --lg-bg-sidebar: rgba(31, 35, 40, 0.76);
-  --lg-surface-1: rgba(34, 39, 46, 0.56);
-  --lg-surface-2: rgba(34, 39, 46, 0.42);
-  --lg-surface-3: rgba(40, 46, 54, 0.62);
-  --lg-border-soft: rgba(255, 255, 255, 0.12);
-  --lg-border-strong: rgba(255, 255, 255, 0.18);
-  --lg-highlight-top: rgba(255, 255, 255, 0.18);
-  --lg-shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.38);
-  --lg-shadow-float: 0 18px 42px rgba(0, 0, 0, 0.44);
-  --lg-shadow-glow: 0 0 18px rgba(154, 180, 210, 0.14);
-  --lg-slider-track: rgba(121, 129, 141, 0.46);
+  --lg-bg-base: #030407;
+  --lg-bg-sidebar: rgba(9, 11, 15, 0.76);
+  --lg-surface-1: rgba(8, 10, 14, 0.72);
+  --lg-surface-2: rgba(10, 12, 17, 0.62);
+  --lg-surface-3: rgba(15, 18, 24, 0.66);
+  --lg-border-soft: rgba(255, 255, 255, 0.09);
+  --lg-border-strong: rgba(255, 255, 255, 0.16);
+  --lg-highlight-top: rgba(255, 255, 255, 0.13);
+  --lg-shadow-soft: 0 20px 46px rgba(0, 0, 0, 0.52);
+  --lg-shadow-float: 0 26px 58px rgba(0, 0, 0, 0.64);
+  --lg-shadow-glow: 0 0 22px rgba(137, 22, 44, 0.14);
+  --lg-slider-track: rgba(76, 84, 95, 0.52);
   --lg-slider-fill: linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%);
-  --lg-slider-thumb: rgba(241, 245, 249, 0.86);
-  --lg-slider-thumb-ring: rgba(255, 255, 255, 0.24);
-  --lg-text-primary: #e5e7eb;
-  --lg-text-secondary: #b4bcc7;
-  --lg-text-muted: #8f99a5;
+  --lg-slider-thumb: rgba(241, 245, 249, 0.76);
+  --lg-slider-thumb-ring: rgba(255, 255, 255, 0.18);
+  --lg-text-primary: #f1f5f9;
+  --lg-text-secondary: #c6cfda;
+  --lg-text-muted: #8e99a7;
 }
 
 .liquid-glass-v2 .lg-shell,
@@ -1640,6 +1640,12 @@
   background:
     radial-gradient(circle at 14% 0%, rgba(255, 255, 255, 0.18) 0%, transparent 36%),
     linear-gradient(160deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 52%, rgba(255, 255, 255, 0.12) 100%) !important;
+}
+
+.dark .liquid-glass-v2 .lab-shell::before {
+  background:
+    radial-gradient(780px 360px at 12% -8%, rgba(158, 22, 52, 0.20) 0%, rgba(70, 14, 29, 0.14) 24%, rgba(3, 4, 7, 0.0) 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.00) 16%, rgba(255, 255, 255, 0.02) 100%) !important;
 }
 
 .liquid-glass-v2.chat-theme-shell .feature-chat.lab-shell,
@@ -1660,6 +1666,14 @@
   backdrop-filter: blur(var(--lg-blur-2)) saturate(var(--lg-sat-2)) !important;
   -webkit-backdrop-filter: blur(var(--lg-blur-2)) saturate(var(--lg-sat-2)) !important;
   box-shadow: var(--lg-shadow-soft) !important;
+}
+
+.dark .liquid-glass-v2 .glass-sidebar {
+  border-right-color: rgba(255, 255, 255, 0.14) !important;
+  box-shadow:
+    1px 0 0 rgba(255, 255, 255, 0.08),
+    24px 0 60px rgba(0, 0, 0, 0.45),
+    inset -1px 0 0 rgba(255, 255, 255, 0.05) !important;
 }
 
 .liquid-glass-v2.chat-theme-shell .glass-sidebar,
@@ -1685,6 +1699,18 @@
   backdrop-filter: blur(var(--lg-blur-1)) saturate(var(--lg-sat-1)) !important;
   -webkit-backdrop-filter: blur(var(--lg-blur-1)) saturate(var(--lg-sat-1)) !important;
   box-shadow: var(--lg-shadow-soft) !important;
+}
+
+.dark .liquid-glass-v2 .lab-panel,
+.dark .liquid-glass-v2 .lab-panel-elevated,
+.dark .liquid-glass-v2 .lab-card,
+.dark .liquid-glass-v2 .lab-card-interactive,
+.dark .liquid-glass-v2 .scientific-protocol-card,
+.dark .liquid-glass-v2 .scientific-workbench-main {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.03),
+    0 20px 44px rgba(0, 0, 0, 0.56) !important;
 }
 
 .liquid-glass-v2.chat-theme-shell .feature-chat .lab-panel,
@@ -1726,6 +1752,21 @@
   backdrop-filter: blur(var(--lg-blur-1)) saturate(var(--lg-sat-1)) !important;
   -webkit-backdrop-filter: blur(var(--lg-blur-1)) saturate(var(--lg-sat-1)) !important;
   box-shadow: inset 0 1px 0 var(--lg-highlight-top), 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark .liquid-glass-v2 .lab-button-secondary,
+.dark .liquid-glass-v2 .lab-nav-pill,
+.dark .liquid-glass-v2 .lab-input,
+.dark .liquid-glass-v2 .lab-select,
+.dark .liquid-glass-v2 .lab-textarea,
+.dark .liquid-glass-v2 .lab-chip-mono,
+.dark .liquid-glass-v2 .lg-control,
+.dark .liquid-glass-v2 .lg-input,
+.dark .liquid-glass-v2 .lg-search {
+  background: rgba(14, 17, 23, 0.74) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 12px 26px rgba(0, 0, 0, 0.42) !important;
 }
 
 .liquid-glass-v2 .lab-textarea::placeholder,
