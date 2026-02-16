@@ -303,6 +303,12 @@ export function ChatWorkbenchV2() {
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
   const loadRequestIdRef = useRef(0);
   const loadAbortControllerRef = useRef<AbortController | null>(null);
+  const groundingSourcesLengthRef = useRef(0);
+
+  // Keep ref in sync so loadSession reads current value without being a dependency
+  useEffect(() => {
+    groundingSourcesLengthRef.current = groundingSources.length;
+  }, [groundingSources.length]);
 
   const resetThread = useCallback(() => {
     loadRequestIdRef.current += 1;
@@ -507,7 +513,7 @@ export function ChatWorkbenchV2() {
               if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
                 setLatestClaimId(firstClaimId);
 
-                if (groundingSources.length === 0) {
+                if (groundingSourcesLengthRef.current === 0) {
                   const reconstructionRes = await fetch(`/api/claims/${firstClaimId}`);
                   if (reconstructionRes.ok) {
                     const reconstructionPayload = (await reconstructionRes.json()) as {
@@ -568,7 +574,7 @@ export function ChatWorkbenchV2() {
         }
       }
     },
-    [applySessionHistory, groundingSources.length]
+    [applySessionHistory]
   );
 
   useEffect(() => {
