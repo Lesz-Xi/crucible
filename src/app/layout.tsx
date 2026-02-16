@@ -44,12 +44,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const liquidGlassEnabled = process.env.NEXT_PUBLIC_THEME_LIQUID_GLASS_V2 !== "false";
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased ${liquidGlassEnabled ? "liquid-glass-v2" : ""}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased liquid-glass-v2`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -57,7 +56,7 @@ export default function RootLayout({
             storageKey="wu-weism-theme"
             disableTransitionOnChange
           >
-            {liquidGlassEnabled ? <LiquidGlassRuntime /> : null}
+            <LiquidGlassRuntime />
             {children}
           </ThemeProvider>
       </body>
