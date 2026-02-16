@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Clock3,
   FolderCheck,
+  FlaskConical,
   FolderMinus,
   Folder,
   FolderPlus,
@@ -65,6 +66,7 @@ const NAV_ITEMS = [
 ];
 
 const RELICS_ITEMS = [
+  { href: '/lab', label: 'Labs', icon: FlaskConical },
   { href: '/legal', label: 'Legal', icon: Gavel },
   { href: '/education', label: 'Educational', icon: GraduationCap },
 ];
