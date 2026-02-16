@@ -1204,6 +1204,45 @@
 }
 
 /* ========================================
+   Dark Swap Override (explicit visual swap)
+   Sidebar: translucent/lighter glass
+   Main cards: solid dark
+   ======================================== */
+.dark .liquid-glass-v2 .glass-sidebar,
+.dark .liquid-glass-v2 .lg-sidebar {
+  background: rgba(48, 52, 62, 0.44) !important;
+  border-color: rgba(210, 218, 230, 0.22) !important;
+  backdrop-filter: blur(28px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    24px 0 60px rgba(0, 0, 0, 0.34) !important;
+}
+
+.dark .liquid-glass-v2 .glass-sidebar .lab-nav-pill,
+.dark .liquid-glass-v2 .glass-sidebar .lab-button-secondary,
+.dark .liquid-glass-v2 .glass-sidebar .sidebar-history-item {
+  background: rgba(22, 26, 34, 0.42) !important;
+  border-color: rgba(214, 222, 234, 0.20) !important;
+  color: #ecf1f8 !important;
+}
+
+.dark .liquid-glass-v2 .lab-panel,
+.dark .liquid-glass-v2 .lab-panel-elevated,
+.dark .liquid-glass-v2 .lab-card,
+.dark .liquid-glass-v2 .lab-card-interactive,
+.dark .liquid-glass-v2 .scientific-protocol-card,
+.dark .liquid-glass-v2 .scientific-workbench-main {
+  background: #07090d !important;
+  border-color: rgba(132, 146, 168, 0.20) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 22px 48px rgba(0, 0, 0, 0.62) !important;
+}
+
+/* ========================================
    Glassmorphism System Polish (Apple-like)
    ======================================== */
 
