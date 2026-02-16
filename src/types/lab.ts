@@ -23,7 +23,10 @@ export type LabToolId =
 export interface LLMConfig {
     provider: 'anthropic' | 'openai' | 'gemini';
     model: string;
-    apiKey?: string; // Memory-only, never persisted to DB
+    apiKey?: string; // Legacy/Active consolidated key (runtime only)
+    anthropicApiKey?: string;
+    openaiApiKey?: string;
+    geminiApiKey?: string; // Google Generative AI Key
     temperature?: number;
 }
 

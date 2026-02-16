@@ -58,10 +58,17 @@ describe("ScientificGateway", () => {
 
     it("should return the correct tool definitions", () => {
         const tools = gateway.getTools();
-        expect(tools).toHaveLength(3);
+        // Core tools: simulate, math analysis, law compliance
+        // Bio Lab tools: fetch_protein_structure, analyze_protein_sequence, dock_ligand
+        expect(tools.length).toBeGreaterThanOrEqual(6);
         expect(tools[0].name).toBe("simulate_scientific_phenomenon");
         expect(tools[1].name).toBe("perform_mathematical_analysis");
         expect(tools[2].name).toBe("verify_law_compliance");
+        // Verify bio lab tools are present
+        const toolNames = tools.map((t: any) => t.name);
+        expect(toolNames).toContain("fetch_protein_structure");
+        expect(toolNames).toContain("analyze_protein_sequence");
+        expect(toolNames).toContain("dock_ligand");
     });
 
     it("should execute a simulation successfully", async () => {
