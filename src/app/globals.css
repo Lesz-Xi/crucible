@@ -801,10 +801,11 @@
 
 /* === APPLE LIQUID GLASS THEME SYSTEM === */
 :root {
-  --glass-sidebar-bg: rgba(30, 30, 35, 0.3);
+  /* Darker, deeper glass base for premium contrast */
+  --glass-sidebar-bg: rgba(18, 18, 20, 0.65); 
   --glass-sidebar-border: rgba(255, 255, 255, 0.08); 
-  --glass-blur: 50px;
-  --glass-saturation: 180%;
+  --glass-blur: 40px;
+  --glass-saturation: 190%; /* Boost saturation for vibrant "bleed through" */
 }
 
 .wabi-liquid-glass {
