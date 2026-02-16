@@ -32,6 +32,11 @@ export default function ChatPage() {
   useEffect(() => {
     void bootstrapHistoryRecovery();
     setUseV2(true);
+
+    document.body.classList.add("chat-theme-shell");
+    return () => {
+      document.body.classList.remove("chat-theme-shell");
+    };
   }, []);
 
   if (useV2) {
