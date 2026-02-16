@@ -39,6 +39,20 @@ export function Hero() {
           From observation to intervention—distilling truth from the flux.
         </p>
 
+        {/* MASA White Paper Call to Action */}
+        <div className="mb-16 opacity-0 animate-[fadeIn_1s_ease-out_1.4s_forwards]">
+          <a 
+            href="/masa-white-paper.html" 
+            target="_blank"
+            className="group relative inline-flex items-center gap-2 px-6 py-3 border border-[var(--text-primary)]/20 rounded-full 
+                     hover:bg-[var(--text-primary)]/5 transition-all duration-300
+                     text-[var(--text-primary)] font-mono text-xs tracking-widest uppercase hover:tracking-[0.15em]"
+          >
+            <span>Read MASA White Paper</span>
+            <span className="opacity-50 group-hover:opacity-100 transition-opacity">→</span>
+          </a>
+        </div>
+
         {/* Subtle Scroll Indicator */}
         <div className="absolute bottom-[-150px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce duration-[3s]">
            <div className="w-[1px] h-12 bg-wabi-ink-light/20"></div>
