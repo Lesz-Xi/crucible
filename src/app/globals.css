@@ -1249,7 +1249,7 @@
    ======================================== */
 .dark .liquid-glass-v2 .glass-sidebar,
 .dark .liquid-glass-v2 .lg-sidebar {
-  background: rgba(188, 184, 177, 0.2) !important;
+  background: #bcb8b1 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(40px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
@@ -1568,15 +1568,15 @@
 }
 
 .dark .chat-theme-shell .glass-sidebar {
-  background: rgba(188, 184, 177, 0.2) !important;
+  background: #bcb8b1 !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   border-width: 0.5px !important;
   backdrop-filter: blur(40px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
-  --lab-text-primary: #e8e6e3;
-  --lab-text-secondary: #a8a5a0;
-  --lab-text-tertiary: #807d78;
-  --lab-border: rgba(255, 255, 255, 0.08);
+  --lab-text-primary: #1f2a2e;
+  --lab-text-secondary: #3c4b52;
+  --lab-text-tertiary: #607076;
+  --lab-border: rgba(0, 0, 0, 0.12);
 }
 
 .dark .chat-theme-shell .feature-chat.lab-shell {
@@ -1589,7 +1589,7 @@
 .dark .chat-theme-shell .feature-chat .lab-card-interactive,
 .dark .chat-theme-shell .feature-chat .scientific-protocol-card,
 .dark .chat-theme-shell .feature-chat .scientific-workbench-main {
-  background: #0a0908 !important;
+  background: #0b090a !important;
   border-color: #3f525d !important;
   border-width: 0.5px !important;
 }
@@ -1687,11 +1687,11 @@
 }
 
 .dark .liquid-glass-v2 {
-  --lg-bg-base: #030407;
-  --lg-bg-sidebar: rgba(188, 184, 177, 0.2);
-  --lg-surface-1: #06080d;
-  --lg-surface-2: #090c12;
-  --lg-surface-3: rgba(15, 18, 24, 0.66);
+  --lg-bg-base: #0b090a;
+  --lg-bg-sidebar: #bcb8b1;
+  --lg-surface-1: #0b090a;
+  --lg-surface-2: #0d0b0c;
+  --lg-surface-3: rgba(11, 9, 10, 0.66);
   --lg-border-soft: rgba(255, 255, 255, 0.09);
   --lg-border-strong: rgba(255, 255, 255, 0.16);
   --lg-highlight-top: rgba(255, 255, 255, 0.13);
