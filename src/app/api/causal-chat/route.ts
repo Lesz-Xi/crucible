@@ -604,6 +604,44 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
             isControllerClosed = true;
             controller.close();
           }
+
+          // Persist conversational fast-path messages (mirrors full causal path at L1097+)
+          if (sessionId && user && supabase) {
+            const { error: sessionError } = await supabase
+              .from("causal_chat_sessions")
+              .upsert({
+                id: sessionId,
+                user_id: user.id,
+                title: userQuestion.slice(0, 50) + (userQuestion.length > 50 ? "..." : ""),
+                updated_at: new Date().toISOString(),
+                domain_classified: "conversational"
+              }, { onConflict: "id" });
+
+            if (sessionError) {
+              console.error("[Persistence] Fast-path session upsert failed:", sessionError);
+            } else {
+              // Save user message
+              const { error: userMsgError } = await supabase.from("causal_chat_messages").insert({
+                session_id: sessionId,
+                role: "user",
+                content: userQuestion
+              });
+              if (userMsgError) {
+                console.error("[Persistence] Fast-path user message insert failed:", userMsgError);
+              }
+
+              // Save assistant message
+              const { error: assistantMsgError } = await supabase.from("causal_chat_messages").insert({
+                session_id: sessionId,
+                role: "assistant",
+                content: fullText
+              });
+              if (assistantMsgError) {
+                console.error("[Persistence] Fast-path assistant message insert failed:", assistantMsgError);
+              }
+            }
+          }
+
           return;
         }
 

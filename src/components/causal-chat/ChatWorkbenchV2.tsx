@@ -398,6 +398,7 @@ export function ChatWorkbenchV2() {
   }, [isLoading]);
 
   const applySessionHistory = useCallback((sessionId: string, historyMessages: SessionHistoryMessage[]) => {
+    console.log('[DEBUG applySessionHistory] called with', sessionId, 'messages:', historyMessages.length);
     const filteredMessages = historyMessages
       .filter((message) => message.role === 'user' || message.role === 'assistant')
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
@@ -437,6 +438,7 @@ export function ChatWorkbenchV2() {
       ? latestAssistantWithEvidence.model_key
       : 'default';
 
+    console.log('[DEBUG applySessionHistory] setting', loadedMessages.length, 'messages for session', sessionId);
     setMessages(loadedMessages);
     setCurrentDomain(restoredDomain);
     currentDomainRef.current = restoredDomain;
@@ -478,13 +480,16 @@ export function ChatWorkbenchV2() {
 
   const loadSession = useCallback(
     async (sessionId: string) => {
+      console.log('[DEBUG loadSession] ENTER', sessionId);
       const requestId = ++loadRequestIdRef.current;
+      console.log('[DEBUG loadSession] requestId=', requestId);
       loadAbortControllerRef.current?.abort();
       const controller = new AbortController();
       loadAbortControllerRef.current = controller;
       setError(null);
 
       const cached = sessionCacheRef.current.get(sessionId);
+      console.log('[DEBUG loadSession] cached?', !!cached, 'for', sessionId);
       if (cached) {
         applySessionHistory(sessionId, cached);
         setIsLoading(false);
@@ -499,8 +504,13 @@ export function ChatWorkbenchV2() {
         }
 
         const payload = (await response.json()) as { messages?: SessionHistoryMessage[] };
-        if (requestId !== loadRequestIdRef.current) return;
+        console.log('[DEBUG loadSession] fetch done. requestId=', requestId, 'current=', loadRequestIdRef.current);
+        if (requestId !== loadRequestIdRef.current) {
+          console.log('[DEBUG loadSession] STALE REQUEST — dropping results');
+          return;
+        }
         const historyMessages = payload.messages || [];
+        console.log('[DEBUG loadSession] got', historyMessages.length, 'messages from API');
         sessionCacheRef.current.set(sessionId, historyMessages);
         applySessionHistory(sessionId, historyMessages);
 
@@ -590,8 +600,12 @@ export function ChatWorkbenchV2() {
       return;
     }
 
+    console.log('[DEBUG URL effect] urlSessionId=', urlSessionId, 'dbSessionId=', dbSessionId);
     if (urlSessionId && urlSessionId !== dbSessionId) {
+      console.log('[DEBUG URL effect] TRIGGERING loadSession');
       void loadSession(urlSessionId);
+    } else {
+      console.log('[DEBUG URL effect] SKIPPED — same session or no sessionId');
     }
   }, [dbSessionId, loadSession, resetThread, searchParams]);
 
