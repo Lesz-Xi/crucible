@@ -838,6 +838,25 @@
   background: transparent !important;
 }
 
+/* === PROMPT CARDS GLASS MATCH === */
+/* Force Protocol Cards and Quick Prompts to match Sidebar liquid glass in dark mode */
+.dark .scientific-protocol-card,
+.dark .lab-card-interactive,
+.dark .lab-card {
+  background: var(--glass-sidebar-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
+  border-color: var(--glass-sidebar-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.dark .scientific-protocol-card:hover,
+.dark .lab-card-interactive:hover {
+  background: rgba(188, 184, 177, 0.25) !important; /* Slightly lighter on hover */
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--lab-shadow-lift);
+}
+
 .dark .lab-chat-prose h2 {
   border-top-color: rgba(255, 255, 255, 0.14);
 }
