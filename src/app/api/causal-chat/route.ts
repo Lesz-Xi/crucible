@@ -459,6 +459,7 @@ export async function POST(req: NextRequest) {
       let compactionReceipt: CompactionReceipt | null = null;
       let scientificAnalysis: ScientificAnalysisResponse[] = [];
       let recentAttachmentFileNames: string[] = [];
+      let fullTextAccumulator = "";  // Outer-scope mirror of fullText for catch-block fallback persistence
 
       const scientificPromise = normalizedAttachments.length > 0
         ? (async () => {
@@ -599,13 +600,7 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
             await new Promise(r => setTimeout(r, 15));
           }
 
-          sendEvent("complete", { finished: true });
-          if (!isControllerClosed) {
-            isControllerClosed = true;
-            controller.close();
-          }
-
-          // Persist conversational fast-path messages (mirrors full causal path at L1097+)
+          // Persist BEFORE closing stream — serverless may kill the function after controller.close()
           if (sessionId && user && supabase) {
             const { error: sessionError } = await supabase
               .from("causal_chat_sessions")
@@ -640,6 +635,12 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
                 console.error("[Persistence] Fast-path assistant message insert failed:", assistantMsgError);
               }
             }
+          }
+
+          sendEvent("complete", { finished: true });
+          if (!isControllerClosed) {
+            isControllerClosed = true;
+            controller.close();
           }
 
           return;
@@ -947,12 +948,14 @@ ${sourceList}`;
 
 
         console.log("[Streaming] Starting LLM generation (simulated streaming)...");
+        fullTextAccumulator = "";  // Reset for this path
         let fullText = "";
         let chunkCount = 0;
 
         // TODO: Implement true streaming when Claude SDK supports it
         const result = await model.generateContent(finalPrompt);
         fullText = result.response.text();
+        fullTextAccumulator = fullText;  // Mirror to outer scope for catch-block fallback
         chunkCount = 1;
 
         if (factTrigger.shouldSearch && groundingSources.length > 0) {
@@ -1078,61 +1081,65 @@ ${sourceList}`;
           oracleActivations,
         });
 
-        // Generate and stream counterfactuals (Layer 3) if an intervention was performed
-        if (interventionApplied) {
-          sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
-          const scenarios = await cfGenerator.generateScenarios(fullText);
-          sendEvent("counterfactuals", scenarios);
-        }
-
-
-        // 5. Causal Graph Visualization (Metadata)
-        const graphPayload = scmContext.tier2
-          ? scmContext.tier2.getFullStructure()
-          : scmContext.primaryScm.getFullStructure();
-
-        sendEvent("causal_graph", graphPayload);
-
-        const validationJson = scmContext.model?.validationJson as Record<string, unknown> | undefined;
-        const biasSensitivePaths = Array.isArray(validationJson?.bias_sensitive_paths)
-          ? validationJson?.bias_sensitive_paths
-          : [];
-        if (biasSensitivePaths.length > 0) {
-          sendEvent("bias_sensitive_paths", { paths: biasSensitivePaths });
-        }
-
-        const isAlignmentModel =
-          scmContext.domain === "alignment" || scmContext.model?.modelKey === "alignment_bias_scm";
-        if (isAlignmentModel && supabase) {
-          const { data: reportRows, error: reportError } = await supabase
-            .from("alignment_audit_reports")
-            .select("id, model_key, model_version, scope, source, created_at, report_json")
-            .eq("model_key", scmContext.model?.modelKey || "alignment_bias_scm")
-            .eq("scope", "global")
-            .order("created_at", { ascending: false });
-
-          const latest = reportError ? null : selectLatestAlignmentAuditReport(reportRows as AlignmentAuditReportRow[]);
-          if (latest) {
-            sendEvent("alignment_audit_report", {
-              id: latest.id,
-              modelKey: latest.modelKey,
-              modelVersion: latest.modelVersion,
-              scope: latest.scope,
-              source: latest.source,
-              createdAt: latest.createdAt,
-              report: latest.report,
-            });
+        // Non-critical metadata steps — wrapped in try-catch to never block persistence
+        let graphPayload: unknown = null;
+        try {
+          // Generate and stream counterfactuals (Layer 3) if an intervention was performed
+          if (interventionApplied) {
+            sendEvent("thinking", { message: "Generating Counterfactual Scenarios (Layer 3)..." });
+            const scenarios = await cfGenerator.generateScenarios(fullText);
+            sendEvent("counterfactuals", scenarios);
           }
+
+          // 5. Causal Graph Visualization (Metadata)
+          graphPayload = scmContext.tier2
+            ? scmContext.tier2.getFullStructure()
+            : scmContext.primaryScm.getFullStructure();
+
+          sendEvent("causal_graph", graphPayload);
+
+          const validationJson = scmContext.model?.validationJson as Record<string, unknown> | undefined;
+          const biasSensitivePaths = Array.isArray(validationJson?.bias_sensitive_paths)
+            ? validationJson?.bias_sensitive_paths
+            : [];
+          if (biasSensitivePaths.length > 0) {
+            sendEvent("bias_sensitive_paths", { paths: biasSensitivePaths });
+          }
+
+          const isAlignmentModel =
+            scmContext.domain === "alignment" || scmContext.model?.modelKey === "alignment_bias_scm";
+          if (isAlignmentModel && supabase) {
+            const { data: reportRows, error: reportError } = await supabase
+              .from("alignment_audit_reports")
+              .select("id, model_key, model_version, scope, source, created_at, report_json")
+              .eq("model_key", scmContext.model?.modelKey || "alignment_bias_scm")
+              .eq("scope", "global")
+              .order("created_at", { ascending: false });
+
+            const latest = reportError ? null : selectLatestAlignmentAuditReport(reportRows as AlignmentAuditReportRow[]);
+            if (latest) {
+              sendEvent("alignment_audit_report", {
+                id: latest.id,
+                modelKey: latest.modelKey,
+                modelVersion: latest.modelVersion,
+                scope: latest.scope,
+                source: latest.source,
+                createdAt: latest.createdAt,
+                report: latest.report,
+              });
+            }
+          }
+
+          sendEvent("provenance", {
+            scm_used: [scmContext.domain],
+            model_key: scmContext.model?.modelKey,
+            model_version: scmContext.model?.version,
+            confidence: classification.confidence
+          });
+        } catch (metadataError) {
+          console.warn("[CausalChat] Non-critical post-streaming step failed (persistence will still proceed):", metadataError);
         }
 
-        sendEvent("provenance", {
-          scm_used: [scmContext.domain],
-          model_key: scmContext.model?.modelKey,
-          model_version: scmContext.model?.version,
-          confidence: classification.confidence
-        });
-
-        // 6. Persistence (only if user is authenticated)
         // 6. Persistence (only if user is authenticated)
         if (sessionId && user && supabase) {
           const canPersistDensity = await verifyCausalDensityColumn(supabase);
@@ -1425,6 +1432,42 @@ ${sourceList}`;
       } catch (error: unknown) {
         const stack = error instanceof Error ? error.stack : undefined;
         console.error("[CausalChat API] Error:", error, stack);
+
+        // Fallback persistence: save what we can even when the pipeline errors
+        if (sessionId && user && supabase) {
+          try {
+            const { error: sessionError } = await supabase
+              .from("causal_chat_sessions")
+              .upsert({
+                id: sessionId,
+                user_id: user.id,
+                title: userQuestion.slice(0, 50) + (userQuestion.length > 50 ? "..." : ""),
+                updated_at: new Date().toISOString(),
+                domain_classified: "error_recovery"
+              }, { onConflict: "id" });
+
+            if (!sessionError) {
+              await supabase.from("causal_chat_messages").insert({
+                session_id: sessionId,
+                role: "user",
+                content: userQuestion
+              });
+
+              // Persist partial assistant response if any text was generated
+              if (fullTextAccumulator.length > 0) {
+                await supabase.from("causal_chat_messages").insert({
+                  session_id: sessionId,
+                  role: "assistant",
+                  content: fullTextAccumulator
+                });
+              }
+            }
+            console.log(`[Persistence] Fallback: saved session ${sessionId} after pipeline error.`);
+          } catch (persistError) {
+            console.error("[Persistence] Fallback persistence also failed:", persistError);
+          }
+        }
+
         if (!isControllerClosed) {
           const message = error instanceof Error ? error.message : "Unknown error";
           sendEvent("error", { message });
