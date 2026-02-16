@@ -119,6 +119,12 @@
   --lab-accent-moss: #71717a;
   --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+  /* Codex parity tokens (dark) */
+  --codex-main: #181818;
+  --codex-surface: #1f1f1f;
+  --codex-surface-hover: #2a2a2a;
+  --codex-border: #303030;
   
   /* Shadow adjustments for dark */
   --shadow-ambient: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -1347,7 +1353,7 @@
 .dark .glass-sidebar .lab-nav-pill:hover,
 .dark .glass-sidebar .lab-card-active,
 .dark .glass-sidebar .lab-button-secondary:hover {
-  background: #2b2b2b !important;
+  background: var(--codex-surface-hover) !important;
 }
 
 .sidebar-history-item {
@@ -1374,6 +1380,12 @@
   color: var(--lab-text-primary);
 }
 
+.dark .sidebar-history-item:hover,
+.dark .sidebar-history-item-active {
+  background: var(--codex-surface-hover);
+  color: var(--lab-text-primary);
+}
+
 .lab-scroll-region-minimal::-webkit-scrollbar {
   width: 4px;
 }
@@ -1391,9 +1403,9 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* Chat workbench: Codex-style neutral dark glass */
+/* Chat workbench: Codex-style neutral dark (solid, parity-matched) */
 .dark .feature-chat.lab-shell {
-  background: #1E1E1E !important;
+  background: var(--codex-main) !important;
 }
 
 .dark .feature-chat.lab-shell::before {
@@ -1405,34 +1417,34 @@
 .dark .feature-chat .lab-panel-elevated,
 .dark .feature-chat .lab-card,
 .dark .feature-chat .lab-card-interactive {
-  background: rgba(30, 30, 30, 0.74) !important;
-  border-color: #333333 !important;
-  backdrop-filter: blur(14px) saturate(108%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(108%) !important;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26) !important;
+  background: var(--codex-surface) !important;
+  border-color: var(--codex-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .dark .feature-chat .scientific-protocol-card {
-  background: rgba(30, 30, 30, 0.78) !important;
-  border-color: #333333 !important;
-  backdrop-filter: blur(14px) saturate(108%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(108%) !important;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28) !important;
+  background: var(--codex-surface) !important;
+  border-color: var(--codex-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
 }
 
 .dark .feature-chat .scientific-workbench-main {
-  border: 1px solid #333333;
+  border: 1px solid var(--codex-border);
   border-radius: 16px;
-  background: rgba(30, 30, 30, 0.74);
-  backdrop-filter: blur(14px) saturate(108%);
-  -webkit-backdrop-filter: blur(14px) saturate(108%);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  background: var(--codex-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
   padding: 1.25rem 1rem;
 }
 
 .dark .glass-sidebar {
-  background: #252526 !important;
-  border-color: #333333 !important;
+  background: var(--codex-surface) !important;
+  border-color: var(--codex-border) !important;
 }
 
 body {
