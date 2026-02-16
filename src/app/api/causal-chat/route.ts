@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ScientificGateway } from '@/lib/services/scientific-gateway';
 import { getClaudeModel } from "@/lib/ai/anthropic";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { DomainClassifier } from "@/lib/services/domain-classifier";
@@ -943,18 +944,85 @@ SOURCES:
 ${sourceList}`;
         }
 
-        // 4. LLM Generation (True Streaming)
+        // 4. LLM Generation (True Streaming with Tool Use)
         const model = getClaudeModel();
-
+        const scientificGateway = ScientificGateway.getInstance();
+        const tools = scientificGateway.getTools(); // Retrieve tool definitions
 
         console.log("[Streaming] Starting LLM generation (simulated streaming)...");
         fullTextAccumulator = "";  // Reset for this path
         let fullText = "";
         let chunkCount = 0;
 
-        // TODO: Implement true streaming when Claude SDK supports it
-        const result = await model.generateContent(finalPrompt);
-        fullText = result.response.text();
+        // Initialize conversation history
+        // We use 'any' cast here to avoid strict type dependency on @anthropic-ai/sdk in this file, 
+        // relying on the structural compatibility with the adapter.
+        let messages: any[] = [{ role: "user", content: finalPrompt }];
+        let currentResponse = await model.generateContent(finalPrompt, { tools, messages });
+
+        // Tool Loop
+        let toolCalls = currentResponse.response.toolCalls();
+        let loopCount = 0;
+        const MAX_TOOL_LOOPS = 5;
+
+        while (toolCalls.length > 0 && loopCount < MAX_TOOL_LOOPS) {
+          loopCount++;
+          console.log(`[CausalChat] Tool usage detected (Loop ${loopCount}):`, toolCalls.map(tc => tc.name));
+
+          // 1. Append Assistant Message (Text + ToolUse) to history
+          const assistantContent: any[] = [];
+          const textPart = currentResponse.response.text();
+          if (textPart) {
+            assistantContent.push({ type: "text", text: textPart });
+          }
+          toolCalls.forEach(tc => {
+            assistantContent.push({
+              type: "tool_use",
+              id: tc.id,
+              name: tc.name,
+              input: tc.input
+            });
+          });
+          messages.push({ role: "assistant", content: assistantContent });
+
+          // 2. Execute Tools
+          const toolResults: any[] = [];
+
+          for (const tc of toolCalls) {
+            let output: any = { error: "Unknown tool" };
+
+            try {
+              if (tc.name === "simulate_scientific_phenomenon") {
+                const { thesis, mechanism, prediction } = tc.input as any;
+                output = await scientificGateway.simulate(thesis, mechanism, prediction);
+              } else if (tc.name === "perform_mathematical_analysis") {
+                const { operation, data } = tc.input as any;
+                output = await scientificGateway.calculate(operation, data);
+              } else if (tc.name === "verify_law_compliance") {
+                const { claim } = tc.input as any;
+                output = await scientificGateway.verify(claim);
+              }
+            } catch (err: any) {
+              output = { error: err.message || String(err) };
+            }
+
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tc.id,
+              content: JSON.stringify(output)
+            });
+          }
+
+          // 3. Append User Message (Tool Results) to history
+          messages.push({ role: "user", content: toolResults });
+
+          // 4. Call Model Again
+          currentResponse = await model.generateContent(finalPrompt, { tools, messages });
+          toolCalls = currentResponse.response.toolCalls();
+        }
+
+        // Final text after tool loop
+        fullText = currentResponse.response.text();
         fullTextAccumulator = fullText;  // Mirror to outer scope for catch-block fallback
         chunkCount = 1;
 

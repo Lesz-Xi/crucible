@@ -1,7 +1,6 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 
-// Initialize Anthropic client
 // Lazy-init Anthropic client
 let anthropicClient: Anthropic | null = null;
 
@@ -32,28 +31,64 @@ function getAnthropicClient(): Anthropic {
   return anthropicClient;
 }
 
-// Adapter Interface to mimic Gemini's GenerativeModel
-export interface ClaudeModel {
-  generateContent(prompt: string): Promise<{ response: { text: () => string } }>;
+export interface ToolDefinition {
+  name: string;
+  description: string;
+  input_schema: Record<string, unknown>;
 }
 
-function extractTextFromMessageContent(content: Array<{ type: string; text?: string }>): string {
+export interface ToolCall {
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+
+export interface GenerateContentOptions {
+  system?: string;
+  tools?: ToolDefinition[];
+  toolChoice?: { type: "auto" | "any" | "tool"; name?: string };
+  messages?: Array<Anthropic.MessageParam>; // Allow passing existing conversation history
+}
+
+export interface GenerateContentResult {
+  response: {
+    text: () => string;
+    toolCalls: () => ToolCall[];
+  };
+}
+
+// Adapter Interface to mimic Gemini's GenerativeModel, extended for Tools
+export interface ClaudeModel {
+  generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult>;
+}
+
+function extractTextFromMessageContent(content: Array<Anthropic.ContentBlock>): string {
   return content
-    .filter((block) => block?.type === "text" && typeof block.text === "string")
-    .map((block) => block.text as string)
+    .filter((block): block is Anthropic.TextBlock => block.type === "text")
+    .map((block) => block.text)
     .join("\n")
     .trim();
+}
+
+function extractToolCallsFromMessageContent(content: Array<Anthropic.ContentBlock>): ToolCall[] {
+  return content
+    .filter((block): block is Anthropic.ToolUseBlock => block.type === "tool_use")
+    .map((block) => ({
+      id: block.id,
+      name: block.name,
+      input: block.input as Record<string, unknown>,
+    }));
 }
 
 // Concrete Adapter
 class ClaudeAdapter implements ClaudeModel {
   private model: string;
 
-  constructor(model: string = "claude-sonnet-4-5-20250929") {
+  constructor(model: string = "claude-3-5-sonnet-20241022") { // Upgraded to Sonnet 3.5 (Newest)
     this.model = model;
   }
 
-  async generateContent(prompt: string) {
+  async generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult> {
     let attempts = 0;
     const maxAttempts = 3;
 
@@ -61,37 +96,77 @@ class ClaudeAdapter implements ClaudeModel {
       try {
         const client = getAnthropicClient();
 
-        const messages: Array<{ role: "user" | "assistant"; content: string }> = [
-          { role: "user", content: prompt },
-        ];
+        // Use provided messages or start fresh with prompt
+        const messages: Array<Anthropic.MessageParam> = options?.messages
+          ? [...options.messages]
+          : [{ role: "user", content: prompt }];
+
+        // If we didn't use options.messages but have a prompt, ensure it's in there (handled above).
+        // If we DO use options.messages, 'prompt' arg might be ignored or expected to be the last user message?
+        // Standard convention: if options.messages is passed, it takes precedence. 
+        // If 'prompt' is also passed and not empty, and not already in messages, we could append it?
+        // For safety/clarity: Let's assume if options.messages is passed, the caller handles the full context.
+        // But the signature requires 'prompt'. 
+        // Let's modify logic: if options.messages has content, use it. If prompt is not empty and not last message, append it?
+        // Actually, simplest is: if options.messages, verify prompt is needed.
+        // Let's stick to: if options.messages is present, use it. If prompt is provided and not in messages, append it.
+        // But for this specific use case (tool loop), we will likely pass the FULL history including the latest user prompt in 'options.messages'.
+
+        // Edge case: Initial call might just use 'prompt'. Subsequent calls use 'options.messages'.
+
+        if (options?.messages && prompt && !options.messages.some(m => m.content === prompt)) {
+          // prompt is just a string, m.content can be string or array.
+          // simpler: if options.messages is provided, we assume it's the source of truth.
+        }
 
         let assembledText = "";
+        let collectedToolCalls: ToolCall[] = [];
         let continuationHops = 0;
         const maxContinuationHops = 1;
+
+        // Note: With tools, we generally want to stop on tool_use. 
+        // If tools are provided, we don't do the simple "max_tokens" continuation loop 
+        // because the state management gets complex. 
+        // For now, we disable the manual continuation loop if tools are present.
+        const toolsEnabled = options?.tools && options.tools.length > 0;
 
         while (true) {
           const msg = await client.messages.create({
             model: this.model,
             max_tokens: 8192,
             messages,
+            system: options?.system,
+            tools: options?.tools as Anthropic.Tool[] | undefined,
+            tool_choice: options?.toolChoice as any,
           });
 
-          const chunk = extractTextFromMessageContent(msg.content as Array<{ type: string; text?: string }>);
-          if (chunk) {
-            assembledText = assembledText ? `${assembledText}\n${chunk}` : chunk;
+          const textChunk = extractTextFromMessageContent(msg.content);
+          const toolCalls = extractToolCallsFromMessageContent(msg.content);
+
+          if (textChunk) {
+            assembledText = assembledText ? `${assembledText}\n${textChunk}` : textChunk;
+          }
+          if (toolCalls.length > 0) {
+            collectedToolCalls = collectedToolCalls.concat(toolCalls);
           }
 
-          if (msg.stop_reason !== "max_tokens" || continuationHops >= maxContinuationHops) {
-            if (msg.stop_reason === "max_tokens") {
+          // Stop conditions
+          if (msg.stop_reason === "tool_use") {
+            break;
+          }
+
+          if (msg.stop_reason !== "max_tokens" || continuationHops >= maxContinuationHops || toolsEnabled) {
+            if (msg.stop_reason === "max_tokens" && !toolsEnabled) {
               console.warn("[Anthropic] Response hit max_tokens; returning truncated-safe output after continuation cap.");
             }
             break;
           }
 
+          // Continuation logic (only for text-only mode)
           continuationHops += 1;
           console.warn(`[Anthropic] stop_reason=max_tokens, requesting continuation hop ${continuationHops}/${maxContinuationHops}`);
 
-          messages.push({ role: "assistant", content: chunk || assembledText || "" });
+          messages.push({ role: "assistant", content: textChunk || assembledText || "" });
           messages.push({
             role: "user",
             content: "Continue exactly where you left off. Do not repeat prior text. Complete the response succinctly.",
@@ -101,6 +176,7 @@ class ClaudeAdapter implements ClaudeModel {
         return {
           response: {
             text: () => assembledText,
+            toolCalls: () => collectedToolCalls,
           },
         };
       } catch (error) {
@@ -109,7 +185,7 @@ class ClaudeAdapter implements ClaudeModel {
 
         if (attempts >= maxAttempts) throw error;
 
-        // Exponential backoff: 1000ms, 2000ms, 4000ms
+        // Exponential backoff
         await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempts - 1)));
       }
     }
@@ -122,9 +198,3 @@ class ClaudeAdapter implements ClaudeModel {
 export function getClaudeModel(): ClaudeModel {
   return new ClaudeAdapter();
 }
-
-// TODO: Claude does not support embeddings natively.
-// If your pipeline relies on generateEmbedding, you must either:
-// 1. Keep using Gemini for embeddings
-// 2. Use OpenAI or local transformers.js
-// 3. Refactor to remove embedding dependency

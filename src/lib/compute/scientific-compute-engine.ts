@@ -155,7 +155,7 @@ export function polynomialRegression(
     const Y = matrix(yValues.map((y) => [y]));
 
     const Xt = transpose(X) as Matrix;
-    const XtX = multiply(Xt, X) as Matrix;
+const XtX = multiply(Xt, X) as Matrix;
     const XtXinv = inv(XtX) as Matrix;
     const XtY = multiply(Xt, Y) as Matrix;
     const beta = multiply(XtXinv, XtY) as Matrix;
