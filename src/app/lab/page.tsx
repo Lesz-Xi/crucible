@@ -20,7 +20,12 @@ export default function LabPage() {
             
             dispatch({ 
                 type: 'LOAD_STRUCTURE', 
-                payload: { pdbId: '4HHB', content: pdb, metadata: { method: 'manual_verification' } } 
+                payload: { 
+                    pdbId: '4HHB', 
+                    content: pdb, 
+                    metadata: { method: 'manual_verification' },
+                    loadedAt: new Date().toISOString()
+                } 
             });
             
             dispatch({
@@ -63,18 +68,25 @@ export default function LabPage() {
              dispatch({
                 type: 'ADD_EXPERIMENT',
                 payload: {
-                    id: crypto.randomUUID(), // New log or update existing? Context only supports ADD. Ideally update.
-                    // For now, we just add a completion log.
+                    id: crypto.randomUUID(), 
                     user_id: 'manual-test',
                     tool_name: 'simulate_scientific_phenomenon',
                     causal_role: 'intervention',
                     input_hash: 'result-hash',
-                    input_json: { note: "Result of simulation " + id },
+                    // Use valid input type
+                    input_json: { thesis, mechanism }, 
+                    metadata: { note: "Result of simulation " + id },
                     status: 'success',
                     result_json: { 
-                        execution_time_ms: 450,
-                        metrics: { stability_score: 0.85, entropy: 4.2 },
-                        stdout: "Simulation completed successfully. No violations found."
+                        success: true,
+                        protocolCode: "def simulate(thesis): return True",
+                        execution: {
+                            executionTimeMs: 450,
+                            metrics: { stability_score: 0.85, entropy: 4.2 },
+                            stdout: "Simulation completed successfully. No violations found.",
+                            stderr: ""
+                        },
+                        degraded: false
                     },
                     created_at: new Date().toISOString()
                 }

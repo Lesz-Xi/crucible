@@ -5,6 +5,8 @@ import { LabProvider } from "@/lib/contexts/LabContext";
 import { LabSidebar } from "@/components/lab/LabSidebar";
 import { LabNotebook } from "@/components/lab/LabNotebook";
 
+import { ModelSettingsModal } from "@/components/lab/settings/ModelSettingsModal";
+
 export default function LabLayout({ children }: { children: React.ReactNode }) {
     return (
         <LabProvider>
@@ -18,6 +20,7 @@ export default function LabLayout({ children }: { children: React.ReactNode }) {
                     {/* Bottom Notebook Panel */}
                     <LabNotebook />
                 </main>
+                <ModelSettingsModal />
             </div>
         </LabProvider>
     );
