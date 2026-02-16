@@ -802,7 +802,7 @@
 /* === APPLE LIQUID GLASS THEME SYSTEM === */
 :root {
   /* Darker, deeper glass base for premium contrast */
-  --glass-sidebar-bg: rgba(18, 18, 20, 0.65); 
+  --glass-sidebar-bg: rgba(188, 184, 177, 0.2); /* Stone/Beige tint with transparency */ 
   --glass-sidebar-border: rgba(255, 255, 255, 0.08); 
   --glass-blur: 40px;
   --glass-saturation: 190%; /* Boost saturation for vibrant "bleed through" */
