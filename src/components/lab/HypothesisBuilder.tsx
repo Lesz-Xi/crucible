@@ -97,18 +97,18 @@ function HypothesisBuilderContent({ onSimulate }: HypothesisBuilderProps) {
   };
 
   return (
-    <div className="w-full h-full relative group">
+    <div className="w-full h-full relative group p-1">
       <div className="absolute top-4 left-4 z-10 flex gap-2">
-        <button onClick={() => addNode('S')} className="px-3 py-1.5 text-xs font-semibold rounded-md border bg-black/50 border-cyan-500/50 text-cyan-400 hover:bg-cyan-950/50 transition-colors cursor-pointer">+ Seq</button>
-        <button onClick={() => addNode('C')} className="px-3 py-1.5 text-xs font-semibold rounded-md border bg-black/50 border-purple-500/50 text-purple-400 hover:bg-purple-950/50 transition-colors cursor-pointer">+ Struct</button>
-        <button onClick={() => addNode('E')} className="px-3 py-1.5 text-xs font-semibold rounded-md border bg-black/50 border-amber-500/50 text-amber-400 hover:bg-amber-950/50 transition-colors cursor-pointer">+ Env</button>
-        <button onClick={() => addNode('Y')} className="px-3 py-1.5 text-xs font-semibold rounded-md border bg-black/50 border-emerald-500/50 text-emerald-400 hover:bg-emerald-950/50 transition-colors cursor-pointer">+ Func</button>
+        <button onClick={() => addNode('S')} className="lab-nav-pill cursor-pointer border-cyan-500/30 text-cyan-600 hover:bg-cyan-500/10">+ Seq</button>
+        <button onClick={() => addNode('C')} className="lab-nav-pill cursor-pointer border-purple-500/30 text-purple-600 hover:bg-purple-500/10">+ Struct</button>
+        <button onClick={() => addNode('E')} className="lab-nav-pill cursor-pointer border-amber-500/30 text-amber-600 hover:bg-amber-500/10">+ Env</button>
+        <button onClick={() => addNode('Y')} className="lab-nav-pill cursor-pointer border-emerald-500/30 text-emerald-600 hover:bg-emerald-500/10">+ Func</button>
       </div>
 
       <div className="absolute bottom-6 right-6 z-10">
         <button 
           onClick={handleSimulate}
-          className="bg-orange-600 hover:bg-orange-700 text-white shadow-[0_0_20px_-5px_rgba(234,88,12,0.5)] border border-orange-400/30 px-6 py-2 rounded-full font-bold flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="lab-button-primary cursor-pointer"
         >
           <Play className="w-4 h-4" />
           Simulate Hypothesis
@@ -122,13 +122,13 @@ function HypothesisBuilderContent({ onSimulate }: HypothesisBuilderProps) {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
-        className="bg-black/20 backdrop-blur-sm rounded-xl border border-white/10"
+        className="lab-panel rounded-xl overflow-hidden"
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={20} size={1} color="#333" />
-        <Controls className="!bg-[#111] !border-white/10 !fill-white" />
+        <Background gap={20} size={1} color="rgba(150, 150, 150, 0.2)" />
+        <Controls className="!bg-white/80 !border-white/20 !fill-stone-600 !backdrop-blur" />
         <MiniMap 
-            className="!bg-[#111] !border-white/10" 
+            className="!bg-white/50 !border-white/20 !backdrop-blur" 
             nodeColor={(n) => {
                 if (n.id.startsWith('S')) return '#06b6d4';
                 if (n.id.startsWith('C')) return '#a855f7';

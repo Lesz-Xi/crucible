@@ -30,14 +30,14 @@ export function LabSidebar() {
     ];
 
     return (
-        <aside className="w-64 border-r border-border bg-card/30 backdrop-blur-md h-full flex flex-col">
-            <div className="p-4 border-b border-border flex items-center gap-2">
-                <FlaskConical className="w-6 h-6 text-primary" />
-                <h1 className="font-bold text-lg">Bio-Lab</h1>
+        <aside className="w-64 border-r border-white/10 lab-panel-elevated h-full flex flex-col">
+            <div className="p-4 border-b border-white/10 flex items-center gap-2">
+                <FlaskConical className="w-5 h-5 text-stone-600 dark:text-stone-300" />
+                <h1 className="lab-section-title text-sm">Bio-Lab Notebook</h1>
             </div>
 
             <div className="flex-1 overflow-y-auto py-4">
-                <div className="px-4 text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+                <div className="px-4 mb-2 lab-section-title text-[10px] opacity-70">
                     Instruments
                 </div>
                 <nav className="space-y-1 px-2">
@@ -46,16 +46,16 @@ export function LabSidebar() {
                             key={tool.id}
                             onClick={() => dispatch({ type: "SET_ACTIVE_TOOL", payload: tool.id as any })}
                             className={cn(
-                                "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors text-left",
+                                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left border border-transparent",
                                 state.activeTool === tool.id
-                                    ? "bg-primary/10 text-primary"
-                                    : "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+                                    ? "bg-white/40 shadow-sm border-white/20 text-stone-800 dark:text-stone-100 dark:bg-white/10"
+                                    : "hover:bg-white/20 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
                             )}
                         >
-                            <tool.icon className="w-4 h-4" />
+                            <tool.icon className={cn("w-4 h-4", state.activeTool === tool.id ? "text-amber-600/80 dark:text-amber-400/80" : "opacity-70")} />
                             <div>
-                                <div className="leading-none">{tool.name}</div>
-                                <div className="text-[10px] opacity-70 font-normal mt-0.5">{tool.description}</div>
+                                <div className="leading-none font-serif tracking-wide">{tool.name}</div>
+                                <div className="text-[10px] opacity-60 font-sans mt-0.5">{tool.description}</div>
                             </div>
                         </button>
                     ))}

@@ -97,7 +97,7 @@ export default function LabPage() {
                         Close Viewer
                     </button>
                 </div>
-                <div className="flex-1 min-h-0 bg-black/40 rounded-xl overflow-hidden border border-white/10 relative">
+                <div className="flex-1 min-h-0 lab-panel overflow-hidden relative">
                      <ProteinViewer 
                         pdbData={state.currentStructure.content} 
                         structureName={state.currentStructure.pdbId} 
@@ -111,24 +111,18 @@ export default function LabPage() {
         <div className="flex flex-col h-full">
             {/* Header / Mode Switcher */}
             <div className="flex justify-center p-4">
-                <div className="flex gap-2 bg-muted/20 p-1 rounded-lg border border-white/5">
+                <div className="flex gap-2 lab-panel p-1">
                     <button
                         onClick={() => setViewMode('dashboard')}
-                        className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
-                            viewMode === 'dashboard' 
-                            ? 'bg-primary/20 text-primary border border-primary/20' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                        }`}
+                        data-active={viewMode === 'dashboard'}
+                        className="lab-nav-pill cursor-pointer hover:bg-white/10"
                     >
                         Dashboard
                     </button>
                     <button
                         onClick={() => setViewMode('builder')}
-                        className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${
-                            viewMode === 'builder' 
-                            ? 'bg-orange-500/20 text-orange-400 border border-orange-500/20' 
-                            : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                        }`}
+                        data-active={viewMode === 'builder'}
+                        className="lab-nav-pill cursor-pointer hover:bg-white/10"
                     >
                         Hypothesis Builder
                     </button>
@@ -143,12 +137,12 @@ export default function LabPage() {
                     </div>
                 ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground flex-col gap-4">
-                        <div className="bg-card/40 p-8 rounded-full border border-border/50">
-                            <FlaskConical className="w-16 h-16 opacity-50" />
+                        <div className="lab-card p-8 rounded-full flex items-center justify-center">
+                            <FlaskConical className="w-16 h-16 opacity-50 text-stone-500" />
                         </div>
                         <div className="text-center">
-                            <h2 className="text-xl font-semibold mb-2">Bio-Computation Lab</h2>
-                            <p className="max-w-md mx-auto text-sm opacity-70 mb-6">
+                            <h2 className="text-xl font-semibold mb-2 lab-section-title text-lg">Bio-Computation Lab</h2>
+                            <p className="max-w-md mx-auto text-sm opacity-70 mb-6 font-serif">
                                 Select an instrument from the sidebar or use the Hypothesis Builder.
                                 All actions are logged to the provenance notebook below.
                             </p>
