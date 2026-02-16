@@ -1447,6 +1447,69 @@
   border-color: var(--codex-border) !important;
 }
 
+/* Exact Codex parity for chat route (dark + light) */
+.chat-theme-shell {
+  --codex-main-light: #f5f5f5;
+  --codex-surface-light: #ececec;
+  --codex-border-light: #dadada;
+  --codex-main-dark: #121212;
+  --codex-surface-dark: #1f1f1f;
+  --codex-border-dark: #303030;
+}
+
+.chat-theme-shell .glass-sidebar {
+  background: var(--codex-surface-light) !important;
+  border-color: var(--codex-border-light) !important;
+  border-width: 0.5px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.chat-theme-shell .feature-chat.lab-shell {
+  background: var(--codex-main-light) !important;
+}
+
+.chat-theme-shell .feature-chat.lab-shell::before {
+  display: none !important;
+  background: none !important;
+}
+
+.chat-theme-shell .feature-chat .lab-panel,
+.chat-theme-shell .feature-chat .lab-panel-elevated,
+.chat-theme-shell .feature-chat .lab-card,
+.chat-theme-shell .feature-chat .lab-card-interactive,
+.chat-theme-shell .feature-chat .scientific-protocol-card,
+.chat-theme-shell .feature-chat .scientific-workbench-main {
+  background: var(--codex-surface-light) !important;
+  border-color: rgba(0, 0, 0, 0.10) !important;
+  border-width: 0.5px !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.dark .chat-theme-shell .glass-sidebar {
+  background: var(--codex-surface-dark) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  border-width: 0.5px !important;
+}
+
+.dark .chat-theme-shell .feature-chat.lab-shell {
+  background: var(--codex-main-dark) !important;
+}
+
+.dark .chat-theme-shell .feature-chat .lab-panel,
+.dark .chat-theme-shell .feature-chat .lab-panel-elevated,
+.dark .chat-theme-shell .feature-chat .lab-card,
+.dark .chat-theme-shell .feature-chat .lab-card-interactive,
+.dark .chat-theme-shell .feature-chat .scientific-protocol-card,
+.dark .chat-theme-shell .feature-chat .scientific-workbench-main {
+  background: var(--codex-surface-dark) !important;
+  border-color: rgba(255, 255, 255, 0.09) !important;
+  border-width: 0.5px !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

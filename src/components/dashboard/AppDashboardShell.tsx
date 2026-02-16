@@ -298,7 +298,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads, researchThreadIds]);
 
   return (
-    <div className={cn('lab-glass-system w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>
+    <div className={cn('lab-glass-system w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'chat-theme-shell h-screen' : 'min-h-screen')}>
       <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(
