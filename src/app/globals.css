@@ -1450,10 +1450,10 @@
 /* Exact Codex parity for chat route (dark + light) */
 .chat-theme-shell {
   --codex-main-light: #f5f5f5;
-  --codex-surface-light: #ececec;
+  --codex-surface-light: #f1f1f1;
   --codex-border-light: #dadada;
   --codex-main-dark: #121212;
-  --codex-surface-dark: #1f1f1f;
+  --codex-surface-dark: #232323;
   --codex-border-dark: #303030;
 }
 
@@ -1481,7 +1481,7 @@
 .chat-theme-shell .feature-chat .lab-card-interactive,
 .chat-theme-shell .feature-chat .scientific-protocol-card,
 .chat-theme-shell .feature-chat .scientific-workbench-main {
-  background: var(--codex-surface-light) !important;
+  background: #e9e9e9 !important;
   border-color: rgba(0, 0, 0, 0.10) !important;
   border-width: 0.5px !important;
   backdrop-filter: none !important;
@@ -1505,7 +1505,7 @@
 .dark .chat-theme-shell .feature-chat .lab-card-interactive,
 .dark .chat-theme-shell .feature-chat .scientific-protocol-card,
 .dark .chat-theme-shell .feature-chat .scientific-workbench-main {
-  background: var(--codex-surface-dark) !important;
+  background: #1a1a1a !important;
   border-color: rgba(255, 255, 255, 0.09) !important;
   border-width: 0.5px !important;
 }
