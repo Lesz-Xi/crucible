@@ -10,7 +10,7 @@ export class GeminiAdapter implements ClaudeModel {
   private modelId: string;
   private apiKey?: string;
 
-  constructor(modelId: string = "gemini-1.5-pro-latest", apiKey?: string) {
+  constructor(modelId: string = "gemini-3-pro", apiKey?: string) {
     this.modelId = modelId;
     this.apiKey = apiKey;
   }

@@ -22,9 +22,9 @@ export const AI_CONFIG = {
             name: 'Anthropic Claude',
             enabled: true,
             models: {
-                fast: 'claude-haiku-4.5',
-                advanced: 'claude-sonnet-4.5',
-                opus: 'claude-opus-4.6'
+                fast: 'claude-4-5-haiku',
+                advanced: 'claude-4-5-sonnet',
+                opus: 'claude-4-6-opus'
             },
             // Requires: process.env.ANTHROPIC_API_KEY
         },
@@ -33,9 +33,9 @@ export const AI_CONFIG = {
             name: 'OpenAI GPT',
             enabled: true, // Set to true after adding OPENAI_API_KEY
             models: {
-                fast: 'gpt-5.1-codex-mini',
-                advanced: 'gpt-5.3-codex',
-                reasoning: 'gpt-5.2'
+                fast: 'gpt-5-3-codex-spark',
+                advanced: 'gpt-5-3-codex',
+                reasoning: 'gpt-5-2'
             },
             // Requires: process.env.OPENAI_API_KEY
         },

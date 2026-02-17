@@ -7,7 +7,7 @@ export class OpenAIAdapter implements ClaudeModel {
     private modelId: string;
     private apiKey?: string;
 
-    constructor(modelId: string = "gpt-5.3-codex", apiKey?: string) {
+    constructor(modelId: string = "gpt-5-3-codex", apiKey?: string) {
         this.modelId = modelId;
         this.apiKey = apiKey;
     }

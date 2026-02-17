@@ -2,7 +2,11 @@
 
 import React from "react";
 import HypothesisBuilder from '@/components/lab/HypothesisBuilder';
-import { FlaskConical, Atom, Network, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { ProteinFetchPanel } from '@/components/lab/panels/ProteinFetchPanel';
+import { SequenceAnalysisPanel } from '@/components/lab/panels/SequenceAnalysisPanel';
+import { DockingPanel } from '@/components/lab/panels/DockingPanel';
+import { ResultDispatcher } from '@/components/lab/results/ResultDispatcher';
+import { FlaskConical, Atom, Network, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useLab } from "@/lib/contexts/LabContext";
 import { ProteinViewer } from "@/components/lab/ProteinViewer";
 import { useState } from "react";
@@ -10,7 +14,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, EASE_OUT_EXPO } from "@/components/ui/motion";
 import { withRetry } from "@/lib/utils/retry";
 import { rcsbRateLimiter, proteinStructureCache } from "@/lib/utils/rate-limiter";
-import type { LabExperiment } from "@/types/lab";
+import { ScientificGateway } from "@/lib/services/scientific-gateway";
+import type { LabExperiment, LabToolId } from "@/types/lab";
+import { cn } from "@/lib/utils";
 
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
@@ -84,9 +90,7 @@ function ExperimentCard({ experiment }: { experiment: LabExperiment }) {
             
             {experiment.result_json && (
                 <div className="mt-3 pt-3 border-t border-[var(--lab-border)]">
-                    <div className="text-xs text-[var(--lab-text-secondary)] font-mono bg-black/5 rounded-lg p-2 overflow-x-auto">
-                        <pre className="text-[10px]">{JSON.stringify(experiment.result_json, null, 2).slice(0, 200)}...</pre>
-                    </div>
+                    <ResultDispatcher experiment={experiment} />
                 </div>
             )}
         </motion.div>
@@ -95,27 +99,36 @@ function ExperimentCard({ experiment }: { experiment: LabExperiment }) {
 
 export default function LabPage() {
     const { state, dispatch, createExperiment, updateExperimentResult } = useLab();
-    const [viewMode, setViewMode] = useState<'dashboard' | 'builder' | 'history'>('dashboard');
+    const [viewMode, setViewMode] = useState<'dashboard' | 'builder' | 'history' | 'tool'>('dashboard');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Enhanced protein fetch with retry and caching
-    const handleLoadTest = async () => {
+    // Scientific Gateway instance for tool operations
+    const gateway = ScientificGateway.getInstance();
+
+    // Map sidebar tool clicks to view mode changes
+    React.useEffect(() => {
+        if (state.activeTool && ['fetch_structure', 'analyze_sequence', 'dock_ligand'].includes(state.activeTool)) {
+            setViewMode('tool');
+        }
+    }, [state.activeTool]);
+
+    // Panel close handler
+    const handleClosePanel = () => {
+        dispatch({ type: 'SET_ACTIVE_TOOL', payload: null });
+        setViewMode('dashboard');
+    };
+
+    // Protein fetch via panel
+    const handleFetchProtein = async (pdbId: string) => {
         setIsLoading(true);
         try {
-            const pdbId = '4HHB';
-            
-            // Check cache first
             let pdb = proteinStructureCache.get(pdbId);
-            
             if (!pdb) {
-                // Check rate limit
                 const rateLimit = rcsbRateLimiter.isAllowed('global');
                 if (!rateLimit.allowed) {
                     console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
                     return;
                 }
-
-                // Fetch with retry
                 const fetchWithRetry = withRetry(
                     async (id: string) => {
                         const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
@@ -124,11 +137,98 @@ export default function LabPage() {
                     },
                     { maxRetries: 3, initialDelayMs: 1000 }
                 );
-                
                 pdb = await fetchWithRetry(pdbId);
                 proteinStructureCache.set(pdbId, pdb);
             }
-            
+            dispatch({ 
+                type: 'LOAD_STRUCTURE', 
+                payload: { 
+                    pdbId, 
+                    content: pdb, 
+                    metadata: { method: 'panel_fetch_with_retry' },
+                    loadedAt: new Date().toISOString()
+                } 
+            });
+            await createExperiment?.('fetch_protein_structure', { pdbId }, 'observation');
+        } catch (err) {
+            console.error('Failed to fetch protein:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Sequence analysis via panel
+    const handleAnalyzeSequence = async (sequence: string) => {
+        setIsLoading(true);
+        try {
+            const experiment = await createExperiment?.(
+                'analyze_protein_sequence',
+                { sequence },
+                'observation'
+            );
+            if (experiment) {
+                // Call gateway's analyzeProteinSequence method
+                const result = await gateway.analyzeProteinSequence(sequence);
+                if (result.success && result.data) {
+                    await updateExperimentResult?.(experiment.id, result.data as any, 'success');
+                } else {
+                    await updateExperimentResult?.(experiment.id, { error: result.error } as any, 'failure');
+                }
+            }
+        } catch (err) {
+            console.error('Failed to analyze sequence:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Docking via panel
+    const handleDockLigand = async (pdbId: string, smiles: string, seed: number) => {
+        setIsLoading(true);
+        try {
+            const experiment = await createExperiment?.(
+                'dock_ligand',
+                { pdbId, smiles, seed },
+                'intervention'
+            );
+            if (experiment) {
+                const result = await gateway.dockLigand(pdbId, smiles, seed);
+                if (result.success && result.data) {
+                    await updateExperimentResult?.(experiment.id, result.data as any, 'success');
+                } else {
+                    await updateExperimentResult?.(experiment.id, { error: result.error } as any, 'failure');
+                }
+            }
+        } catch (err) {
+            console.error('Failed to dock ligand:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Legacy handler for dashboard button
+    const handleLoadTest = async () => {
+        setIsLoading(true);
+        try {
+            const pdbId = '4HHB';
+            let pdb = proteinStructureCache.get(pdbId);
+            if (!pdb) {
+                const rateLimit = rcsbRateLimiter.isAllowed('global');
+                if (!rateLimit.allowed) {
+                    console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
+                    return;
+                }
+                const fetchWithRetry = withRetry(
+                    async (id: string) => {
+                        const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
+                        if (!res.ok) throw new Error(`Failed to fetch PDB: ${res.statusText}`);
+                        return res.text();
+                    },
+                    { maxRetries: 3, initialDelayMs: 1000 }
+                );
+                pdb = await fetchWithRetry(pdbId);
+                proteinStructureCache.set(pdbId, pdb);
+            }
             dispatch({ 
                 type: 'LOAD_STRUCTURE', 
                 payload: { 
@@ -138,10 +238,7 @@ export default function LabPage() {
                     loadedAt: new Date().toISOString()
                 } 
             });
-            
-            // Create experiment record
             await createExperiment?.('fetch_protein_structure', { pdbId }, 'observation');
-            
         } catch (err) {
             console.error('Failed to load structure:', err);
         } finally {
@@ -157,7 +254,6 @@ export default function LabPage() {
         );
         
         if (experiment) {
-            // Simulate execution delay
             setTimeout(() => {
                 updateExperimentResult?.(experiment.id, {
                     success: true,
@@ -205,6 +301,20 @@ export default function LabPage() {
         );
     }
 
+    // Tool panel view
+    const renderToolPanel = () => {
+        switch (state.activeTool) {
+            case 'fetch_structure':
+                return <ProteinFetchPanel onSubmit={handleFetchProtein} isLoading={isLoading} />;
+            case 'analyze_sequence':
+                return <SequenceAnalysisPanel onSubmit={handleAnalyzeSequence} isLoading={isLoading} />;
+            case 'dock_ligand':
+                return <DockingPanel onSubmit={handleDockLigand} isLoading={isLoading} />;
+            default:
+                return null;
+        }
+    };
+
     // Get experiments from state
     const experiments = state.experimentHistory || [];
 
@@ -232,7 +342,26 @@ export default function LabPage() {
             {/* Content Area */}
             <div className="flex-1 min-h-0 relative overflow-hidden">
                 <AnimatePresence mode="wait">
-                    {viewMode === 'builder' ? (
+                    {viewMode === 'tool' && state.activeTool ? (
+                        <motion.div 
+                            key="tool"
+                            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                            transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
+                            className="absolute inset-0 p-4 overflow-auto"
+                        >
+                            {/* Close button */}
+                            <button
+                                onClick={handleClosePanel}
+                                className="flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-primary)] transition-colors mb-4"
+                            >
+                                <ArrowLeft className="w-3 h-3" />
+                                Back to Dashboard
+                            </button>
+                            {renderToolPanel()}
+                        </motion.div>
+                    ) : viewMode === 'builder' ? (
                         <motion.div 
                             key="builder"
                             initial={{ opacity: 0, y: 10, scale: 0.98 }}

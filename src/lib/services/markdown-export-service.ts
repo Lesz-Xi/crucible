@@ -56,15 +56,15 @@ function sanitizeText(text: string | undefined | null): string {
  */
 function sanitizeLatex(text: string | undefined | null): string {
   if (!text) return "";
-  
+
   // Don't double-wrap already-wrapped LaTeX
   // This regex checks if the text already has proper LaTeX delimiters
   let result = text;
-  
+
   // Escape standalone $ that aren't LaTeX delimiters (e.g., currency)
   // Look for $ not followed by another $ or alphanumeric (likely currency)
   result = result.replace(/\$(?!\$)(?![a-zA-Z0-9\\])/g, "\\$");
-  
+
   return result;
 }
 
@@ -74,15 +74,15 @@ function sanitizeLatex(text: string | undefined | null): string {
 function generateFrontmatter(data: SynthesisExportData, options: MarkdownExportOptions): string {
   const now = new Date().toISOString();
   const title = options.title || data.synthesisGoal || "Hybrid Synthesis Report";
-  
+
   const sourcesList = data.sources.map(s => `  - type: ${s.type}\n    name: "${s.name}"`).join("\n");
-  
+
   return `---
 title: "${sanitizeText(title)}"
 date: "${now}"
 sources:
 ${sourcesList}
-model: "claude-sonnet-4-5-20250929"
+model: "claude-4-5-sonnet" // Updated to standard identifier for Feb 2026
 ---
 
 `;
@@ -98,19 +98,19 @@ function renderMetadata(data: SynthesisExportData): string {
     "",
     `- **Generated:** ${new Date().toLocaleDateString()}`,
   ];
-  
+
   if (meta.pdfCount !== undefined || meta.companyCount !== undefined) {
     lines.push(`- **Sources:** ${meta.pdfCount || 0} PDFs, ${meta.companyCount || 0} Companies`);
   }
-  
+
   if (meta.refinementIterations !== undefined) {
     lines.push(`- **Refinement Iterations:** ${meta.refinementIterations}`);
   }
-  
+
   if (meta.calibrationApplied !== undefined) {
     lines.push(`- **Calibration Applied:** ${meta.calibrationApplied ? "Yes" : "No"}`);
   }
-  
+
   lines.push("", "---", "");
   return lines.join("\n");
 }
@@ -120,7 +120,7 @@ function renderMetadata(data: SynthesisExportData): string {
  */
 function renderConfidenceFactors(factors: ConfidenceFactors | undefined): string {
   if (!factors) return "";
-  
+
   return `
 #### Confidence Factors
 | Factor                  | Score |
@@ -194,19 +194,19 @@ function renderNovelIdea(idea: NovelIdea, index: number): string {
     `> ${sanitizeLatex(idea.description)}`,
     "",
   ];
-  
+
   if (idea.mechanism) {
     lines.push("**Mechanism:**", `> ${sanitizeLatex(idea.mechanism)}`, "");
   }
-  
+
   if (idea.prediction) {
     lines.push("**Testable Prediction:**", `> ${sanitizeLatex(idea.prediction)}`, "");
   }
-  
+
   if (idea.bridgedConcepts && idea.bridgedConcepts.length > 0) {
     lines.push(`**Bridged Concepts:** ${idea.bridgedConcepts.map(c => `\`${c}\``).join(", ")}`, "");
   }
-  
+
   if (idea.noveltyAssessment) {
     lines.push("**Novelty Assessment:**", `> ${sanitizeText(idea.noveltyAssessment)}`, "");
   }
@@ -214,22 +214,22 @@ function renderNovelIdea(idea: NovelIdea, index: number): string {
   if (idea.causalOutput) {
     lines.push(renderCausalOutput(idea));
   }
-  
+
   // Add confidence factors table
   if (idea.confidenceFactors) {
     lines.push(renderConfidenceFactors(idea.confidenceFactors));
   }
-  
+
   // Add MASA Audit if present
   if (idea.masaAudit) {
     lines.push(renderMasaAudit(idea.masaAudit));
   }
-  
+
   // Add Scientific Artifacts
   if (idea.scientificArtifacts) {
     lines.push(renderScientificArtifacts(idea.scientificArtifacts));
   }
-  
+
   lines.push("---", "");
   return lines.join("\n");
 }
@@ -239,12 +239,12 @@ function renderNovelIdea(idea: NovelIdea, index: number): string {
  */
 function renderNovelIdeas(ideas: NovelIdea[]): string {
   if (!ideas || ideas.length === 0) return "";
-  
+
   const lines = ["## 1. Novel Ideas", ""];
   ideas.forEach((idea, index) => {
     lines.push(renderNovelIdea(idea, index));
   });
-  
+
   return lines.join("\n");
 }
 
@@ -253,24 +253,24 @@ function renderNovelIdeas(ideas: NovelIdea[]): string {
  */
 function renderPriorArt(art: PriorArt[] | undefined): string {
   if (!art || art.length === 0) return "";
-  
+
   const lines = [
     "## 2. Prior Art",
     "",
     "| Title | Authors | Venue | Year | Similarity | Differentiator |",
     "|-------|---------|-------|------|------------|----------------|",
   ];
-  
+
   art.forEach(item => {
     const authors = item.authors?.slice(0, 2).join(", ") || "—";
     const authorsDisplay = item.authors && item.authors.length > 2 ? `${authors} et al.` : authors;
     const title = item.url ? `[${sanitizeText(item.title)}](${item.url})` : sanitizeText(item.title);
-    
+
     lines.push(
       `| ${title} | ${authorsDisplay} | ${sanitizeText(item.venue) || "—"} | ${item.year || "—"} | ${Math.round((item.similarity || 0) * 100)}% | ${sanitizeText(item.differentiator)} |`
     );
   });
-  
+
   lines.push("", "---", "");
   return lines.join("\n");
 }
@@ -280,7 +280,7 @@ function renderPriorArt(art: PriorArt[] | undefined): string {
  */
 function renderStructuredApproach(approach: StructuredApproach | undefined): string {
   if (!approach) return "";
-  
+
   const lines = [
     "## 3. Structured Approach",
     "",
@@ -293,7 +293,7 @@ function renderStructuredApproach(approach: StructuredApproach | undefined): str
     `> ${sanitizeText(approach.proposedSolution)}`,
     "",
   ];
-  
+
   if (approach.keySteps && approach.keySteps.length > 0) {
     lines.push("### Key Steps", "");
     approach.keySteps?.sort((a, b) => a.order - b.order).forEach(step => {
@@ -301,7 +301,7 @@ function renderStructuredApproach(approach: StructuredApproach | undefined): str
     });
     lines.push("");
   }
-  
+
   if (approach.risks && approach.risks.length > 0) {
     lines.push("### Risks", "");
     approach.risks.forEach(risk => {
@@ -311,7 +311,7 @@ function renderStructuredApproach(approach: StructuredApproach | undefined): str
     });
     lines.push("");
   }
-  
+
   if (approach.successMetrics && approach.successMetrics.length > 0) {
     lines.push("### Success Metrics", "");
     approach.successMetrics.forEach(metric => {
@@ -319,7 +319,7 @@ function renderStructuredApproach(approach: StructuredApproach | undefined): str
     });
     lines.push("");
   }
-  
+
   lines.push("---", "");
   return lines.join("\n");
 }
@@ -329,7 +329,7 @@ function renderStructuredApproach(approach: StructuredApproach | undefined): str
  */
 function renderMasaAudit(audit: MasaAudit | undefined): string {
   if (!audit) return "";
-  
+
   const lines = [
     "#### MASA Audit Trace",
     "",
@@ -337,7 +337,7 @@ function renderMasaAudit(audit: MasaAudit | undefined): string {
     `- **Grade:** ${audit.methodologist?.grade || "N/A"}`,
     `- **Score:** ${audit.methodologist?.score || 0}/100`,
   ];
-  
+
   if (audit.methodologist?.constructValidityIssues?.length) {
     lines.push(`- **Construct Validity Issues:** ${audit.methodologist.constructValidityIssues.join(", ")}`);
   }
@@ -347,10 +347,10 @@ function renderMasaAudit(audit: MasaAudit | undefined): string {
   if (audit.methodologist?.critique) {
     lines.push(`- **Critique:** ${sanitizeText(audit.methodologist.critique)}`);
   }
-  
+
   lines.push("", "##### Skeptic Critique");
   lines.push(`- **Score:** ${audit.skeptic?.score || 0}/100`);
-  
+
   if (audit.skeptic?.biasesDetected?.length) {
     lines.push(`- **Biases Detected:** ${audit.skeptic.biasesDetected.join(", ")}`);
   }
@@ -360,7 +360,7 @@ function renderMasaAudit(audit: MasaAudit | undefined): string {
   if (audit.skeptic?.devilAdvocacy) {
     lines.push(`- **Devil's Advocacy:** ${sanitizeText(audit.skeptic.devilAdvocacy)}`);
   }
-  
+
   if (audit.finalSynthesis) {
     lines.push("", "##### Final Synthesis Verdict");
     lines.push(`- **Approved:** ${audit.finalSynthesis.isApproved ? "✅ Yes" : "❌ No"}`);
@@ -375,7 +375,7 @@ function renderMasaAudit(audit: MasaAudit | undefined): string {
       });
     }
   }
-  
+
   lines.push("");
   return lines.join("\n");
 }
@@ -385,17 +385,17 @@ function renderMasaAudit(audit: MasaAudit | undefined): string {
  */
 function renderScientificArtifacts(artifacts: { protocolCode?: string; labManual?: string } | undefined): string {
   if (!artifacts) return "";
-  
+
   const lines = ["#### Scientific Artifacts", ""];
-  
+
   if (artifacts.protocolCode) {
     lines.push("##### Protocol Code (Python)", "```python", artifacts.protocolCode, "```", "");
   }
-  
+
   if (artifacts.labManual) {
     lines.push("##### Lab Manual", "```markdown", artifacts.labManual, "```", "");
   }
-  
+
   return lines.join("\n");
 }
 
@@ -404,9 +404,9 @@ function renderScientificArtifacts(artifacts: { protocolCode?: string; labManual
  */
 function renderContradictions(contradictions: Contradiction[]): string {
   if (!contradictions || contradictions.length === 0) return "";
-  
+
   const lines = ["## Contradictions Detected", ""];
-  
+
   contradictions.forEach((c, i) => {
     lines.push(`### ${i + 1}. ${sanitizeText(c.concept)}`, "");
     lines.push(`| Source | Claim |`);
@@ -418,7 +418,7 @@ function renderContradictions(contradictions: Contradiction[]): string {
     }
     lines.push("");
   });
-  
+
   lines.push("---", "");
   return lines.join("\n");
 }
@@ -431,40 +431,40 @@ export function generateMarkdown(
   options: MarkdownExportOptions = {}
 ): string {
   const parts: string[] = [];
-  
+
   // Frontmatter
   parts.push(generateFrontmatter(data, options));
-  
+
   // Title
   const title = options.title || data.synthesisGoal || "Synthesis Report";
   parts.push(`# ${sanitizeText(title)}`, "");
-  
+
   // Metadata
   parts.push(renderMetadata(data));
-  
+
   // Novel Ideas (main content)
   parts.push(renderNovelIdeas(data.novelIdeas));
-  
+
   // Prior Art
   if (data.priorArt || (data.novelIdeas && data.novelIdeas.some(i => i.masaAudit))) {
     // Collect prior art from ideas if not provided at top level
     const allPriorArt = data.priorArt || [];
     parts.push(renderPriorArt(allPriorArt));
   }
-  
+
   // Contradictions
   if (data.contradictions && data.contradictions.length > 0) {
     parts.push(renderContradictions(data.contradictions));
   }
-  
+
   // Structured Approach
   if (data.structuredApproach) {
     parts.push(renderStructuredApproach(data.structuredApproach));
   }
-  
+
   // Footer
   parts.push("---", "", "*Generated by Sovereign Synthesis Engine*", "");
-  
+
   return parts.join("\n");
 }
 
@@ -475,14 +475,14 @@ export function downloadMarkdown(data: SynthesisExportData, options: MarkdownExp
   const markdown = generateMarkdown(data, options);
   const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  
+
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
   const titleSlug = (options.title || data.synthesisGoal || "synthesis")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .slice(0, 30);
   const filename = `${titleSlug}-${timestamp}.md`;
-  
+
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;

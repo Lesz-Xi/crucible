@@ -95,7 +95,7 @@ class ClaudeAdapter implements ClaudeModel {
   private model: string;
   private apiKey?: string;
 
-  constructor(model: string = "claude-4-5-sonnet-20260217", apiKey?: string) { // Upgraded to Sonnet 4.5 (Newest)
+  constructor(model: string = "claude-4-5-sonnet", apiKey?: string) { // Harmonized with AI_CONFIG (Feb 2026)
     this.model = model;
     this.apiKey = apiKey;
   }
