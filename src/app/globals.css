@@ -1275,7 +1275,7 @@ body.dark .lab-card-interactive:hover {
    ======================================== */
 .dark .liquid-glass-v2 .glass-sidebar,
 .dark .liquid-glass-v2 .lg-sidebar {
-  background: rgba(188, 184, 177, 0.2) !important;
+  background: rgba(218, 210, 188, 0.18) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(40px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(190%) !important;

@@ -17,6 +17,7 @@ import { rcsbRateLimiter, proteinStructureCache } from "@/lib/utils/rate-limiter
 import { ScientificGateway } from "@/lib/services/scientific-gateway";
 import type { LabExperiment, LabToolId } from "@/types/lab";
 import { cn } from "@/lib/utils";
+import { LabSidebar } from '@/components/lab/LabSidebar';
 
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
@@ -319,28 +320,30 @@ export default function LabPage() {
     const experiments = state.experimentHistory || [];
 
     return (
-        <div className="flex flex-col h-full">
-            {/* Header / Mode Switcher with Liquid Glass */}
-            <div className="flex justify-center p-4">
-                <div className="flex gap-1 lab-panel p-1.5">
-                    {(['dashboard', 'builder', 'history'] as const).map((mode) => (
-                        <button
-                            key={mode}
-                            onClick={() => setViewMode(mode)}
-                            data-active={viewMode === mode}
-                            className="lab-nav-pill cursor-pointer hover:bg-white/10 transition-all duration-200"
-                        >
-                            {mode === 'dashboard' && <Database className="w-4 h-4 mr-1.5" />}
-                            {mode === 'builder' && <Sparkles className="w-4 h-4 mr-1.5" />}
-                            {mode === 'history' && <Clock className="w-4 h-4 mr-1.5" />}
-                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                        </button>
-                    ))}
+        <div className="flex h-screen bg-[#050505] overflow-hidden">
+            <LabSidebar />
+            <div className="flex-1 flex flex-col h-full bg-transparent">
+                {/* Header / Mode Switcher with Liquid Glass */}
+                <div className="flex justify-center p-4">
+                    <div className="flex gap-1 lab-panel p-1.5">
+                        {(['dashboard', 'builder', 'history'] as const).map((mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => setViewMode(mode)}
+                                data-active={viewMode === mode}
+                                className="lab-nav-pill cursor-pointer hover:bg-white/10 transition-all duration-200"
+                            >
+                                {mode === 'dashboard' && <Database className="w-4 h-4 mr-1.5" />}
+                                {mode === 'builder' && <Sparkles className="w-4 h-4 mr-1.5" />}
+                                {mode === 'history' && <Clock className="w-4 h-4 mr-1.5" />}
+                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* Content Area */}
-            <div className="flex-1 min-h-0 relative overflow-hidden">
+                {/* Content Area */}
+                <div className="flex-1 min-h-0 relative overflow-hidden">
                 <AnimatePresence mode="wait">
                     {viewMode === 'tool' && state.activeTool ? (
                         <motion.div 
