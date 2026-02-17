@@ -1287,9 +1287,22 @@ body.dark .lab-card-interactive:hover {
 .dark .liquid-glass-v2 .glass-sidebar .lab-nav-pill,
 .dark .liquid-glass-v2 .glass-sidebar .lab-button-secondary,
 .dark .liquid-glass-v2 .glass-sidebar .sidebar-history-item {
-  background: rgba(22, 26, 34, 0.42) !important;
-  border-color: rgba(214, 222, 234, 0.20) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
   color: #ecf1f8 !important;
+}
+
+.dark .liquid-glass-v2 .glass-sidebar .lab-nav-pill:hover,
+.dark .liquid-glass-v2 .glass-sidebar .lab-button-secondary:hover,
+.dark .liquid-glass-v2 .glass-sidebar .sidebar-history-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark .liquid-glass-v2 .glass-sidebar .sidebar-history-item-active {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  color: #ffffff !important;
 }
 
 .dark .liquid-glass-v2 .lab-panel,
