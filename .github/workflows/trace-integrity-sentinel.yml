@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  ROLLOUT_STAGE: week1
+  ROLLOUT_STAGE: week2
   TRACE_SOURCE: hybrid
   TRACE_FIXTURES_PATH: docs/governance/trace-fixtures.v1.json
   TRACE_SCAN_LIMIT: "100"
