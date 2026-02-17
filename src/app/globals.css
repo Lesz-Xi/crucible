@@ -364,6 +364,72 @@
   letter-spacing: 0.16em;
 }
 
+/* Phase-3 density + sizing should apply to 4 feature surfaces only (Labs remains canonical source style) */
+.feature-chat .lab-button-primary,
+.feature-chat .lab-button-secondary,
+.feature-legal .lab-button-primary,
+.feature-legal .lab-button-secondary,
+.feature-hybrid .lab-button-primary,
+.feature-hybrid .lab-button-secondary,
+.feature-education .lab-button-primary,
+.feature-education .lab-button-secondary {
+  min-height: 38px;
+  padding: 9px 13px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.feature-chat .lab-button-primary svg,
+.feature-chat .lab-button-secondary svg,
+.feature-legal .lab-button-primary svg,
+.feature-legal .lab-button-secondary svg,
+.feature-hybrid .lab-button-primary svg,
+.feature-hybrid .lab-button-secondary svg,
+.feature-education .lab-button-primary svg,
+.feature-education .lab-button-secondary svg {
+  width: 14px;
+  height: 14px;
+}
+
+.feature-chat .lab-nav-pill,
+.feature-legal .lab-nav-pill,
+.feature-hybrid .lab-nav-pill,
+.feature-education .lab-nav-pill {
+  min-height: 36px;
+  border-radius: 12px;
+  padding: 7px 12px;
+  gap: 7px;
+  font-size: 12.5px;
+  line-height: 1;
+}
+
+.feature-chat .lab-nav-pill svg,
+.feature-legal .lab-nav-pill svg,
+.feature-hybrid .lab-nav-pill svg,
+.feature-education .lab-nav-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+.feature-chat .sidebar-history-item,
+.feature-legal .sidebar-history-item,
+.feature-hybrid .sidebar-history-item,
+.feature-education .sidebar-history-item {
+  min-height: 34px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1;
+}
+
+.feature-chat .sidebar-history-item svg,
+.feature-legal .sidebar-history-item svg,
+.feature-hybrid .sidebar-history-item svg,
+.feature-education .sidebar-history-item svg {
+  width: 14px;
+  height: 14px;
+}
+
 .feature-chat .lab-card,
 .feature-legal .lab-card,
 .feature-hybrid .lab-card,
@@ -495,20 +561,12 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 38px;
   border-radius: 12px;
-  padding: 9px 13px;
+  padding: 10px 14px;
   font-family: var(--font-geist-sans), sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1;
   transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease, background-color 180ms ease;
-}
-
-.lab-button-primary svg,
-.lab-button-secondary svg {
-  width: 14px;
-  height: 14px;
 }
 
 .lab-button-primary:focus-visible,
@@ -601,25 +659,18 @@
 .lab-nav-pill {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 36px;
-  border-radius: 12px;
-  padding: 7px 12px;
+  gap: 8px;
+  border-radius: 14px;
+  padding: 8px 14px;
   border: 1px solid var(--lab-border);
   background: rgba(255, 255, 255, 0.42);
   backdrop-filter: blur(10px) saturate(130%);
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   color: var(--lab-text-secondary);
   font-family: var(--font-geist-sans), sans-serif;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
-  line-height: 1;
   transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
-}
-
-.lab-nav-pill svg {
-  width: 14px;
-  height: 14px;
 }
 
 .lab-nav-pill[data-active="true"] {
@@ -1549,46 +1600,57 @@ body.dark .lab-card-interactive:hover {
   align-items: center;
   gap: 8px;
   width: 100%;
-  min-height: 34px;
-  padding: 7px 10px;
-  border-radius: 10px;
-  font-size: 12.5px;
-  line-height: 1;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
   color: var(--lab-text-secondary);
   transition: all 150ms ease;
   cursor: pointer;
 }
 
-.sidebar-history-item svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Mobile density variant */
+/* Mobile density variant (scoped to non-Lab feature workbenches) */
 @media (max-width: 768px) {
-  .lab-button-primary,
-  .lab-button-secondary {
+  .feature-chat .lab-button-primary,
+  .feature-chat .lab-button-secondary,
+  .feature-legal .lab-button-primary,
+  .feature-legal .lab-button-secondary,
+  .feature-hybrid .lab-button-primary,
+  .feature-hybrid .lab-button-secondary,
+  .feature-education .lab-button-primary,
+  .feature-education .lab-button-secondary {
     min-height: 34px;
     padding: 8px 11px;
     font-size: 12px;
   }
 
-  .lab-nav-pill {
+  .feature-chat .lab-nav-pill,
+  .feature-legal .lab-nav-pill,
+  .feature-hybrid .lab-nav-pill,
+  .feature-education .lab-nav-pill {
     min-height: 32px;
     padding: 6px 10px;
     font-size: 12px;
     border-radius: 10px;
   }
 
-  .lab-rail-header {
+  .feature-chat .lab-rail-header,
+  .feature-legal .lab-rail-header,
+  .feature-hybrid .lab-rail-header,
+  .feature-education .lab-rail-header {
     padding: 12px 12px;
   }
 
-  .lab-rail-body {
+  .feature-chat .lab-rail-body,
+  .feature-legal .lab-rail-body,
+  .feature-hybrid .lab-rail-body,
+  .feature-education .lab-rail-body {
     padding: 12px;
   }
 
-  .sidebar-history-item {
+  .feature-chat .sidebar-history-item,
+  .feature-legal .sidebar-history-item,
+  .feature-hybrid .sidebar-history-item,
+  .feature-education .sidebar-history-item {
     min-height: 32px;
     padding: 6px 9px;
     font-size: 12px;
