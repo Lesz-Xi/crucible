@@ -4,7 +4,16 @@ import Anthropic from "@anthropic-ai/sdk";
 // Lazy-init Anthropic client
 let anthropicClient: Anthropic | null = null;
 
-function getAnthropicClient(): Anthropic {
+
+function getAnthropicClient(apiKeyOverride?: string): Anthropic {
+  // If an override is provided, we ALWAYS create a new client (or cache it by key if needed, but simplest is new instance for BYOK)
+  if (apiKeyOverride) {
+    return new Anthropic({
+      apiKey: apiKeyOverride.trim(),
+    });
+  }
+
+  // Fallback to singleton env-based client
   if (anthropicClient) return anthropicClient;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -80,12 +89,15 @@ function extractToolCallsFromMessageContent(content: Array<Anthropic.ContentBloc
     }));
 }
 
+
 // Concrete Adapter
 class ClaudeAdapter implements ClaudeModel {
   private model: string;
+  private apiKey?: string;
 
-  constructor(model: string = "claude-4-5-sonnet-20260217") { // Upgraded to Sonnet 4.5 (Newest)
+  constructor(model: string = "claude-4-5-sonnet-20260217", apiKey?: string) { // Upgraded to Sonnet 4.5 (Newest)
     this.model = model;
+    this.apiKey = apiKey;
   }
 
   async generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult> {
@@ -94,7 +106,7 @@ class ClaudeAdapter implements ClaudeModel {
 
     while (attempts < maxAttempts) {
       try {
-        const client = getAnthropicClient();
+        const client = getAnthropicClient(this.apiKey);
 
         // Use provided messages or start fresh with prompt
         const messages: Array<Anthropic.MessageParam> = options?.messages
@@ -195,6 +207,6 @@ class ClaudeAdapter implements ClaudeModel {
 }
 
 // Factory function
-export function getClaudeModel(): ClaudeModel {
-  return new ClaudeAdapter();
+export function getClaudeModel(options?: { apiKey?: string; model?: string }): ClaudeModel {
+  return new ClaudeAdapter(options?.model, options?.apiKey);
 }

@@ -2,6 +2,9 @@ import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import { AI_CONFIG, AIProviderId } from '../../config/ai-models';
+import { getClaudeModel, ClaudeModel } from './anthropic';
+import { OpenAIAdapter } from './openai';
+import { GeminiAdapter } from './gemini';
 
 // ── LLM Factory ───────────────────────────────────────────────
 // Abstraction layer to instantiate the correct model provider
@@ -58,6 +61,46 @@ export class LLMFactory {
                     apiKey: apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
                 });
                 return google(modelId);
+
+            default:
+                throw new Error(`Unknown AI Provider: ${providerId}`);
+        }
+    }
+
+    /**
+     * Get a legacy ClaudeModel compatible adapter (supports generateContent interface)
+     */
+    static getAdapter(options: LLMOptions = {}): ClaudeModel {
+        const {
+            providerId = AI_CONFIG.defaultProvider,
+            modelType = 'advanced',
+            apiKey
+        } = options;
+
+        // 1. Resolve Provider & Model ID
+        const providerConfig = AI_CONFIG.providers[providerId];
+
+        // @ts-ignore - dynamic access to model types
+        const modelId = providerConfig.models[modelType] || providerConfig.models.advanced;
+
+        // 2. Validate Key Availability (Env or Runtime)
+        if (!apiKey && !LLMFactory.validateEnvironment(providerId)) {
+            // Check specifically for user-provided key requirement if system key is missing
+            throw new Error(`Missing API Key for ${providerConfig.name}. Please configure environment variables or provide a User Key.`);
+        }
+
+        // 3. Instantiate Adapter
+        switch (providerId) {
+            case 'anthropic':
+                // Use the factory from anthropic.ts which uses the official SDK
+                // We pass modelId here leveraging the update we just made
+                return getClaudeModel({ apiKey, model: modelId });
+
+            case 'openai':
+                return new OpenAIAdapter(modelId, apiKey);
+
+            case 'gemini':
+                return new GeminiAdapter(modelId, apiKey);
 
             default:
                 throw new Error(`Unknown AI Provider: ${providerId}`);

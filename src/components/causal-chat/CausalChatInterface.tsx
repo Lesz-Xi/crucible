@@ -400,13 +400,46 @@ export function CausalChatInterface() {
       }
       abortControllerRef.current = new AbortController();
 
+
+
+      // Extract BYOK Key based on active provider
+      let byokHeaders: Record<string, string> = {};
+      let activeProvider = 'anthropic';
+
+      try {
+        const savedConfig = localStorage.getItem('lab_llm_config');
+        if (savedConfig) {
+          const parsed = JSON.parse(savedConfig);
+          if (parsed) {
+             activeProvider = parsed.provider || 'anthropic';
+             let selectedKey = parsed.apiKey; // Fallback to compatible field
+
+             // Prefer specific provider keys if available
+             if (activeProvider === 'anthropic' && parsed.anthropicApiKey) selectedKey = parsed.anthropicApiKey;
+             if (activeProvider === 'openai' && parsed.openaiApiKey) selectedKey = parsed.openaiApiKey;
+             if (activeProvider === 'gemini' && parsed.geminiApiKey) selectedKey = parsed.geminiApiKey;
+
+             if (selectedKey) {
+               byokHeaders["X-BYOK-API-Key"] = selectedKey;
+               console.log(`[CausalChat] 🔑 Injected BYOK API Key for ${activeProvider}`);
+             }
+          }
+        }
+      } catch (e) {
+        console.warn("[CausalChat] Failed to read BYOK config", e);
+      }
+
       // Start SSE connection
       const response = await fetch("/api/causal-chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...byokHeaders 
+        },
         body: JSON.stringify({
           sessionId: sessionId,
           modelKey: undefined,
+          providerId: activeProvider, // Explicitly pass provider
           messages: messages
             .filter((m) => !m.isStreaming)
             .map((m) => ({ role: m.role, content: m.content }))

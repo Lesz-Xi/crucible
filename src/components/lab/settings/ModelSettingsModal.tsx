@@ -21,15 +21,36 @@ export function ModelSettingsModal() {
     }
   }, [isModelSettingsOpen, state.llmConfig]);
 
+
   const handleProviderChange = (providerId: string) => {
     const provider = AI_CONFIG.providers[providerId as AIProviderId];
+    
+    // Switch to the saved key for this provider
+    let newKey = '';
+    if (providerId === 'anthropic') newKey = localConfig.anthropicApiKey || '';
+    if (providerId === 'openai') newKey = localConfig.openaiApiKey || '';
+    if (providerId === 'gemini') newKey = localConfig.geminiApiKey || '';
+
     setLocalConfig((prev: LLMConfig) => ({
       ...prev,
       provider: providerId as AIProviderId,
       // Reset model to default fast model of new provider
-      model: provider.models.fast
+      model: provider.models.fast,
+      apiKey: newKey // Sync active key
     }));
     setDirty(true);
+  };
+
+  const handleApiKeyChange = (value: string) => {
+      const provider = localConfig.provider;
+      const updates: Partial<LLMConfig> = { apiKey: value };
+      
+      if (provider === 'anthropic') updates.anthropicApiKey = value;
+      if (provider === 'openai') updates.openaiApiKey = value;
+      if (provider === 'gemini') updates.geminiApiKey = value;
+      
+      setLocalConfig((prev: LLMConfig) => ({ ...prev, ...updates }));
+      setDirty(true);
   };
 
   const handleSave = () => {
@@ -110,16 +131,13 @@ export function ModelSettingsModal() {
             <div className="space-y-3">
               <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
                 <Key className="w-4 h-4" />
-                API Key (BYOK)
+                {activeProvider.name} API Key (BYOK)
               </label>
               <div className="relative">
                 <input
                   type={showKey ? "text" : "password"}
                   value={localConfig.apiKey || ''}
-                  onChange={(e) => {
-                      setLocalConfig((prev: LLMConfig) => ({ ...prev, apiKey: e.target.value }));
-                      setDirty(true);
-                  }}
+                  onChange={(e) => handleApiKeyChange(e.target.value)}
                   placeholder={`Enter your ${activeProvider.name} API Key`}
                   className="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2.5 text-zinc-200 focus:ring-2 focus:ring-indigo-500/50 outline-none pr-20 font-mono text-sm"
                 />

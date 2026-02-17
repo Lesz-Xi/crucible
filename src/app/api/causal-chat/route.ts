@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ScientificGateway } from '@/lib/services/scientific-gateway';
-import { getClaudeModel } from "@/lib/ai/anthropic";
+import { LLMFactory } from "@/lib/ai/llm-factory";
+import { AIProviderId } from "@/config/ai-models";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { DomainClassifier } from "@/lib/services/domain-classifier";
 import { SCMRetriever } from "@/lib/services/scm-retrieval";
@@ -12,6 +13,7 @@ import { evaluateInterventionGate } from "@/lib/services/identifiability-gate";
 
 import { CausalSolver, type Intervention } from '@/lib/services/causal-solver';
 import { CounterfactualGenerator } from '@/lib/services/counterfactual-generator';
+import { buildCounterfactualTrace, persistCounterfactualTrace } from '@/lib/services/counterfactual-trace';
 import { selectLatestAlignmentAuditReport } from "@/lib/services/alignment-audit";
 import type { AlignmentAuditReportRow } from "@/lib/services/alignment-audit";
 import { buildConversationContext, normalizeChatTurns, type ChatTurn } from "@/lib/services/conversation-context";
@@ -358,6 +360,7 @@ export async function POST(req: NextRequest) {
     latticeTargetSessionId,
     operatorMode,
     attachments,
+    providerId: clientProviderId,
   } = requestBody;
 
   // Support both single question and message history
@@ -427,6 +430,8 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let isControllerClosed = false;
+      const byokApiKey = req.headers.get("x-byok-api-key") || undefined;
+      const providerId = (clientProviderId as AIProviderId) || "anthropic";
 
       const sendEvent = (event: string, data: unknown) => {
         if (!isControllerClosed) {
@@ -578,7 +583,11 @@ export async function POST(req: NextRequest) {
         if (isConversational) {
           sendEvent("thinking", { message: "Processing conversational query..." });
 
-          const model = getClaudeModel();
+          const model = LLMFactory.getAdapter({
+            providerId,
+            modelType: 'fast',
+            apiKey: byokApiKey
+          });
           // Updated: Principal Investigator persona (Automated Scientist paradigm)
           const simplePrompt = `You are the Principal Investigator (PI), an Automated Scientist that embodies the scientific method as a computational framework.
 
@@ -816,6 +825,57 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
               affected: affectedNodes,
               latency_ms: latency
             });
+
+            // M6.2 Trace Integrity: Persist Deterministic Provenance
+            if (user?.id && supabase) {
+              const traceValue = typeof intervention.value === "number" ? intervention.value : 1;
+              const outcomeVar = typeof intervention.outcome_var === "string" ? intervention.outcome_var.trim() : inferOutcomeVariableFromScm(subjectScm);
+
+              const trace = buildCounterfactualTrace(subjectScm, {
+                modelRef: {
+                  modelKey: scmContext.model?.modelKey || "unknown",
+                  version: scmContext.model?.version || "v0",
+                },
+                intervention: {
+                  variable: intervention.node_id,
+                  value: traceValue,
+                },
+                outcome: outcomeVar,
+                method: "deterministic_graph_diff",
+                traceId: traceId || crypto.randomUUID(), // Ensure we log it even if client didn't send traceId
+                assumptions: sanitizeStringArray(intervention.known_confounders),
+                adjustmentSet: sanitizeStringArray(intervention.adjustment_set),
+                // Chat mode usually lacks precise numeric observation of the world state,
+                // so we use an abstract baseline (empty) to capture the *causal mechanism's* predicted binding.
+                observedWorld: {},
+              });
+
+              // M6.2: Inject Provider Metadata (Safe Cast)
+              // We inject the provider ID into the trace object so it's persisted in the JSONB column.
+              const traceWithMetadata = {
+                ...trace,
+                metadata: {
+                  providerId,
+                  timestamp: new Date().toISOString(),
+                }
+              } as unknown as import("@/types/scm").CounterfactualTrace;
+
+              // We don't await this to avoid blocking the response stream,
+              // but we catch errors to ensure observability.
+              persistCounterfactualTrace({
+                trace: traceWithMetadata,
+                sourceFeature: "chat",
+                userId: user.id
+              }).then((result) => {
+                if (!result.persisted) {
+                  console.warn(`[TraceIntegrity] Failed to persist trace ${trace.traceId}: ${result.error}`);
+                } else {
+                  console.log(`[TraceIntegrity] Persisted trace ${trace.traceId}`);
+                }
+              }).catch((err) => {
+                console.error("[TraceIntegrity] Critical persistence error:", err);
+              });
+            }
           }
         }
 
@@ -945,7 +1005,15 @@ ${sourceList}`;
         }
 
         // 4. LLM Generation (True Streaming with Tool Use)
-        const model = getClaudeModel();
+        if (byokApiKey) {
+          console.log(`[CausalChat] 🔑 Using BYOK Key for provider: ${providerId}`);
+        }
+
+        const model = LLMFactory.getAdapter({
+          providerId,
+          modelType: 'advanced',
+          apiKey: byokApiKey
+        });
         const scientificGateway = ScientificGateway.getInstance();
         const tools = scientificGateway.getTools(); // Retrieve tool definitions
 
