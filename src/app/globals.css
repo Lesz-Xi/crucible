@@ -1714,23 +1714,23 @@ body.dark .lab-card-interactive:hover {
 
 .dark .liquid-glass-v2 {
   --lg-bg-base: #000000;
-  --lg-bg-sidebar: rgba(18, 18, 20, 0.45); /* Translucent sidebar */
-  --lg-surface-1: rgba(11, 9, 10, 0.55);   /* Deep semi-transparent surface */
-  --lg-surface-2: rgba(22, 22, 24, 0.65);
-  --lg-surface-3: rgba(30, 30, 35, 0.70);
+  --lg-bg-sidebar: rgba(28, 28, 30, 0.65); /* Apple-style translucent grey sidebar */
+  --lg-surface-1: #000000;                 /* Deep black cards */
+  --lg-surface-2: rgba(20, 20, 22, 0.85);  /* Slightly elevated obsidian */
+  --lg-surface-3: rgba(44, 44, 46, 0.65);
   --lg-border-soft: rgba(255, 255, 255, 0.08);
-  --lg-border-strong: rgba(255, 255, 255, 0.14);
-  --lg-highlight-top: rgba(255, 255, 255, 0.08); /* Specular highlight */
-  --lg-shadow-soft: 0 20px 46px rgba(0, 0, 0, 0.52);
-  --lg-shadow-float: 0 26px 58px rgba(0, 0, 0, 0.64);
-  --lg-shadow-glow: 0 0 32px rgba(137, 22, 44, 0.18); /* MASA glow */
-  --lg-slider-track: rgba(76, 84, 95, 0.52);
+  --lg-border-strong: rgba(255, 255, 255, 0.15);
+  --lg-highlight-top: rgba(255, 255, 255, 0.1); /* Specular highlight */
+  --lg-shadow-soft: 0 20px 46px rgba(0, 0, 0, 0.7);
+  --lg-shadow-float: 0 26px 58px rgba(0, 0, 0, 0.85);
+  --lg-shadow-glow: 0 0 32px rgba(137, 22, 44, 0.12); /* Subtle MASA glow */
+  --lg-slider-track: rgba(76, 84, 95, 0.42);
   --lg-slider-fill: linear-gradient(90deg, #60a5fa 0%, #93c5fd 100%);
   --lg-slider-thumb: rgba(241, 245, 249, 0.9);
   --lg-slider-thumb-ring: rgba(255, 255, 255, 0.15);
-  --lg-text-primary: #ededed;
-  --lg-text-secondary: #9eaab7;
-  --lg-text-muted: #64748b;
+  --lg-text-primary: #ffffff;
+  --lg-text-secondary: #a1a1aa;
+  --lg-text-muted: #71717a;
 }
 
 .liquid-glass-v2 .lg-shell,
@@ -1816,12 +1816,13 @@ body.dark .lab-card-interactive:hover {
 .dark .liquid-glass-v2 .lab-card-interactive,
 .dark .liquid-glass-v2 .scientific-protocol-card,
 .dark .liquid-glass-v2 .scientific-workbench-main {
-  /* Re-enable glass in dark mode */
-  backdrop-filter: blur(28px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(140%) !important;
+  /* Cards are deep obsidian/black in V3 */
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(40px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(150%) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 20px 44px rgba(0, 0, 0, 0.56) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.75) !important;
 }
 
 .liquid-glass-v2.chat-theme-shell .feature-chat .lab-panel,

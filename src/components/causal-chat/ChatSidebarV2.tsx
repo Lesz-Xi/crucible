@@ -91,7 +91,7 @@ export function ChatSidebarV2({ onNewThread, onLoadSession }: ChatSidebarV2Props
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col glass-sidebar">
       <div className="border-b border-[var(--lab-border)] p-4">
         <div className="mb-4 flex items-center gap-3">
           <p className="font-mono text-2xl font-semibold tracking-tight text-[var(--lab-text-primary)]">Wu-Weism</p>
