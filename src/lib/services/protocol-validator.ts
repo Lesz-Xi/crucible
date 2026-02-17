@@ -2,7 +2,8 @@
 // Uses Pyodide (WebAssembly) to securely execute generated Python protocols
 // Transitions MASA from "Philosopher" to "Scientist"
 
-import { loadPyodide, PyodideInterface } from 'pyodide';
+// Dynamic import to avoid bundling Node.js modules for browser
+type PyodideInterface = any; // Will be properly typed at runtime
 
 // Singleton Pyodide instance - heavy (~15MB), reuse across calls
 let pyodideInstance: PyodideInterface | null = null;
@@ -80,6 +81,9 @@ async function getPyodide(): Promise<PyodideInterface | null> {
   console.log('[ProtocolValidator] Loading Pyodide...');
 
   try {
+    // Dynamic import to avoid bundling Node.js modules
+    const { loadPyodide } = await import('pyodide');
+
     // In Node.js, omit indexURL - pyodide npm package handles loading automatically
     // Specifying CDN indexURL causes path concatenation errors in server environments
     pyodideLoading = loadPyodide().then(async (instance) => {
