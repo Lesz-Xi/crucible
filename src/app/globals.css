@@ -1275,7 +1275,7 @@ body.dark .lab-card-interactive:hover {
    ======================================== */
 .dark .liquid-glass-v2 .glass-sidebar,
 .dark .liquid-glass-v2 .lg-sidebar {
-  background: #bcb8b1 !important;
+  background: rgba(188, 184, 177, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: blur(40px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
@@ -1594,15 +1594,15 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .chat-theme-shell .glass-sidebar {
-  background: #bcb8b1 !important;
+  background: rgba(188, 184, 177, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
   border-width: 0.5px !important;
   backdrop-filter: blur(40px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
-  --lab-text-primary: #1f2a2e;
-  --lab-text-secondary: #3c4b52;
-  --lab-text-tertiary: #607076;
-  --lab-border: rgba(0, 0, 0, 0.12);
+  --lab-text-primary: #e8e6e3;
+  --lab-text-secondary: #a8a5a0;
+  --lab-text-tertiary: #807d78;
+  --lab-border: rgba(255, 255, 255, 0.08);
 }
 
 .dark .chat-theme-shell .feature-chat.lab-shell {

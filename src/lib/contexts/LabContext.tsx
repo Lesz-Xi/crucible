@@ -54,10 +54,10 @@ interface LabContextValue {
   userId: string | null;
 }
 
-// Default LLM Config
+// Default LLM Config (Feb 2026 - Harmonized with AI_CONFIG)
 const DEFAULT_LLM_CONFIG: LLMConfig = {
   provider: 'anthropic',
-  model: 'claude-3-sonnet-20240229',
+  model: 'claude-4-5-sonnet', // Updated to standard identifier
   temperature: 0.7,
 };
 
