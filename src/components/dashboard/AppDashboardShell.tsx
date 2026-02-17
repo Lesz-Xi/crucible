@@ -347,7 +347,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="lab-nav-pill lg-control !px-3.5 !py-2.5"
+                    className="lab-nav-pill lg-control"
                     data-active={active ? 'true' : 'false'}
                     title={collapsed ? item.label : undefined}
                   >
@@ -362,7 +362,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 <button
                   type="button"
                   className={cn(
-                    "lab-nav-pill !px-3.5 !py-2.5",
+                    "lab-nav-pill",
                     relicsOpen ? "!bg-[#2b2b2b]" : ""
                   )}
                   onClick={() => setRelicsOpen(!relicsOpen)}
@@ -405,7 +405,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
-                      className="sidebar-history-item lg-control !py-2.5 !font-medium flex-1"
+                      className="sidebar-history-item lg-control font-medium flex-1"
                       onClick={() => {
                         if (activeFolderId) createFolderFile(activeFolderId);
                         router.push('/chat?new=1');
@@ -418,7 +418,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     
                     <button
                       type="button"
-                      className="sidebar-history-item lg-control !py-2.5 !px-2.5 !w-auto"
+                      className="sidebar-history-item lg-control w-auto px-2"
                       onClick={() => {
                         createFolder();
                       }}

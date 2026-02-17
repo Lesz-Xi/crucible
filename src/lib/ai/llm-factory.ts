@@ -15,6 +15,7 @@ import { GeminiAdapter } from './gemini';
 export interface LLMOptions {
     providerId?: AIProviderId;
     modelType?: 'fast' | 'advanced' | 'reasoning';
+    modelId?: string; // Explicit model override (validated by caller)
     apiKey?: string; // BYOK: User-provided API Key
 }
 
@@ -28,6 +29,7 @@ export class LLMFactory {
         const {
             providerId = AI_CONFIG.defaultProvider,
             modelType = 'advanced',
+            modelId: explicitModelId,
             apiKey
         } = options;
 
@@ -35,7 +37,7 @@ export class LLMFactory {
         const providerConfig = AI_CONFIG.providers[providerId];
 
         // @ts-ignore - dynamic access to model types
-        const modelId = providerConfig.models[modelType] || providerConfig.models.advanced;
+        const modelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
 
         // 2. Validate Key Availability (Env or Runtime)
         if (!apiKey && !LLMFactory.validateEnvironment(providerId)) {
@@ -74,6 +76,7 @@ export class LLMFactory {
         const {
             providerId = AI_CONFIG.defaultProvider,
             modelType = 'advanced',
+            modelId: explicitModelId,
             apiKey
         } = options;
 
@@ -81,7 +84,7 @@ export class LLMFactory {
         const providerConfig = AI_CONFIG.providers[providerId];
 
         // @ts-ignore - dynamic access to model types
-        const modelId = providerConfig.models[modelType] || providerConfig.models.advanced;
+        const modelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
 
         // 2. Validate Key Availability (Env or Runtime)
         if (!apiKey && !LLMFactory.validateEnvironment(providerId)) {

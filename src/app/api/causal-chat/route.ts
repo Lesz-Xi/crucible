@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ScientificGateway } from '@/lib/services/scientific-gateway';
 import { LLMFactory } from "@/lib/ai/llm-factory";
-import { AIProviderId } from "@/config/ai-models";
+import { AI_CONFIG, AIProviderId } from "@/config/ai-models";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { DomainClassifier } from "@/lib/services/domain-classifier";
 import { SCMRetriever } from "@/lib/services/scm-retrieval";
@@ -108,6 +108,16 @@ function sanitizeStringArray(values: unknown): string[] {
         .filter((value) => value.length > 0)
     )
   );
+}
+
+function isValidProviderId(value: unknown): value is AIProviderId {
+  return value === "anthropic" || value === "openai" || value === "gemini";
+}
+
+function isAllowedModelForProvider(providerId: AIProviderId, modelId: unknown): modelId is string {
+  if (typeof modelId !== "string" || modelId.trim().length === 0) return false;
+  const allowedModels = Object.values(AI_CONFIG.providers[providerId].models) as string[];
+  return allowedModels.includes(modelId);
 }
 
 function sanitizeAutomatedScientistTone(text: string): string {
@@ -339,14 +349,9 @@ export async function POST(req: NextRequest) {
     console.warn("[CausalChat] Supabase initialization failed (Persistence disabled):", error);
   }
 
-  // Authentication is optional for MVP
-
-  // Check for API Keys early
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error("[CausalChat] ANTHROPIC_API_KEY is missing");
-    return NextResponse.json({
-      error: "Configuration Error: API Key missing. Please check your .env file."
-    }, { status: 500 });
+  // Enforce authenticated access for chat persistence, provenance, and BYOK safety.
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const requestBody = await req.json();
@@ -361,7 +366,34 @@ export async function POST(req: NextRequest) {
     operatorMode,
     attachments,
     providerId: clientProviderId,
+    model: clientModelId,
   } = requestBody;
+
+  const byokApiKey = req.headers.get("x-byok-api-key") || undefined;
+  const providerId: AIProviderId = isValidProviderId(clientProviderId) ? clientProviderId : "anthropic";
+
+  if (clientProviderId && !isValidProviderId(clientProviderId)) {
+    return NextResponse.json({ error: "Invalid providerId" }, { status: 400 });
+  }
+
+  const selectedModelId =
+    typeof clientModelId === "string" && clientModelId.trim().length > 0
+      ? clientModelId.trim()
+      : undefined;
+
+  if (selectedModelId && !isAllowedModelForProvider(providerId, selectedModelId)) {
+    return NextResponse.json({ error: "Invalid model for selected provider" }, { status: 400 });
+  }
+
+  const hasProviderEnvKey = LLMFactory.validateEnvironment(providerId);
+  if (!byokApiKey && !hasProviderEnvKey) {
+    return NextResponse.json(
+      {
+        error: `Configuration Error: Missing API key for provider '${providerId}'. Supply BYOK key or configure server key.`,
+      },
+      { status: 500 }
+    );
+  }
 
   // Support both single question and message history
   const fallbackQuestion = Array.isArray(messages) ? messages[messages.length - 1]?.content : "";
@@ -430,8 +462,6 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       let isControllerClosed = false;
-      const byokApiKey = req.headers.get("x-byok-api-key") || undefined;
-      const providerId = (clientProviderId as AIProviderId) || "anthropic";
 
       const sendEvent = (event: string, data: unknown) => {
         if (!isControllerClosed) {
@@ -586,6 +616,7 @@ export async function POST(req: NextRequest) {
           const model = LLMFactory.getAdapter({
             providerId,
             modelType: 'fast',
+            modelId: selectedModelId,
             apiKey: byokApiKey
           });
           // Updated: Principal Investigator persona (Automated Scientist paradigm)
@@ -1012,6 +1043,7 @@ ${sourceList}`;
         const model = LLMFactory.getAdapter({
           providerId,
           modelType: 'advanced',
+          modelId: selectedModelId,
           apiKey: byokApiKey
         });
         const scientificGateway = ScientificGateway.getInstance();

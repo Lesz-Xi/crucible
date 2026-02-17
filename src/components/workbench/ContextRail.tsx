@@ -11,11 +11,11 @@ export interface ContextRailProps {
 export function ContextRail({ title, subtitle, children }: ContextRailProps) {
   return (
     <div className="flex h-full flex-col">
-      <header className="border-b border-[var(--lab-border)] bg-[var(--lab-panel)] px-4 py-4">
+      <header className="lab-rail-header">
         <p className="lab-section-title">{title}</p>
-        {subtitle ? <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{subtitle}</p> : null}
+        {subtitle ? <p className="lab-rail-subtitle">{subtitle}</p> : null}
       </header>
-      <div className="lab-scroll-region flex-1 p-4">{children}</div>
+      <div className="lab-scroll-region lab-rail-body flex-1">{children}</div>
     </div>
   );
 }

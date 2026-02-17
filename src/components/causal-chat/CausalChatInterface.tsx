@@ -405,6 +405,7 @@ export function CausalChatInterface() {
       // Extract BYOK Key based on active provider
       let byokHeaders: Record<string, string> = {};
       let activeProvider = 'anthropic';
+      let activeModel: string | undefined = undefined;
 
       try {
         const savedConfig = localStorage.getItem('lab_llm_config');
@@ -412,6 +413,9 @@ export function CausalChatInterface() {
           const parsed = JSON.parse(savedConfig);
           if (parsed) {
              activeProvider = parsed.provider || 'anthropic';
+             activeModel = typeof parsed.model === 'string' && parsed.model.trim().length > 0
+               ? parsed.model
+               : undefined;
              let selectedKey = parsed.apiKey; // Fallback to compatible field
 
              // Prefer specific provider keys if available
@@ -440,6 +444,7 @@ export function CausalChatInterface() {
           sessionId: sessionId,
           modelKey: undefined,
           providerId: activeProvider, // Explicitly pass provider
+          model: activeModel,
           messages: messages
             .filter((m) => !m.isStreaming)
             .map((m) => ({ role: m.role, content: m.content }))

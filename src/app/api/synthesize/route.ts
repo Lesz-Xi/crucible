@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
   const writer = writable.getWriter();
   const emitter = new StreamingEventEmitter(writer);
 
-  // Extract User ID from headers (set by middleware or client)
-  let userId = request.headers.get("x-user-id") || undefined;
+  // Enforce authenticated ownership for synthesis runs.
+  let userId: string | undefined;
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -27,7 +27,11 @@ export async function POST(request: NextRequest) {
       userId = user.id;
     }
   } catch {
-    // Keep header fallback for environments where auth is unavailable.
+    // Auth resolution failed; handled below.
+  }
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Start background processing

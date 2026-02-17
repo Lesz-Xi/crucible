@@ -9,6 +9,11 @@ export default function LegalPage() {
 
   useEffect(() => {
     setUseV2(true);
+
+    document.body.classList.add('liquid-glass-v2', 'lab-glass-system');
+    return () => {
+      document.body.classList.remove('liquid-glass-v2', 'lab-glass-system');
+    };
   }, []);
 
   if (useV2) {

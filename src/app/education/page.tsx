@@ -97,6 +97,13 @@ function gateTone(value: AllowedOutputClass | undefined): {
 }
 
 export default function EducationPage() {
+  useEffect(() => {
+    document.body.classList.add('liquid-glass-v2', 'lab-glass-system');
+    return () => {
+      document.body.classList.remove('liquid-glass-v2', 'lab-glass-system');
+    };
+  }, []);
+
   const [analysisState, setAnalysisState] = useState<AnalysisState>({
     stage: 'intake',
     message: 'Complete your learning profile to discover your causal fingerprint'
@@ -645,7 +652,7 @@ export default function EducationPage() {
   
   return (
     <AppDashboardShell>
-      <main className="edu-page min-h-screen transition-colors duration-500">
+      <main className="edu-page feature-education min-h-screen transition-colors duration-500">
       {/* Header */}
       <header className="edu-header px-8 py-6">
         <div className="max-w-6xl mx-auto">

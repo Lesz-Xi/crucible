@@ -28,7 +28,9 @@ export const LabToolNameSchema = z.enum([
 /**
  * LLM Provider options
  */
-export const LLMProviderSchema = z.enum(['openai', 'anthropic', 'google', 'local']);
+export const LLMProviderSchema = z.enum(['openai', 'anthropic', 'gemini', 'google', 'local']).transform((provider) =>
+    provider === 'google' ? 'gemini' : provider
+);
 
 /**
  * LLM Configuration

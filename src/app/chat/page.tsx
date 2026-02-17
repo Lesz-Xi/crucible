@@ -33,9 +33,9 @@ export default function ChatPage() {
     void bootstrapHistoryRecovery();
     setUseV2(true);
 
-    document.body.classList.add("chat-theme-shell");
+    document.body.classList.add("chat-theme-shell", "liquid-glass-v2", "lab-glass-system");
     return () => {
-      document.body.classList.remove("chat-theme-shell");
+      document.body.classList.remove("chat-theme-shell", "liquid-glass-v2", "lab-glass-system");
     };
   }, []);
 

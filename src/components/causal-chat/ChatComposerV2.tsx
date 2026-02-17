@@ -134,7 +134,7 @@ export function ChatComposerV2({
                 onClick={() => setShortcutMenuOpen((current) => !current)}
               >
                 <FlaskConical className="h-3.5 w-3.5" />
-Scenarios
+                Scenarios
                 <ChevronDown className="h-3.5 w-3.5" />
               </button>
               {shortcutMenuOpen ? (
