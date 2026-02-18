@@ -350,7 +350,7 @@ export default function LabPage() {
     const experiments = state.experimentHistory || [];
 
     return (
-        <div className="flex h-screen bg-[#050505] overflow-hidden">
+        <div className="feature-lab flex h-screen bg-[var(--lab-bg)] overflow-hidden">
             <div className="flex-1 flex flex-col h-full bg-transparent">
                 {/* Header / Mode Switcher with Liquid Glass */}
                 <div className="flex justify-center p-4">

@@ -63,7 +63,7 @@ export function SequenceAnalysisPanel({ onSubmit, isLoading = false, disabled = 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.3, ease: [0.19, 1, 0.22, 1] }}
-            className="lab-panel p-6 max-w-md mx-auto"
+            className="lab-panel sequence-panel p-6 max-w-md mx-auto"
         >
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
@@ -73,7 +73,7 @@ export function SequenceAnalysisPanel({ onSubmit, isLoading = false, disabled = 
                     <h3 className="text-sm font-semibold text-[var(--lab-text-primary)] font-serif tracking-wide">
                         Sequence Analysis
                     </h3>
-                    <p className="text-[10px] text-[var(--lab-text-tertiary)]">
+                    <p className="text-[10px] text-[var(--lab-text-secondary)]">
                         Physicochemical properties via Biopython
                     </p>
                 </div>
@@ -88,7 +88,7 @@ export function SequenceAnalysisPanel({ onSubmit, isLoading = false, disabled = 
                         >
                             Amino Acid Sequence
                         </label>
-                        <span className="text-[10px] text-[var(--lab-text-tertiary)] font-mono">
+                        <span className="text-[10px] text-[var(--lab-text-secondary)] font-mono">
                             {cleanedLength} residues
                         </span>
                     </div>

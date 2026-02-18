@@ -2322,6 +2322,42 @@ body.dark .lab-card-interactive:hover {
   box-shadow: none !important;
 }
 
+/* Labs specific contrast + light-mode safeguards */
+.feature-lab {
+  --lab-bg: #eef2f6;
+  --lab-bg-elevated: #e7ecf1;
+  --lab-panel: rgba(255, 255, 255, 0.58);
+  --lab-border: rgba(73, 84, 99, 0.16);
+  --lab-text-primary: #232a33;
+  --lab-text-secondary: #445264;
+  --lab-text-tertiary: #6f7d8d;
+}
+
+.dark .feature-lab {
+  --lab-bg: #050505;
+  --lab-bg-elevated: #0b0b0b;
+  --lab-panel: rgba(10, 10, 10, 0.84);
+  --lab-border: rgba(255, 255, 255, 0.10);
+  --lab-text-primary: #e9e9e9;
+  --lab-text-secondary: #c6c6c6;
+  --lab-text-tertiary: #9a9a9a;
+}
+
+.dark .sequence-panel label,
+.dark .sequence-panel p,
+.dark .sequence-panel span {
+  color: var(--lab-text-secondary) !important;
+}
+
+.dark .sequence-panel h3 {
+  color: var(--lab-text-primary) !important;
+}
+
+.dark .sequence-panel textarea,
+.dark .sequence-panel textarea::placeholder {
+  color: var(--lab-text-primary) !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
