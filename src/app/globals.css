@@ -1798,6 +1798,34 @@ body.dark .lab-card-interactive:hover {
   color: var(--lab-text-secondary) !important;
 }
 
+/* Dark-mode chat readability: force prompt + outputs to white */
+.dark .chat-theme-shell .feature-chat {
+  --lab-text-primary: #ffffff;
+  --lab-text-secondary: #f1f5f9;
+  --lab-text-tertiary: #cbd5e1;
+}
+
+.dark .chat-theme-shell .feature-chat .lab-chat-prose,
+.dark .chat-theme-shell .feature-chat .lab-chat-prose p,
+.dark .chat-theme-shell .feature-chat .lab-chat-prose li,
+.dark .chat-theme-shell .feature-chat .lab-chat-prose strong,
+.dark .chat-theme-shell .feature-chat .lab-card,
+.dark .chat-theme-shell .feature-chat .lab-card-interactive,
+.dark .chat-theme-shell .feature-chat .lab-chip-mono,
+.dark .chat-theme-shell .feature-chat p,
+.dark .chat-theme-shell .feature-chat span {
+  color: #ffffff !important;
+}
+
+.dark .chat-theme-shell .feature-chat textarea,
+.dark .chat-theme-shell .feature-chat input {
+  color: #ffffff !important;
+}
+
+.dark .chat-theme-shell .feature-chat textarea::placeholder {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
 .dark .chat-theme-shell .glass-sidebar {
   background: rgba(188, 184, 177, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
