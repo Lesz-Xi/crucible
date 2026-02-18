@@ -466,22 +466,47 @@ except Exception as e:
      */
     async dockLigand(pdbId: string, smiles: string, seed: number): Promise<{ success: boolean; data?: any; error?: string }> {
         try {
-            // 1. Deterministic Calculation (Hash)
+            const serviceUrl = process.env.DOCKING_SERVICE_URL;
+
+            // Prefer external docking service when configured
+            if (serviceUrl) {
+                const response = await fetch(`${serviceUrl.replace(/\/$/, '')}/dock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(process.env.DOCKING_SERVICE_API_KEY ? { Authorization: `Bearer ${process.env.DOCKING_SERVICE_API_KEY}` } : {}),
+                    },
+                    body: JSON.stringify({ pdbId, smiles, seed }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Docking service failed: ${response.status} ${response.statusText}`);
+                }
+
+                const payload = await response.json() as any;
+                return {
+                    success: true,
+                    data: {
+                        ...payload,
+                        engine: payload?.engine || 'AutoDockVina-Service',
+                        seed,
+                    },
+                };
+            }
+
+            // Fallback: deterministic stub (legacy)
             const inputString = `${pdbId}-${smiles}-${seed}`;
             let hash = 0;
             for (let i = 0; i < inputString.length; i++) {
                 const char = inputString.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32bit integer
+                hash = hash & hash;
             }
 
-            // 2. Map hash to scientific range (-5.0 to -12.0 kcal/mol)
-            // Normalize hash to 0-1
             const normalized = (Math.abs(hash) % 1000) / 1000;
-            const affinity = -5.0 - (normalized * 7.0); // Range: -5.0 to -12.0
-            const rmsd = (normalized * 2.5).toFixed(2); // Range: 0.0 to 2.5
+            const affinity = -5.0 - (normalized * 7.0);
+            const rmsd = (normalized * 2.5).toFixed(2);
 
-            // 3. Fake Poses (just metadata for now)
             const result = {
                 affinity_kcal_mol: parseFloat(affinity.toFixed(2)),
                 rmsd: parseFloat(rmsd),
@@ -490,7 +515,7 @@ except Exception as e:
                     { rank: 2, score: (affinity + 0.5).toFixed(2), rmsd: rmsd }
                 ],
                 engine: "Vina-Stub-v1 (Deterministic)",
-                seed: seed
+                seed,
             };
 
             return { success: true, data: result };

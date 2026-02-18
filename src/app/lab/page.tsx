@@ -228,14 +228,56 @@ export default function LabPage() {
                 { pdbId, smiles, seed },
                 'intervention'
             );
-            if (experiment) {
-                const result = await gateway.dockLigand(pdbId, smiles, seed);
-                if (result.success && result.data) {
-                    await updateExperimentResult?.(experiment.id, result.data as any, 'success');
-                } else {
-                    await updateExperimentResult?.(experiment.id, { error: result.error } as any, 'failure');
-                }
+            if (!experiment) return;
+
+            const createRes = await fetch('/api/lab/docking/jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pdbId, smiles, seed }),
+            });
+
+            if (!createRes.ok) {
+                const payload = await createRes.json().catch(() => ({}));
+                await updateExperimentResult?.(experiment.id, { error: payload?.error || 'Failed to create docking job' } as any, 'failure');
+                return;
             }
+
+            const createPayload = await createRes.json() as { jobId?: string };
+            const jobId = createPayload.jobId;
+            if (!jobId) {
+                await updateExperimentResult?.(experiment.id, { error: 'Missing docking job id' } as any, 'failure');
+                return;
+            }
+
+            let attempts = 0;
+            const maxAttempts = 60; // ~60s at 1s interval
+
+            while (attempts < maxAttempts) {
+                attempts += 1;
+                const statusRes = await fetch(`/api/lab/docking/jobs/${jobId}`, { method: 'GET' });
+                if (!statusRes.ok) {
+                    const payload = await statusRes.json().catch(() => ({}));
+                    await updateExperimentResult?.(experiment.id, { error: payload?.error || 'Failed to query docking job' } as any, 'failure');
+                    return;
+                }
+
+                const statusPayload = await statusRes.json() as { job?: { status?: string; result?: any; error?: string } };
+                const status = statusPayload.job?.status;
+
+                if (status === 'succeeded') {
+                    await updateExperimentResult?.(experiment.id, statusPayload.job?.result as any, 'success');
+                    return;
+                }
+
+                if (status === 'failed') {
+                    await updateExperimentResult?.(experiment.id, { error: statusPayload.job?.error || 'Docking failed' } as any, 'failure');
+                    return;
+                }
+
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+            }
+
+            await updateExperimentResult?.(experiment.id, { error: 'Docking job timed out' } as any, 'failure');
         } catch (err) {
             console.error('Failed to dock ligand:', err);
         } finally {
