@@ -12,14 +12,10 @@ import { ProteinViewer } from "@/components/lab/ProteinViewer";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, EASE_OUT_EXPO } from "@/components/ui/motion";
-import { withRetry } from "@/lib/utils/retry";
-import { rcsbRateLimiter, proteinStructureCache } from "@/lib/utils/rate-limiter";
+import { proteinStructureCache } from "@/lib/utils/rate-limiter";
 import { ScientificGateway } from "@/lib/services/scientific-gateway";
 import type { LabExperiment, LabToolId } from "@/types/lab";
 import { cn } from "@/lib/utils";
-
-const PDB_ID_REGEX = /^[A-Z0-9]{4}$/;
-const UNIPROT_ACCESSION_REGEX = /^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})$/i;
 
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
@@ -104,6 +100,8 @@ export default function LabPage() {
     const { state, dispatch, createExperiment, updateExperimentResult } = useLab();
     const [viewMode, setViewMode] = useState<'dashboard' | 'builder' | 'history' | 'tool'>('dashboard');
     const [isLoading, setIsLoading] = useState(false);
+    const [fetchStatusMessage, setFetchStatusMessage] = useState<string | null>(null);
+    const [fetchErrorMessage, setFetchErrorMessage] = useState<string | null>(null);
 
     // Scientific Gateway instance for tool operations
     const gateway = ScientificGateway.getInstance();
@@ -119,55 +117,42 @@ export default function LabPage() {
     const handleClosePanel = () => {
         dispatch({ type: 'SET_ACTIVE_TOOL', payload: null });
         setViewMode('dashboard');
+        setFetchStatusMessage(null);
+        setFetchErrorMessage(null);
     };
 
-    // Protein fetch via panel
+    // Protein fetch via panel (server-proxied to avoid browser CORS/provider drift)
     const handleFetchProtein = async (identifier: string, source: 'rcsb' | 'alphafold' = 'rcsb') => {
         setIsLoading(true);
+        setFetchErrorMessage(null);
+        setFetchStatusMessage(null);
         try {
             const rawInput = identifier.trim();
+            const cacheKey = `${source}:${rawInput.toUpperCase()}`;
+            let pdb = proteinStructureCache.get(cacheKey);
             let resolvedId = rawInput.toUpperCase();
 
-            if (source === 'rcsb' && !PDB_ID_REGEX.test(resolvedId)) {
-                const resolved = await gateway.resolvePdbId(rawInput);
-                if (!resolved.success || !resolved.pdbId) throw new Error(resolved.error || 'Could not resolve PDB ID');
-                resolvedId = resolved.pdbId;
-            }
-
-            if (source === 'alphafold' && !UNIPROT_ACCESSION_REGEX.test(resolvedId)) {
-                const resolved = await gateway.resolveUniProtAccession(rawInput);
-                if (!resolved.success || !resolved.accession) throw new Error(resolved.error || 'Could not resolve UniProt accession');
-                resolvedId = resolved.accession;
-            }
-
-            const cacheKey = `${source}:${resolvedId}`;
-            let pdb = proteinStructureCache.get(cacheKey);
-
             if (!pdb) {
-                if (source === 'rcsb') {
-                    const rateLimit = rcsbRateLimiter.isAllowed('global');
-                    if (!rateLimit.allowed) {
-                        console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
-                        return;
-                    }
-                    const fetchWithRetry = withRetry(
-                        async (id: string) => {
-                            const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
-                            if (!res.ok) throw new Error(`Failed to fetch PDB: ${res.statusText}`);
-                            return res.text();
-                        },
-                        { maxRetries: 3, initialDelayMs: 1000 }
-                    );
-                    pdb = await fetchWithRetry(resolvedId);
-                } else {
-                    const result = await gateway.fetchAlphaFoldStructure(resolvedId);
-                    if (!result.success || !result.data) {
-                        throw new Error(result.error || 'Failed to fetch AlphaFold structure');
-                    }
-                    pdb = result.data;
+                const response = await fetch('/api/lab/structure/fetch', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identifier: rawInput, source }),
+                });
+
+                const payload = await response.json().catch(() => ({} as any));
+                if (!response.ok || !payload?.success || !payload?.data?.content) {
+                    throw new Error(payload?.error || 'Failed to fetch protein structure');
                 }
 
-                proteinStructureCache.set(cacheKey, pdb);
+                pdb = payload.data.content as string;
+                resolvedId = String(payload.data.resolvedId || resolvedId).toUpperCase();
+                proteinStructureCache.set(`${source}:${resolvedId}`, pdb);
+            }
+
+            if (rawInput.toUpperCase() !== resolvedId) {
+                setFetchStatusMessage(`Resolved "${rawInput}" → ${resolvedId} (${source === 'rcsb' ? 'RCSB' : 'AlphaFold'})`);
+            } else {
+                setFetchStatusMessage(`Loaded ${resolvedId} from ${source === 'rcsb' ? 'RCSB PDB' : 'AlphaFold DB'}`);
             }
 
             dispatch({
@@ -175,7 +160,7 @@ export default function LabPage() {
                 payload: {
                     pdbId: resolvedId,
                     content: pdb,
-                    metadata: { method: source === 'rcsb' ? 'panel_fetch_with_retry' : 'alphafold_fetch', source },
+                    metadata: { method: source === 'rcsb' ? 'server_fetch_rcsb' : 'server_fetch_alphafold', source },
                     loadedAt: new Date().toISOString()
                 }
             });
@@ -188,6 +173,8 @@ export default function LabPage() {
                 'observation'
             );
         } catch (err) {
+            const message = err instanceof Error ? err.message : 'Failed to fetch protein structure';
+            setFetchErrorMessage(message);
             console.error('Failed to fetch protein:', err);
         } finally {
             setIsLoading(false);
@@ -287,42 +274,7 @@ export default function LabPage() {
 
     // Legacy handler for dashboard button
     const handleLoadTest = async () => {
-        setIsLoading(true);
-        try {
-            const pdbId = '4HHB';
-            let pdb = proteinStructureCache.get(pdbId);
-            if (!pdb) {
-                const rateLimit = rcsbRateLimiter.isAllowed('global');
-                if (!rateLimit.allowed) {
-                    console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
-                    return;
-                }
-                const fetchWithRetry = withRetry(
-                    async (id: string) => {
-                        const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
-                        if (!res.ok) throw new Error(`Failed to fetch PDB: ${res.statusText}`);
-                        return res.text();
-                    },
-                    { maxRetries: 3, initialDelayMs: 1000 }
-                );
-                pdb = await fetchWithRetry(pdbId);
-                proteinStructureCache.set(pdbId, pdb);
-            }
-            dispatch({ 
-                type: 'LOAD_STRUCTURE', 
-                payload: { 
-                    pdbId, 
-                    content: pdb, 
-                    metadata: { method: 'enhanced_fetch_with_retry' },
-                    loadedAt: new Date().toISOString()
-                } 
-            });
-            await createExperiment?.('fetch_protein_structure', { pdbId }, 'observation');
-        } catch (err) {
-            console.error('Failed to load structure:', err);
-        } finally {
-            setIsLoading(false);
-        }
+        await handleFetchProtein('4HHB', 'rcsb');
     };
 
     const handleSimulateHypothesis = async (thesis: string, mechanism: string) => {
@@ -384,7 +336,7 @@ export default function LabPage() {
     const renderToolPanel = () => {
         switch (state.activeTool) {
             case 'fetch_structure':
-                return <ProteinFetchPanel onSubmit={handleFetchProtein} isLoading={isLoading} />;
+                return <ProteinFetchPanel onSubmit={handleFetchProtein} isLoading={isLoading} statusMessage={fetchStatusMessage} errorMessage={fetchErrorMessage} />;
             case 'analyze_sequence':
                 return <SequenceAnalysisPanel onSubmit={handleAnalyzeSequence} isLoading={isLoading} />;
             case 'dock_ligand':

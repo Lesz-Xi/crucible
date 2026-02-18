@@ -12,11 +12,13 @@ interface ProteinFetchPanelProps {
     onSubmit: (identifier: string, source: ProteinSource) => Promise<void>;
     isLoading?: boolean;
     disabled?: boolean;
+    statusMessage?: string | null;
+    errorMessage?: string | null;
 }
 
 const UNIPROT_ACCESSION_REGEX = /^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})$/i;
 
-export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = false }: ProteinFetchPanelProps) {
+export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = false, statusMessage = null, errorMessage = null }: ProteinFetchPanelProps) {
     const [source, setSource] = useState<ProteinSource>('rcsb');
     const [identifier, setIdentifier] = useState("");
     const [error, setError] = useState<string | null>(null);
@@ -164,6 +166,18 @@ export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = fals
                             ? 'Use PDB ID or a protein query (e.g. 4HHB, 1CRN, hemoglobin).'
                             : 'Use UniProt accession or a protein/gene query (e.g. P69905, Q8WZ42, HBB human).'}
                     </p>
+
+                    {statusMessage ? (
+                        <p className="mt-2 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-300">
+                            {statusMessage}
+                        </p>
+                    ) : null}
+
+                    {errorMessage ? (
+                        <p className="mt-2 rounded-md border border-red-500/30 bg-red-500/10 px-2 py-1 text-[11px] text-red-300">
+                            {errorMessage}
+                        </p>
+                    ) : null}
                 </div>
 
                 <button

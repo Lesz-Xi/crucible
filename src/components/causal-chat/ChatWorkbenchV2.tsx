@@ -877,15 +877,50 @@ export function ChatWorkbenchV2() {
         }))
       );
 
+      // Resolve provider/model and BYOK from lab config for parity with legacy chat path
+      let activeProvider: 'anthropic' | 'openai' | 'gemini' = 'anthropic';
+      let activeModel: string | undefined;
+      const byokHeaders: Record<string, string> = {};
+
+      try {
+        const savedConfig = window.localStorage.getItem('lab_llm_config');
+        if (savedConfig) {
+          const parsed = JSON.parse(savedConfig);
+          if (parsed) {
+            const providerCandidate = parsed.provider;
+            if (providerCandidate === 'anthropic' || providerCandidate === 'openai' || providerCandidate === 'gemini') {
+              activeProvider = providerCandidate;
+            }
+
+            if (typeof parsed.model === 'string' && parsed.model.trim().length > 0) {
+              activeModel = parsed.model.trim();
+            }
+
+            let selectedKey: string | undefined = typeof parsed.apiKey === 'string' ? parsed.apiKey : undefined;
+            if (activeProvider === 'anthropic' && typeof parsed.anthropicApiKey === 'string') selectedKey = parsed.anthropicApiKey;
+            if (activeProvider === 'openai' && typeof parsed.openaiApiKey === 'string') selectedKey = parsed.openaiApiKey;
+            if (activeProvider === 'gemini' && typeof parsed.geminiApiKey === 'string') selectedKey = parsed.geminiApiKey;
+
+            if (selectedKey && selectedKey.trim().length > 0) {
+              byokHeaders['X-BYOK-API-Key'] = selectedKey.trim();
+            }
+          }
+        }
+      } catch (configError) {
+        console.warn('[ChatWorkbenchV2] Failed to read lab_llm_config for BYOK/provider selection', configError);
+      }
+
       const response = await fetch('/api/causal-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...byokHeaders },
         body: JSON.stringify({
           messages: conversation,
           sessionId: sessionForSave,
           operatorMode: inferredMode,
           intervention: interventionPayload || undefined,
           attachments: serializedAttachments.length > 0 ? serializedAttachments : undefined,
+          providerId: activeProvider,
+          model: activeModel,
         }),
         signal: abortControllerRef.current.signal,
       });
