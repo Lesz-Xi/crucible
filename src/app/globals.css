@@ -2282,6 +2282,25 @@ body.dark .lab-card-interactive:hover {
   }
 }
 
+/* Final authority: App feature sidebars must match Labs dark theme */
+.dark .app-feature-shell {
+  --lg-bg-sidebar: #050505;
+  --lg-surface-1: #000000;
+  --lg-surface-2: #000000;
+  --lg-border-soft: rgba(255, 255, 255, 0.10);
+}
+
+.dark .liquid-glass-v2 .app-feature-shell .glass-sidebar,
+.dark .liquid-glass-v2 .app-feature-shell .lg-sidebar,
+.dark .liquid-glass-v2.chat-theme-shell .app-feature-shell .glass-sidebar,
+.dark .liquid-glass-v2.chat-theme-shell .app-feature-shell .lg-sidebar {
+  background: #050505 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

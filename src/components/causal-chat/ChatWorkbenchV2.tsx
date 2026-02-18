@@ -23,7 +23,6 @@ import {
   StopCircle,
   Upload,
   X,
-  PanelLeft,
 } from 'lucide-react';
 import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import { CausalGauges } from '@/components/workbench/CausalGauges';
@@ -291,7 +290,6 @@ export function ChatWorkbenchV2() {
   const [claimCopied, setClaimCopied] = useState(false);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
-  const [contextRailOpen, setContextRailOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
   const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
@@ -1042,16 +1040,6 @@ export function ChatWorkbenchV2() {
       primary={
         <PrimaryCanvas>
           <div className="flex h-full min-h-0 flex-col">
-            <header className="flex h-12 items-center border-b border-[var(--lab-border)] bg-transparent px-4">
-              <button
-                type="button"
-                onClick={() => setContextRailOpen(!contextRailOpen)}
-                className="lab-button-icon"
-                title={contextRailOpen ? 'Close sidebar' : 'Open sidebar'}
-              >
-                <PanelLeft className={cn("h-4 w-4 transition-colors", contextRailOpen ? "text-[var(--lab-text-secondary)]" : "text-[var(--lab-text-tertiary)]")} />
-              </button>
-            </header>
             <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
               {messages.length === 0 ? (
                 <div className="scientific-workbench-main mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -1290,7 +1278,7 @@ export function ChatWorkbenchV2() {
           </div>
         </EvidenceRail>
       }
-      contextRailOpen={contextRailOpen}
+      contextRailOpen={false}
     />
   );
 }
