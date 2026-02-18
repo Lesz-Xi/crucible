@@ -436,29 +436,51 @@ except Exception as e:
 
     /**
      * Fetch a predicted protein structure from AlphaFold DB by UniProt accession.
+     * Uses the AlphaFold EBI API to resolve the correct pdbUrl (currently v6),
+     * rather than guessing version numbers which break when EBI bumps the version.
      */
     async fetchAlphaFoldStructure(uniprotId: string): Promise<{ success: boolean; data?: string; error?: string }> {
         const accession = uniprotId.trim().toUpperCase();
-        const versions = ['v4', 'v3', 'v2', 'v1'];
 
         try {
-            let lastError: string | undefined;
+            // Step 1: Query the AlphaFold API to get the actual download URL.
+            // This is version-agnostic — EBI returns the latest pdbUrl directly.
+            const apiUrl = `https://alphafold.ebi.ac.uk/api/prediction/${accession}`;
+            const apiResponse = await fetch(apiUrl);
 
-            for (const version of versions) {
-                const url = `https://alphafold.ebi.ac.uk/files/AF-${accession}-F1-model_${version}.pdb`;
-                const response = await fetch(url);
-                if (response.ok) {
-                    const data = await response.text();
-                    return { success: true, data };
-                }
-                lastError = `${response.status} ${response.statusText}`;
+            if (!apiResponse.ok) {
+                const hint = apiResponse.status === 404
+                    ? ' (protein may not be in AlphaFold DB — try RCSB PDB instead)'
+                    : '';
+                return {
+                    success: false,
+                    error: `No AlphaFold model found for ${accession} (${apiResponse.status} ${apiResponse.statusText})${hint}`,
+                };
             }
 
-            return { success: false, error: `No AlphaFold model found for ${accession}${lastError ? ` (${lastError})` : ''}` };
+            const entries: Array<{ pdbUrl?: string }> = await apiResponse.json();
+            const pdbUrl = entries[0]?.pdbUrl;
+
+            if (!pdbUrl) {
+                return { success: false, error: `AlphaFold API returned no PDB URL for ${accession}` };
+            }
+
+            // Step 2: Download the PDB file from the URL returned by the API.
+            const pdbResponse = await fetch(pdbUrl);
+            if (!pdbResponse.ok) {
+                return {
+                    success: false,
+                    error: `Failed to download PDB for ${accession}: ${pdbResponse.status} ${pdbResponse.statusText}`,
+                };
+            }
+
+            const data = await pdbResponse.text();
+            return { success: true, data };
         } catch (error) {
             return { success: false, error: String(error) };
         }
     }
+
 
     /**
      * Deterministic Docking Stub (Phase 2)
