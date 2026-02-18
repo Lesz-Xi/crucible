@@ -8,9 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:benchmark-governance": "vitest run src/lib/services/__tests__/benchmark-governance.test.ts",
-    "test:scm-promotion-governance": "vitest run src/lib/services/__tests__/scm-promotion-governance.test.ts",
-    "test:scientific-integrity": "vitest run src/lib/services/__tests__/scientific-integrity-service.test.ts",
+    "test:benchmark-governance": "TMPDIR=/tmp vitest run src/lib/services/__tests__/benchmark-governance.test.ts",
+    "test:scm-promotion-governance": "TMPDIR=/tmp vitest run src/lib/services/__tests__/scm-promotion-governance.test.ts",
+    "test:scientific-integrity": "TMPDIR=/tmp vitest run src/lib/services/__tests__/scientific-integrity-service.test.ts",
     "seed:framework-scms": "node scripts/seed-framework-scms.mjs",
     "promote:scm": "npx --yes tsx scripts/promote-scm-model.ts",
     "validate:schemas": "node scripts/validate-causal-graph-schema.mjs --all",
@@ -28,7 +28,8 @@
     "governance:hybrid-novelty-proof": "npx --yes tsx scripts/evaluate-hybrid-novelty-proof.ts",
     "governance:persistent-memory-integrity": "npx --yes tsx scripts/evaluate-persistent-memory-integrity.ts",
     "audit:migrations": "npx --yes tsx scripts/check-migration-state.ts",
-    "agent:bootstrap": "bash ../.agent/scripts/agent-bootstrap.sh"
+    "agent:bootstrap": "bash ../.agent/scripts/agent-bootstrap.sh",
+    "test": "TMPDIR=/tmp npx vitest run"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
@@ -79,6 +80,7 @@
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/scope-manager": "^8.53.1",
+    "@vitejs/plugin-react": "^5.1.4",
     "autoprefixer": "^10.4.23",
     "eslint": "^9",
     "eslint-config-next": "^15.4.3",

@@ -351,6 +351,24 @@ export default function LabPage() {
 
     return (
         <div className="feature-lab flex h-screen bg-[var(--lab-bg)] overflow-hidden">
+            {/* GAP-6: Offline Banner — shown when navigator.onLine is false */}
+            <AnimatePresence>
+                {state.isOffline && (
+                    <motion.div
+                        key="offline-banner"
+                        initial={{ y: -40, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -40, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: EASE_OUT_EXPO }}
+                        role="alert"
+                        aria-live="assertive"
+                        className="absolute top-0 left-0 right-0 z-50 flex items-center justify-center gap-2 px-4 py-2 bg-amber-500/90 backdrop-blur-sm text-black text-sm font-medium"
+                    >
+                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                        You are offline. Tool calls are queued and will sync when reconnected.
+                    </motion.div>
+                )}
+            </AnimatePresence>
             <div className="flex-1 flex flex-col h-full bg-transparent">
                 {/* Header / Mode Switcher with Liquid Glass */}
                 <div className="flex justify-center p-4">
