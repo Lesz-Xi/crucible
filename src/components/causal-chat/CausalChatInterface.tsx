@@ -454,8 +454,19 @@ export function CausalChatInterface() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP Error ${response.status}`);
+        const errorData = await response.json().catch(() => ({} as { error?: string }));
+        const raw = errorData.error || `HTTP Error ${response.status}`;
+        const normalized = raw.toLowerCase();
+
+        if (normalized.includes('credit balance is too low') || normalized.includes('plans & billing')) {
+          throw new Error('Anthropic credits are insufficient. Open Model Settings and switch provider (OpenAI/Gemini) or top up Anthropic credits.');
+        }
+
+        if (normalized.includes('missing api key') || normalized.includes('configuration error')) {
+          throw new Error('Provider API key is missing. Open Model Settings and add a BYOK key for the selected provider.');
+        }
+
+        throw new Error(raw);
       }
 
       const reader = response.body?.getReader();

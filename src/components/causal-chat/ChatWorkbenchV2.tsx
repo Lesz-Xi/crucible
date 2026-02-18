@@ -927,7 +927,18 @@ export function ChatWorkbenchV2() {
 
       if (!response.ok) {
         const body = (await response.json().catch(() => ({}))) as { error?: string };
-        throw new Error(body.error || `Chat request failed (${response.status})`);
+        const raw = body.error || `Chat request failed (${response.status})`;
+        const normalized = raw.toLowerCase();
+
+        if (normalized.includes('credit balance is too low') || normalized.includes('plans & billing')) {
+          throw new Error('Anthropic credits are insufficient. Open Model Settings and switch provider (OpenAI/Gemini) or top up Anthropic credits.');
+        }
+
+        if (normalized.includes('missing api key') || normalized.includes('configuration error')) {
+          throw new Error('Provider API key is missing. Open Model Settings and add a BYOK key for the selected provider.');
+        }
+
+        throw new Error(raw);
       }
 
       const reader = response.body?.getReader();
