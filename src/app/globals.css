@@ -1968,6 +1968,33 @@ body.dark .lab-card-interactive:hover {
     24px 0 60px rgba(0, 0, 0, 0.34) !important;
 }
 
+/* Systematic Labs-dark sidebar parity across Chat/Hybrid/Legal/Education (AppDashboardShell surfaces) */
+.dark .app-feature-shell .glass-sidebar {
+  background: #050505 !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.dark .app-feature-shell .glass-sidebar .lab-nav-pill,
+.dark .app-feature-shell .glass-sidebar .sidebar-history-item,
+.dark .app-feature-shell .glass-sidebar .lg-control {
+  background: transparent !important;
+  color: var(--lab-text-primary) !important;
+}
+
+.dark .app-feature-shell .glass-sidebar .lab-nav-pill {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+.dark .app-feature-shell .glass-sidebar .lab-nav-pill[data-active="true"],
+.dark .app-feature-shell .glass-sidebar .sidebar-history-item-active,
+.dark .app-feature-shell .glass-sidebar .sidebar-history-item:hover,
+.dark .app-feature-shell .glass-sidebar .lab-nav-pill:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
 .liquid-glass-v2.chat-theme-shell .glass-sidebar,
 .dark .liquid-glass-v2.chat-theme-shell .glass-sidebar {
   background: var(--lg-bg-sidebar) !important;
