@@ -18,6 +18,9 @@ import { ScientificGateway } from "@/lib/services/scientific-gateway";
 import type { LabExperiment, LabToolId } from "@/types/lab";
 import { cn } from "@/lib/utils";
 
+const PDB_ID_REGEX = /^[A-Z0-9]{4}$/;
+const UNIPROT_ACCESSION_REGEX = /^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})$/i;
+
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
     const config = {
@@ -119,37 +122,71 @@ export default function LabPage() {
     };
 
     // Protein fetch via panel
-    const handleFetchProtein = async (pdbId: string) => {
+    const handleFetchProtein = async (identifier: string, source: 'rcsb' | 'alphafold' = 'rcsb') => {
         setIsLoading(true);
         try {
-            let pdb = proteinStructureCache.get(pdbId);
-            if (!pdb) {
-                const rateLimit = rcsbRateLimiter.isAllowed('global');
-                if (!rateLimit.allowed) {
-                    console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
-                    return;
-                }
-                const fetchWithRetry = withRetry(
-                    async (id: string) => {
-                        const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
-                        if (!res.ok) throw new Error(`Failed to fetch PDB: ${res.statusText}`);
-                        return res.text();
-                    },
-                    { maxRetries: 3, initialDelayMs: 1000 }
-                );
-                pdb = await fetchWithRetry(pdbId);
-                proteinStructureCache.set(pdbId, pdb);
+            const rawInput = identifier.trim();
+            let resolvedId = rawInput.toUpperCase();
+
+            if (source === 'rcsb' && !PDB_ID_REGEX.test(resolvedId)) {
+                const resolved = await gateway.resolvePdbId(rawInput);
+                if (!resolved.success || !resolved.pdbId) throw new Error(resolved.error || 'Could not resolve PDB ID');
+                resolvedId = resolved.pdbId;
             }
-            dispatch({ 
-                type: 'LOAD_STRUCTURE', 
-                payload: { 
-                    pdbId, 
-                    content: pdb, 
-                    metadata: { method: 'panel_fetch_with_retry' },
+
+            if (source === 'alphafold' && !UNIPROT_ACCESSION_REGEX.test(resolvedId)) {
+                const resolved = await gateway.resolveUniProtAccession(rawInput);
+                if (!resolved.success || !resolved.accession) throw new Error(resolved.error || 'Could not resolve UniProt accession');
+                resolvedId = resolved.accession;
+            }
+
+            const cacheKey = `${source}:${resolvedId}`;
+            let pdb = proteinStructureCache.get(cacheKey);
+
+            if (!pdb) {
+                if (source === 'rcsb') {
+                    const rateLimit = rcsbRateLimiter.isAllowed('global');
+                    if (!rateLimit.allowed) {
+                        console.warn(`Rate limited. Reset in ${rateLimit.resetIn}ms`);
+                        return;
+                    }
+                    const fetchWithRetry = withRetry(
+                        async (id: string) => {
+                            const res = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
+                            if (!res.ok) throw new Error(`Failed to fetch PDB: ${res.statusText}`);
+                            return res.text();
+                        },
+                        { maxRetries: 3, initialDelayMs: 1000 }
+                    );
+                    pdb = await fetchWithRetry(resolvedId);
+                } else {
+                    const result = await gateway.fetchAlphaFoldStructure(resolvedId);
+                    if (!result.success || !result.data) {
+                        throw new Error(result.error || 'Failed to fetch AlphaFold structure');
+                    }
+                    pdb = result.data;
+                }
+
+                proteinStructureCache.set(cacheKey, pdb);
+            }
+
+            dispatch({
+                type: 'LOAD_STRUCTURE',
+                payload: {
+                    pdbId: resolvedId,
+                    content: pdb,
+                    metadata: { method: source === 'rcsb' ? 'panel_fetch_with_retry' : 'alphafold_fetch', source },
                     loadedAt: new Date().toISOString()
-                } 
+                }
             });
-            await createExperiment?.('fetch_protein_structure', { pdbId }, 'observation');
+
+            await createExperiment?.(
+                'fetch_protein_structure',
+                source === 'rcsb'
+                    ? { pdbId: resolvedId, source }
+                    : { pdbId: resolvedId, source, uniprotId: resolvedId },
+                'observation'
+            );
         } catch (err) {
             console.error('Failed to fetch protein:', err);
         } finally {

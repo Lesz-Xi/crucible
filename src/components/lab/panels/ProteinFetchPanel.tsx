@@ -6,49 +6,73 @@ import { motion } from "framer-motion";
 import { ProteinViewerInputSchema, formatValidationErrors } from "@/lib/validations/lab";
 import { cn } from "@/lib/utils";
 
+type ProteinSource = 'rcsb' | 'alphafold';
+
 interface ProteinFetchPanelProps {
-    onSubmit: (pdbId: string) => Promise<void>;
+    onSubmit: (identifier: string, source: ProteinSource) => Promise<void>;
     isLoading?: boolean;
     disabled?: boolean;
 }
 
+const UNIPROT_ACCESSION_REGEX = /^(?:[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})$/i;
+
 export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = false }: ProteinFetchPanelProps) {
-    const [pdbId, setPdbId] = useState("");
+    const [source, setSource] = useState<ProteinSource>('rcsb');
+    const [identifier, setIdentifier] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [touched, setTouched] = useState(false);
 
-    const validate = useCallback((value: string): boolean => {
+    const validate = useCallback((value: string, selectedSource: ProteinSource): boolean => {
         if (!value) {
             setError(null);
             return false;
         }
-        const result = ProteinViewerInputSchema.safeParse({ pdbId: value });
-        if (result.success) {
+
+        if (selectedSource === 'rcsb') {
+            const result = ProteinViewerInputSchema.safeParse({ pdbId: value });
+            if (result.success || value.trim().length >= 3) {
+                setError(null);
+                return true;
+            }
+            setError(formatValidationErrors(result.error)[0] || "Enter a PDB ID or protein query");
+            return false;
+        }
+
+        if (UNIPROT_ACCESSION_REGEX.test(value) || value.trim().length >= 3) {
             setError(null);
             return true;
         }
-        setError(formatValidationErrors(result.error)[0] || "Invalid PDB ID");
+
+        setError("Enter a UniProt ID or protein/gene query");
         return false;
     }, []);
 
-    const isValid = pdbId.length > 0 && !error && touched;
+    const isValid = identifier.length > 0 && !error && touched;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value.toUpperCase().slice(0, 4);
-        setPdbId(val);
-        if (touched) validate(val);
+        const raw = e.target.value;
+        const val = source === 'rcsb' ? raw.slice(0, 80) : raw.slice(0, 120);
+        setIdentifier(val);
+        if (touched) validate(val, source);
     };
 
     const handleBlur = () => {
         setTouched(true);
-        if (pdbId) validate(pdbId);
+        if (identifier) validate(identifier, source);
+    };
+
+    const handleSourceChange = (next: ProteinSource) => {
+        setSource(next);
+        setIdentifier("");
+        setTouched(false);
+        setError(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setTouched(true);
-        if (!validate(pdbId) || isLoading || disabled) return;
-        await onSubmit(pdbId);
+        if (!validate(identifier, source) || isLoading || disabled) return;
+        await onSubmit(identifier, source);
     };
 
     return (
@@ -68,33 +92,50 @@ export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = fals
                         Protein Structure Fetch
                     </h3>
                     <p className="text-[10px] text-[var(--lab-text-tertiary)]">
-                        Retrieve structures from RCSB PDB
+                        Retrieve structures from RCSB PDB or AlphaFold DB
                     </p>
                 </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-2">
+                    <button
+                        type="button"
+                        className={cn('lab-nav-pill justify-center', source === 'rcsb' ? 'sidebar-history-item-active' : '')}
+                        onClick={() => handleSourceChange('rcsb')}
+                    >
+                        RCSB PDB
+                    </button>
+                    <button
+                        type="button"
+                        className={cn('lab-nav-pill justify-center', source === 'alphafold' ? 'sidebar-history-item-active' : '')}
+                        onClick={() => handleSourceChange('alphafold')}
+                    >
+                        AlphaFold
+                    </button>
+                </div>
+
                 <div>
                     <label
-                        htmlFor="pdb-id-input"
+                        htmlFor="protein-id-input"
                         className="block text-xs font-medium text-[var(--lab-text-secondary)] mb-1.5"
                     >
-                        PDB Identifier
+                        {source === 'rcsb' ? 'PDB Identifier' : 'UniProt Accession'}
                     </label>
                     <div className="relative">
                         <input
-                            id="pdb-id-input"
-                            data-testid="pdb-id-input"
+                            id="protein-id-input"
+                            data-testid="protein-id-input"
                             type="text"
-                            value={pdbId}
+                            value={identifier}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            placeholder="e.g. 4HHB"
+                            placeholder={source === 'rcsb' ? 'e.g. 4HHB or hemoglobin' : 'e.g. P69905 or HBB human'}
                             disabled={isLoading || disabled}
                             autoComplete="off"
-                            aria-label="PDB ID"
+                            aria-label={source === 'rcsb' ? 'PDB ID' : 'UniProt accession'}
                             aria-invalid={!!error && touched}
-                            aria-describedby={error ? "pdb-id-error" : undefined}
+                            aria-describedby={error ? "protein-id-error" : undefined}
                             className={cn(
                                 "w-full px-3 py-2.5 rounded-lg text-sm font-mono tracking-wider",
                                 "bg-white/90 dark:bg-white/5 border transition-all duration-200",
@@ -114,12 +155,14 @@ export function ProteinFetchPanel({ onSubmit, isLoading = false, disabled = fals
                         </div>
                     </div>
                     {error && touched && (
-                        <p id="pdb-id-error" className="mt-1 text-[11px] text-red-400" role="alert">
+                        <p id="protein-id-error" className="mt-1 text-[11px] text-red-400" role="alert">
                             {error}
                         </p>
                     )}
                     <p className="mt-1.5 text-[10px] text-[var(--lab-text-tertiary)]">
-                        4-character alphanumeric identifier (e.g. 4HHB, 1CRN, 6LU7)
+                        {source === 'rcsb'
+                            ? 'Use PDB ID or a protein query (e.g. 4HHB, 1CRN, hemoglobin).'
+                            : 'Use UniProt accession or a protein/gene query (e.g. P69905, Q8WZ42, HBB human).'}
                     </p>
                 </div>
 

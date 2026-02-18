@@ -389,6 +389,77 @@ except Exception as e:
         }
     }
 
+
+    /**
+     * Resolve a free-text query to a likely UniProt accession.
+     */
+    async resolveUniProtAccession(query: string): Promise<{ success: boolean; accession?: string; error?: string }> {
+        try {
+            const q = encodeURIComponent(query.trim());
+            const url = `https://rest.uniprot.org/uniprotkb/search?query=${q}&fields=accession,protein_name,organism_name&format=json&size=1`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`UniProt search failed: ${res.statusText}`);
+            const json = await res.json() as any;
+            const accession = json?.results?.[0]?.primaryAccession;
+            if (!accession) return { success: false, error: `No UniProt match for "${query}"` };
+            return { success: true, accession };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }
+
+    /**
+     * Resolve a free-text query to a likely RCSB PDB ID.
+     */
+    async resolvePdbId(query: string): Promise<{ success: boolean; pdbId?: string; error?: string }> {
+        try {
+            const body = {
+                query: {
+                    type: 'terminal',
+                    service: 'full_text',
+                    parameters: { value: query.trim() }
+                },
+                return_type: 'entry',
+                request_options: { pager: { start: 0, rows: 1 } }
+            };
+
+            const res = await fetch('https://search.rcsb.org/rcsbsearch/v2/query?json=' + encodeURIComponent(JSON.stringify(body)));
+            if (!res.ok) throw new Error(`RCSB search failed: ${res.statusText}`);
+            const json = await res.json() as any;
+            const pdbId = json?.result_set?.[0]?.identifier;
+            if (!pdbId) return { success: false, error: `No PDB match for "${query}"` };
+            return { success: true, pdbId: String(pdbId).toUpperCase() };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }
+
+    /**
+     * Fetch a predicted protein structure from AlphaFold DB by UniProt accession.
+     */
+    async fetchAlphaFoldStructure(uniprotId: string): Promise<{ success: boolean; data?: string; error?: string }> {
+        const accession = uniprotId.trim().toUpperCase();
+        const versions = ['v4', 'v3', 'v2', 'v1'];
+
+        try {
+            let lastError: string | undefined;
+
+            for (const version of versions) {
+                const url = `https://alphafold.ebi.ac.uk/files/AF-${accession}-F1-model_${version}.pdb`;
+                const response = await fetch(url);
+                if (response.ok) {
+                    const data = await response.text();
+                    return { success: true, data };
+                }
+                lastError = `${response.status} ${response.statusText}`;
+            }
+
+            return { success: false, error: `No AlphaFold model found for ${accession}${lastError ? ` (${lastError})` : ''}` };
+        } catch (error) {
+            return { success: false, error: String(error) };
+        }
+    }
+
     /**
      * Deterministic Docking Stub (Phase 2)
      * used when: User asks to dock a ligand.

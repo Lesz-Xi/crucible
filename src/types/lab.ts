@@ -49,6 +49,8 @@ export interface LabTool {
 
 export interface ProteinFetchInput {
     pdbId: string;
+    source?: 'rcsb' | 'alphafold';
+    uniprotId?: string;
 }
 
 export interface SequenceAnalysisInput {
@@ -83,6 +85,7 @@ export interface ProteinFetchResult {
         method?: string;
         title?: string;
         organism?: string;
+        source?: 'rcsb' | 'alphafold';
     };
 }
 
