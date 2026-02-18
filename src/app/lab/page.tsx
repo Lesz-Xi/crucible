@@ -6,7 +6,7 @@ import { ProteinFetchPanel } from '@/components/lab/panels/ProteinFetchPanel';
 import { SequenceAnalysisPanel } from '@/components/lab/panels/SequenceAnalysisPanel';
 import { DockingPanel } from '@/components/lab/panels/DockingPanel';
 import { ResultDispatcher } from '@/components/lab/results/ResultDispatcher';
-import { FlaskConical, Atom, Network, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
+import { FlaskConical, Atom, Network, Box, Dna, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useLab } from "@/lib/contexts/LabContext";
 import { ProteinViewer } from "@/components/lab/ProteinViewer";
 import { useState } from "react";
@@ -337,6 +337,54 @@ export default function LabPage() {
                                 {mode.charAt(0).toUpperCase() + mode.slice(1)}
                             </button>
                         ))}
+                    </div>
+                </div>
+
+                {/* Instruments Rail (restored): keep Labs tools accessible while using shared app sidebar */}
+                <div className="px-4 pb-2">
+                    <div className="lab-panel p-2">
+                        <div className="mb-2 px-1 lab-section-title text-[10px] opacity-70">Instruments</div>
+                        <div className="grid grid-cols-1 gap-1.5 md:grid-cols-3">
+                            <button
+                                onClick={() => {
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'fetch_structure' as any });
+                                    setViewMode('tool');
+                                }}
+                                className={cn(
+                                    'lab-nav-pill w-full justify-start',
+                                    state.activeTool === 'fetch_structure' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
+                                )}
+                            >
+                                <Box className="w-4 h-4" />
+                                <span className="font-serif tracking-wide">Protein Fetch</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_sequence' as any });
+                                    setViewMode('tool');
+                                }}
+                                className={cn(
+                                    'lab-nav-pill w-full justify-start',
+                                    state.activeTool === 'analyze_sequence' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
+                                )}
+                            >
+                                <Dna className="w-4 h-4" />
+                                <span className="font-serif tracking-wide">Seq. Analysis</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'dock_ligand' as any });
+                                    setViewMode('tool');
+                                }}
+                                className={cn(
+                                    'lab-nav-pill w-full justify-start',
+                                    state.activeTool === 'dock_ligand' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
+                                )}
+                            >
+                                <Network className="w-4 h-4" />
+                                <span className="font-serif tracking-wide">Ligand Docking</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
