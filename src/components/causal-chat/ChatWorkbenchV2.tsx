@@ -246,6 +246,16 @@ const extractSourcesFromText = (text: string): GroundingSource[] => {
   return sources.slice(0, 5);
 };
 
+
+
+const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
+  if (typeof role !== 'string') return null;
+  const value = role.trim().toLowerCase();
+  if (['user', 'human', 'researcher', 'client'].includes(value)) return 'user';
+  if (['assistant', 'ai', 'model', 'system', 'agent', 'wu-weism'].includes(value)) return 'assistant';
+  return null;
+};
+
 const QUICK_PROMPTS = [
   {
     id: 'growth-drop',
@@ -397,13 +407,30 @@ export function ChatWorkbenchV2() {
 
   const applySessionHistory = useCallback((sessionId: string, historyMessages: SessionHistoryMessage[]) => {
     console.log('[DEBUG applySessionHistory] called with', sessionId, 'messages:', historyMessages.length);
-    const filteredMessages = historyMessages
-      .filter((message) => message.role === 'user' || message.role === 'assistant')
+    const sortedMessages = [...historyMessages]
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    let normalizedHistory = sortedMessages
+      .map((message, index) => ({
+        ...message,
+        __role: normalizeHistoryRole(message.role),
+        __index: index,
+      }))
+      .filter((message) => message.__role === 'user' || message.__role === 'assistant');
+
+    // Recovery for legacy/broken role persistence: if everything came back as user, infer alternating turns.
+    if (normalizedHistory.length > 1 && !normalizedHistory.some((m) => m.__role === 'assistant')) {
+      normalizedHistory = normalizedHistory.map((message, index) => ({
+        ...message,
+        __role: index % 2 === 0 ? 'user' : 'assistant',
+      }));
+    }
+
+    const filteredMessages = normalizedHistory as Array<SessionHistoryMessage & { __role: 'user' | 'assistant' }>;
 
     const loadedMessages: WorkbenchMessage[] = filteredMessages.map((message) => ({
       id: message.id,
-      role: message.role as 'user' | 'assistant',
+      role: message.__role,
       content: message.content,
       createdAt: new Date(message.created_at),
     }));
@@ -411,7 +438,7 @@ export function ChatWorkbenchV2() {
     const latestAssistantWithDensity = [...filteredMessages]
       .reverse()
       .find((message) => {
-        if (message.role !== 'assistant') return false;
+        if (message.__role !== 'assistant') return false;
         const density = message.causal_density;
         return (
           !!density &&
@@ -425,7 +452,7 @@ export function ChatWorkbenchV2() {
     const latestAssistantWithEvidence = latestAssistantWithDensity || [...filteredMessages]
       .reverse()
       .find((message) => {
-        if (message.role !== 'assistant') return false;
+        if (message.__role !== 'assistant') return false;
         return isRealDomain(message.domain_classified) || isRealModelKey(message.model_key);
       });
 
