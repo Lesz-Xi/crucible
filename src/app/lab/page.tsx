@@ -17,7 +17,6 @@ import { rcsbRateLimiter, proteinStructureCache } from "@/lib/utils/rate-limiter
 import { ScientificGateway } from "@/lib/services/scientific-gateway";
 import type { LabExperiment, LabToolId } from "@/types/lab";
 import { cn } from "@/lib/utils";
-import { LabSidebar } from '@/components/lab/LabSidebar';
 
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
@@ -321,7 +320,6 @@ export default function LabPage() {
 
     return (
         <div className="flex h-screen bg-[#050505] overflow-hidden">
-            <LabSidebar />
             <div className="flex-1 flex flex-col h-full bg-transparent">
                 {/* Header / Mode Switcher with Liquid Glass */}
                 <div className="flex justify-center p-4">

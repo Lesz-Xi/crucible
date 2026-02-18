@@ -325,8 +325,9 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
           <div className="flex h-full flex-col p-3">
             <div className="mb-3 flex items-center justify-between gap-2">
               {collapsed ? null : (
-                <div>
-                  <p className="font-serif text-[24px] leading-tight tracking-tight text-[var(--lab-text-primary)]">Wu-Weism</p>
+                <div className="flex items-center gap-2 px-1">
+                  <FlaskConical className="h-5 w-5 text-[var(--lab-text-primary)]" />
+                  <p className="lab-section-title text-sm">Bio-Lab Notebook</p>
                 </div>
               )}
               <div className="flex items-center gap-1">
@@ -339,7 +340,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
               </div>
             </div>
 
-            <nav className={cn("flex flex-wrap gap-2", collapsed ? "flex-col" : "flex-row")}>
+            <nav className={cn("flex flex-col gap-1.5", collapsed ? "items-center" : "")}>
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -347,12 +348,15 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="lab-nav-pill lg-control"
+                    className={cn(
+                      "lab-nav-pill lg-control w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
+                      active ? "!bg-white/10 !border-[var(--lab-border)]" : "hover:!bg-white/6"
+                    )}
                     data-active={active ? 'true' : 'false'}
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className="h-4 w-4" />
-                    {collapsed ? null : <span>{item.label}</span>}
+                    {collapsed ? null : <span className="font-serif tracking-wide">{item.label}</span>}
                   </Link>
                 );
               })}
@@ -362,14 +366,14 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 <button
                   type="button"
                   className={cn(
-                    "lab-nav-pill",
-                    relicsOpen ? "!bg-[#2b2b2b]" : ""
+                    "lab-nav-pill w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
+                    relicsOpen ? "!bg-white/10 !border-[var(--lab-border)]" : "hover:!bg-white/6"
                   )}
                   onClick={() => setRelicsOpen(!relicsOpen)}
                   title={collapsed ? "Relics" : undefined}
                 >
                   <Menu className="h-4 w-4" />
-                  {collapsed ? null : <span>Relics</span>}
+                  {collapsed ? null : <span className="font-serif tracking-wide">Relics</span>}
                   {!collapsed && <ChevronDown className={cn("h-3 w-3 transition-transform", relicsOpen ? "rotate-180" : "")} />}
                 </button>
 
@@ -429,7 +433,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   </div>
 
                   <div className="pt-4 pb-1">
-                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">Folders</p>
+                    <p className="px-3 lab-section-title text-[10px] opacity-70">Folders</p>
                   </div>
                 </div>
 
@@ -502,7 +506,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
                   {/* Threads List */}
                   <div className="pt-3 pb-1">
-                    <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)] opacity-70">History</p>
+                    <p className="px-3 lab-section-title text-[10px] opacity-70">History</p>
                   </div>
                   {filteredThreads.slice(0, 48).map((session) => {
                     const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
@@ -516,7 +520,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       >
                         <button 
                           type="button" 
-                          className="flex-1 truncate text-left" 
+                          className="flex-1 truncate text-left font-serif tracking-wide text-[var(--lab-text-primary)]" 
                           onClick={() => openThread(session.id)}
                           title={session.title || 'Untitled thread'}
                         >
@@ -551,12 +555,12 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 title={collapsed ? 'Toggle theme' : undefined}
               >
                 {mounted && resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                {collapsed ? null : <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
+                {collapsed ? null : <span className="font-serif tracking-wide">{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
               </button>
 
               <Link href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="lab-nav-pill lg-control" title={collapsed ? 'Documentation' : undefined}>
                 <BookOpen className="h-4 w-4" />
-                {collapsed ? null : <span>Documentation</span>}
+                {collapsed ? null : <span className="font-serif tracking-wide">Documentation</span>}
               </Link>
 
               <div className="relative">
@@ -570,7 +574,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     {initials}
                   </span>
                   {collapsed ? null : (
-                    <span className="min-w-0 flex-1 truncate text-left">
+                    <span className="min-w-0 flex-1 truncate text-left font-serif tracking-wide">
                       {userEmail || 'Account'}
                     </span>
                   )}
@@ -593,11 +597,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       }}
                     >
                       <UserCircle2 className="h-4 w-4" />
-                      <span>Workspace</span>
+                      <span className="font-serif tracking-wide">Workspace</span>
                     </button>
                     <button type="button" className="lab-nav-pill lg-control mt-1 w-full" onClick={() => void handleSignOut()}>
                       <LogOut className="h-4 w-4" />
-                      <span>Sign out</span>
+                      <span className="font-serif tracking-wide">Sign out</span>
                     </button>
                   </div>
                 ) : null}
