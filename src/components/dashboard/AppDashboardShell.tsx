@@ -406,10 +406,10 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             {isChatRoute && !collapsed ? (
               <div className="mt-6 flex-1 overflow-hidden">
                 <div className="px-1 space-y-1">
-                  <div className="flex items-center gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
-                      className="sidebar-history-item lg-control font-medium flex-1"
+                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-white/6"
                       onClick={() => {
                         if (activeFolderId) createFolderFile(activeFolderId);
                         router.push('/chat?new=1');
@@ -417,18 +417,19 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                       }}
                     >
                       <Plus className="h-4 w-4" />
-                      <span>New chat</span>
+                      <span className="font-serif tracking-wide">New chat</span>
                     </button>
-                    
+
                     <button
                       type="button"
-                      className="sidebar-history-item lg-control w-auto px-2"
+                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-white/6"
                       onClick={() => {
                         createFolder();
                       }}
                       title="New Folder"
                     >
                       <FolderPlus className="h-4 w-4" />
+                      <span className="font-serif tracking-wide">New folder</span>
                     </button>
                   </div>
 

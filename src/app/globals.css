@@ -341,11 +341,11 @@
   border-color: color-mix(in srgb, var(--lab-text-secondary) 38%, var(--lab-border));
 }
 
-/* Unified Lab language for Chat/Legal/Hybrid/Education */
-.feature-chat,
-.feature-legal,
-.feature-hybrid,
-.feature-education {
+/* Unified Lab language for Chat/Legal/Hybrid/Education (dark mode only) */
+.dark .feature-chat,
+.dark .feature-legal,
+.dark .feature-hybrid,
+.dark .feature-education {
   --lab-bg: #050505;
   --lab-bg-elevated: #0b0b0b;
   --lab-panel: rgba(10, 10, 10, 0.84);
@@ -1664,7 +1664,7 @@ body.dark .lab-card-interactive:hover {
 }
 
 .sidebar-history-item-active {
-  background: #2f2f2f;
+  background: color-mix(in srgb, var(--lab-bg-elevated) 88%, white 12%);
   color: var(--lab-text-primary);
 }
 
@@ -1775,6 +1775,27 @@ body.dark .lab-card-interactive:hover {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
+}
+
+/* Light-mode chat contrast boost */
+.chat-theme-shell .feature-chat {
+  --lab-text-primary: #1f2933;
+  --lab-text-secondary: #374151;
+  --lab-text-tertiary: #6b7280;
+}
+
+.chat-theme-shell .feature-chat .lab-chat-prose,
+.chat-theme-shell .feature-chat .lab-chat-prose p,
+.chat-theme-shell .feature-chat .lab-chat-prose li,
+.chat-theme-shell .feature-chat .lab-card,
+.chat-theme-shell .feature-chat .lab-card-interactive {
+  color: var(--lab-text-primary) !important;
+}
+
+.chat-theme-shell .feature-chat textarea,
+.chat-theme-shell .feature-chat input,
+.chat-theme-shell .feature-chat textarea::placeholder {
+  color: var(--lab-text-secondary) !important;
 }
 
 .dark .chat-theme-shell .glass-sidebar {
