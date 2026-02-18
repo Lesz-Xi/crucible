@@ -1805,6 +1805,32 @@ body.dark .lab-card-interactive:hover {
   --lab-text-tertiary: #cbd5e1;
 }
 
+/* Apple-like Liquid Glass typography for generated output */
+.chat-theme-shell .feature-chat .lab-chat-prose {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", var(--font-geist-sans), sans-serif;
+  font-size: 1.06rem;
+  line-height: 1.78;
+  letter-spacing: -0.003em;
+  font-weight: 430;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark .chat-theme-shell .feature-chat .lab-chat-prose {
+  font-weight: 420;
+}
+
+.chat-theme-shell .feature-chat .lab-chat-prose p {
+  margin-bottom: 0.92rem;
+}
+
+/* Keep structured blocks technical */
+.chat-theme-shell .feature-chat .lab-chat-prose pre,
+.chat-theme-shell .feature-chat .lab-chat-prose code,
+.chat-theme-shell .feature-chat .lab-chat-prose .font-mono {
+  font-family: var(--font-geist-mono), "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 .dark .chat-theme-shell .feature-chat .lab-chat-prose,
 .dark .chat-theme-shell .feature-chat .lab-chat-prose p,
 .dark .chat-theme-shell .feature-chat .lab-chat-prose li,
