@@ -17,7 +17,6 @@ import {
   FileText,
   Gavel,
   GraduationCap,
-  Home,
   LogOut,
   Menu,
   MessageSquare,
@@ -60,7 +59,6 @@ interface SidebarFolderFile {
 }
 
 const NAV_ITEMS = [
-  { href: '/mission-control', label: 'Mission', icon: Home },
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/hybrid', label: 'Hybrid', icon: Bot },
 ];
