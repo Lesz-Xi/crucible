@@ -6,6 +6,7 @@ import { ProteinFetchPanel } from '@/components/lab/panels/ProteinFetchPanel';
 import { SequenceAnalysisPanel } from '@/components/lab/panels/SequenceAnalysisPanel';
 import { DockingPanel } from '@/components/lab/panels/DockingPanel';
 import { ResultDispatcher } from '@/components/lab/results/ResultDispatcher';
+import { LabCopilotPanel } from '@/components/lab/LabCopilotPanel';
 import { FlaskConical, Atom, Network, Box, Dna, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useLab } from "@/lib/contexts/LabContext";
 import { ProteinViewer } from "@/components/lab/ProteinViewer";
@@ -102,6 +103,7 @@ export default function LabPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [fetchStatusMessage, setFetchStatusMessage] = useState<string | null>(null);
     const [fetchErrorMessage, setFetchErrorMessage] = useState<string | null>(null);
+    const [copilotOpen, setCopilotOpen] = useState(false);
 
     // Scientific Gateway instance for tool operations
     const gateway = ScientificGateway.getInstance();
@@ -304,30 +306,36 @@ export default function LabPage() {
     // Protein viewer mode
     if (state.currentStructure) {
         return (
-            <FadeIn className="w-full h-full p-4 flex flex-col gap-4">
-                <div className="flex justify-between items-center px-2">
-                    <h2 className="text-lg font-semibold flex items-center gap-2">
-                        <Atom className="w-5 h-5 text-cyan-400" />
-                        Structure: {state.currentStructure.pdbId}
-                    </h2>
-                    <button 
-                        onClick={() => dispatch({ type: 'LOAD_STRUCTURE', payload: null as any })}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            <FadeIn className="w-full h-full flex overflow-hidden">
+                <div className="flex-1 flex flex-col p-4 gap-4 min-w-0">
+                    <div className="flex justify-between items-center px-2">
+                        <h2 className="text-lg font-semibold flex items-center gap-2">
+                            <Atom className="w-5 h-5 text-cyan-400" />
+                            Structure: {state.currentStructure.pdbId}
+                        </h2>
+                        <button 
+                            onClick={() => dispatch({ type: 'LOAD_STRUCTURE', payload: null as any })}
+                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            Close Viewer
+                        </button>
+                    </div>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
+                        className="flex-1 min-h-0 lab-panel overflow-hidden relative"
                     >
-                        Close Viewer
-                    </button>
+                        <ProteinViewer 
+                            pdbData={state.currentStructure.content} 
+                            structureName={state.currentStructure.pdbId} 
+                        />
+                    </motion.div>
                 </div>
-                <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
-                    className="flex-1 min-h-0 lab-panel overflow-hidden relative"
-                >
-                    <ProteinViewer 
-                        pdbData={state.currentStructure.content} 
-                        structureName={state.currentStructure.pdbId} 
-                    />
-                </motion.div>
+                <LabCopilotPanel
+                    isOpen={copilotOpen}
+                    onToggle={() => setCopilotOpen((v) => !v)}
+                />
             </FadeIn>
         );
     }
@@ -350,7 +358,7 @@ export default function LabPage() {
     const experiments = state.experimentHistory || [];
 
     return (
-        <div className="feature-lab flex h-screen bg-[var(--lab-bg)] overflow-hidden">
+        <div className="feature-lab flex h-screen bg-[var(--lab-bg)] overflow-hidden" data-testid="lab-page">
             {/* GAP-6: Offline Banner — shown when navigator.onLine is false */}
             <AnimatePresence>
                 {state.isOffline && (
@@ -622,6 +630,11 @@ export default function LabPage() {
                 </AnimatePresence>
                 </div>
             </div>
+            {/* Lab Copilot right rail */}
+            <LabCopilotPanel
+                isOpen={copilotOpen}
+                onToggle={() => setCopilotOpen((v) => !v)}
+            />
         </div>
     );
 }
