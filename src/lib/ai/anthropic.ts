@@ -103,9 +103,10 @@ class ClaudeAdapter implements ClaudeModel {
     // Actually, LLMFactory is already mapping it before calling getClaudeModel.
     // To be perfectly safe against direct instantiations:
     const mapping: Record<string, string> = {
-      'claude-4-5-haiku': 'claude-3-haiku-20240307',
-      'claude-4-5-sonnet': 'claude-3-5-sonnet-20241022',
-      'claude-4-6-opus': 'claude-3-opus-20240229'
+      // Claude 4.5 tier — confirmed available on API key (Feb 2026)
+      'claude-4-5-haiku': 'claude-haiku-4-5-20251001',
+      'claude-4-5-sonnet': 'claude-sonnet-4-5-20250929',
+      'claude-4-6-opus': 'claude-opus-4-5-20251101'
     };
     this.model = mapping[model] || model;
     this.apiKey = apiKey;
