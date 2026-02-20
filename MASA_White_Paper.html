@@ -330,7 +330,7 @@
 
         <div class="abstract">
             <h3>Abstract</h3>
-            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture designed to automate scientific discovery with causal discipline. Unlike conventional LLM applications that generate plausible text, MASA implements a closed-loop system spanning: (1) hypothesis generation from heterogeneous evidence, (2) multi-agent critique under explicit causal constraints, (3) durable memory of evaluations and traces, and (4) validation protocols that move outputs toward falsifiable science. Core breakthroughs include the implementation of <strong>Pearl's Causal Blueprint</strong> (observation, intervention, counterfactual layers), a domain registry of constraint templates, and a governance stack that measures drift between architectural claims and code reality. This paper presents the architecture as implemented and identifies remaining gaps required to reach fully autonomous, high-integrity scientific operation.</p>
+            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture for causally disciplined scientific discovery. Unlike conventional LLM applications that only generate plausible text, MASA runs a closed loop: (1) hypothesis generation from heterogeneous evidence, (2) multi-agent critique under explicit causal constraints, (3) durable memory of evaluations and traces, and (4) validation protocols that push outputs toward falsifiable science. Core breakthroughs include <strong>Pearl's Causal Blueprint</strong> (observation, intervention, counterfactual layers), a domain registry of constraint templates, and a governance stack that tracks drift between architectural claims and code reality. This paper documents the implemented architecture and the remaining gaps toward fully autonomous, high-integrity scientific operation.</p>
             <div class="callout callout-info" style="margin-top: 20px;">
                 <strong>Code-Reality Update (February 2026)</strong><br>
                 MASA now includes an additive persistent-memory v1.1 path in production code (causal pruning policy, compaction receipts, hybrid retrieval fusion, and cross-session lattice events) behind feature flags for controlled rollout. Governance sentinels for claim drift and memory integrity are operational in report-first mode.
@@ -338,7 +338,21 @@
         </div>
 
         <section>
-            <h2>1. Introduction</h2>
+            <div class="callout callout-info" style="margin-top: 8px;">
+                <strong>Quick Navigation</strong><br>
+                <a href="#sec-introduction">Introduction</a> ·
+                <a href="#sec-foundations">Theoretical Foundations</a> ·
+                <a href="#sec-pipeline">Synthesis Pipeline</a> ·
+                <a href="#sec-memory">Sovereign Memory</a> ·
+                <a href="#sec-chemical">Chemical Validation</a> ·
+                <a href="#sec-results">Results</a> ·
+                <a href="#sec-limitations">Limitations</a> ·
+                <a href="#sec-appendix-a">Appendix A</a>
+            </div>
+        </section>
+
+        <section>
+            <h2 id="sec-introduction">1. Introduction</h2>
             
             <h3>1.1 The Problem</h3>
             <p>Current AI systems for scientific research face a fundamental limitation: they are <strong>philosophers without empirical grounding</strong>. They can reason logically about hypotheses but cannot:</p>
@@ -398,7 +412,7 @@
         <section>
             <h2>2. Beyond the Armchair Philosopher</h2>
             
-            <p>A common critique of AI in scientific research is that Large Language Models are merely "armchair philosophers"—they predict what valid science <em>looks like</em> based on text probability, not physical laws. This critique is accurate for standalone LLMs, but it fundamentally misunderstands agentic architectures like MASA.</p>
+            <p>A common critique in AI for science is that Large Language Models are merely "armchair philosophers"—they predict what valid science <em>looks like</em> from text statistics rather than physical laws. That critique is accurate for standalone LLMs, but it under-describes agentic architectures like MASA.</p>
             
             <h3>2.1 The Two Paradigms</h3>
             <table>
@@ -660,7 +674,7 @@ flowchart TB
         </section>
 
         <section>
-            <h2>4. Theoretical Foundations: Combinatorial, Causal, and Cybernetic</h2>
+            <h2 id="sec-foundations">4. Theoretical Foundations: Combinatorial, Causal, and Cybernetic</h2>
             
             <p>MASA's architecture is mathematically grounded in three complementary theoretical frameworks: <strong>Carina Hong's Combinatorics</strong> for hypothesis space exploration, <strong>Judea Pearl's Causal Inference</strong> for reasoning depth, and <strong>Maxwell Maltz's Psycho-Cybernetics</strong> for goal-directed self-correction.</p>
             
@@ -1379,7 +1393,7 @@ flowchart TD
         </section>
 
         <section>
-            <h2>5. The Synthesis Pipeline</h2>
+            <h2 id="sec-pipeline">5. The Synthesis Pipeline</h2>
             
             <h3>5.1 Pipeline Stages</h3>
             <div class="mermaid">
@@ -1428,7 +1442,7 @@ flowchart LR
         </section>
 
         <section>
-            <h2>6. Sovereign Memory</h2>
+            <h2 id="sec-memory">6. Sovereign Memory</h2>
             <span class="badge badge-foundation">Foundation + Operational v1.1 (Flag-Gated)</span>
             
             <h3>6.1 The Closed-Loop Problem</h3>
@@ -1498,7 +1512,7 @@ flowchart TD
         </section>
 
         <section>
-            <h2>7. Chemical Entity Validation</h2>
+            <h2 id="sec-chemical">7. Chemical Entity Validation</h2>
             <span class="badge badge-complete">Complete</span>
             
             <h3>7.1 The Philosopher-to-Scientist Transition</h3>
@@ -1629,10 +1643,15 @@ flowchart LR
         </section>
 
         <section>
-            <h2>9. Results & Conclusion</h2>
+            <h2 id="sec-results">9. Results & Conclusion</h2>
             
-            <h3>8.1 Achievement Summary</h3>
-            <p>MASA implements the three pillars required for a causal scientific-discovery engine. <strong>Code-reality note (February 2026):</strong> the Update Mechanism now includes operational persistent-memory primitives (flag-gated) beyond pure rejection caching, while true online parameter learning remains future work.</p>
+            <div class="callout callout-info" style="margin-top: 14px;">
+                <strong>Status Legend</strong><br>
+                ✅ Implemented &nbsp;&nbsp; 🟨 Integrated behind feature flags &nbsp;&nbsp; 🧪 Experimental &nbsp;&nbsp; 🗺 Planned
+            </div>
+            
+            <h3>9.1 Achievement Summary</h3>
+            <p>MASA implements the three pillars required for a causal scientific-discovery engine. <strong>Code-Reality Note (February 2026):</strong> the Update Mechanism now includes operational persistent-memory primitives (flag-gated) beyond pure rejection caching, while true online parameter learning remains future work.</p>
             
             <table>
                 <thead>
@@ -1656,7 +1675,7 @@ flowchart LR
                     <tr>
                         <td>Update Mechanism</td>
                         <td><span class="badge badge-foundation">Foundation</span></td>
-                        <td>Sovereign Memory + causal pruning + compaction receipts + retrieval fusion + lattice events (feature-flag rollout). <em>No online weight updates yet.</em></td>
+                        <td>Sovereign Memory + causal pruning + compaction receipts + retrieval fusion + lattice events (feature-flagged rollout). <em>No online weight updates yet.</em></td>
                     </tr>
                     <tr>
                         <td>Physical Validation</td>
@@ -1676,7 +1695,7 @@ flowchart LR
                 The Truth Cartridge Library (Phases 28.5-31) implements four domain-specific SCM templates that can <strong>stack</strong> on a single idea: <code>BiologicalEcologyTemplate</code> (population dynamics, τ>0.3), <code>SelfishGeneTemplate</code> (gene selection, rB>C), <code>CognitivePsychologyTemplate</code> (individual decision-making, λ≈2.25), and <code>ScalingLawsTemplate</code> (complex systems physics, β regime). This enables comprehensive validation across organizational scales, from molecular genetics to urban systems.
             </div>
             
-            <h3>8.2 Key Innovations</h3>
+            <h3>9.2 Key Innovations</h3>
             <ul>
                 <li><strong>Dialectical Synthesis:</strong> Novel ideas emerge from contradictions between sources, not just summarization</li>
                 <li><strong>Causal Persistent Memory:</strong> Rejection memory expanded to pruning policy, compaction receipts, retrieval fusion, and cross-session lattice events</li>
@@ -1684,25 +1703,25 @@ flowchart LR
                 <li><strong>Real-Time Transparency:</strong> SSE streaming now includes memory and grounding telemetry for auditable reasoning</li>
             </ul>
             
-            <h3>8.3 Empirical Audit Response (January 2026)</h3>
+            <h3>9.3 Empirical Audit Response (January 2026)</h3>
             <p>Following the <strong>K-Dense AI Forensic Audit</strong>, MASA underwent a rigorous empirical validation phase. The results from the newly implemented Benchmark Suite refute the core structural weaknesses identified in the audit:</p>
             
             <div class="arch-grid">
                 <div class="arch-item">
                     <h5>Hallucination Rejection</h5>
-                    <p><strong>Metric:</strong> 88.4% rejection of adversarial counter-factuals. Proves the audit loop acts as a corrective filter, not a reinforcement chamber.</p>
+                    <p><strong>Metric:</strong> 88.4% rejection of adversarial counterfactuals [B1]. Proves the audit loop acts as a corrective filter, not a reinforcement chamber. Canonical sample-size/baseline/interval details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
                 <div class="arch-item">
                     <h5>Novelty Velocity</h5>
-                    <p><strong>Metric:</strong> 0.68 learning slope in sequential synthesis. Demonstrates that Sovereign Memory improves generator output quality over time.</p>
+                    <p><strong>Metric:</strong> 0.68 learning slope in sequential synthesis [B2]. Demonstrates that Sovereign Memory improves generator output quality over time. Canonical sample-size/baseline details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
                 <div class="arch-item">
                     <h5>Chemical Validation</h5>
-                    <p><strong>Metric:</strong> 82.1% PubChem CID alignment. Moving from "creative writing" to "valid syntax" by verifying chemical entities exist in reality.</p>
+                    <p><strong>Metric:</strong> 82.1% PubChem CID alignment [B3]. Moving from "creative writing" to "valid syntax" by verifying chemical entities exist in reality. Canonical sample-size/baseline details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
             </div>
 
-            <h3>8.4 Future Directions</h3>
+            <h3>9.4 Future Directions</h3>
             <ul>
                 <li>Expansion to reaction pathway simulators (ChemCrow/RXN) for feasibility validation</li>
                 <li>Integration with LoRA-adapter swapping for true parameter-space partitioning</li>
@@ -1710,16 +1729,21 @@ flowchart LR
                 <li>Collaborative human-AI hypothesis refinement interface</li>
             </ul>
 
-            <h3>10. Limitations and Roadmap</h3>
+            <div class="callout callout-success" style="margin-top: 20px;">
+                <strong>Definition of Done (MASA vCurrent)</strong><br>
+                A claim is considered "done" only if it is linked to (1) an implementation artifact (module/commit/flag), (2) a benchmark protocol with sample size and baseline, (3) uncertainty reporting where applicable, and (4) explicit failure modes/boundary conditions with reproducible run paths.
+            </div>
+
+            <h3 id="sec-limitations">10. Limitations and Roadmap</h3>
             
             <div class="callout callout-info" style="margin-bottom: 20px;">
                 <strong>Implementation Status Update (February 2026)</strong><br>
                 Pearl's Causal Blueprint and domain registry foundations are complete, and persistent-memory v1.1 services are integrated in code with report-first governance. Remaining work is rollout hardening: migration application, feature-flag activation, benchmark baselines, and enforcement thresholds.
             </div>
             
-            <p>While MASA now supports causal trace persistence and policy-gated cross-session continuity, transition to a fully autonomous self-improving scientist still requires proving stability under long-horizon workloads and enforcing governance thresholds in CI.</p>
+            <p>MASA now supports causal trace persistence and policy-gated cross-session continuity. However, reaching a fully autonomous self-improving scientist still requires demonstrated long-horizon stability and enforced governance thresholds in CI.</p>
             
-            <h4>9.1 Vector-Space Orthogonality (Phase 3)</h4>
+            <h4>10.1 Vector-Space Orthogonality (Phase 3)</h4>
             <p><strong>Constraint:</strong> Memory is now stateful, but orthogonality learning still lacks a validated optimizer and enough per-domain audit data. Since the base models are API-hosted, weight-level Fisher-Hessian control remains inaccessible.</p>
             
             <p><strong>Planned Implementation:</strong></p>
@@ -1729,7 +1753,7 @@ flowchart LR
                 <li><strong>Timeline:</strong> Phase 3 Engineering hardening (Q2 2026), pending benchmark dataset readiness.</li>
             </ul>
             
-            <h4>9.2 Chemical Entity Validation & Epistemological Caveats</h4>
+            <h4>10.2 Chemical Entity Validation & Epistemological Caveats</h4>
             <p><strong>Constraint:</strong> Validation is currently limited to <em>In Silico</em> computational simulations and database alignment (PubChem). It does not prove reaction feasibility or biological safety.</p>
             
             <p><strong>Caveat:</strong> While Chemical Validation verifies that the <em>nouns</em> (chemical compounds) exist, it does not guarantee that the <em>verbs</em> (reaction protocols) are safe or feasible. Furthermore, the 'Skeptic' and 'Epistemologist' agents are bound by the fundamental training gaps of the underlying base model and cannot verify mechanisms that fall entirely outside its latent representation.</p>
@@ -1743,8 +1767,28 @@ flowchart LR
             
             <div class="callout callout-success">
                 <strong>Conclusion</strong>
-                MASA represents a significant step toward autonomous scientific discovery. The architecture has moved from narrative-only claims to auditable, code-level causal operations: deterministic gating, persistent causal memory artifacts, retrieval fusion, and governance sentinels. While still constrained by API-model boundaries and pending rollout gates, MASA now operates as a measurable scientific system rather than a purely semantic assistant.
+                MASA is a significant step toward autonomous scientific discovery. The architecture has moved from narrative-only claims to auditable, code-level causal operations: deterministic gating, persistent causal memory artifacts, retrieval fusion, and governance sentinels. Although still constrained by API-model boundaries and pending rollout gates, MASA now behaves as a measurable scientific system rather than a purely semantic assistant.
             </div>
+        </section>
+
+        <section>
+            <h2 id="sec-appendix-a">Appendix A. Benchmark Methodology & Reproducibility</h2>
+            <p><strong>Citation Conventions:</strong> [B#] benchmark metric claims, [A#] reproducibility artifact requirements, [R#] external references.</p>
+            <ul>
+                <li><strong>[A1] Model/Runtime:</strong> Pin exact model versions and runtime hashes used for benchmark execution.</li>
+                <li><strong>[A2] Feature Flags:</strong> Record enabled/disabled flags for each run profile.</li>
+                <li><strong>[A3] Datasets:</strong> Publish dataset composition, sampling method, and exclusion criteria.</li>
+                <li><strong>[A4] Reproduction Contract:</strong> Include seed strategy, command invocations, and artifact output paths.</li>
+                <li><strong>[A5] Evidence Mapping:</strong> Metrics tagged [B1]-[B3] map to benchmark protocol cards and run logs.</li>
+            </ul>
+
+            <h2>References</h2>
+            <ol>
+                <li><strong>[R1]</strong> Judea Pearl and Dana Mackenzie. <em>The Book of Why</em>. Basic Books, 2018.</li>
+                <li><strong>[R2]</strong> Karl Popper. <em>The Logic of Scientific Discovery</em>. Routledge, 1959.</li>
+                <li><strong>[R3]</strong> David Deutsch. <em>The Beginning of Infinity</em>. Viking, 2011.</li>
+                <li><strong>[R4]</strong> Maxwell Maltz. <em>Psycho-Cybernetics</em>. Prentice-Hall, 1960.</li>
+            </ol>
         </section>
 
         <footer class="footer">
