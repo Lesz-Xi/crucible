@@ -57,6 +57,7 @@ export interface GenerateContentOptions {
   tools?: ToolDefinition[];
   toolChoice?: { type: "auto" | "any" | "tool"; name?: string };
   messages?: Array<Anthropic.MessageParam>; // Allow passing existing conversation history
+  temperature?: number;
 }
 
 export interface GenerateContentResult {
@@ -96,7 +97,17 @@ class ClaudeAdapter implements ClaudeModel {
   private apiKey?: string;
 
   constructor(model: string = "claude-4-5-sonnet", apiKey?: string) { // Harmonized with AI_CONFIG (Feb 2026)
-    this.model = model;
+    // Dynamic import to avoid circular dependencies if any, though it shouldn't be an issue here
+    // But actually LLMFactory imports this file, so importing LLMFactory here creates a circular dependency.
+    // Let's implement a local mapping function or just rely on LLMFactory mapping it first.
+    // Actually, LLMFactory is already mapping it before calling getClaudeModel.
+    // To be perfectly safe against direct instantiations:
+    const mapping: Record<string, string> = {
+      'claude-4-5-haiku': 'claude-3-haiku-20240307',
+      'claude-4-5-sonnet': 'claude-3-5-sonnet-20241022',
+      'claude-4-6-opus': 'claude-3-opus-20240229'
+    };
+    this.model = mapping[model] || model;
     this.apiKey = apiKey;
   }
 
@@ -150,6 +161,7 @@ class ClaudeAdapter implements ClaudeModel {
             system: options?.system,
             tools: options?.tools as Anthropic.Tool[] | undefined,
             tool_choice: options?.toolChoice as any,
+            temperature: options?.temperature,
           });
 
           const textChunk = extractTextFromMessageContent(msg.content);

@@ -105,6 +105,10 @@ export async function POST(request: NextRequest) {
               latestSignal = event.replaceAll("_", " ");
             }
 
+            if (event === "tbe_telemetry" && data.isTriggered) {
+              latestSignal = `Thermodynamic Expansion Triggered! (Temp: ${data.temperature})`;
+            }
+
             if (
               event === "timeline_stage_started" ||
               event === "timeline_stage_progress" ||

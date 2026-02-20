@@ -162,6 +162,12 @@ export default function HybridSynthesisPage() {
     validityScore?: number;
   } | null>(null);
 
+  const [tbeTelemetry, setTbeTelemetry] = useState<{
+    spectralGap: number;
+    temperature: number;
+    isTriggered: boolean;
+  } | null>(null);
+
   // Handle cinematic transition from stabilization to results
   useEffect(() => {
     if (stage === "stabilizing") {
@@ -264,6 +270,12 @@ export default function HybridSynthesisPage() {
                       approved: event.approved,
                       validityScore: event.validityScore
                     });
+                  } else if (event.event === 'tbe_telemetry') {
+                    setTbeTelemetry({
+                      spectralGap: event.spectralGap,
+                      temperature: event.temperature,
+                      isTriggered: event.isTriggered
+                    });
                   }
 
                  if (event.event === 'complete') {
@@ -344,6 +356,7 @@ export default function HybridSynthesisPage() {
     setEpistemicData(null);
     setSpectralHealth(null);
     setRefinementCycle(null);
+    setTbeTelemetry(null);
   };
 
   const selectedIdea = result?.novelIdeas[selectedIdeaIndex];
@@ -517,6 +530,7 @@ export default function HybridSynthesisPage() {
                epistemicData={epistemicData}
                spectralHealth={spectralHealth}
                refinementCycle={refinementCycle}
+               tbeTelemetry={tbeTelemetry}
             />
           </div>
         )}

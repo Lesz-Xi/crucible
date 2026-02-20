@@ -65,6 +65,12 @@ export type StreamEvent =
     plateauReached: boolean
   }
   | {
+    event: 'tbe_telemetry',
+    spectralGap: number,
+    temperature: number,
+    isTriggered: boolean
+  }
+  | {
     event: 'spectral_health_tick',
     lambda_min: number,
     lambda_max: number,

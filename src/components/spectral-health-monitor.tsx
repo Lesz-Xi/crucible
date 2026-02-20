@@ -33,7 +33,13 @@ interface SpectralHealthHistory {
   history: SpectralHealthData[];
 }
 
-export const SpectralHealthMonitor: React.FC<{ data?: SpectralHealthHistory }> = ({ data }) => {
+interface TbeTelemetryData {
+  spectralGap: number;
+  temperature: number;
+  isTriggered: boolean;
+}
+
+export const SpectralHealthMonitor: React.FC<{ data?: SpectralHealthHistory, tbeData?: TbeTelemetryData | null }> = ({ data, tbeData }) => {
   // Mock data for Phase 1 design validation
   const mockData: SpectralHealthHistory = {
     current: {
@@ -238,6 +244,35 @@ export const SpectralHealthMonitor: React.FC<{ data?: SpectralHealthHistory }> =
             </div>
           </div>
         </div>
+
+        {/* Thermodynamic Telemetry (Phase 2 TBE) */}
+        {tbeData && (
+          <div className="pt-4 border-t border-wabi-sand/10 space-y-3">
+            <div className="text-xs font-semibold text-wabi-charcoal/70 dark:text-wabi-sand/70 uppercase tracking-wide">
+              Thermodynamic State
+            </div>
+            <div className={`p-4 rounded-lg border ${tbeData.isTriggered ? 'bg-orange-500/10 border-orange-500/30' : 'bg-wabi-charcoal/5 dark:bg-wabi-sand/5 border-wabi-sand/10'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-wabi-charcoal/60 dark:text-wabi-sand/60">System Temperature</span>
+                <span className={`text-sm font-mono font-bold ${tbeData.isTriggered ? 'text-orange-500' : 'text-wabi-charcoal dark:text-wabi-sand'}`}>
+                  {tbeData.temperature.toFixed(2)}
+                </span>
+              </div>
+              <div className="relative h-2 w-full bg-wabi-charcoal/10 dark:bg-wabi-sand/10 rounded-full overflow-hidden">
+                <div 
+                  className={`absolute left-0 h-full rounded-full transition-all duration-500 ${tbeData.isTriggered ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-wabi-charcoal/40 dark:bg-wabi-sand/40'}`}
+                  style={{ width: `${Math.min(100, Math.max(0, (tbeData.temperature / 1.5) * 100))}%` }}
+                />
+              </div>
+              {tbeData.isTriggered && (
+                <div className="mt-3 flex items-start gap-2 text-xs text-orange-600 dark:text-orange-400">
+                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <p>Basis expansion triggered: injecting thermal noise to escape local minima.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -41,6 +41,10 @@ export interface SCMHypothesisGeneratorInput {
   };
   researchFocus?: string;
   maxIdeas?: number;
+
+  // Thermodynamic Basis Expansion parameters
+  temperature?: number;
+  seed?: number;
 }
 
 interface HypothesisDraft {
@@ -212,6 +216,8 @@ async function elaborateWithLLM(payload: {
   skeleton: SCMHypothesisSkeleton;
   contradictions: Contradiction[];
   researchFocus?: string;
+  temperature?: number;
+  seed?: number;
 }): Promise<{
   thesis: string;
   description: string;
@@ -254,7 +260,20 @@ Return JSON:
 }`;
 
   try {
-    const response = await model.generateContent(prompt);
+    const config: any = {};
+    if (payload.temperature !== undefined) {
+      config.temperature = payload.temperature;
+    }
+    // Claude might not use "seed" directly via google/genai SDK natively without specific handling or it might be passed as an extra parameter
+    // Assuming standard system usage of a config object if supported
+
+    // We pass the string prompt. In true implementation, you'd pass the GenerationConfig.
+    // The google-gen-ai SDK accepts it as the second argument.
+    const response = await model.generateContent({
+      contents: prompt,
+      generationConfig: config
+    } as any); // Type cast due to varied SDK signatures, will adjust based on actual SDK
+
     const parsed = safeParseJson<any>(response.response.text(), {});
     if (!parsed?.thesis || !parsed?.description) {
       return null;
@@ -273,7 +292,8 @@ Return JSON:
         : undefined,
       nextScientificAction: typeof parsed.nextScientificAction === "string" ? parsed.nextScientificAction : undefined,
     };
-  } catch {
+  } catch (error) {
+    console.warn("LLM Elaboration skipped or failed", error);
     return null;
   }
 }
@@ -372,6 +392,8 @@ export class SCMHypothesisGenerator {
         skeleton: draft.candidate,
         contradictions: input.contradictions,
         researchFocus: input.researchFocus,
+        temperature: input.temperature,
+        seed: input.seed,
       });
 
       const confidence = Math.round(

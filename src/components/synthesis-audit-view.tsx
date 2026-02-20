@@ -80,6 +80,11 @@ interface SynthesisAuditViewProps {
     approved?: boolean;
     validityScore?: number;
   } | null;
+  tbeTelemetry?: {
+    spectralGap: number;
+    temperature: number;
+    isTriggered: boolean;
+  } | null;
 }
 
 const BASE_STEPS: TimelineStep[] = [
@@ -150,7 +155,8 @@ export function SynthesisAuditView({
   traceManifest,
   epistemicData,
   spectralHealth,
-  refinementCycle
+  refinementCycle,
+  tbeTelemetry
 }: SynthesisAuditViewProps) {
   const steps = useMemo(
     () => (companies.length > 0 ? BASE_STEPS : BASE_STEPS.filter((s) => s.key !== "entity_harvest")),
@@ -326,7 +332,10 @@ export function SynthesisAuditView({
           <LiveEpistemicMonitor data={epistemicData || undefined} />
         </div>
         <div className="h-[500px] 2xl:h-[600px]">
-          <SpectralHealthMonitor data={spectralHealth ? { current: spectralHealth, history: [] } : undefined} />
+          <SpectralHealthMonitor 
+            data={spectralHealth ? { current: spectralHealth, history: [] } : undefined}
+            tbeData={tbeTelemetry}
+          />
         </div>
       </div>
 

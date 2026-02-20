@@ -34,6 +34,7 @@ import {
   computeNoveltyProofs,
 } from "@/lib/services/novelty-proof-engine";
 import { buildNoveltyRecoveryPlan } from "@/lib/services/novelty-recovery-planner";
+import { ThermodynamicEvaluator } from "@/lib/ai/thermodynamic-evaluator";
 
 // ===== CONCEPT EXTRACTION =====
 
@@ -188,7 +189,8 @@ Format as JSON:
 
 export async function generateNovelIdeas(
   sources: { name: string; concepts: ExtractedConcepts }[],
-  contradictions: Contradiction[]
+  contradictions: Contradiction[],
+  temperature?: number
 ): Promise<NovelIdea[]> {
   const model = getClaudeModel();
 
@@ -210,7 +212,7 @@ export async function generateNovelIdeas(
     .replace("{SOURCES}", sourcesText)
     .replace("{CONTRADICTIONS}", contradictionsText);
 
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent(prompt, { temperature });
   const responseText = result.response.text();
 
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -359,7 +361,8 @@ export async function refineNovelIdea(
   originalIdea: NovelIdea,
   priorArtToAvoid: PriorArt[],
   iteration: number,
-  critique?: CriticalAnalysis
+  critique?: CriticalAnalysis,
+  temperature?: number
 ): Promise<NovelIdea> {
   const model = getClaudeModel();
   const bridgedConcepts = Array.isArray(originalIdea.bridgedConcepts) ? originalIdea.bridgedConcepts : [];
@@ -379,7 +382,7 @@ export async function refineNovelIdea(
     prompt += `\n\n${critiqueText}\n\nIMPORTANT: Address the critique points in your refinement.`;
   }
 
-  const result = await model.generateContent(prompt);
+  const result = await model.generateContent(prompt, { temperature });
   const responseText = result.response.text();
 
   const jsonMatch = responseText.match(/\{[\s\S]*\}/);
@@ -614,7 +617,12 @@ export async function runEnhancedSynthesisPipeline(
   emitTimeline("timeline_stage_started", "hypothesis_generation", "active", {
     totalFiles: sourcesWithConcepts.length,
   });
-  let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions);
+
+  // Initialize Thermodynamic Evaluator for Visual TBE Integration
+  const thermodynamicEvaluator = new ThermodynamicEvaluator();
+  let currentTemperature = 0.7; // Base temp
+
+  let novelIdeas = await generateNovelIdeas(sourcesWithConcepts, contradictions, currentTemperature);
   ensureNotAborted(abortSignal);
   if (typeof maxNovelIdeas === "number" && maxNovelIdeas > 0) {
     novelIdeas = novelIdeas.slice(0, maxNovelIdeas);
@@ -681,6 +689,30 @@ export async function runEnhancedSynthesisPipeline(
         }
         idea = enrichedIdea;
 
+        // --- Visual TBE Integration ---
+        // Proxy Spectral Gap calculation using Prior Art Variance
+        let proxySpectralGap = 0.1; // Default safe gap
+        if (priorArt.length > 1) {
+          const meanSim = priorArt.reduce((a, b) => a + b.similarity, 0) / priorArt.length;
+          const variance = priorArt.reduce((a, b) => a + Math.pow(b.similarity - meanSim, 2), 0) / (priorArt.length - 1);
+          // High variance = low spectral gap (exploration), low variance = high spectral gap (trap)
+          // Wait, if variance is low, all prior art is equally similar - typical coherence trap. So low variance -> low spectral gap.
+          proxySpectralGap = variance;
+        } else if (priorArt.length === 1 && priorArt[0].similarity > 0.8) {
+          proxySpectralGap = 0.05; // Force trap condition if stuck on one highly similar prior art
+        }
+
+        const tbeResult = thermodynamicEvaluator.evaluate(proxySpectralGap, 0.7, iteration + 1);
+        currentTemperature = tbeResult.recommendedTemperature;
+
+        eventEmitter?.emit({
+          event: 'tbe_telemetry',
+          spectralGap: proxySpectralGap,
+          temperature: currentTemperature,
+          isTriggered: tbeResult.isTriggered
+        });
+        // ------------------------------
+
         // Check if refinement needed (prior art too similar)
         const maxSimilarity = priorArt.length > 0
           ? Math.max(...priorArt.map(p => p.similarity))
@@ -691,7 +723,7 @@ export async function runEnhancedSynthesisPipeline(
           const similarArt = priorArt.filter(p => p.similarity > 0.5);
 
           try {
-            idea = await refineNovelIdea(idea, similarArt, iteration + 1);
+            idea = await refineNovelIdea(idea, similarArt, iteration + 1, undefined, currentTemperature);
             totalRefinements++;
             iteration++;
             ensureNotAborted(abortSignal);
@@ -770,7 +802,8 @@ export async function runEnhancedSynthesisPipeline(
 
       while (critique.validityScore < 90 && attempts < 2) {
         // Self-Correction: Refine based on critique
-        const tempRefinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique);
+        // Apply currentTemperature determined by TBE Evaluator
+        const tempRefinedIdea = await refineNovelIdea(refinedIdea, [], attempts + 1, critique, currentTemperature);
         ensureNotAborted(abortSignal);
         // Re-generate hypothesis for the refined idea
         deepHypothesis = await hypothesisGenerator.generate(tempRefinedIdea);

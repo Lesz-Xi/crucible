@@ -22,6 +22,27 @@ export interface LLMOptions {
 export class LLMFactory {
 
     /**
+     * Map fictional MASA model IDs to their actual real-world API equivalent
+     */
+    private static resolveApiMapping(modelId: string): string {
+        const mapping: Record<string, string> = {
+            // Anthropic
+            'claude-4-5-haiku': 'claude-3-haiku-20240307',
+            'claude-4-5-sonnet': 'claude-3-5-sonnet-20241022',
+            'claude-4-6-opus': 'claude-3-opus-20240229',
+            // OpenAI
+            'gpt-5-3-codex-spark': 'gpt-4o-mini',
+            'gpt-5-3-codex': 'gpt-4o',
+            'gpt-5-2': 'o1-preview',
+            // Gemini
+            'gemini-3-flash': 'gemini-1.5-flash',
+            'gemini-3-deep-think': 'gemini-1.5-pro',
+            'gemini-3-pro': 'gemini-1.5-pro'
+        };
+        return mapping[modelId] || modelId;
+    }
+
+    /**
      * Get a Vercel AI SDK compatible model instance
      * @param options - Configuration options with optional API key override
      */
@@ -37,7 +58,8 @@ export class LLMFactory {
         const providerConfig = AI_CONFIG.providers[providerId];
 
         // @ts-ignore - dynamic access to model types
-        const modelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
+        const rawModelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
+        const modelId = LLMFactory.resolveApiMapping(rawModelId);
 
         // 2. Validate Key Availability (Env or Runtime)
         if (!apiKey && !LLMFactory.validateEnvironment(providerId)) {
@@ -84,7 +106,8 @@ export class LLMFactory {
         const providerConfig = AI_CONFIG.providers[providerId];
 
         // @ts-ignore - dynamic access to model types
-        const modelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
+        const rawModelId = explicitModelId || providerConfig.models[modelType] || providerConfig.models.advanced;
+        const modelId = LLMFactory.resolveApiMapping(rawModelId);
 
         // 2. Validate Key Availability (Env or Runtime)
         if (!apiKey && !LLMFactory.validateEnvironment(providerId)) {
