@@ -373,9 +373,25 @@ export function LabProvider({ children }: { children: ReactNode }) {
 export function useLab() {
   const context = useContext(LabContext);
   if (context === undefined) {
-    throw new Error("useLab must be used within a LabProvider");
+    // Return a dummy context to avoid crashing statically generated pages
+    return {
+      state: initialState,
+      dispatch: () => {},
+      createExperiment: async () => null,
+      updateExperimentResult: async () => false,
+      loadExperimentHistory: async () => {},
+      removeExperiment: async () => false,
+      setLLMConfig: () => {},
+      setModelSettingsOpen: () => {},
+      isReady: false,
+      userId: null,
+    };
   }
   return context;
+}
+
+export function useOptionalLab() {
+  return useContext(LabContext);
 }
 
 // =============================================================
