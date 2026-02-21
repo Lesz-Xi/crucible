@@ -4,7 +4,6 @@ import React, { useEffect } from "react";
 import { LabProvider } from "@/lib/contexts/LabContext";
 import { LabNotebook } from "@/components/lab/LabNotebook";
 import { AppDashboardShell } from "@/components/dashboard/AppDashboardShell";
-import { ModelSettingsModal } from "@/components/lab/settings/ModelSettingsModal";
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
     useEffect(() => {
@@ -24,7 +23,6 @@ export default function LabLayout({ children }: { children: React.ReactNode }) {
                         </div>
                         <LabNotebook />
                     </main>
-                    <ModelSettingsModal />
                 </div>
             </AppDashboardShell>
         </LabProvider>

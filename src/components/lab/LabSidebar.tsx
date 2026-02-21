@@ -76,14 +76,7 @@ export function LabSidebar() {
             </div>
 
             <div className="p-4 border-t border-border space-y-3">
-                <motion.button
-                    whileHover={{ x: 2 }}
-                    onClick={() => dispatch({ type: "SET_MODEL_SETTINGS_OPEN", payload: true })}
-                    className="w-full flex items-center gap-2 px-2 py-1.5 text-xs font-medium text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 transition-colors rounded-md hover:bg-white/10"
-                >
-                    <Settings className="w-3.5 h-3.5" />
-                    <span>Model Settings</span>
-                </motion.button>
+
                 <div className="flex items-center gap-2 text-xs px-2">
                     <div className={cn("w-2 h-2 rounded-full", state.isOffline ? "bg-red-500" : "bg-green-500")} />
                     <span className="text-muted-foreground">{state.isOffline ? "Offline Mode" : "System Online"}</span>

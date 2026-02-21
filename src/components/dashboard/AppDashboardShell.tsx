@@ -35,6 +35,7 @@ import {
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { SidebarModelSettings } from './SidebarModelSettings';
 
 interface AppDashboardShellProps {
   children: ReactNode;
@@ -561,6 +562,8 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                 <BookOpen className="h-4 w-4" />
                 {collapsed ? null : <span className="font-serif tracking-wide">Documentation</span>}
               </Link>
+
+              <SidebarModelSettings collapsed={collapsed} />
 
               <div className="relative">
                 <button
