@@ -132,6 +132,14 @@
   --shadow-deep: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
+/* Landing Page Theme Overrides */
+.theme-landing {
+  --bg-primary: #DAD6D6;
+}
+.dark .theme-landing {
+  --bg-primary: #09090b;
+}
+
 /* Utility Classes */
 .wabi-glass-panel {
   background: rgba(255, 255, 255, 0.6);

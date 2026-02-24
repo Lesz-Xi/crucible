@@ -17,7 +17,7 @@ import { LandingThemeLock } from "@/components/landing/LandingThemeLock";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)]">
+    <div className="theme-landing min-h-screen bg-[var(--bg-primary)]">
       <LandingThemeLock />
       <Navbar />
       <Hero />

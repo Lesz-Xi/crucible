@@ -4,7 +4,7 @@ import { EpistemicCards } from "@/components/landing/EpistemicCards";
 
 export function Hero() {
   return (
-    <section className="relative h-screen min-h-[900px] flex flex-col items-center justify-center overflow-hidden bg-[#DAD6D6] dark:bg-[#18181b] transition-colors duration-500">
+    <section className="relative h-screen min-h-[900px] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-primary)] transition-colors duration-500">
       
       
       {/* Living Washi Background - CSS Fog/Noise */}
