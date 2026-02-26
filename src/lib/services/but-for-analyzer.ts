@@ -21,11 +21,11 @@
 
 import { getClaudeModel } from '../ai/anthropic';
 import { safeParseJson } from '../ai/ai-utils';
-import { 
-  LegalAction, 
-  Harm, 
-  ButForAnalysis, 
-  ButForResult 
+import {
+  LegalAction,
+  Harm,
+  ButForAnalysis,
+  ButForResult
 } from '@/types/legal';
 
 // Cache for but-for analyses (key: action-harm pair)
@@ -368,7 +368,7 @@ Not all correlations are causations. Be rigorous in distinguishing mere presence
 
     // Step 1: Check cache and heuristics first (no LLM calls)
     const pairsNeedingLLM: Array<{ action: LegalAction; harm: Harm; key: string }> = [];
-    
+
     for (const { action, harm, key } of pairs) {
       // Check cache
       if (this.config.useCache && analysisCache.has(key)) {
@@ -393,11 +393,11 @@ Not all correlations are causations. Be rigorous in distinguishing mere presence
           sufficiencyScore: heuristicResult.result === 'sufficient' || heuristicResult.result === 'both' ? 0.75 : 0.25,
         };
         results.set(key, analysis);
-        
+
         if (this.config.useCache && analysis.confidence >= (this.config.cacheThreshold || 0.7)) {
           analysisCache.set(key, analysis);
         }
-        
+
         if (analysis.result === 'necessary' || analysis.result === 'both') {
           confirmedCausalChains++;
         }
@@ -450,16 +450,16 @@ Not all correlations are causations. Be rigorous in distinguishing mere presence
     pairs: Array<{ action: LegalAction; harm: Harm; key: string }>
   ): Promise<Map<string, ButForAnalysis>> {
     const results = new Map<string, ButForAnalysis>();
-    
+
     // FIXED: Reduced from 10 to 3 to prevent LLM timeouts/hangs
     const maxBatchSize = 3;
-    
+
     console.log(`[ButForAnalyzer] Batch analyzing ${pairs.length} pairs in batches of ${maxBatchSize}`);
-    
+
     for (let i = 0; i < pairs.length; i += maxBatchSize) {
       const batch = pairs.slice(i, i + maxBatchSize);
       console.log(`[ButForAnalyzer] Processing batch ${Math.floor(i / maxBatchSize) + 1}/${Math.ceil(pairs.length / maxBatchSize)} (${batch.length} pairs)`);
-      
+
       try {
         const batchResults = await this.analyzeBatch(batch);
         for (const [key, analysis] of batchResults) {
@@ -482,12 +482,15 @@ Not all correlations are causations. Be rigorous in distinguishing mere presence
         }
       }
     }
-    
+
     return results;
   }
 
   /**
-   * Analyze a batch of action-harm pairs in a single LLM call
+   * Analyze a batch of action-harm pairs in a single LLM call.
+   * 
+   * FIXED: Uses 1-based pairIndex for result mapping instead of fragile
+   * timestamp-based key strings that the LLM cannot reproduce reliably.
    */
   private async analyzeBatch(
     batch: Array<{ action: LegalAction; harm: Harm; key: string }>
@@ -496,14 +499,15 @@ Not all correlations are causations. Be rigorous in distinguishing mere presence
     const model = getClaudeModel();
     const results = new Map<string, ButForAnalysis>();
 
-    // Build batch prompt
+    // Build batch prompt using simple 1-based indices (NOT timestamp-based IDs)
+    // This ensures reliable index-based result mapping regardless of how LLM formats IDs
     const pairsText = batch.map((p, idx) => `
-## PAIR ${idx + 1} (ID: ${p.key})
+## PAIR ${idx + 1}
 **ACTION:** ${p.action.description.slice(0, 200)}${p.action.description.length > 200 ? '...' : ''}
 ${p.action.intent ? `**INTENT:** ${p.action.intent.type}` : ''}
 **HARM:** ${p.harm.description.slice(0, 200)}${p.harm.description.length > 200 ? '...' : ''}
 `).join('\n---\n');
-    
+
     console.log(`[ButForAnalyzer] Built prompt with ${pairsText.length} characters`);
 
     const prompt = `You are a legal causation expert performing BUT-FOR counterfactual analysis on multiple action-harm pairs.
@@ -516,45 +520,60 @@ ${pairsText}
 ## YOUR TASK
 For EACH pair above, provide counterfactual analysis.
 
-## OUTPUT FORMAT (JSON array, no markdown):
+## OUTPUT FORMAT (JSON array ONLY — no markdown fences, no explanation):
 [
   {
-    "pairId": "action-id->harm-id",
+    "pairIndex": 1,
     "question": "Would [harm] have occurred if [action] was removed?",
     "counterfactualScenario": "Description of world where action did not occur",
-    "harmInCounterfactual": true or false,
-    "result": "necessary" | "sufficient" | "both" | "neither",
-    "confidence": number (0-1),
-    "necessityScore": number (0-1),
-    "sufficiencyScore": number (0-1),
+    "harmInCounterfactual": true,
+    "result": "necessary",
+    "confidence": 0.85,
+    "necessityScore": 0.85,
+    "sufficiencyScore": 0.6,
     "reasoning": "Brief causal reasoning"
   }
 ]
 
-Analyze all ${batch.length} pairs concisely. Be rigorous in distinguishing correlation from causation.`;
+Result must be one of: "necessary" | "sufficient" | "both" | "neither"
+Analyze all ${batch.length} pairs. Output the array starting with [ and ending with ].`;
 
     try {
       // Add timeout support
-      const timeoutPromise = new Promise<never>((_, reject) => 
+      const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('LLM timeout')), this.config.timeoutMs || 30000)
       );
-      
+
       const responsePromise = model.generateContent(prompt);
       const response = await Promise.race([responsePromise, timeoutPromise]);
-      
-      const parsed = safeParseJson<any[]>(response.response.text(), []);
 
-      // Map results back to pairs
+      const rawText = response.response.text();
+      console.log(`[ButForAnalyzer] Raw LLM response (first 300 chars): ${rawText.slice(0, 300)}`);
+
+      const parsed = safeParseJson<any[]>(rawText, []);
+      console.log(`[ButForAnalyzer] Parsed ${parsed.length} results from batch of ${batch.length}`);
+
+      // Map results back to pairs using 1-based pairIndex (reliable positional matching)
       for (const result of parsed) {
-        if (!result.pairId) continue;
-        
+        const pairIndex = typeof result.pairIndex === 'number' ? result.pairIndex : null;
+
+        if (pairIndex === null || pairIndex < 1 || pairIndex > batch.length) {
+          console.warn(`[ButForAnalyzer] Invalid pairIndex ${pairIndex} in result, skipping`);
+          continue;
+        }
+
+        const { key, action, harm } = batch[pairIndex - 1];
+
         let butForResult: ButForResult = result.result || 'neither';
+        // Correct result if LLM said harm would NOT occur in counterfactual but labelled as 'neither'
         if (result.harmInCounterfactual === false && butForResult === 'neither') {
           butForResult = 'necessary';
         }
 
-        results.set(result.pairId, {
-          question: result.question || '',
+        console.log(`[ButForAnalyzer] Pair ${pairIndex} (${key}): result=${butForResult}, confidence=${result.confidence}`);
+
+        results.set(key, {
+          question: result.question || `Would "${harm.description}" occur without "${action.description}"?`,
           counterfactualScenario: result.counterfactualScenario || '',
           result: butForResult,
           confidence: Math.min(1, Math.max(0, result.confidence || 0.5)),
@@ -564,9 +583,11 @@ Analyze all ${batch.length} pairs concisely. Be rigorous in distinguishing corre
         });
       }
 
-      // Fill in any missing pairs with defaults
+      // Fill in any missing pairs with defaults (should not happen if LLM follows instructions)
+      let missingCount = 0;
       for (const { key, action, harm } of batch) {
         if (!results.has(key)) {
+          missingCount++;
           results.set(key, {
             question: `Would "${harm.description}" occur without "${action.description}"?`,
             counterfactualScenario: 'Could not determine from batch analysis',
@@ -577,6 +598,9 @@ Analyze all ${batch.length} pairs concisely. Be rigorous in distinguishing corre
             sufficiencyScore: 0.5,
           });
         }
+      }
+      if (missingCount > 0) {
+        console.warn(`[ButForAnalyzer] ${missingCount} pairs missing from LLM response, filled with defaults`);
       }
 
     } catch (error) {
@@ -610,7 +634,7 @@ Analyze all ${batch.length} pairs concisely. Be rigorous in distinguishing corre
     harm: Harm
   ): Promise<LegalAction[]> {
     const analyses = await this.analyzeMultiple(actions, [harm]);
-    
+
     return actions.filter(action => {
       const key = `${action.id}->${harm.id}`;
       const analysis = analyses.get(key);
