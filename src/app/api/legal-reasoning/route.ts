@@ -30,6 +30,8 @@ import {
   LegalVerdict,
   LegalStreamEvent,
   HarmSeverity,
+  LegalDiagnostics,
+  ButForAnalysis,
 } from '@/types/legal';
 import { ClaimLedgerService } from '@/lib/services/claim-ledger-service';
 
@@ -265,6 +267,63 @@ function evaluateLegalCausalGate(
   };
 }
 
+function buildLegalDiagnostics(params: {
+  documentCount: number;
+  extraction: { entities: unknown[]; timeline: unknown[]; harms: unknown[]; warnings?: string[] };
+  butForResults: Map<string, ButForAnalysis>;
+  rawChainCount: number;
+  dedupedChainCount: number;
+  gate: LegalGateSummary;
+}): LegalDiagnostics {
+  let butForNecessaryOrBoth = 0;
+  let butForSufficientOnly = 0;
+  let butForNeither = 0;
+  let butForLowConfidence = 0;
+  let llmFailureSignals = 0;
+
+  for (const analysis of params.butForResults.values()) {
+    if (analysis.result === 'necessary' || analysis.result === 'both') {
+      butForNecessaryOrBoth++;
+    } else if (analysis.result === 'sufficient') {
+      butForSufficientOnly++;
+    } else {
+      butForNeither++;
+    }
+
+    if (analysis.confidence < 0.5) {
+      butForLowConfidence++;
+    }
+
+    const reason = (analysis.reasoning || '').toLowerCase();
+    if (
+      reason.includes('failed') ||
+      reason.includes('timeout') ||
+      reason.includes('error') ||
+      reason.includes('fallback')
+    ) {
+      llmFailureSignals++;
+    }
+  }
+
+  return {
+    documentCount: params.documentCount,
+    extractedEntities: params.extraction.entities.length,
+    extractedActions: params.extraction.timeline.length,
+    extractedHarms: params.extraction.harms.length,
+    actionHarmPairsAnalyzed: params.butForResults.size,
+    butForNecessaryOrBoth,
+    butForSufficientOnly,
+    butForNeither,
+    butForLowConfidence,
+    llmFailureSignals,
+    causalChainsBeforeDedup: params.rawChainCount,
+    causalChainsAfterDedup: params.dedupedChainCount,
+    gateAllowedChains: params.gate.allowedChains.length,
+    gateBlockedChains: params.gate.blockedChains,
+    extractionWarnings: params.extraction.warnings || [],
+  };
+}
+
 // Max execution time for complex legal analysis
 export const maxDuration = 120;
 
@@ -413,16 +472,55 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
 
     // Step 2: Build causal chains (Intent → Action → Harm)
     console.log('[LegalReasoning] Building causal chains');
-    const rawChains = await buildCausalChains(
-      extraction.timeline,
-      extraction.harms,
-      butForAnalyzer,
-      legalSCM
-    );
+    const butForResults = await butForAnalyzer.analyzeMultiple(extraction.timeline, extraction.harms);
+    const rawChains: LegalCausalChain[] = [];
+
+    for (const action of extraction.timeline) {
+      for (const harm of extraction.harms) {
+        const key = `${action.id}->${harm.id}`;
+        const butForAnalysis = butForResults.get(key);
+        if (!butForAnalysis) continue;
+
+        if (butForAnalysis.result === 'necessary' || butForAnalysis.result === 'both') {
+          const scmValidation = await legalSCM.validateLegalCausation(
+            action.intent?.description || 'unknown intent',
+            action.description,
+            harm.description
+          );
+
+          if (scmValidation.valid || scmValidation.violations.filter((v) => v.severity === 'fatal').length === 0) {
+            rawChains.push({
+              intent: action.intent || {
+                type: 'negligent',
+                description: 'Unknown',
+                evidenceSnippets: [],
+                confidence: 0.3,
+              },
+              action,
+              harm,
+              causalStrength: butForAnalysis.confidence,
+              butForAnalysis,
+              interveningCauses: [],
+              proximateCauseEstablished: scmValidation.proximateCausePassed,
+              foreseeability: scmValidation.proximateCausePassed ? 0.8 : 0.3,
+            });
+          }
+        }
+      }
+    }
 
     // Step 2b: Deduplicate chains (eliminate A×H redundancy)
     const deduplicatedChains = deduplicateCausalChains(rawChains);
     const legalGate = evaluateLegalCausalGate(deduplicatedChains, legalSCM);
+    const diagnostics = buildLegalDiagnostics({
+      documentCount: documents.length,
+      extraction,
+      butForResults,
+      rawChainCount: rawChains.length,
+      dedupedChainCount: deduplicatedChains.length,
+      gate: legalGate,
+    });
+
     const userId = await getAuthenticatedUserId();
     const traced = await attachCounterfactualTracesToLegalChains(legalGate.allowedChains, legalSCM, userId);
     const causalChains = traced.chains;
@@ -473,6 +571,7 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
         missingConfounders: legalGate.missingConfounders,
         rationale: legalGate.rationale,
       },
+      diagnostics,
       processingTimeMs: Math.round(processingTime),
     } as LegalReasoningResponse);
 
@@ -634,6 +733,14 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
         // This reduces chains like [A1→H1, A1→H2, A1→H3] to just [A1→H_highest_severity]
         const deduplicatedChains = deduplicateCausalChains(causalChains);
         const legalGate = evaluateLegalCausalGate(deduplicatedChains, legalSCM);
+        const diagnostics = buildLegalDiagnostics({
+          documentCount: documents.length,
+          extraction,
+          butForResults,
+          rawChainCount: causalChains.length,
+          dedupedChainCount: deduplicatedChains.length,
+          gate: legalGate,
+        });
         const userId = await getAuthenticatedUserId();
         const traced = await attachCounterfactualTracesToLegalChains(legalGate.allowedChains, legalSCM, userId);
         sendEvent({
@@ -646,6 +753,7 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
           rationale: legalGate.rationale,
           counterfactualTraceIds: traced.traceIds,
         });
+        sendEvent({ event: 'legal_diagnostics', diagnostics });
 
         // Construct legal case with deduplicated chains
         const legalCase: LegalCase = {

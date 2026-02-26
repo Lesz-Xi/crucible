@@ -305,6 +305,24 @@ export interface LegalReasoningRequest {
   focusEntities?: string[]; // Entity names to prioritize
 }
 
+export interface LegalDiagnostics {
+  documentCount: number;
+  extractedEntities: number;
+  extractedActions: number;
+  extractedHarms: number;
+  actionHarmPairsAnalyzed: number;
+  butForNecessaryOrBoth: number;
+  butForSufficientOnly: number;
+  butForNeither: number;
+  butForLowConfidence: number;
+  llmFailureSignals: number;
+  causalChainsBeforeDedup: number;
+  causalChainsAfterDedup: number;
+  gateAllowedChains: number;
+  gateBlockedChains: number;
+  extractionWarnings: string[];
+}
+
 export interface LegalReasoningResponse {
   success: boolean;
   case?: LegalCase;
@@ -318,6 +336,7 @@ export interface LegalReasoningResponse {
     missingConfounders: string[];
     rationale: string;
   };
+  diagnostics?: LegalDiagnostics;
   
   // Processing metadata
   processingTimeMs?: number;
@@ -347,6 +366,7 @@ export type LegalStreamEvent =
       rationale: string;
       counterfactualTraceIds?: string[];
     }
+  | { event: 'legal_diagnostics'; diagnostics: LegalDiagnostics }
   | { event: 'legal_masa_audit_start'; agentCount: number }
   | { event: 'legal_verdict_ready'; verdict: LegalVerdict }
   | { event: 'claim_recorded'; claimId: string }

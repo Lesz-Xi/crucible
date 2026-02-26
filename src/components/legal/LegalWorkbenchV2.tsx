@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { BookOpen, Clock3 } from 'lucide-react';
-import type { LegalCase } from '@/types/legal';
+import type { LegalCase, LegalDiagnostics } from '@/types/legal';
 import { getAnalysisHistory, loadAnalysisFromHistory, saveAnalysisToHistory, type LegalHistoryEntry } from '@/lib/services/legal-history';
 import { ContextRail } from '@/components/workbench/ContextRail';
 import { EvidenceRail } from '@/components/workbench/EvidenceRail';
@@ -37,6 +37,7 @@ export function LegalWorkbenchV2() {
   const [history, setHistory] = useState<LegalHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [transportMode, setTransportMode] = useState<'idle' | 'sse' | 'json-fallback'>('idle');
+  const [diagnostics, setDiagnostics] = useState<LegalDiagnostics | null>(null);
 
   const loadHistory = useCallback(async () => {
     setHistoryLoading(true);
@@ -60,6 +61,7 @@ export function LegalWorkbenchV2() {
     setClaimCopied(false);
     setError(null);
     setTransportMode('idle');
+    setDiagnostics(null);
     setAnalysisStatus({
       stage: 'idle',
       message: 'Upload legal documents to begin analysis.',
@@ -85,6 +87,14 @@ export function LegalWorkbenchV2() {
         missingConfounders: Array.isArray(event.missingConfounders) ? (event.missingConfounders as string[]) : [],
         rationale: String(event.rationale || 'No rationale provided'),
       });
+      return;
+    }
+
+    if (eventType === 'legal_diagnostics') {
+      const payload = (event.diagnostics || null) as LegalDiagnostics | null;
+      if (payload) {
+        setDiagnostics(payload);
+      }
       return;
     }
 
@@ -124,6 +134,7 @@ export function LegalWorkbenchV2() {
     setResult(null);
     setGateState(null);
     setTransportMode('idle');
+    setDiagnostics(null);
     setAnalysisStatus({ stage: 'uploading', message: 'Preparing analysis request...', progress: 12 });
 
     try {
@@ -161,6 +172,7 @@ export function LegalWorkbenchV2() {
             missingConfounders?: string[];
             rationale?: string;
           };
+          diagnostics?: LegalDiagnostics;
           allowedOutputClass?: LegalGateSummary['allowedOutputClass'];
         };
 
@@ -178,6 +190,9 @@ export function LegalWorkbenchV2() {
             missingConfounders: payload.interventionGate.missingConfounders || [],
             rationale: payload.interventionGate.rationale || 'No rationale provided',
           });
+        }
+        if (payload.diagnostics) {
+          setDiagnostics(payload.diagnostics);
         }
         setAnalysisStatus({ stage: 'complete', message: 'Analysis complete.', progress: 100 });
         void saveAnalysisToHistory(payload.case, documentNames).then(loadHistory);
@@ -238,6 +253,7 @@ export function LegalWorkbenchV2() {
     setCaseTitle(loaded.title);
     setJurisdiction(loaded.jurisdiction || '');
     setCaseType((loaded.caseType as 'criminal' | 'tort' | 'contract' | 'administrative') || 'tort');
+    setDiagnostics(null);
     setAnalysisStatus({ stage: 'complete', message: 'Loaded historical analysis.', progress: 100 });
   };
 
@@ -334,6 +350,27 @@ export function LegalWorkbenchV2() {
                 {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
               </section>
             ) : null}
+
+            <section className="lab-metric-tile">
+              <p className="lab-section-title !mb-1">Diagnostics</p>
+              {diagnostics ? (
+                <div className="space-y-1.5 text-xs text-[var(--lab-text-secondary)]">
+                  <p>Docs: {diagnostics.documentCount} · Entities: {diagnostics.extractedEntities}</p>
+                  <p>Actions: {diagnostics.extractedActions} · Harms: {diagnostics.extractedHarms}</p>
+                  <p>Pairs: {diagnostics.actionHarmPairsAnalyzed}</p>
+                  <p>But-for pass (necessary/both): {diagnostics.butForNecessaryOrBoth}</p>
+                  <p>But-for sufficient-only: {diagnostics.butForSufficientOnly} · neither: {diagnostics.butForNeither}</p>
+                  <p>Low-confidence: {diagnostics.butForLowConfidence} · LLM-failure signals: {diagnostics.llmFailureSignals}</p>
+                  <p>Chains raw→dedup: {diagnostics.causalChainsBeforeDedup} → {diagnostics.causalChainsAfterDedup}</p>
+                  <p>Gate allowed/blocked: {diagnostics.gateAllowedChains}/{diagnostics.gateBlockedChains}</p>
+                  {diagnostics.extractionWarnings.length > 0 ? (
+                    <p className="text-[var(--lab-accent-earth)]">Warnings: {diagnostics.extractionWarnings.slice(0, 2).join(' | ')}</p>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-sm text-[var(--lab-text-tertiary)]">No diagnostics yet.</p>
+              )}
+            </section>
 
             <section className="lab-metric-tile">
               <p className="lab-section-title !mb-1">Historical Analyses</p>
