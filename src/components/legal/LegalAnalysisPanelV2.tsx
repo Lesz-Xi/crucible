@@ -22,6 +22,8 @@ export interface LegalAnalysisPanelV2Props {
 }
 
 export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, gateState, error }: LegalAnalysisPanelV2Props) {
+  const isBillingError = (error || '').toLowerCase().includes('anthropic credits depleted');
+
   if (!result && !error) {
     return (
       <div className="lab-empty-state h-full">
@@ -44,9 +46,16 @@ export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, g
 
       {error ? (
         <section className="lab-card border-red-300 bg-red-50/70">
-          <div className="flex items-center gap-2 text-red-700">
-            <AlertTriangle className="h-4 w-4" />
-            <p className="font-medium">{error}</p>
+          <div className="flex items-start gap-2 text-red-700">
+            <AlertTriangle className="mt-0.5 h-4 w-4" />
+            <div>
+              <p className="font-medium">{error}</p>
+              {isBillingError ? (
+                <p className="mt-1 text-xs text-red-700/90">
+                  Action: Open Anthropic Plans & Billing, add credits, then rerun analysis.
+                </p>
+              ) : null}
+            </div>
           </div>
         </section>
       ) : null}

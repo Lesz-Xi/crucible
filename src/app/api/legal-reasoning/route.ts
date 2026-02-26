@@ -324,6 +324,19 @@ function buildLegalDiagnostics(params: {
   };
 }
 
+function detectAnthropicBillingIssue(extractionWarnings?: string[]): boolean {
+  const combined = (extractionWarnings || []).join(' | ').toLowerCase();
+  return (
+    combined.includes('credit balance is too low') ||
+    combined.includes('plans & billing') ||
+    combined.includes('invalid_request_error')
+  );
+}
+
+function anthropicBillingMessage(): string {
+  return 'Anthropic credits depleted. Please top up your Anthropic balance in Plans & Billing, then re-run legal analysis.';
+}
+
 // Max execution time for complex legal analysis
 export const maxDuration = 120;
 
@@ -459,6 +472,33 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
     // Step 1: Extract legal entities, actions, and harms from all documents
     console.log('[LegalReasoning] Extracting from', documents.length, 'documents');
     const extraction = await extractor.extractMultiple(documents);
+
+    if (detectAnthropicBillingIssue(extraction.warnings)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: anthropicBillingMessage(),
+          diagnostics: {
+            documentCount: documents.length,
+            extractedEntities: extraction.entities.length,
+            extractedActions: extraction.timeline.length,
+            extractedHarms: extraction.harms.length,
+            actionHarmPairsAnalyzed: 0,
+            butForNecessaryOrBoth: 0,
+            butForSufficientOnly: 0,
+            butForNeither: 0,
+            butForLowConfidence: 0,
+            llmFailureSignals: 1,
+            causalChainsBeforeDedup: 0,
+            causalChainsAfterDedup: 0,
+            gateAllowedChains: 0,
+            gateBlockedChains: 0,
+            extractionWarnings: extraction.warnings || [],
+          },
+        } as LegalReasoningResponse,
+        { status: 402 }
+      );
+    }
 
     if (extraction.entities.length === 0) {
       return NextResponse.json(
@@ -651,6 +691,32 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
         // Step 1: Extract
         sendEvent({ event: 'legal_extraction_start', documentCount: documents.length });
         const extraction = await extractor.extractMultiple(documents);
+
+        if (detectAnthropicBillingIssue(extraction.warnings)) {
+          sendEvent({
+            event: 'legal_diagnostics',
+            diagnostics: {
+              documentCount: documents.length,
+              extractedEntities: extraction.entities.length,
+              extractedActions: extraction.timeline.length,
+              extractedHarms: extraction.harms.length,
+              actionHarmPairsAnalyzed: 0,
+              butForNecessaryOrBoth: 0,
+              butForSufficientOnly: 0,
+              butForNeither: 0,
+              butForLowConfidence: 0,
+              llmFailureSignals: 1,
+              causalChainsBeforeDedup: 0,
+              causalChainsAfterDedup: 0,
+              gateAllowedChains: 0,
+              gateBlockedChains: 0,
+              extractionWarnings: extraction.warnings || [],
+            },
+          });
+          sendEvent({ event: 'legal_error', message: anthropicBillingMessage() });
+          safeClose();
+          return;
+        }
 
         // Emit found entities
         for (const entity of extraction.entities) {

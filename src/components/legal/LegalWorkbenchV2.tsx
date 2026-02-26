@@ -364,7 +364,7 @@ export function LegalWorkbenchV2() {
                   <p>Chains raw→dedup: {diagnostics.causalChainsBeforeDedup} → {diagnostics.causalChainsAfterDedup}</p>
                   <p>Gate allowed/blocked: {diagnostics.gateAllowedChains}/{diagnostics.gateBlockedChains}</p>
                   {diagnostics.extractionWarnings.length > 0 ? (
-                    <p className="text-[var(--lab-accent-earth)]">Warnings: {diagnostics.extractionWarnings.slice(0, 2).join(' | ')}</p>
+                    <p className="text-[var(--lab-accent-earth)]">Warnings: {diagnostics.extractionWarnings.slice(0, 1).join(' | ').slice(0, 220)}{diagnostics.extractionWarnings[0] && diagnostics.extractionWarnings[0].length > 220 ? '…' : ''}</p>
                   ) : null}
                 </div>
               ) : (
