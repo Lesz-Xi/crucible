@@ -135,9 +135,28 @@
 /* Landing Page Theme Overrides */
 .theme-landing {
   --bg-primary: #DAD6D6;
+  
+  /* Text Contrast Overrides for light mode #DAD6D6 background */
+  --stone-700: #1C201A;     /* Very dark primary text for strong contrast */
+  --mist-400: #384248;      /* Dark secondary text for navigation */
+  --ash-200: #5D6A75;       /* Darker subtle borders and texts like wabi-stone */
+  
+  /* Map Wabi-Sabi legacy tokens strictly for landing */
+  --wabi-sumi: var(--stone-700);
+  --wabi-patina: var(--mist-400);
+  --wabi-stone: var(--ash-200);
+  --wabi-ink: var(--stone-700);      
+  --wabi-ink-light: var(--mist-400); 
+  --wabi-sand: var(--ash-200);
+  --wabi-charcoal: #11140E;          
 }
 .dark .theme-landing {
   --bg-primary: #09090b;
+  /* Reset to dark mode defaults implicitly inherited from .dark */
+  --wabi-ink: #fafafa;
+  --wabi-ink-light: #a1a1aa;
+  --wabi-sand: #52525b;
+  --wabi-charcoal: #09090b;
 }
 
 /* Utility Classes */

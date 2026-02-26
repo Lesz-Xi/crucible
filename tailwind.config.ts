@@ -16,6 +16,7 @@ const config: Config = {
         "wabi-patina": "var(--wabi-patina)",
         "wabi-clay": "var(--wabi-clay)",
         "wabi-sumi": "var(--wabi-sumi)",
+        "wabi-ink": "var(--wabi-ink)",
         "wabi-ink-light": "var(--wabi-ink-light)",
         "wabi-moss": "var(--wabi-moss)",
         "wabi-rust": "var(--wabi-rust)",
