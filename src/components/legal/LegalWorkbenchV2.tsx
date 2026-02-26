@@ -36,6 +36,7 @@ export function LegalWorkbenchV2() {
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<LegalHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [transportMode, setTransportMode] = useState<'idle' | 'sse' | 'json-fallback'>('idle');
 
   const loadHistory = useCallback(async () => {
     setHistoryLoading(true);
@@ -58,6 +59,7 @@ export function LegalWorkbenchV2() {
     setLatestClaimId(null);
     setClaimCopied(false);
     setError(null);
+    setTransportMode('idle');
     setAnalysisStatus({
       stage: 'idle',
       message: 'Upload legal documents to begin analysis.',
@@ -121,6 +123,7 @@ export function LegalWorkbenchV2() {
     setError(null);
     setResult(null);
     setGateState(null);
+    setTransportMode('idle');
     setAnalysisStatus({ stage: 'uploading', message: 'Preparing analysis request...', progress: 12 });
 
     try {
@@ -138,13 +141,68 @@ export function LegalWorkbenchV2() {
         }),
       });
 
-      if (!response.ok || !response.body) {
+      if (!response.ok) {
         throw new Error(`Analysis request failed (${response.status})`);
       }
 
+      const contentType = response.headers.get('content-type') || '';
+
+      // Fallback: some environments/proxies can downgrade streaming to JSON.
+      if (contentType.includes('application/json')) {
+        setTransportMode('json-fallback');
+        const payload = (await response.json()) as {
+          success?: boolean;
+          error?: string;
+          case?: LegalCase;
+          interventionGate?: {
+            allowed?: boolean;
+            allowedChains?: number;
+            blockedChains?: number;
+            missingConfounders?: string[];
+            rationale?: string;
+          };
+          allowedOutputClass?: LegalGateSummary['allowedOutputClass'];
+        };
+
+        if (!payload.success || !payload.case) {
+          throw new Error(payload.error || 'Legal analysis failed');
+        }
+
+        setResult(payload.case);
+        if (payload.interventionGate) {
+          setGateState({
+            allowed: Boolean(payload.interventionGate.allowed),
+            allowedOutputClass: (payload.allowedOutputClass || 'association_only') as LegalGateSummary['allowedOutputClass'],
+            allowedChains: Number(payload.interventionGate.allowedChains || 0),
+            blockedChains: Number(payload.interventionGate.blockedChains || 0),
+            missingConfounders: payload.interventionGate.missingConfounders || [],
+            rationale: payload.interventionGate.rationale || 'No rationale provided',
+          });
+        }
+        setAnalysisStatus({ stage: 'complete', message: 'Analysis complete.', progress: 100 });
+        void saveAnalysisToHistory(payload.case, documentNames).then(loadHistory);
+        return;
+      }
+
+      if (!response.body) {
+        throw new Error('Analysis stream was empty');
+      }
+
+      setTransportMode('sse');
       const decoder = new TextDecoder();
       const reader = response.body.getReader();
       let buffer = '';
+
+      const processLine = (rawLine: string) => {
+        const line = rawLine.trim();
+        if (!line.startsWith('data: ')) return;
+        try {
+          const event = JSON.parse(line.slice(6)) as Record<string, unknown>;
+          handleStreamEvent(event);
+        } catch (parseError) {
+          console.warn('[LegalWorkbenchV2] Failed to parse SSE event line:', parseError, line);
+        }
+      };
 
       while (true) {
         const { done, value } = await reader.read();
@@ -155,10 +213,13 @@ export function LegalWorkbenchV2() {
         buffer = lines.pop() || '';
 
         for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const event = JSON.parse(line.slice(6)) as Record<string, unknown>;
-          handleStreamEvent(event);
+          processLine(line);
         }
+      }
+
+      // Flush any final buffered line if stream ends without trailing newline.
+      if (buffer.trim().length > 0) {
+        processLine(buffer);
       }
     } catch (analysisError) {
       const message = analysisError instanceof Error ? analysisError.message : 'Analysis failed';
@@ -242,7 +303,12 @@ export function LegalWorkbenchV2() {
         <EvidenceRail title="Evidence Rail" subtitle="Precedents, confidence, and history quick load">
           <div className="space-y-3">
             <section className="lab-metric-tile">
-              <p className="lab-section-title !mb-1">Intervention Gate</p>
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="lab-section-title !mb-0">Intervention Gate</p>
+                <span className="lab-chip-mono text-[10px]">
+                  Transport: {transportMode === 'idle' ? 'pending' : transportMode === 'sse' ? 'SSE stream' : 'JSON fallback'}
+                </span>
+              </div>
               <p className="text-sm text-[var(--lab-text-secondary)]">{gateState?.rationale || 'Pending gate evaluation.'}</p>
             </section>
 
