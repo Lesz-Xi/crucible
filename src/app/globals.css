@@ -172,6 +172,11 @@
   border-color: #27272a;
 }
 
+.mask-fade-edges {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
 /* Card glass effect - per Wabi-Sabi 2041 spec */
 .bg-glass-card {
   background: rgba(255, 250, 250, 0.7); /* paper-050 with transparency */

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MessageSquare, Scale, Sparkles, GraduationCap } from "lucide-react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 
 export function Navbar() {
@@ -69,8 +70,24 @@ export function Navbar() {
     }
   };
 
+  const { scrollY } = useScroll();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setIsScrolled(latest > 50);
+  });
+
   return (
-    <header className="absolute top-0 left-0 right-0 z-20 px-8 py-8 md:py-12">
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled 
+          ? "px-8 py-4 bg-[var(--bg-primary)]/80 backdrop-blur-md border-b border-[var(--border-subtle)]/50 shadow-sm"
+          : "px-8 py-8 md:py-12 bg-transparent border-b-0"
+      }`}
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link href="/" className="lg-control flex items-center gap-3 rounded-2xl px-2 py-1 transition-opacity hover:opacity-90">
           <span className="flex h-16 w-16 shrink-0 items-center justify-center">
@@ -181,6 +198,6 @@ export function Navbar() {
           <p className="mt-2 text-[10px] text-[var(--text-secondary)]">{authError}</p>
         )}
       </nav>
-    </header>
+    </motion.header>
   );
 }

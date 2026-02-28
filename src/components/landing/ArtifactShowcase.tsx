@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { FileText, Activity, GitCommit, ArrowRight } from "lucide-react";
+import { useRef } from "react";
 
 const artifacts = [
   {
@@ -31,60 +32,70 @@ const artifacts = [
 ];
 
 export function ArtifactShowcase() {
+  const targetRef = useRef<HTMLDivElement | null>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+  });
+
+  // Transform scroll position into horizontal movement
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-60%"]);
+
   return (
-    <section className="relative z-10 w-full py-32 flex flex-col items-center">
-      
-      {/* Header */}
-      <div className="relative z-20 text-center mb-20 max-w-2xl px-6">
-         <h2 className="font-serif text-4xl text-wabi-sumi mb-4">Evidence of Truth</h2>
-         <p className="font-sans text-lg text-wabi-sumi/70 leading-relaxed">
-            We do not sell "features". We provide the instruments to generate <span className="text-wabi-gold italic">verified artifacts</span>.
-         </p>
+    <section ref={targetRef} className="relative z-10 w-full h-[250vh]">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+        
+        {/* Full width container for the content moving horizontally */}
+        <motion.div style={{ x }} className="flex gap-16 px-6 lg:px-24 w-max items-center">
+          
+          {/* Header section acting as the first horizontal element */}
+          <div className="w-[300px] md:w-[400px] flex-shrink-0 pr-8">
+             <h2 className="font-serif text-4xl text-wabi-sumi mb-4">Evidence of Truth</h2>
+             <p className="font-sans text-lg text-wabi-sumi/70 leading-relaxed">
+                We do not sell "features". We provide the instruments to generate <span className="text-wabi-gold italic">verified artifacts</span>.
+             </p>
+          </div>
+
+          {/* Artifact Cards */}
+          <div className="flex gap-8">
+             {artifacts.map((item, i) => (
+                <div
+                   key={i}
+                   className="group lg-card relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[360px] w-[320px] md:w-[380px] flex-shrink-0 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+                >
+                   {/* Background Texture/Gradient */}
+                   <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-wabi-sand/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                   
+                   {/* Top Meta */}
+                   <div className="relative z-10 flex justify-between items-start mb-8">
+                      <div className={`lg-control p-3 rounded-sm ${item.color}`}>
+                         <item.icon className="w-6 h-6" strokeWidth={1.5} />
+                      </div>
+                      <span className="font-mono text-[10px] uppercase tracking-widest text-wabi-ink/30 group-hover:text-wabi-ink/50 transition-colors">
+                         {item.meta}
+                      </span>
+                   </div>
+
+                   {/* Content */}
+                   <div className="relative z-10">
+                      <h3 className="font-serif text-2xl text-wabi-sumi mb-3 group-hover:text-wabi-gold transition-colors duration-300">
+                         {item.title}
+                      </h3>
+                      <p className="font-sans text-sm text-wabi-sumi/60 leading-relaxed group-hover:text-wabi-sumi/80 transition-colors">
+                         {item.description}
+                      </p>
+                   </div>
+
+                   {/* Bottom Action */}
+                   <button type="button" className="relative z-10 mt-8 lg-control w-max flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 transition-colors duration-300 group-hover:text-wabi-sumi">
+                      <span>View Sample</span>
+                      <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                   </button>
+                </div>
+             ))}
+          </div>
+        </motion.div>
       </div>
-
-      {/* Artifact Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6 w-full">
-         {artifacts.map((item, i) => (
-            <motion.div
-               key={i}
-               className="group lg-card relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[320px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.6, delay: item.delay }}
-               viewport={{ once: true }}
-            >
-               {/* Background Texture/Gradient */}
-               <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-wabi-sand/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-               
-               {/* Top Meta */}
-               <div className="relative z-10 flex justify-between items-start mb-8">
-                  <div className={`lg-control p-3 rounded-sm ${item.color}`}>
-                     <item.icon className="w-6 h-6" strokeWidth={1.5} />
-                  </div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-wabi-ink/30 group-hover:text-wabi-ink/50 transition-colors">
-                     {item.meta}
-                  </span>
-               </div>
-
-               {/* Content */}
-               <div className="relative z-10">
-                  <h3 className="font-serif text-2xl text-wabi-sumi mb-3 group-hover:text-wabi-gold transition-colors duration-300">
-                     {item.title}
-                  </h3>
-                  <p className="font-sans text-sm text-wabi-sumi/60 leading-relaxed group-hover:text-wabi-sumi/80 transition-colors">
-                     {item.description}
-                  </p>
-               </div>
-
-               {/* Bottom Action */}
-               <button type="button" className="relative z-10 mt-8 lg-control flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 transition-colors duration-300 group-hover:text-wabi-sumi">
-                  <span>View Sample</span>
-                  <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-               </button>
-            </motion.div>
-         ))}
-      </div>
-
     </section>
   );
 }

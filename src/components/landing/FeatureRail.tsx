@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MessageSquare, Scale, GraduationCap } from "lucide-react";
 import { LiquidSegmentedControl } from "@/components/ui/liquid-segmented-control";
 import { LiquidSlider } from "@/components/ui/liquid-slider";
+import { motion } from "framer-motion";
 
 interface LandingFeature {
   label: "Chat" | "Legal" | "Learn";
@@ -78,38 +79,49 @@ export function FeatureRail() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto grid items-end gap-x-5 gap-y-6 md:gap-y-10 md:grid-cols-12 lg:gap-x-7">
-        {FEATURES.map((feature) => {
-          const Icon = feature.icon;
-          return (
-            <article
-              key={feature.label}
-              className={[
-                "group lg-card relative rounded-[14px] border border-[var(--border-subtle)]/90 bg-[var(--bg-secondary)]/88 p-6 md:p-7 min-h-[188px]",
-                "shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5",
-                feature.layoutClass,
-              ].join(" ")}
-            >
-              <div className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${feature.toneClass} to-transparent`} />
-              <div className="pointer-events-none absolute right-4 top-4 h-1.5 w-1.5 rounded-full bg-[var(--border-subtle)]/90" />
-              <div className="flex items-center justify-between">
-                <div className="inline-flex items-center gap-2">
-                  <Icon className={`h-4 w-4 ${feature.accentClass}`} />
-                  <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]/95">
-                    {feature.label}
-                  </span>
+      <div className="relative mt-12 w-full overflow-hidden flex -mx-6 px-6 mask-fade-edges">
+        <motion.div 
+           className="flex gap-6 pr-6 w-max"
+           animate={{ x: ["0%", "-50%"] }}
+           transition={{ repeat: Infinity, ease: "linear", duration: 40 }}
+        >
+          {/* Duplicate features to create seamless infinite loop */}
+          {[...FEATURES, ...FEATURES, ...FEATURES, ...FEATURES].map((feature, idx) => {
+            const Icon = feature.icon;
+            
+            // Derive a card height class depending on original intended layout for intentional stagger
+            const cardHeight = idx % 2 === 0 ? "min-h-[220px]" : "min-h-[250px] mt-8";
+
+            return (
+              <article
+                key={`${feature.label}-${idx}`}
+                className={[
+                  "group lg-card relative rounded-[14px] border border-[var(--border-subtle)]/90 bg-[var(--bg-secondary)]/88 p-6 md:p-7 shrink-0 w-[300px] md:w-[380px] lg:w-[420px]",
+                  "shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-1",
+                  cardHeight
+                ].join(" ")}
+              >
+                <div className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${feature.toneClass} to-transparent`} />
+                <div className="pointer-events-none absolute right-4 top-4 h-1.5 w-1.5 rounded-full bg-[var(--border-subtle)]/90" />
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex items-center gap-2">
+                    <Icon className={`h-4 w-4 ${feature.accentClass}`} />
+                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]/95">
+                      {feature.label}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                {feature.subtitle}
-              </p>
-              <div className="mt-5 h-px w-14 bg-gradient-to-r from-[var(--border-subtle)] to-transparent" />
-              <p className={`mt-4 text-sm leading-relaxed text-[var(--text-secondary)] transition-colors duration-300 ${feature.hoverTextClass}`}>
-                {feature.description}
-              </p>
-            </article>
-          );
-        })}
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                  {feature.subtitle}
+                </p>
+                <div className="mt-5 h-px w-14 bg-gradient-to-r from-[var(--border-subtle)] to-transparent" />
+                <p className={`mt-4 text-sm leading-relaxed text-[var(--text-secondary)] transition-colors duration-300 ${feature.hoverTextClass}`}>
+                  {feature.description}
+                </p>
+              </article>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

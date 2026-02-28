@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useState } from "react";
 
 interface ModuleProps {
@@ -51,8 +51,32 @@ const modules: ModuleProps[] = [
 export function CausalLattice() {
   const [activeNode, setActiveNode] = useState<number | null>(null);
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 30 });
+
+  function handleMouseMove(event: React.MouseEvent<HTMLElement>) {
+    const { clientX, clientY, currentTarget } = event;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    
+    const x = (clientX - left - width / 2) / (width / 2);
+    const y = (clientY - top - height / 2) / (height / 2);
+    
+    mouseX.set(x);
+    mouseY.set(y);
+  }
+
+  const parallaxX = useTransform(springX, [-1, 1], [-15, 15]);
+  const parallaxY = useTransform(springY, [-1, 1], [-15, 15]);
+
   return (
-    <section className="relative z-10 w-full py-32 overflow-hidden min-h-[800px] flex flex-col items-center">
+    <section 
+       className="relative z-10 w-full py-32 overflow-hidden min-h-[800px] flex flex-col items-center"
+       onMouseMove={handleMouseMove}
+       onMouseLeave={() => { mouseX.set(0); mouseY.set(0); }}
+    >
       
       {/* Header */}
       <div className="relative z-20 text-center mb-16">
@@ -63,25 +87,28 @@ export function CausalLattice() {
       </div>
 
       {/* Desktop Graph (md+) */}
-      <div className="hidden md:block absolute inset-0 top-32 w-full h-full max-w-6xl mx-auto">
+      <motion.div 
+         style={{ x: parallaxX, y: parallaxY }}
+         className="hidden md:block absolute inset-0 top-32 w-full h-full max-w-6xl mx-auto"
+      >
          {/* SVG Connections Layer */}
          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-60 dark:opacity-80">
             {/* Draw lines between nodes */}
              <motion.path 
-                d="M 20% 30% L 75% 20%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
+                initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, ease: "easeInOut", delay: 0.2 }}
+                d="M 20% 30% L 75% 20%" stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
              />
              <motion.path 
-                d="M 20% 30% L 30% 70%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4" 
+                initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, ease: "easeInOut", delay: 0.4 }}
+                d="M 20% 30% L 30% 70%" stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4" 
              />
              <motion.path 
-                d="M 30% 70% L 80% 65%" 
-                stroke="#C4A77D" strokeWidth="1"
+                initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, ease: "easeInOut", delay: 0.6 }}
+                d="M 30% 70% L 80% 65%" stroke="#C4A77D" strokeWidth="1"
              />
              <motion.path 
-                d="M 75% 20% L 80% 65%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
+                initial={{ pathLength: 0, opacity: 0 }} whileInView={{ pathLength: 1, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.5, ease: "easeInOut", delay: 0.8 }}
+                d="M 75% 20% L 80% 65%" stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
              />
          </svg>
 
@@ -93,8 +120,12 @@ export function CausalLattice() {
             return (
                <motion.div
                   key={i}
-                  className="absolute"
+                  className="absolute origin-center"
                   style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileInView={{ scale: 1, opacity: 1 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ type: "spring", bounce: 0.5, delay: node.delay + 0.3 }}
                   whileHover={{ scale: 1.05, zIndex: 10 }} 
                   onMouseEnter={() => setActiveNode(i)}
                   onMouseLeave={() => setActiveNode(null)}
@@ -137,7 +168,7 @@ export function CausalLattice() {
                </motion.div>
             );
          })}
-      </div>
+      </motion.div>
 
       {/* Mobile Feed (Vertical Trace) */}
       <div className="md:hidden w-full px-6 relative">

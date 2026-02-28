@@ -9,7 +9,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import { easing } from "maath";
-import { useInView } from "framer-motion";
+import { useInView, useScroll, useTransform, motion } from "framer-motion";
 
 function Prism() {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -87,12 +87,21 @@ function Prism() {
 export function SynthesisPrism() {
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { amount: 0.1 });
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.85, 1, 0.85]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   return (
     <section ref={containerRef} className="relative h-[80vh] min-h-[600px] w-full overflow-hidden flex flex-col items-center justify-center">
       
       {/* 3D Scene */}
-      <div className="absolute inset-0 z-0">
+      <motion.div style={{ y, scale, opacity }} className="absolute inset-0 z-0 pointer-events-none">
         <Canvas frameloop={isInView ? "always" : "never"} gl={{ alpha: true, antialias: true }} camera={{ position: [0, 0, 8], fov: 45 }}>
            {/* Transparent background to show page texture */}
            <ambientLight intensity={0.5} />
@@ -101,10 +110,16 @@ export function SynthesisPrism() {
            
            <Prism />
         </Canvas>
-      </div>
+      </motion.div>
 
       {/* Content Overlay */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-20%" }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="relative z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none"
+      >
           <div className="inline-flex items-center gap-2 mb-6">
              <div className="w-1.5 h-1.5 rounded-full bg-wabi-gold"></div>
              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
@@ -121,7 +136,7 @@ export function SynthesisPrism() {
              A refraction engine that splits complex data streams into 
              distinct, verifiable truth vectors.
           </p>
-      </div>
+      </motion.div>
 
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function FAQ() {
   const faqs = [
@@ -45,13 +46,23 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
            className="lg-control w-full flex items-center justify-between p-6 text-left"
          >
             <span className="font-serif text-lg text-wabi-sumi">{question}</span>
-            {isOpen ? <Minus className="w-4 h-4 text-wabi-clay" /> : <Plus className="w-4 h-4 text-wabi-stone" />}
+            {isOpen ? <Minus className="w-4 h-4 text-wabi-clay transition-all duration-300 transform rotate-180" /> : <Plus className="w-4 h-4 text-wabi-stone transition-all duration-300 transform rotate-0" />}
          </button>
-         {isOpen && (
-            <div className="px-6 pb-6 text-sm text-wabi-ink-light leading-relaxed">
-               {answer}
-            </div>
-         )}
+         <AnimatePresence initial={false}>
+           {isOpen && (
+              <motion.div
+                 initial={{ height: 0, opacity: 0 }}
+                 animate={{ height: "auto", opacity: 1 }}
+                 exit={{ height: 0, opacity: 0 }}
+                 transition={{ duration: 0.3, ease: "easeInOut" }}
+                 className="overflow-hidden"
+              >
+                 <div className="px-6 pb-6 text-sm text-wabi-ink-light leading-relaxed">
+                    {answer}
+                 </div>
+              </motion.div>
+           )}
+         </AnimatePresence>
       </div>
    );
 }

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useInView } from "framer-motion";
+import { useInView, motion } from "framer-motion";
 import { Environment, MeshTransmissionMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -84,7 +84,13 @@ export function ObsidianVault() {
 
       {/* Content Overlay - Cinematic Bottom Alignment */}
       <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/60 to-transparent pointer-events-none z-0" />
-      <div className="absolute bottom-0 w-full pb-24 z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none text-[var(--text-primary)]">
+      <motion.div 
+         initial={{ opacity: 0, y: 50 }}
+         whileInView={{ opacity: 1, y: 0 }}
+         viewport={{ once: true, margin: "-20%" }}
+         transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+         className="absolute bottom-0 w-full pb-24 z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none text-[var(--text-primary)]"
+      >
           <div className="inline-flex items-center gap-2 mb-6">
              <div className="w-1.5 h-1.5 rounded-full bg-wabi-gold"></div>
              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-70">
@@ -100,7 +106,7 @@ export function ObsidianVault() {
              Hardened truth. Axioms that withstood the audit. 
              Stored in an immutable lattice of high-density causal graphs.
           </p>
-      </div>
+      </motion.div>
     </section>
   );
 }

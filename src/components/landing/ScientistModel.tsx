@@ -4,7 +4,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
-import { useInView } from "framer-motion";
+import { useInView, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 function SignalPulses() {
     const pulseCount = 40;
@@ -168,31 +168,63 @@ function CausalArtifact() {
 
 export function ScientistModel() {
   const [mounted, setMounted] = useState(false);
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { amount: 0.1 });
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  function handleMouseMove(event: React.MouseEvent<HTMLElement>) {
+    const { clientX, clientY, currentTarget } = event;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const x = (clientX - left - width / 2) / (width / 2);
+    const y = (clientY - top - height / 2) / (height / 2);
+    mouseX.set(x);
+    mouseY.set(y);
+  }
+
+  const parallaxX = useTransform(springX, [-1, 1], [-20, 20]);
+  const parallaxY = useTransform(springY, [-1, 1], [-20, 20]);
+
   if (!mounted) return null;
 
   return (
-    <div ref={containerRef} className="w-full h-full absolute inset-0">
-      <Canvas 
-        frameloop={isInView ? "always" : "never"}
-        gl={{ alpha: true, antialias: true }}
-        camera={{ position: [0, 0, 12], fov: 45 }}
-        style={{ background: 'transparent' }}
+    <div 
+       ref={containerRef} 
+       className="w-full h-full absolute inset-0"
+       onMouseMove={handleMouseMove}
+       onMouseLeave={() => { mouseX.set(0); mouseY.set(0); }}
+    >
+      <motion.div 
+         className="w-full h-full"
+         style={{ x: parallaxX, y: parallaxY }}
+         initial={{ scale: 0.8, opacity: 0 }}
+         whileInView={{ scale: 1, opacity: 1 }}
+         viewport={{ once: true, margin: "-10%" }}
+         transition={{ duration: 1.5, ease: "easeOut" }}
       >
-        <ambientLight intensity={0.4} />
-        <spotLight position={[10, 10, 10]} intensity={1} color="#C4A77D" />
-        
-        {/* Static Camera View */}
-        <group rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}> 
-            <CausalArtifact />
-        </group>
-      </Canvas>
+        <Canvas 
+          frameloop={isInView ? "always" : "never"}
+          gl={{ alpha: true, antialias: true }}
+          camera={{ position: [0, 0, 12], fov: 45 }}
+          style={{ background: 'transparent' }}
+        >
+          <ambientLight intensity={0.4} />
+          <spotLight position={[10, 10, 10]} intensity={1} color="#C4A77D" />
+          
+          {/* Static Camera View */}
+          <group rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}> 
+              <CausalArtifact />
+          </group>
+        </Canvas>
+      </motion.div>
     </div>
   );
 }
