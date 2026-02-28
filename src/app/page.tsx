@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
+import { CompanyLogos } from "@/components/landing/CompanyLogos";
 import { SynthesisPrism } from "@/components/landing/SynthesisPrism";
 import { FeatureRail } from "@/components/landing/FeatureRail";
 import { Features } from "@/components/landing/Features";
@@ -21,6 +22,7 @@ export default function Home() {
       <LandingThemeLock />
       <Navbar />
       <Hero />
+      <CompanyLogos />
       <SynthesisPrism />
       <FeatureRail />
       <Features />

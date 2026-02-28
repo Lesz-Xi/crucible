@@ -24,8 +24,8 @@ export function FAQ() {
   ];
 
   return (
-    <section className="relative z-10 max-w-3xl mx-auto px-6 py-20 mb-20">
-      <h2 className="font-serif text-3xl text-wabi-sumi mb-12 text-center">Inquiries</h2>
+    <section className="relative z-10 max-w-3xl mx-auto px-6 py-20 mb-20 border-t border-black/5">
+      <h2 className="font-sans font-bold text-3xl text-mistral-dark mb-12 text-center">Inquiries</h2>
       
       <div className="space-y-4">
          {faqs.map((item, idx) => (
@@ -40,13 +40,13 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
    const [isOpen, setIsOpen] = useState(false);
 
    return (
-      <div className="lg-card border border-wabi-sand/30 bg-white/40 rounded-2xl overflow-hidden active:scale-[0.99] transition-transform">
+      <div className="bg-white border-b border-black/5 hover:bg-mistral-sand transition-colors">
          <button 
            onClick={() => setIsOpen(!isOpen)}
-           className="lg-control w-full flex items-center justify-between p-6 text-left"
+           className="w-full flex items-center justify-between p-6 text-left"
          >
-            <span className="font-serif text-lg text-wabi-sumi">{question}</span>
-            {isOpen ? <Minus className="w-4 h-4 text-wabi-clay transition-all duration-300 transform rotate-180" /> : <Plus className="w-4 h-4 text-wabi-stone transition-all duration-300 transform rotate-0" />}
+            <span className="font-sans font-bold text-lg text-mistral-dark">{question}</span>
+            {isOpen ? <Minus className="w-5 h-5 text-mistral-orange transition-all duration-300 transform rotate-180" /> : <Plus className="w-5 h-5 text-mistral-dark/50 transition-all duration-300 transform rotate-0" />}
          </button>
          <AnimatePresence initial={false}>
            {isOpen && (
@@ -57,7 +57,7 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
                  transition={{ duration: 0.3, ease: "easeInOut" }}
                  className="overflow-hidden"
               >
-                 <div className="px-6 pb-6 text-sm text-wabi-ink-light leading-relaxed">
+                 <div className="px-6 pb-6 text-sm font-sans text-mistral-dark/80 leading-relaxed">
                     {answer}
                  </div>
               </motion.div>

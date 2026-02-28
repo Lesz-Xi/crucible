@@ -5,6 +5,8 @@ import { Points, PointMaterial } from "@react-three/drei";
 import { useRef, useState, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useInView, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useCausalJobSSE } from "@/hooks/useCausalJobSSE";
+import { Loader2 } from "lucide-react";
 
 function SignalPulses() {
     const pulseCount = 40;
@@ -124,7 +126,7 @@ function CausalArtifact() {
             {/* 2. Rung: Intervention (The Action Plane) */}
             <mesh position={[0, 0.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
                 <torusGeometry args={[3.5, 0.02, 16, 100]} />
-                <meshBasicMaterial color="#C4A77D" transparent opacity={0.4} /> // Gold Rung
+                <meshBasicMaterial color="#E65C00" transparent opacity={0.4} /> {/* Mistral Orange Rung */}
             </mesh>
 
             {/* 3. Rung: Counterfactuals (The Imagination Expanse) */}
@@ -177,6 +179,8 @@ export function ScientistModel() {
   const springX = useSpring(mouseX, { stiffness: 100, damping: 30 });
   const springY = useSpring(mouseY, { stiffness: 100, damping: 30 });
 
+  const { stage, progress, startJob, isProcessing, error } = useCausalJobSSE();
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -225,6 +229,48 @@ export function ScientistModel() {
           </group>
         </Canvas>
       </motion.div>
+
+      {/* Causal Copilot Overlay UI */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-10 pointer-events-auto">
+        <button 
+          onClick={() => startJob('estimate', { query: 'test_run' })}
+          disabled={isProcessing}
+          className="px-6 py-2 bg-mistral-dark/80 hover:bg-mistral-dark/90 border border-black/10 text-white rounded font-sans text-sm tracking-widest font-bold backdrop-blur-md transition-all disabled:opacity-50"
+        >
+           {isProcessing ? 'SYNTHESIZING...' : 'INITIATE CAUSAL COPILOT'}
+        </button>
+
+        {stage !== 'idle' && (
+           <div className="flex flex-col items-center gap-2 mt-4 px-6 py-4 bg-white/95 border border-black/10 rounded backdrop-blur-lg shadow-mistral">
+             <div className="flex items-center gap-3 text-sm text-mistral-dark font-sans max-w-sm text-center font-medium">
+                 {isProcessing && <Loader2 className="w-4 h-4 animate-spin text-[#E65C00]" />}
+                 <span>
+                    {stage === 'queued' && "Job queued in ledger..."}
+                    {stage === 'parsing_llm' && "LLM Parsing Request..."}
+                    {stage === 'identifying_algo' && "Identifying Causal Graph..."}
+                    {stage === 'estimating_math' && "Evaluating Mathematical Estimands..."}
+                    {stage === 'formatting_evidence' && "Formatting Evidence Card..."}
+                    {stage === 'done' && "Synthesis Complete."}
+                    {stage === 'failed' && "Synthesis Failed."}
+                 </span>
+             </div>
+             
+             {/* Progress Bar */}
+             {isProcessing && (
+                <div className="w-64 h-1 bg-mistral-sand rounded overflow-hidden mt-1">
+                   <motion.div 
+                     className="h-full bg-[#E65C00]"
+                     initial={{ width: 0 }}
+                     animate={{ width: `${progress}%` }}
+                     transition={{ duration: 0.3 }}
+                   />
+                </div>
+             )}
+             
+             {error && <div className="text-red-500 font-sans font-medium text-xs mt-2">{error}</div>}
+           </div>
+        )}
+      </div>
     </div>
   );
 }

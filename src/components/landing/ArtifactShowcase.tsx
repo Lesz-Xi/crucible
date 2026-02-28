@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { FileText, Activity, GitCommit, ArrowRight } from "lucide-react";
 import { useRef } from "react";
+import Image from "next/image";
 
 const artifacts = [
   {
@@ -10,7 +11,7 @@ const artifacts = [
     description: "A directed acyclic graph (DAG) representing confirmed dependencies.",
     icon: Activity,
     meta: "FORMAT: .JSON / .SVG",
-    color: "bg-wabi-gold/10 text-wabi-gold",
+    color: "bg-mistral-orange/10 text-mistral-orange",
     delay: 0
   },
   {
@@ -18,7 +19,7 @@ const artifacts = [
     description: "Publication-ready academic prose with BibTeX citations.",
     icon: FileText,
     meta: "FORMAT: .TEX / .PDF",
-    color: "bg-wabi-sumi/5 text-wabi-sumi",
+    color: "bg-mistral-dark/10 text-mistral-dark",
     delay: 0.2
   },
   {
@@ -26,7 +27,7 @@ const artifacts = [
     description: "Step-by-step verification log of every logical inference.",
     icon: GitCommit,
     meta: "FORMAT: .LOG / .MD",
-    color: "bg-blue-900/10 text-blue-900",
+    color: "bg-blue-600/10 text-blue-600",
     delay: 0.4
   }
 ];
@@ -42,7 +43,7 @@ export function ArtifactShowcase() {
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-60%"]);
 
   return (
-    <section ref={targetRef} className="relative z-10 w-full h-[250vh]">
+    <section ref={targetRef} className="relative z-10 w-full h-[250vh] bg-white">
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         
         {/* Full width container for the content moving horizontally */}
@@ -50,9 +51,9 @@ export function ArtifactShowcase() {
           
           {/* Header section acting as the first horizontal element */}
           <div className="w-[300px] md:w-[400px] flex-shrink-0 pr-8">
-             <h2 className="font-serif text-4xl text-wabi-sumi mb-4">Evidence of Truth</h2>
-             <p className="font-sans text-lg text-wabi-sumi/70 leading-relaxed">
-                We do not sell "features". We provide the instruments to generate <span className="text-wabi-gold italic">verified artifacts</span>.
+             <h2 className="font-sans font-bold text-5xl text-mistral-dark mb-6 tracking-tight">Evidence of Truth</h2>
+             <p className="font-sans text-xl text-mistral-dark/70 leading-relaxed font-light">
+                We do not sell "features". We provide the instruments to generate <span className="font-medium">verified artifacts</span>.
              </p>
           </div>
 
@@ -61,39 +62,43 @@ export function ArtifactShowcase() {
              {artifacts.map((item, i) => (
                 <div
                    key={i}
-                   className="group lg-card relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[360px] w-[320px] md:w-[380px] flex-shrink-0 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+                   className="group relative bg-white border border-black/5 p-10 min-h-[360px] w-[320px] md:w-[380px] flex-shrink-0 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-mistral hover:-translate-y-1 rounded-xl"
                 >
                    {/* Background Texture/Gradient */}
-                   <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-wabi-sand/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                   <div className="absolute inset-0 bg-gradient-to-br from-mistral-sand/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                    
                    {/* Top Meta */}
                    <div className="relative z-10 flex justify-between items-start mb-8">
-                      <div className={`lg-control p-3 rounded-sm ${item.color}`}>
-                         <item.icon className="w-6 h-6" strokeWidth={1.5} />
+                      <div className={`p-3 rounded transition-colors ${item.color}`}>
+                         <item.icon className="w-6 h-6" strokeWidth={2} />
                       </div>
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-wabi-ink/30 group-hover:text-wabi-ink/50 transition-colors">
+                      <span className="font-sans font-medium text-[11px] uppercase tracking-wider text-mistral-dark/40 group-hover:text-mistral-dark/60 transition-colors">
                          {item.meta}
                       </span>
                    </div>
 
                    {/* Content */}
                    <div className="relative z-10">
-                      <h3 className="font-serif text-2xl text-wabi-sumi mb-3 group-hover:text-wabi-gold transition-colors duration-300">
+                      <h3 className="font-sans font-bold text-2xl text-mistral-dark mb-3 tracking-tight">
                          {item.title}
                       </h3>
-                      <p className="font-sans text-sm text-wabi-sumi/60 leading-relaxed group-hover:text-wabi-sumi/80 transition-colors">
+                      <p className="font-sans text-base text-mistral-dark/70 leading-relaxed">
                          {item.description}
                       </p>
                    </div>
 
                    {/* Bottom Action */}
-                   <button type="button" className="relative z-10 mt-8 lg-control w-max flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 transition-colors duration-300 group-hover:text-wabi-sumi">
+                   <button type="button" className="relative z-10 mt-8 w-max flex items-center gap-2 px-4 py-2 bg-mistral-sand/50 hover:bg-mistral-sand text-sm font-sans font-medium text-mistral-dark rounded transition-colors duration-300">
                       <span>View Sample</span>
-                      <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                    </button>
                 </div>
              ))}
           </div>
+
+           {/* End Spacer */}
+           <div className="w-[100px] flex-shrink-0"></div>
+
         </motion.div>
       </div>
     </section>

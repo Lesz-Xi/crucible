@@ -1,3 +1,5 @@
+"use client";
+
 import { Wind, Droplets, Circle, Sparkles } from "lucide-react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
@@ -38,24 +40,18 @@ function FeatureCard({ feature, idx }: { feature: any; idx: number }) {
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group lg-card relative p-8 rounded-[22px] border border-[var(--border-subtle)]/70 bg-[var(--bg-secondary)]/78 shadow-wabi transition-colors duration-[220ms] hover:bg-[var(--bg-secondary)]"
+      className="group relative p-10 rounded-xl border border-black/5 bg-white shadow-sm transition-all duration-300 hover:shadow-mistral hover:-translate-y-1"
     >
-      <div className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${feature.toneClass} to-transparent`} />
-      <div className="absolute top-6 right-6 opacity-15 group-hover:opacity-30 transition-opacity duration-[180ms]" style={{ transform: "translateZ(20px)" }}>
-         <Sparkles className="w-6 h-6 text-[var(--text-primary)]" />
-      </div>
-
-      <div className="lg-control w-14 h-14 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/45 flex items-center justify-center mb-6 shadow-sm transition-transform duration-[220ms] ease-out group-hover:scale-[1.04]" style={{ transform: "translateZ(30px)" }}>
-         <Icon className={`w-6 h-6 ${feature.iconClass}`} />
-      </div>
-
-      <div style={{ transform: "translateZ(40px)" }}>
-        <h3 className="font-serif text-xl text-[var(--text-primary)] mb-3">{feature.title}</h3>
-        <p className="font-mono text-xs leading-relaxed text-[var(--text-secondary)]">{feature.description}</p>
-      </div>
+      <div className={`pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${feature.toneClass} to-transparent rounded-t-xl opacity-50 group-hover:opacity-100 transition-opacity duration-300`} />
       
-      {/* Subtle hover glow */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-10 pointer-events-none transition-opacity duration-500 rounded-[22px]" style={{ background: `radial-gradient(circle at center, var(--wabi-gold), transparent 70%)` }} />
+      <div className="w-16 h-16 rounded mb-8 flex items-center justify-center bg-mistral-sand group-hover:bg-mistral-sand/70 transition-colors duration-300">
+         <Icon className={`w-8 h-8 ${feature.iconClass}`} />
+      </div>
+
+      <div>
+        <h3 className="font-sans font-bold text-2xl text-mistral-dark mb-4 tracking-tight">{feature.title}</h3>
+        <p className="font-sans text-base leading-relaxed text-mistral-dark/70">{feature.description}</p>
+      </div>
     </motion.div>
   );
 }
@@ -64,38 +60,38 @@ export function Features() {
   const features = [
     {
       icon: Wind,
-      iconClass: "text-wabi-moss",
-      toneClass: "from-wabi-moss/18",
-      title: "Fukinsei (Asymmetry)",
+      iconClass: "text-[#008A8A]", // Mistral teal
+      toneClass: "from-[#008A8A]",
+      title: "Asymmetry",
       description: "Detecting value in irregular data patterns that conventional models discard.",
     },
     {
       icon: Droplets,
-      iconClass: "text-wabi-clay",
-      toneClass: "from-wabi-clay/16",
-      title: "Shibumi (Subtlety)",
+      iconClass: "text-[#E65C00]", // Mistral orange
+      toneClass: "from-[#E65C00]",
+      title: "Subtlety",
       description: "Generating insights that are quiet but profound, prioritizing depth over noise.",
     },
     {
       icon: Circle,
-      iconClass: "text-wabi-rust",
-      toneClass: "from-wabi-rust/16",
-      title: "Datsuzoku (Transcendence)",
+      iconClass: "text-[#4B0082]", // Indigo/purple accent
+      toneClass: "from-[#4B0082]",
+      title: "Transcendence",
       description: "Breaking free from habituated thinking to discover genuinely novel connections.",
     },
   ];
 
   return (
-    <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:py-32">
-       <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+    <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-24 lg:py-40 bg-mistral-sand w-full">
+       <div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
           <div className="inline-flex items-center gap-2 mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-wabi-moss"></div>
-             <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">Core Capabilities</span>
+             <div className="w-2 h-2 rounded bg-[#008A8A]"></div>
+             <span className="font-sans font-medium text-xs uppercase tracking-widest text-[#008A8A]">Core Capabilities</span>
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl text-[var(--text-primary)]">
+          <h2 className="font-sans font-bold text-5xl md:text-6xl text-mistral-dark tracking-tighter">
              Organic Intelligence
           </h2>
-          <p className="text-[var(--text-secondary)] leading-relaxed">
+          <p className="font-sans text-xl text-mistral-dark/70 leading-relaxed font-light">
              Beyond mere calculation. A synthesis engine designed to understand the 
              nuance, context, and contradictions inherent in human knowledge.
           </p>

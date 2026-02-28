@@ -10,9 +10,9 @@ const cards = [
     sub: "Observation",
     desc: "Detecting patterns in raw data",
     icon: Eye,
-    color: "text-wabi-stone",
-    border: "border-wabi-stone/30",
-    bg: "bg-wabi-stone/5"
+    color: "text-mistral-dark",
+    border: "border-black/5",
+    bg: "bg-mistral-sand"
   },
   {
     level: "L2",
@@ -20,9 +20,9 @@ const cards = [
     sub: "do(x) Operator",
     desc: "Changing the world to learn",
     icon: Hand,
-    color: "text-wabi-rust",
-    border: "border-wabi-rust/40",
-    bg: "bg-wabi-rust/5"
+    color: "text-[#E65C00]",
+    border: "border-black/5",
+    bg: "bg-mistral-sand"
   },
   {
     level: "L3",
@@ -30,9 +30,9 @@ const cards = [
     sub: "Imagination",
     desc: "Reasoning about alternative realities",
     icon: GitMerge,
-    color: "text-wabi-gold",
-    border: "border-wabi-gold/50",
-    bg: "bg-wabi-gold/5"
+    color: "text-[#4B0082]",
+    border: "border-black/5",
+    bg: "bg-mistral-sand"
   }
 ];
 
@@ -77,30 +77,30 @@ export function EpistemicCards() {
             variants={cardVariants}
             className={`
               relative group overflow-hidden
-              w-64 h-40 p-6 rounded-2xl
-              backdrop-blur-md bg-glass-card
+              w-64 h-40 p-6 rounded
+              bg-white
               border ${card.border}
               flex flex-col justify-between
-              transition-all duration-500 hover:-translate-y-1 hover:shadow-wabi
+              transition-all duration-300 hover:-translate-y-1 hover:shadow-mistral shadow-sm
             `}
           >
             {/* Ambient Background Glow */}
             <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${card.bg}`} />
             
             {/* Header */}
-            <div className="relative z-10 flex justify-between items-start">
-              <span className={`font-mono text-xs uppercase tracking-widest ${card.color}`}>
+            <div className="relative z-10 flex justify-between items-start mb-4">
+              <span className={`font-sans font-medium text-xs uppercase tracking-widest ${card.color}`}>
                 {card.level}
               </span>
-              <Icon className={`w-5 h-5 ${card.color} opacity-80`} strokeWidth={1.5} />
+              <Icon className={`w-5 h-5 ${card.color}`} strokeWidth={2} />
             </div>
 
             {/* Content */}
             <div className="relative z-10">
-              <h3 className="font-serif text-lg text-[var(--text-primary)] leading-none mb-1">
+              <h3 className="font-sans font-bold text-xl text-mistral-dark leading-none mb-2">
                 {card.label}
               </h3>
-              <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-tight">
+              <p className="font-sans font-medium text-xs text-mistral-dark/50 uppercase tracking-tight">
                 {card.sub}
               </p>
             </div>

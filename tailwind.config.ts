@@ -23,6 +23,11 @@ const config: Config = {
         "wabi-stone": "var(--wabi-stone)",
         "wabi-sand": "var(--wabi-sand)",
         "wabi-charcoal": "var(--wabi-charcoal)",
+        "mistral-dark": "#0B0C10",
+        "mistral-sand": "#F4F0E8",
+        "mistral-orange": "#FF8A00",
+        "mistral-orange-light": "#FFB044",
+        "mistral-beige": "#FBF9F6",
       },
       fontFamily: {
         serif: ["var(--font-crimson)", "var(--font-playfair)", "serif"],
@@ -41,6 +46,9 @@ const config: Config = {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
+      boxShadow: {
+        'mistral': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+      }
     },
   },
   plugins: [

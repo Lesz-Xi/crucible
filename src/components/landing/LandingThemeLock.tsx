@@ -11,21 +11,21 @@ export function LandingThemeLock() {
     const body = document.body;
 
     // Align next-themes state + DOM classes.
-    setTheme('light');
+    setTheme('dark');
 
-    const forceLight = () => {
-      root.classList.remove('dark');
-      root.classList.add('light');
-      body.classList.remove('dark');
-      body.classList.add('light');
+    const forceDark = () => {
+      root.classList.remove('light');
+      root.classList.add('dark');
+      body.classList.remove('light');
+      body.classList.add('dark');
     };
 
-    forceLight();
+    forceDark();
 
     // Guard against any late class flips while landing page is mounted.
     const observer = new MutationObserver(() => {
-      if (root.classList.contains('dark') || body.classList.contains('dark')) {
-        forceLight();
+      if (root.classList.contains('light') || body.classList.contains('light')) {
+        forceDark();
       }
     });
 

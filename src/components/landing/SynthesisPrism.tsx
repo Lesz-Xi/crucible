@@ -121,17 +121,17 @@ export function SynthesisPrism() {
         className="relative z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none"
       >
           <div className="inline-flex items-center gap-2 mb-6">
-             <div className="w-1.5 h-1.5 rounded-full bg-wabi-gold"></div>
-             <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
+             <div className="w-2 h-2 rounded bg-[#008A8A]"></div>
+             <span className="font-sans font-medium text-xs uppercase tracking-widest text-mistral-dark/80">
                 Process Layer
              </span>
           </div>
           
-          <h2 className="font-serif text-5xl md:text-6xl text-[var(--text-primary)] mb-6 leading-tight drop-shadow-2xl shadow-black/50">
-             The Synthesis <br/> <span className="italic text-wabi-gold drop-shadow-md">Prism</span>
+          <h2 className="font-sans font-bold text-5xl md:text-6xl text-mistral-dark mb-6 leading-tight tracking-tighter drop-shadow-sm">
+             The Synthesis <br/> <span className="text-[#008A8A]">Prism</span>
           </h2>
           
-          <p className="font-mono text-xs md:text-sm text-[var(--text-muted)] max-w-md mx-auto leading-relaxed opacity-80 backdrop-blur-sm bg-[var(--bg-card)]/30 rounded-lg p-4">
+          <p className="font-sans text-sm md:text-base text-mistral-dark/70 max-w-md mx-auto leading-relaxed bg-white/70 backdrop-blur-md rounded border border-black/5 p-4 shadow-sm">
              Raw ambiguity enters. Causal clarity exits. 
              A refraction engine that splits complex data streams into 
              distinct, verifiable truth vectors.

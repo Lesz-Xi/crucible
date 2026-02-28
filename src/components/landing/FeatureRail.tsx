@@ -23,30 +23,30 @@ const FEATURES: LandingFeature[] = [
     subtitle: "Quiet Precision",
     description: "Run causal dialogue with focused intervention logic.",
     icon: MessageSquare,
-    accentClass: "text-wabi-moss",
-    toneClass: "from-wabi-moss/10",
+    accentClass: "text-[#008A8A]",
+    toneClass: "from-[#008A8A]/10",
     layoutClass: "md:col-span-4 lg:col-span-3 lg:mt-10 lg:min-h-[208px]",
-    hoverTextClass: "group-hover:text-wabi-moss",
+    hoverTextClass: "group-hover:text-[#008A8A]",
   },
   {
     label: "Legal",
     subtitle: "Ritual Flow",
     description: "Trace intent to action to harm with legal causation.",
     icon: Scale,
-    accentClass: "text-wabi-rust",
-    toneClass: "from-wabi-rust/10",
+    accentClass: "text-[#E65C00]",
+    toneClass: "from-[#E65C00]/10",
     layoutClass: "md:col-span-4 lg:col-span-6 lg:-mt-4 lg:min-h-[236px]",
-    hoverTextClass: "group-hover:text-wabi-rust",
+    hoverTextClass: "group-hover:text-[#E65C00]",
   },
   {
     label: "Learn",
     subtitle: "Warm Intelligence",
     description: "Personalize learning paths through adaptive causal models.",
     icon: GraduationCap,
-    accentClass: "text-wabi-clay",
-    toneClass: "from-wabi-sand/20",
+    accentClass: "text-[#4B0082]",
+    toneClass: "from-[#4B0082]/10",
     layoutClass: "md:col-span-4 lg:col-span-3 lg:mt-10 lg:min-h-[208px]",
-    hoverTextClass: "group-hover:text-wabi-clay",
+    hoverTextClass: "group-hover:text-[#4B0082]",
   },
 ];
 
@@ -59,10 +59,10 @@ export function FeatureRail() {
       aria-label="Primary product features"
       className="relative z-10 max-w-7xl mx-auto px-6 pt-6 md:pt-10 lg:pt-14 pb-24 md:pb-32"
     >
-      <div className="max-w-6xl mx-auto mb-10 rounded-[20px] lg-card p-5 md:p-6">
+      <div className="max-w-6xl mx-auto mb-10 rounded shadow-sm bg-white border border-black/5 p-5 md:p-6">
         <div className="grid gap-5 md:grid-cols-2">
           <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">Liquid Segmented</p>
+            <p className="mb-2 font-sans font-medium text-[10px] uppercase tracking-widest text-mistral-dark/50">Liquid Segmented</p>
             <LiquidSegmentedControl
               value={segment}
               onChange={setSegment}
@@ -73,7 +73,7 @@ export function FeatureRail() {
             />
           </div>
           <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">Glass Intensity</p>
+            <p className="mb-2 font-sans font-medium text-[10px] uppercase tracking-widest text-mistral-dark/50">Glass Intensity</p>
             <LiquidSlider value={intensity} onChange={setIntensity} min={0} max={100} />
           </div>
         </div>
@@ -96,8 +96,8 @@ export function FeatureRail() {
               <article
                 key={`${feature.label}-${idx}`}
                 className={[
-                  "group lg-card relative rounded-[14px] border border-[var(--border-subtle)]/90 bg-[var(--bg-secondary)]/88 p-6 md:p-7 shrink-0 w-[300px] md:w-[380px] lg:w-[420px]",
-                  "shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-1",
+                  "group relative rounded bg-white p-6 md:p-7 shrink-0 w-[300px] md:w-[380px] lg:w-[420px]",
+                  "border border-black/5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-mistral",
                   cardHeight
                 ].join(" ")}
               >
@@ -106,16 +106,16 @@ export function FeatureRail() {
                 <div className="flex items-center justify-between">
                   <div className="inline-flex items-center gap-2">
                     <Icon className={`h-4 w-4 ${feature.accentClass}`} />
-                    <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]/95">
+                    <span className="font-sans font-bold text-xs uppercase tracking-widest text-mistral-dark">
                       {feature.label}
                     </span>
                   </div>
                 </div>
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                <p className="mt-2 font-sans font-medium text-[10px] uppercase tracking-widest text-mistral-dark/50">
                   {feature.subtitle}
                 </p>
-                <div className="mt-5 h-px w-14 bg-gradient-to-r from-[var(--border-subtle)] to-transparent" />
-                <p className={`mt-4 text-sm leading-relaxed text-[var(--text-secondary)] transition-colors duration-300 ${feature.hoverTextClass}`}>
+                <div className="mt-5 h-px w-14 bg-gradient-to-r from-black/10 to-transparent" />
+                <p className={`mt-4 text-sm font-sans leading-relaxed text-mistral-dark/80 transition-colors duration-300 ${feature.hoverTextClass}`}>
                   {feature.description}
                 </p>
               </article>

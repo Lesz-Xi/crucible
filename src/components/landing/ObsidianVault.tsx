@@ -57,7 +57,7 @@ function Monolith() {
         {/* Shadow/Grounding */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.5, 0]}>
             <planeGeometry args={[12, 12]} />
-            <shadowMaterial opacity={0.3} color="#2C2824" />
+            <shadowMaterial opacity={0.1} color="#000000" />
         </mesh>
     </group>
   );
@@ -83,26 +83,26 @@ export function ObsidianVault() {
       </div>
 
       {/* Content Overlay - Cinematic Bottom Alignment */}
-      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/60 to-transparent pointer-events-none z-0" />
+      <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none z-0" />
       <motion.div 
          initial={{ opacity: 0, y: 50 }}
          whileInView={{ opacity: 1, y: 0 }}
          viewport={{ once: true, margin: "-20%" }}
          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-         className="absolute bottom-0 w-full pb-24 z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none text-[var(--text-primary)]"
+         className="absolute bottom-0 w-full pb-24 z-10 text-center max-w-4xl mx-auto px-6 pointer-events-none text-mistral-dark"
       >
           <div className="inline-flex items-center gap-2 mb-6">
-             <div className="w-1.5 h-1.5 rounded-full bg-wabi-gold"></div>
-             <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-muted)] opacity-70">
+             <div className="w-1.5 h-1.5 rounded-full bg-mistral-orange"></div>
+             <span className="font-sans font-medium text-xs uppercase tracking-widest text-mistral-dark/50">
                 Storage Layer
              </span>
           </div>
           
-          <h2 className="font-serif text-5xl md:text-6xl mb-6 leading-tight">
-             The Obsidian <br/> <span className="italic text-wabi-gold">Vault</span>
+          <h2 className="font-sans font-bold text-5xl md:text-6xl mb-6 leading-tight">
+             The Obsidian <br/> <span className="italic text-mistral-dark/80">Vault</span>
           </h2>
           
-          <p className="font-mono text-xs md:text-sm max-w-md mx-auto leading-relaxed opacity-80 backdrop-blur-sm bg-[var(--bg-card)]/50 rounded-lg p-4 text-[var(--text-muted)]">
+          <p className="font-sans font-medium text-xs md:text-sm max-w-md mx-auto leading-relaxed opacity-80 backdrop-blur-sm bg-mistral-sand/50 rounded p-4 text-mistral-dark/80">
              Hardened truth. Axioms that withstood the audit. 
              Stored in an immutable lattice of high-density causal graphs.
           </p>

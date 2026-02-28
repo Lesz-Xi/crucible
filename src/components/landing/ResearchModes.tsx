@@ -9,46 +9,46 @@ export function ResearchModes() {
         {/* LEFT: AUTONOMOUS SYNTHESIS */}
         <div className="relative group hover:-translate-y-1 transition-transform duration-500">
           {/* Glow Effect */}
-          <div className="absolute -inset-1 bg-gradient-to-br from-wabi-rust/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+          <div className="absolute -inset-1 bg-gradient-to-br from-[#E65C00]/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           
           <div 
-            className="relative h-full lg-card bg-glass-card border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
+            className="relative h-full bg-white border border-black/5 rounded-[2rem] p-10 lg:p-12 shadow-sm hover:shadow-mistral flex flex-col justify-between transition-all duration-500"
           >
             <div>
               <div className="flex justify-between items-start mb-10">
-                <div className="lg-control p-3 rounded-full bg-wabi-rust/5">
-                   <User className="w-6 h-6 text-wabi-rust" strokeWidth={1.5} />
+                <div className="p-3 rounded bg-[#E65C00]/10">
+                   <User className="w-6 h-6 text-[#E65C00]" strokeWidth={2} />
                 </div>
-                <span className="font-serif text-2xl italic text-wabi-sand/50">01</span>
+                <span className="font-sans font-bold text-2xl text-mistral-dark/20">01</span>
               </div>
               
-              <h2 className="font-serif text-4xl text-[var(--text-primary)] mb-6 leading-tight">
+              <h2 className="font-sans font-bold text-4xl text-mistral-dark mb-6 leading-tight tracking-tight">
                 Autonomous<br/>Synthesis
               </h2>
               
-              <p className="font-sans text-sm text-wabi-stone leading-relaxed mb-10">
+              <p className="font-sans text-base text-mistral-dark/70 leading-relaxed mb-10">
                 For the researcher operating in deep isolation. 
                 A private, high-density environment to synthesize complex graphs without noise.
               </p>
 
               <div className="space-y-4 mb-10">
                 <div className="flex items-center gap-3">
-                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
-                      <Lock className="w-3 h-3 text-wabi-rust" />
+                   <div className="w-6 h-6 rounded bg-[#E65C00]/10 flex items-center justify-center">
+                      <Lock className="w-3 h-3 text-[#E65C00]" />
                    </div>
-                   <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Encrypted Session</span>
+                   <span className="text-xs font-sans font-medium uppercase tracking-widest text-[#E65C00]">Encrypted Session</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-rust/10 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-wabi-rust"></div>
+                   <div className="w-6 h-6 rounded bg-[#E65C00]/10 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded bg-[#E65C00]"></div>
                    </div>
-                   <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Unfiltered Inference</span>
+                   <span className="text-xs font-sans font-medium uppercase tracking-widest text-[#E65C00]">Unfiltered Inference</span>
                 </div>
               </div>
             </div>
 
             <Link href="/chat" className="w-full">
-              <button className="lg-control w-full py-4 bg-[var(--text-primary)] text-[var(--bg-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] group-hover:bg-[var(--text-secondary)] transition-colors relative overflow-hidden">
+              <button className="w-full py-4 bg-mistral-dark text-white rounded font-sans font-bold text-sm hover:bg-mistral-dark/90 transition-colors relative overflow-hidden">
                  <span className="relative z-10">Enter Deep Work</span>
               </button>
             </Link>
@@ -58,47 +58,47 @@ export function ResearchModes() {
         {/* RIGHT: EPISTEMIC VERIFICATION */}
         <div className="relative group hover:-translate-y-1 transition-transform duration-500">
            {/* Glow Effect */}
-           <div className="absolute -inset-1 bg-gradient-to-br from-wabi-moss/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+           <div className="absolute -inset-1 bg-gradient-to-br from-[#008A8A]/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
            <div 
-            className="relative h-full lg-card bg-glass-card border border-[var(--border-subtle)]/40 rounded-[2rem] p-10 lg:p-12 shadow-wabi flex flex-col justify-between transition-colors duration-500"
+            className="relative h-full bg-white border border-black/5 rounded-[2rem] p-10 lg:p-12 shadow-sm hover:shadow-mistral flex flex-col justify-between transition-all duration-500"
           >
             <div>
               <div className="flex justify-between items-start mb-10">
-                <div className="lg-control p-3 rounded-full bg-wabi-moss/10">
-                   <Users className="w-6 h-6 text-wabi-moss" strokeWidth={1.5} />
+                <div className="p-3 rounded bg-[#008A8A]/10">
+                   <Users className="w-6 h-6 text-[#008A8A]" strokeWidth={2} />
                 </div>
-                <span className="font-serif text-2xl italic text-wabi-sand/50">02</span>
+                <span className="font-sans font-bold text-2xl text-mistral-dark/20">02</span>
               </div>
 
-              <h2 className="font-serif text-4xl text-[var(--text-primary)] mb-6 leading-tight">
+              <h2 className="font-sans font-bold text-4xl text-mistral-dark mb-6 leading-tight tracking-tight">
                 Epistemic<br/>Verification
               </h2>
               
-              <p className="font-sans text-sm text-wabi-stone leading-relaxed mb-10">
+              <p className="font-sans text-base text-mistral-dark/70 leading-relaxed mb-10">
                 For the institute requiring verified consensus. 
                 A shared epistemic layer where every causal inference is logged, audited, and peer-reviewed.
               </p>
 
               <div className="space-y-4 mb-10">
                 <div className="flex items-center gap-3">
-                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
-                      <Share2 className="w-3 h-3 text-wabi-moss" />
+                   <div className="w-6 h-6 rounded bg-[#008A8A]/10 flex items-center justify-center">
+                      <Share2 className="w-3 h-3 text-[#008A8A]" />
                    </div>
-                   <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Epistemic Validation</span>
+                   <span className="text-xs font-sans font-medium uppercase tracking-widest text-[#008A8A]">Epistemic Validation</span>
                 </div>
                 <div className="flex items-center gap-3">
-                   <div className="lg-control w-5 h-5 rounded-full bg-wabi-moss/10 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-wabi-moss"></div>
+                   <div className="w-6 h-6 rounded bg-[#008A8A]/10 flex items-center justify-center">
+                      <div className="w-2 h-2 rounded bg-[#008A8A]"></div>
                    </div>
-                   <span className="text-xs font-mono uppercase tracking-widest text-[var(--text-secondary)]/70">Audit Trail</span>
+                   <span className="text-xs font-sans font-medium uppercase tracking-widest text-[#008A8A]">Audit Trail</span>
                 </div>
               </div>
             </div>
 
             <Link href="/epistemic" className="w-full">
-              <button className="lg-control w-full py-4 bg-[var(--bg-primary)] border border-[var(--border-subtle)] text-[var(--text-primary)] rounded-full font-mono text-xs uppercase tracking-[0.2em] hover:bg-[var(--text-primary)] hover:text-[var(--bg-primary)] transition-all">
-                 Start Joint Audit
+              <button className="w-full py-4 bg-mistral-sand text-mistral-dark rounded font-sans font-bold text-sm hover:bg-mistral-sand/80 transition-all border border-black/5">
+                 <span className="relative z-10">Start Joint Audit</span>
               </button>
             </Link>
           </div>

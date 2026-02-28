@@ -36,32 +36,32 @@ export function Process() {
   const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="process" ref={containerRef} className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:py-32 border-t border-[var(--border-subtle)]/20">
-      <div className="grid lg:grid-cols-2 gap-16 items-center">
+    <section id="process" ref={containerRef} className="relative z-10 w-full py-24 lg:py-40 bg-white border-t border-black/5">
+      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 mb-6">
-            <div className="w-1.5 h-1.5 rounded-full bg-wabi-stone"></div>
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-wabi-ink-light">
+          <div className="inline-flex items-center gap-2 mb-8">
+            <div className="w-2 h-2 rounded bg-[#E65C00]"></div>
+            <span className="font-sans font-medium text-xs uppercase tracking-widest text-[#E65C00]">
               Protocol
             </span>
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl text-[var(--text-primary)] mb-8 leading-tight">
-            The Synthesis <br /> <span className="italic">Pipeline</span>
+          <h2 className="font-sans font-bold text-5xl md:text-6xl text-mistral-dark mb-8 tracking-tighter leading-none">
+            The Synthesis Pipeline.
           </h2>
-          <p className="text-[var(--text-secondary)] leading-relaxed max-w-md">
+          <p className="font-sans text-xl font-light text-mistral-dark/70 leading-relaxed max-w-md">
             We do not simply retrieve information. We transmute it.
             Our pipeline mimics the cognitive leap of a disciplined mind, moving
             from observation to insight.
           </p>
         </div>
 
-        <div className="relative space-y-8">
+        <div className="relative space-y-12">
            {/* Static background line */}
-           <div className="absolute left-[1.65rem] top-4 bottom-4 w-px bg-[var(--border-subtle)]/20 -z-10" />
+           <div className="absolute left-[1.65rem] top-4 bottom-4 w-px bg-mistral-sand -z-10" />
            
            {/* Animated fill line */}
            <motion.div 
-             className="absolute left-[1.65rem] top-4 bottom-4 w-px bg-wabi-clay -z-10 origin-top"
+             className="absolute left-[1.65rem] top-4 bottom-4 w-px bg-mistral-orange -z-10 origin-top"
              style={{ height: lineHeight }}
            />
 
@@ -72,15 +72,15 @@ export function Process() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-10%" }}
                 transition={{ duration: 0.7, delay: idx * 0.15, ease: "easeOut" }}
-                className="relative pl-16 group"
+                className="relative pl-20 group"
               >
                  {/* Node */}
-                 <div className="absolute left-[1.4rem] top-1 w-2.5 h-2.5 rounded-full bg-wabi-washi border-2 border-wabi-sand group-hover:border-wabi-clay transition-colors duration-500 z-10" />
+                 <div className="absolute left-[1.3rem] top-2 w-3 h-3 rounded bg-white border-2 border-mistral-sand group-hover:border-mistral-orange transition-colors duration-500 z-10" />
                  
-                 <div className="space-y-2">
-                    <span className="font-mono text-[10px] text-wabi-clay uppercase tracking-widest block mb-1">Step {step.num}</span>
-                    <h3 className="font-serif text-base text-[var(--text-primary)] transition-colors duration-300">{step.title}</h3>
-                    <p className="text-sm text-[var(--text-muted)] leading-relaxed max-w-sm">{step.desc}</p>
+                 <div className="space-y-3">
+                    <span className="font-sans font-bold text-xs text-mistral-orange uppercase tracking-wider block mb-2">Step {step.num}</span>
+                    <h3 className="font-sans font-bold text-2xl text-mistral-dark transition-colors duration-300 tracking-tight">{step.title}</h3>
+                    <p className="font-sans text-base text-mistral-dark/70 leading-relaxed max-w-sm">{step.desc}</p>
                  </div>
               </motion.div>
            ))}

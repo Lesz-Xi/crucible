@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useState } from "react";
+import Image from "next/image";
 
 interface ModuleProps {
   x: number;
@@ -73,15 +74,16 @@ export function CausalLattice() {
 
   return (
     <section 
-       className="relative z-10 w-full py-32 overflow-hidden min-h-[800px] flex flex-col items-center"
+       className="relative z-10 w-full py-32 overflow-hidden min-h-[800px] flex flex-col items-center bg-mistral-sand"
        onMouseMove={handleMouseMove}
        onMouseLeave={() => { mouseX.set(0); mouseY.set(0); }}
     >
-      
+
+
       {/* Header */}
       <div className="relative z-20 text-center mb-16">
-         <h2 className="font-serif text-4xl text-[var(--text-primary)] mb-2">System Architecture</h2>
-         <p className="font-mono text-xs text-[var(--text-muted)] uppercase tracking-widest">
+         <h2 className="font-sans font-bold text-4xl text-mistral-dark mb-2 tracking-tight">System Architecture</h2>
+         <p className="font-sans text-sm text-mistral-dark/70 font-medium tracking-wide">
             The High-Dense Causal Blueprint
          </p>
       </div>
@@ -180,7 +182,7 @@ export function CausalLattice() {
                    {/* Node Dot */}
                    <div className="absolute left-[9px] top-6 w-1.5 h-1.5 -ml-[3px] bg-wabi-sumi rounded-full border border-wabi-gold"></div>
                    
-                   <div className="bg-white/40 backdrop-blur-sm border border-wabi-sand/20 p-6 rounded-sm">
+                   <div className="bg-glass-card backdrop-blur-sm border border-wabi-sand/20 p-6 rounded-sm">
                       <div className="font-mono text-[9px] text-wabi-ink/40 mb-2">{node.specs}</div>
                       <h3 className="font-serif text-lg text-wabi-sumi mb-2">{node.label}</h3>
                       <p className="font-sans text-sm text-wabi-sumi/80 leading-relaxed mb-4">{node.description}</p>
