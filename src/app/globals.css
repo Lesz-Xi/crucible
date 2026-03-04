@@ -52,8 +52,8 @@
   --space-3xl: 64px;
   
   /* Typography */
-  --font-geist-sans: "Geist Sans", -apple-system, sans-serif;
-  --font-geist-mono: "Geist Mono", "Courier New", monospace;
+  --font-geist-sans: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-geist-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-crimson: "Crimson Pro", "Times New Roman", serif;
   --font-playfair: "Playfair Display", serif;
 
