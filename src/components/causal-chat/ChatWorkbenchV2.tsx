@@ -298,6 +298,7 @@ export function ChatWorkbenchV2() {
   const [alignmentPosture, setAlignmentPosture] = useState<string>('No unaudited intervention claims without identifiability gates.');
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
   const [claimCopied, setClaimCopied] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
@@ -1049,6 +1050,16 @@ export function ChatWorkbenchV2() {
     }
   }, []);
 
+  const handleCopyMessage = useCallback(async (messageId: string, content: string) => {
+    try {
+      await navigator.clipboard.writeText(content || '');
+      setCopiedMessageId(messageId);
+      window.setTimeout(() => setCopiedMessageId((current) => (current === messageId ? null : current)), 1200);
+    } catch {
+      setCopiedMessageId(null);
+    }
+  }, []);
+
   const handleQuickPrompt = useCallback((id: string, snippet: string) => {
     const matched = QUICK_PROMPTS.find((item) => item.id === id);
     if (matched) setSelectedQuickPrompt(matched.id);
@@ -1161,9 +1172,20 @@ export function ChatWorkbenchV2() {
                     key={message.id}
                     className={message.role === 'user' ? 'lab-card-interactive ml-auto max-w-[88%]' : 'lab-card mr-auto max-w-[92%]'}
                   >
-                    <div className="mb-2 flex items-center justify-between">
+                    <div className="mb-2 flex items-center justify-between gap-2">
                       <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
-                      <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void handleCopyMessage(message.id, message.content)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-white/55 text-xs text-[var(--lab-text-secondary)] transition hover:bg-white/80 dark:bg-[#27272a]/70"
+                          title={copiedMessageId === message.id ? `Copied ${message.role === 'user' ? 'prompt' : 'response'}` : `Copy ${message.role === 'user' ? 'prompt' : 'response'}`}
+                          aria-label={copiedMessageId === message.id ? 'Copied' : 'Copy message'}
+                        >
+                          {copiedMessageId === message.id ? '✓' : '⧉'}
+                        </button>
+                        <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
+                      </div>
                     </div>
                     {message.role === 'assistant' && message.scientificAnalysis && (
                       <div className="mb-4 max-w-2xl">
