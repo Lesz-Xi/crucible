@@ -11,12 +11,14 @@ export type LabToolName =
     | 'fetch_protein_structure'
     | 'analyze_protein_sequence'
     | 'dock_ligand'
-    | 'simulate_scientific_phenomenon';
+    | 'simulate_scientific_phenomenon'
+    | 'analyze_scm_report';
 
 export type LabToolId =
     | 'fetch_structure'
     | 'analyze_sequence'
-    | 'dock_ligand';
+    | 'dock_ligand'
+    | 'analyze_report';
 
 // ── LLM & BYOK Configuration ─────────────────────────────────
 
