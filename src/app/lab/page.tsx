@@ -5,9 +5,10 @@ import HypothesisBuilder from '@/components/lab/HypothesisBuilder';
 import { ProteinFetchPanel } from '@/components/lab/panels/ProteinFetchPanel';
 import { SequenceAnalysisPanel } from '@/components/lab/panels/SequenceAnalysisPanel';
 import { DockingPanel } from '@/components/lab/panels/DockingPanel';
+import { ReportAnalysisPanel } from '@/components/lab/panels/ReportAnalysisPanel';
 import { ResultDispatcher } from '@/components/lab/results/ResultDispatcher';
 import { LabCopilotPanel } from '@/components/lab/LabCopilotPanel';
-import { FlaskConical, Atom, Network, Box, Dna, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft } from "lucide-react";
+import { FlaskConical, Atom, Network, Box, Dna, Database, Sparkles, Clock, CheckCircle2, AlertCircle, Loader2, ArrowLeft, FileText } from "lucide-react";
 import { useLab } from "@/lib/contexts/LabContext";
 import { ProteinViewer } from "@/components/lab/ProteinViewer";
 import { useState } from "react";
@@ -103,6 +104,7 @@ export default function LabPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [fetchStatusMessage, setFetchStatusMessage] = useState<string | null>(null);
     const [fetchErrorMessage, setFetchErrorMessage] = useState<string | null>(null);
+    const [scmReport, setScmReport] = useState<any | null>(null);
     const [copilotOpen, setCopilotOpen] = useState(false);
 
     // Scientific Gateway instance for tool operations
@@ -110,7 +112,7 @@ export default function LabPage() {
 
     // Map sidebar tool clicks to view mode changes
     React.useEffect(() => {
-        if (state.activeTool && ['fetch_structure', 'analyze_sequence', 'dock_ligand'].includes(state.activeTool)) {
+        if (state.activeTool && ['fetch_structure', 'analyze_sequence', 'dock_ligand', 'analyze_report'].includes(state.activeTool)) {
             setViewMode('tool');
         }
     }, [state.activeTool]);
@@ -121,6 +123,7 @@ export default function LabPage() {
         setViewMode('dashboard');
         setFetchStatusMessage(null);
         setFetchErrorMessage(null);
+        setScmReport(null);
     };
 
     // Protein fetch via panel (server-proxied to avoid browser CORS/provider drift)
@@ -266,9 +269,104 @@ export default function LabPage() {
                 await new Promise((resolve) => setTimeout(resolve, 1000));
             }
 
+    // Docking via panel... [Truncated for brevity since we are appending below this block]
             await updateExperimentResult?.(experiment.id, { error: 'Docking job timed out' } as any, 'failure');
         } catch (err) {
             console.error('Failed to dock ligand:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // SCM Report Analysis via panel
+    const handleAnalyzeReport = async (query: string) => {
+        setIsLoading(true);
+        setFetchStatusMessage("Initializing report generation...");
+        setFetchErrorMessage(null);
+        setScmReport(null);
+
+        try {
+            const experiment = await createExperiment?.(
+                'analyze_scm_report' as any,
+                { query },
+                'intervention'
+            );
+
+            // Connect to real-time SSE endpoint
+            const res = await fetch('/api/scm/reports/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query }),
+            });
+
+            if (!res.ok || !res.body) {
+                let errorMsg = 'Failed to analyze report';
+                try {
+                    const errorPayload = await res.json();
+                    if (errorPayload?.error) errorMsg = errorPayload.error;
+                } catch (e) {}
+                setFetchErrorMessage(errorMsg);
+                if (experiment) {
+                    await updateExperimentResult?.(experiment.id, { error: errorMsg } as any, 'failure');
+                }
+                setIsLoading(false);
+                return;
+            }
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let finalReportId = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                const lines = chunk.split('\n');
+
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        try {
+                            const data = JSON.parse(line.slice(6));
+                            if (data.event === 'report_stage_progress' || data.event === 'report_pipeline_start') {
+                                setFetchStatusMessage(data.label || `Initializing... [${data.computeRunId}]`);
+                            } else if (data.event === 'report_complete') {
+                                finalReportId = data.reportId;
+                            } else if (data.event === 'report_pipeline_error') {
+                                setFetchErrorMessage(data.error);
+                            }
+                        } catch (e) {
+                            // ignore parse errors for partial chunks
+                        }
+                    }
+                }
+            }
+
+            if (finalReportId) {
+                // Fetch the full report
+                setFetchStatusMessage("Pipeline complete. Loading report...");
+                const reportRes = await fetch(`/api/scm/reports/${finalReportId}`);
+                if (reportRes.ok) {
+                    const reportData = await reportRes.json();
+                    if (reportData.success) {
+                        setScmReport(reportData.report);
+                        setFetchStatusMessage(null);
+                        
+                        if (experiment) {
+                            await updateExperimentResult?.(experiment.id, { reportId: finalReportId } as any, 'success');
+                        }
+                    } else {
+                        setFetchErrorMessage("Failed to load generated report.");
+                    }
+                }
+            } else if (!fetchErrorMessage) {
+                setFetchErrorMessage("Stream completed but no report ID was received.");
+            }
+
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Failed to analyze report';
+            setFetchErrorMessage(message);
+            console.error('Error in handleAnalyzeReport:', err);
         } finally {
             setIsLoading(false);
         }
@@ -349,6 +447,8 @@ export default function LabPage() {
                 return <SequenceAnalysisPanel onSubmit={handleAnalyzeSequence} isLoading={isLoading} />;
             case 'dock_ligand':
                 return <DockingPanel onSubmit={handleDockLigand} isLoading={isLoading} />;
+            case 'analyze_report':
+                return <ReportAnalysisPanel onSubmit={handleAnalyzeReport} isLoading={isLoading} statusMessage={fetchStatusMessage} errorMessage={fetchErrorMessage} report={scmReport} />;
             default:
                 return null;
         }
@@ -401,7 +501,7 @@ export default function LabPage() {
                 <div className="px-4 pb-2">
                     <div className="lab-panel p-2">
                         <div className="mb-2 px-1 lab-section-title text-[10px] opacity-70">Instruments</div>
-                        <div className="grid grid-cols-1 gap-1.5 md:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-1.5 md:grid-cols-4">
                             <button
                                 onClick={() => {
                                     dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'fetch_structure' as any });
@@ -440,6 +540,19 @@ export default function LabPage() {
                             >
                                 <Network className="w-4 h-4" />
                                 <span className="font-serif tracking-wide">Ligand Docking</span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_report' as any });
+                                    setViewMode('tool');
+                                }}
+                                className={cn(
+                                    'lab-nav-pill w-full justify-start',
+                                    state.activeTool === 'analyze_report' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
+                                )}
+                            >
+                                <FileText className="w-4 h-4" />
+                                <span className="font-serif tracking-wide">Causal Report</span>
                             </button>
                         </div>
                     </div>

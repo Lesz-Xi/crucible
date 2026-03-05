@@ -1,6 +1,7 @@
 
 import { SynthesisResult, HypothesisNode } from "@/types";
 import type { HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from "@/types/hybrid-timeline";
+import type { WarningCode, SCMGroundedReport } from "@/types/report-analysis";
 
 export type AgentPersona = 'creator' | 'skeptic' | 'architect' | 'methodologist';
 
@@ -90,6 +91,12 @@ export type StreamEvent =
     approved: boolean,
     validityScore: number
   }
+  // SCM-Grounded Report Analysis Events
+  | { event: 'report_pipeline_start', computeRunId: string, estimatedSteps: number }
+  | { event: 'report_stage_progress', stage: number, label: string, detail?: string }
+  | { event: 'report_heartbeat', elapsedMs: number, stage: number }
+  | { event: 'report_complete', reportId: string, report: SCMGroundedReport }
+  | { event: 'report_pipeline_error', stage: number, error: string, warningCode: WarningCode }
   | { event: 'complete', synthesis: SynthesisResult }
   | { event: 'error', message: string };
 
