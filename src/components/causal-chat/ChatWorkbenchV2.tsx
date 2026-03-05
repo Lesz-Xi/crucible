@@ -59,6 +59,9 @@ interface AssistantEventPayload {
   confidence?: number;
   model_key?: string;
   model_version?: string;
+  requested_model?: string;
+  used_model?: string;
+  provider?: string;
   primary?: string;
   allowed?: boolean;
   rationale?: string;
@@ -286,6 +289,7 @@ export function ChatWorkbenchV2() {
   const [dbSessionId, setDbSessionId] = useState<string | null>(null);
   const [currentDomain, setCurrentDomain] = useState<string>('unclassified');
   const [currentModelKey, setCurrentModelKey] = useState<string>('default');
+  const [modelFallbackNotice, setModelFallbackNotice] = useState<string | null>(null);
   const [lastDensity, setLastDensity] = useState<{ score: number; label: string; confidence: number } | null>(null);
   const currentDomainRef = useRef<string>('unclassified');
   const currentModelKeyRef = useRef<string>('default');
@@ -330,6 +334,7 @@ export function ChatWorkbenchV2() {
     currentDomainRef.current = 'unclassified';
     setCurrentModelKey('default');
     currentModelKeyRef.current = 'default';
+    setModelFallbackNotice(null);
     setLastDensity(null);
     // Clear refs for new generation
     assistantContentRef.current = '';
@@ -513,6 +518,7 @@ export function ChatWorkbenchV2() {
       const controller = new AbortController();
       loadAbortControllerRef.current = controller;
       setError(null);
+      setModelFallbackNotice(null);
 
       const cached = sessionCacheRef.current.get(sessionId);
       console.log('[DEBUG loadSession] cached?', !!cached, 'for', sessionId);
@@ -667,6 +673,14 @@ export function ChatWorkbenchV2() {
       if (eventName === 'provenance' && isRealModelKey(payload.model_key)) {
         setCurrentModelKey(payload.model_key);
         currentModelKeyRef.current = payload.model_key;
+        return;
+      }
+
+      if (eventName === 'model_fallback') {
+        const requested = payload.requested_model || 'requested model';
+        const used = payload.used_model || 'fallback model';
+        const provider = payload.provider ? `${payload.provider}: ` : '';
+        setModelFallbackNotice(`${provider}${requested} unavailable → routed to ${used}`);
         return;
       }
 
@@ -828,6 +842,7 @@ export function ChatWorkbenchV2() {
     }
 
     setError(null);
+    setModelFallbackNotice(null);
     setIsLoading(true);
     setGroundingSources([]);
     setGroundingStatus('idle');
@@ -1265,6 +1280,11 @@ export function ChatWorkbenchV2() {
               </div>
             )}
             </div>
+            {modelFallbackNotice ? (
+              <div className="px-6 pb-2 text-xs text-amber-700 dark:text-amber-300">
+                ⚠️ Model fallback: {modelFallbackNotice}
+              </div>
+            ) : null}
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>

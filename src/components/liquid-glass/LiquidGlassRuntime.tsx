@@ -38,19 +38,6 @@ export function LiquidGlassRuntime() {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let prefersReducedMotion = mediaQuery.matches;
 
-    const markInteractive = () => {
-      const nodes = document.querySelectorAll<HTMLElement>(CLICKABLE_SELECTOR);
-      nodes.forEach((node) => {
-        if (!node.classList.contains("lg-bubble-hover")) {
-          node.classList.add("lg-bubble-hover");
-        }
-      });
-    };
-
-    markInteractive();
-    const observer = new MutationObserver(markInteractive);
-    observer.observe(document.body, { childList: true, subtree: true });
-
     const onPreferenceChange = (event: MediaQueryListEvent) => {
       prefersReducedMotion = event.matches;
     };
@@ -58,7 +45,7 @@ export function LiquidGlassRuntime() {
 
     const onPointerMove = (event: PointerEvent) => {
       if (prefersReducedMotion) return;
-      const target = (event.target as HTMLElement | null)?.closest<HTMLElement>(".lg-bubble-hover");
+      const target = (event.target as HTMLElement | null)?.closest<HTMLElement>(CLICKABLE_SELECTOR);
       if (!target) return;
       const rect = target.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
@@ -70,7 +57,6 @@ export function LiquidGlassRuntime() {
 
     document.addEventListener("pointermove", onPointerMove, { passive: true });
     return () => {
-      observer.disconnect();
       mediaQuery.removeEventListener("change", onPreferenceChange);
       document.removeEventListener("pointermove", onPointerMove);
     };

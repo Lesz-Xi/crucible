@@ -65,6 +65,11 @@ export interface DockingInput {
     seed?: number;
 }
 
+export interface SCMReportInput {
+    query: string;
+}
+
+
 export interface HypothesisSimulationInput {
     thesis: string;
     mechanism: string;

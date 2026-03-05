@@ -25,7 +25,13 @@ export async function signInWithGoogle(): Promise<{ error?: string }> {
   }
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
-  const redirectTo = `${origin}/auth/callback`;
+  const nextPath =
+    typeof window !== 'undefined'
+      ? `${window.location.pathname}${window.location.search}`
+      : '/chat';
+  const redirectUrl = new URL('/auth/callback', origin);
+  redirectUrl.searchParams.set('next', nextPath.startsWith('/') ? nextPath : '/chat');
+  const redirectTo = redirectUrl.toString();
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',

@@ -20,4 +20,7 @@ export const FEATURE_FLAGS = {
   MASA_MEMORY_FUSION_V1: parseBoolean(process.env.MASA_MEMORY_FUSION_V1, false),
   MASA_MEMORY_RRF_V1: parseBoolean(process.env.MASA_MEMORY_RRF_V1, false),
   MASA_CAUSAL_LATTICE_V1: parseBoolean(process.env.MASA_CAUSAL_LATTICE_V1, false),
+
+  // Ported from crucible
+  SCM_REPORT_ANALYSIS_ENABLED: parseBoolean(process.env.SCM_REPORT_ANALYSIS_ENABLED, false),
 };

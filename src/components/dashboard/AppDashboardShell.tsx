@@ -7,9 +7,6 @@ import {
   BookOpen,
   Bot,
   ChevronDown,
-  ChevronRight,
-  Clock3,
-  FolderCheck,
   FlaskConical,
   FolderMinus,
   Folder,
@@ -20,14 +17,11 @@ import {
   LogOut,
   Menu,
   MessageSquare,
-  MoreHorizontal,
   PanelLeftClose,
   PanelLeftOpen,
   Moon,
   Plus,
-  Scale,
   Search,
-  Settings,
   Sun,
   Trash2,
   UserCircle2,
@@ -76,9 +70,8 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   const [collapsed, setCollapsed] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
-  const [sidebarMode, setSidebarMode] = useState<'threads' | 'research'>('threads');
-  const [researchExpanded, setResearchExpanded] = useState(true);
   const [relicsOpen, setRelicsOpen] = useState(false);
   const [researchThreadIds, setResearchThreadIds] = useState<string[]>([]);
   const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
@@ -190,11 +183,20 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     const supabase = createClient();
     void supabase.auth.getUser().then(({ data }) => {
       setUserEmail(data.user?.email ?? null);
+      setAuthChecked(true);
+    }).catch(() => {
+      setUserEmail(null);
+      setAuthChecked(true);
     });
   }, []);
 
   useEffect(() => {
     if (!isChatRoute) return;
+    if (!authChecked) return;
+    if (!userEmail) {
+      setRecentThreads([]);
+      return;
+    }
 
     const loadHistory = async () => {
       try {
@@ -231,7 +233,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVisibility);
     };
-  }, [isChatRoute]);
+  }, [authChecked, isChatRoute, userEmail]);
 
   useEffect(() => {
     if (!isChatRoute) return;
@@ -270,10 +272,6 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     router.push(`/chat?sessionId=${sessionId}`);
   };
 
-  const removeFromResearch = (sessionId: string) => {
-    setResearchThreadIds((current) => current.filter((id) => id !== sessionId));
-  };
-
   const handleDeleteThread = async (sessionId: string) => {
     if (deletingThreadId === sessionId) return;
     setDeletingThreadId(sessionId);
@@ -307,11 +305,6 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   const filteredThreads = useMemo(() => {
     return recentThreads;
   }, [recentThreads]);
-
-  const filteredResearchThreads = useMemo(() => {
-    const idSet = new Set(researchThreadIds);
-    return recentThreads.filter((session) => idSet.has(session.id));
-  }, [recentThreads, researchThreadIds]);
 
   return (
     <div className={cn('app-feature-shell lab-glass-system lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>

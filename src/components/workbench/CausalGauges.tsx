@@ -115,7 +115,7 @@ export function CausalGauges({ density, posture, modelKey, provenanceAvailable =
               </div>
               <div className="flex-1 space-y-0.5">
                 <p className="text-xs font-bold text-[var(--lab-text-primary)]">
-                  {modelKey === "default" ? "Anthropic Claude 3.5" : modelKey}
+                  {modelKey === "default" ? "Configured default model" : modelKey}
                 </p>
                 <p className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">
                   provenance event emitted

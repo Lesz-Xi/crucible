@@ -632,6 +632,14 @@ Respond to this greeting/question: "${userQuestion}"
 Keep your response brief (1-2 sentences). If the user asks who you are, explain you are a Principal Investigator that follows the scientific method: Observation -> Hypothesis -> Prediction -> Falsification -> Test.`;
 
           const response = await model.generateContent(simplePrompt);
+          const modelInfo = response.response.modelInfo?.();
+          if (modelInfo?.fallbackApplied) {
+            sendEvent("model_fallback", {
+              provider: providerId,
+              requested_model: modelInfo.requestedModel,
+              used_model: modelInfo.usedModel,
+            });
+          }
           const fullText = response.response.text();
 
           // Stream response
@@ -1128,6 +1136,15 @@ ${sourceList}`;
           // 4. Call Model Again
           currentResponse = await model.generateContent(finalPrompt, { tools, messages });
           toolCalls = currentResponse.response.toolCalls();
+        }
+
+        const finalModelInfo = currentResponse.response.modelInfo?.();
+        if (finalModelInfo?.fallbackApplied) {
+          sendEvent("model_fallback", {
+            provider: providerId,
+            requested_model: finalModelInfo.requestedModel,
+            used_model: finalModelInfo.usedModel,
+          });
         }
 
         // Final text after tool loop

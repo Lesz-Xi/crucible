@@ -10,18 +10,29 @@ export class GeminiAdapter implements ClaudeModel {
   private modelId: string;
   private apiKey?: string;
 
-  constructor(modelId: string = "gemini-3-pro", apiKey?: string) {
+  constructor(modelId: string = "gemini-3.1-pro", apiKey?: string) {
     this.modelId = modelId;
     this.apiKey = apiKey;
   }
 
   async generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult> {
-    try {
-      const google = createGoogleGenerativeAI({
-        apiKey: this.apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-      });
+    const candidateModels = Array.from(new Set([
+      this.modelId,
+      'gemini-3.1-pro',
+      'gemini-2.5-pro',
+      'gemini-2.5-flash',
+      'gemini-2.0-flash'
+    ]));
 
-      const model = google(this.modelId);
+    const google = createGoogleGenerativeAI({
+      apiKey: this.apiKey || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    });
+
+    let lastError: unknown = null;
+
+    for (const candidateModel of candidateModels) {
+      try {
+        const model = google(candidateModel);
 
       const messages: any[] = [];
       if (options?.system) {
@@ -45,24 +56,42 @@ export class GeminiAdapter implements ClaudeModel {
         messages.push({ role: 'user', content: prompt });
       }
 
-      const result = await generateText({
-        model,
-        messages,
-        maxTokens: 8192,
-        temperature: 0.7,
-      } as any);
+        const result = await generateText({
+          model,
+          messages,
+          maxTokens: 8192,
+          temperature: 0.7,
+        } as any);
 
-      return {
-        response: {
-          text: () => result.text,
-          toolCalls: () => [], // Flatten tools for now
+        if (candidateModel !== this.modelId) {
+          console.warn(`[Gemini Adapter] Fallback model used: ${candidateModel} (requested: ${this.modelId})`);
         }
-      };
 
-    } catch (error) {
-      console.error("[Gemini Adapter] Generation failed:", error);
-      throw error;
+        return {
+          response: {
+            text: () => result.text,
+            toolCalls: () => [],
+            modelInfo: () => ({
+              requestedModel: this.modelId,
+              usedModel: candidateModel,
+              fallbackApplied: candidateModel !== this.modelId,
+            }),
+          }
+        };
+      } catch (error) {
+        lastError = error;
+        const message = error instanceof Error ? error.message : String(error);
+        const maybeUnavailable = /model|not found|unsupported|does not exist|unavailable|404/i.test(message);
+        if (!maybeUnavailable) {
+          console.error("[Gemini Adapter] Generation failed:", error);
+          throw error;
+        }
+        console.warn(`[Gemini Adapter] Model unavailable (${candidateModel}), trying fallback...`);
+      }
     }
+
+    console.error("[Gemini Adapter] All candidate models failed:", lastError);
+    throw (lastError instanceof Error ? lastError : new Error("All Gemini model candidates failed"));
   }
 }
 

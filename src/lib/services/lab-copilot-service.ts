@@ -107,7 +107,7 @@ export interface CopilotChatResult {
 }
 
 export async function labCopilotChat(options: CopilotChatOptions): Promise<CopilotChatResult> {
-    const { request, contextString, contextHash, apiKey, model = 'claude-sonnet-4-5' } = options;
+    const { request, contextString, contextHash, apiKey, model = 'claude-sonnet-4-6' } = options;
 
     const client = getAnthropicClient(apiKey);
 

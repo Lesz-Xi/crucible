@@ -82,7 +82,7 @@ title: "${sanitizeText(title)}"
 date: "${now}"
 sources:
 ${sourcesList}
-model: "claude-4-5-sonnet" // Updated to standard identifier for Feb 2026
+model: "claude-sonnet-4-6" // Default frontier model (Mar 2026)
 ---
 
 `;
