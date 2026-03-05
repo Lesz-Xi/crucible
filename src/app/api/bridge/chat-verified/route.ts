@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
+import { randomUUID } from "crypto";
 
 const BridgePayloadSchema = z.object({
   sessionId: z.string().min(1).optional(),
@@ -81,14 +82,32 @@ export async function POST(req: NextRequest) {
     if (clientIp) row.ip = clientIp;
     if (userAgent) row.user_agent = userAgent;
 
-    const { error, data } = await supabase
+    let { error, data } = await supabase
       .from("bridge_verification_log")
       .insert(row)
       .select("id")
       .single();
 
+    // Backward-compat: some deployments have trace_id NOT NULL on this table.
+    if (error && /trace_id/i.test(error.message) && /not-null|null value/i.test(error.message)) {
+      const retryRow = {
+        ...row,
+        trace_id: parsed.data.requestId || randomUUID(),
+      };
+      const retry = await supabase
+        .from("bridge_verification_log")
+        .insert(retryRow)
+        .select("id")
+        .single();
+      error = retry.error;
+      data = retry.data;
+    }
+
     if (error) {
       return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+    }
+    if (!data) {
+      return NextResponse.json({ ok: false, error: "Insert succeeded but no row id returned" }, { status: 500 });
     }
 
     return NextResponse.json({ ok: true, id: data.id });
