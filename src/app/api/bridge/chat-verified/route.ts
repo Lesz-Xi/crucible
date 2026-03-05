@@ -82,22 +82,40 @@ export async function POST(req: NextRequest) {
     if (clientIp) row.ip = clientIp;
     if (userAgent) row.user_agent = userAgent;
 
-    let { error, data } = await supabase.from("bridge_verification_log").insert(row).select("id").single();
+    // Legacy-schema compatibility: some environments still have extra NOT NULL columns.
+    // We retry adaptively, filling the reported missing column each pass.
+    let attemptRow: Record<string, unknown> = { ...row };
+    let error: { message: string } | null = null;
+    let data: { id: string } | null = null;
 
-    // Backward-compat: adapt to legacy NOT NULL columns on older bridge_verification_log schemas.
-    const notNullMatch = error?.message.match(/null value in column "([^"]+)"/i);
-    if (error && notNullMatch) {
-      const requiredColumn = notNullMatch[1];
-      const retryRow: Record<string, unknown> = { ...row };
+    const injectLegacyDefault = (column: string) => {
+      const key = column.toLowerCase();
+      if (key === "trace_id") attemptRow.trace_id = parsed.data.requestId || randomUUID();
+      else if (key === "endpoint") attemptRow.endpoint = "/api/bridge/chat-verified";
+      else if (key === "method") attemptRow.method = req.method;
+      else if (key === "event_type") attemptRow.event_type = "chat_verified";
+      else if (key === "request_id") attemptRow.request_id = parsed.data.requestId || randomUUID();
+      else if (key === "created_at") attemptRow.created_at = new Date().toISOString();
+      else if (key === "updated_at") attemptRow.updated_at = new Date().toISOString();
+      else if (key === "payload") attemptRow.payload = parsed.data.metadata ?? {};
+      else if (key === "status") attemptRow.status = "ok";
+    };
 
-      if (requiredColumn === "trace_id") retryRow.trace_id = parsed.data.requestId || randomUUID();
-      if (requiredColumn === "endpoint") retryRow.endpoint = "/api/bridge/chat-verified";
-      if (requiredColumn === "method") retryRow.method = req.method;
-      if (requiredColumn === "event_type") retryRow.event_type = "chat_verified";
+    // Prime known legacy columns proactively to reduce retries.
+    injectLegacyDefault("trace_id");
+    injectLegacyDefault("endpoint");
+    injectLegacyDefault("method");
+    injectLegacyDefault("event_type");
 
-      const retry = await supabase.from("bridge_verification_log").insert(retryRow).select("id").single();
-      error = retry.error;
-      data = retry.data;
+    for (let i = 0; i < 6; i++) {
+      const result = await supabase.from("bridge_verification_log").insert(attemptRow).select("id").single();
+      error = (result.error as { message: string } | null) ?? null;
+      data = (result.data as { id: string } | null) ?? null;
+      if (!error) break;
+
+      const notNullMatch = error.message.match(/null value in column "([^"]+)"/i);
+      if (!notNullMatch) break;
+      injectLegacyDefault(notNullMatch[1]);
     }
 
     if (error) {
