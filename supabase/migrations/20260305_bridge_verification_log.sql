@@ -14,6 +14,20 @@ create table if not exists public.bridge_verification_log (
   user_agent text
 );
 
+alter table public.bridge_verification_log
+  add column if not exists created_at timestamptz not null default now(),
+  add column if not exists session_id text,
+  add column if not exists message_id text,
+  add column if not exists user_id text,
+  add column if not exists source text not null default 'unknown',
+  add column if not exists verdict text not null default 'verified',
+  add column if not exists model text,
+  add column if not exists confidence numeric,
+  add column if not exists request_id text,
+  add column if not exists metadata jsonb not null default '{}'::jsonb,
+  add column if not exists ip text,
+  add column if not exists user_agent text;
+
 create index if not exists idx_bridge_verification_log_created_at
   on public.bridge_verification_log (created_at desc);
 

@@ -66,21 +66,24 @@ export async function POST(req: NextRequest) {
 
   try {
     const supabase = createPublicSupabaseClient();
+    const row: Record<string, unknown> = {
+      source: parsed.data.source,
+      verdict: parsed.data.verdict,
+      metadata: parsed.data.metadata ?? {},
+    };
+
+    if (parsed.data.sessionId !== undefined) row.session_id = parsed.data.sessionId;
+    if (parsed.data.messageId !== undefined) row.message_id = parsed.data.messageId;
+    if (parsed.data.userId !== undefined) row.user_id = parsed.data.userId;
+    if (parsed.data.model !== undefined) row.model = parsed.data.model;
+    if (parsed.data.confidence !== undefined) row.confidence = parsed.data.confidence;
+    if (parsed.data.requestId !== undefined) row.request_id = parsed.data.requestId;
+    if (clientIp) row.ip = clientIp;
+    if (userAgent) row.user_agent = userAgent;
+
     const { error, data } = await supabase
       .from("bridge_verification_log")
-      .insert({
-        session_id: parsed.data.sessionId ?? null,
-        message_id: parsed.data.messageId ?? null,
-        user_id: parsed.data.userId ?? null,
-        source: parsed.data.source,
-        verdict: parsed.data.verdict,
-        model: parsed.data.model ?? null,
-        confidence: parsed.data.confidence ?? null,
-        request_id: parsed.data.requestId ?? null,
-        metadata: parsed.data.metadata ?? {},
-        ip: clientIp,
-        user_agent: userAgent,
-      })
+      .insert(row)
       .select("id")
       .single();
 
