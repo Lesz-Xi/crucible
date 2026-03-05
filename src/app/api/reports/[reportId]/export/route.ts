@@ -107,7 +107,7 @@ export async function POST(
 
     return NextResponse.json(report);
   } catch (error) {
-    console.error(`[SCM Report Export ${params.reportId}] Error:`, error);
+    console.error(`[SCM Report Export] Error:`, error);
     return NextResponse.json({ error: "Internal Server Error." }, { status: 500 });
   }
 }

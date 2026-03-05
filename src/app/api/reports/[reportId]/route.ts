@@ -30,7 +30,7 @@ export async function GET(
         // 2. Return report payload
         return NextResponse.json(report.report_json);
     } catch (error) {
-        console.error(`[SCM Report GET ${params.reportId}] Error:`, error);
+        console.error(`[SCM Report GET] Error:`, error);
         return NextResponse.json(
             { error: "Internal Server Error." },
             { status: 500 }
