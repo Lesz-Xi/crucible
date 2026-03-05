@@ -18,6 +18,13 @@ export const CausalRoleSchema = z.enum(['observation', 'intervention', 'hybrid']
  * Lab tool names
  */
 export const LabToolNameSchema = z.enum([
+    // Active lab tool identifiers
+    'fetch_protein_structure',
+    'analyze_protein_sequence',
+    'dock_ligand',
+    'simulate_scientific_phenomenon',
+    'analyze_scm_report',
+    // Legacy aliases kept for backward-compat validation paths
     'protein_viewer',
     'hypothesis_builder',
     'experiment_runner',
