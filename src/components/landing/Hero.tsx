@@ -4,61 +4,78 @@ import { EpistemicCards } from "@/components/landing/EpistemicCards";
 
 export function Hero() {
   return (
-    <section className="relative h-screen min-h-[900px] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-primary)] transition-colors duration-500">
-      
-      
-      {/* Living Washi Background - CSS Fog/Noise */}
-      <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-[3000ms]">
-          
-          {/* Base Texture Overlay */}
-           <div className="absolute inset-0 opacity-[0.05] dark:opacity-[0.08] noise-overlay-light pointer-events-none mix-blend-multiply dark:mix-blend-normal"></div>
-
-          {/* Base Grain */}
-          <div className="absolute inset-0 noise-overlay-subtle mix-blend-multiply opacity-50"></div>
+    <section className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)] px-6 pb-20 pt-44 transition-colors duration-500 md:min-h-[100svh] md:pb-24 md:pt-52 lg:pt-56">
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-x-0 top-0 h-px bg-[var(--border-subtle)]" />
       </div>
 
-      {/* Main Typography Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-        
-        {/* Spacer for Cinematic "Ma" (Negative Space) */}
-        <div className="h-[10vh]"></div>
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
+        <div className="max-w-[34rem] pt-6 lg:pt-0">
+          <div className="mb-5 inline-flex items-center gap-3">
+            <span className="h-2 w-2 rounded-full bg-[var(--accent-rust)]" />
+            <span className="hd-kicker">Thinking Instrument</span>
+          </div>
 
-        {/* Epistemic Cards - Sequential Reveal */}
-        <div className="relative z-20 mb-16">
-           <EpistemicCards />
+          <h1 className="font-serif text-[3.55rem] leading-[0.94] tracking-[-0.055em] text-[var(--text-primary)] md:text-[4.8rem] lg:text-[6.05rem]">
+            Causal <span className="italic font-light text-[var(--accent-rust)]">Architect</span>
+          </h1>
+
+          <p className="mt-8 max-w-[30rem] text-[1rem] leading-8 text-[var(--text-secondary)] md:text-[1.04rem] md:leading-9">
+            Traversing the rungs of Judea Pearl&apos;s Ladder. From observation to
+            intervention, distilling truth from the flux through disciplined
+            causal inquiry.
+          </p>
+
+          <div className="mt-10">
+            <a
+              href="/masa-white-paper.html"
+              target="_blank"
+              className="lg-control inline-flex items-center gap-2 border border-[var(--border-strong)] bg-white px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--accent-rust)] hover:text-[var(--accent-rust)]"
+            >
+              <span>Read MASA White Paper</span>
+              <span className="opacity-50 transition-opacity group-hover:opacity-100">→</span>
+            </a>
+          </div>
+
         </div>
 
-        {/* The Title - Single Line, Cinematic Scale */}
-        <h1 className="font-serif text-6xl md:text-8xl lg:text-[10rem] text-[var(--text-primary)] leading-[0.9] tracking-tight mb-8 whitespace-nowrap">
-          Causal <span className="italic font-light text-[var(--text-primary)]">Architect</span>
-        </h1>
+        <div className="relative lg:self-center">
+          <div className="rounded-[30px] border border-[var(--border-subtle)] bg-white p-5 md:p-6">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+              <div>
+                <p className="hd-kicker">Epistemic ladder</p>
+                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  Structured reasoning modes
+                </p>
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                03 layers
+              </p>
+            </div>
 
-        {/* The Description - Haiku of Function */}
-        <p className="font-sans text-sm md:text-base text-wabi-stone leading-relaxed max-w-lg mx-auto mb-10 opacity-0 animate-[fadeIn_1s_ease-out_1.2s_forwards]">
-          Traversing the rungs of Judea Pearl’s Ladder. <br className="hidden md:block"/>
-          From observation to intervention—distilling truth from the flux.
-        </p>
+            <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_152px]">
+              <EpistemicCards compact className="min-w-0" />
 
-        {/* MASA White Paper Call to Action */}
-        <div className="mb-16 opacity-0 animate-[fadeIn_1s_ease-out_1.4s_forwards]">
-          <a 
-            href="/masa-white-paper.html" 
-            target="_blank"
-            className="group relative inline-flex items-center gap-2 px-6 py-3 border border-[var(--text-primary)]/20 rounded-full 
-                     hover:bg-[var(--text-primary)]/5 transition-all duration-300
-                     text-[var(--text-primary)] font-mono text-xs tracking-widest uppercase hover:tracking-[0.15em]"
-          >
-            <span>Read MASA White Paper</span>
-            <span className="opacity-50 group-hover:opacity-100 transition-opacity">→</span>
-          </a>
+              <div className="rounded-[20px] border border-[var(--border-subtle)] bg-[#fffdfa] p-4">
+                <p className="hd-kicker">Output posture</p>
+                <div className="mt-5 space-y-5">
+                  {[
+                    ["Truth-first", "Hard constraints"],
+                    ["Do(x)", "Intervention ready"],
+                    ["Audit", "Trace preserved"],
+                  ].map(([label, note]) => (
+                    <div key={label} className="border-t border-[var(--border-subtle)] pt-4 first:border-t-0 first:pt-0">
+                      <p className="font-serif text-lg text-[var(--text-primary)]">{label}</p>
+                      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                        {note}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Subtle Scroll Indicator */}
-        <div className="absolute bottom-[-150px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce duration-[3s]">
-           <div className="w-[1px] h-12 bg-wabi-ink-light/20"></div>
-           <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-wabi-ink-light">Explore</span>
-        </div>
-
       </div>
     </section>
   );

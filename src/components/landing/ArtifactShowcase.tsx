@@ -1,90 +1,86 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { FileText, Activity, GitCommit, ArrowRight } from "lucide-react";
 
 const artifacts = [
   {
     title: "The Causal Graph",
-    description: "A directed acyclic graph (DAG) representing confirmed dependencies.",
+    description: "A directed acyclic graph representing confirmed dependencies and intervention points.",
     icon: Activity,
-    meta: "FORMAT: .JSON / .SVG",
-    color: "bg-wabi-gold/10 text-wabi-gold",
-    delay: 0
+    meta: "Format: .json / .svg",
+    accent: "text-[var(--accent-rust)]",
   },
   {
     title: "The LaTeX Manuscript",
-    description: "Publication-ready academic prose with BibTeX citations.",
+    description: "Publication-ready academic prose with citation structure and calibrated uncertainty notes.",
     icon: FileText,
-    meta: "FORMAT: .TEX / .PDF",
-    color: "bg-wabi-sumi/5 text-wabi-sumi",
-    delay: 0.2
+    meta: "Format: .tex / .pdf",
+    accent: "text-[#7b8a78]",
   },
   {
     title: "The Epistemic Audit",
-    description: "Step-by-step verification log of every logical inference.",
+    description: "A step-by-step verification log for every logical inference admitted into the result.",
     icon: GitCommit,
-    meta: "FORMAT: .LOG / .MD",
-    color: "bg-blue-900/10 text-blue-900",
-    delay: 0.4
-  }
+    meta: "Format: .log / .md",
+    accent: "text-[#8e877e]",
+  },
 ];
 
 export function ArtifactShowcase() {
   return (
-    <section className="relative z-10 w-full py-32 flex flex-col items-center">
-      
-      {/* Header */}
-      <div className="relative z-20 text-center mb-20 max-w-2xl px-6">
-         <h2 className="font-serif text-4xl text-wabi-sumi mb-4">Evidence of Truth</h2>
-         <p className="font-sans text-lg text-wabi-sumi/70 leading-relaxed">
-            We do not sell "features". We provide the instruments to generate <span className="text-wabi-gold italic">verified artifacts</span>.
-         </p>
-      </div>
+    <section className="hd-section bg-white py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-6 md:px-8">
+        <div className="mb-12 max-w-2xl">
+          <p className="hd-kicker inline-flex items-center gap-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-rust)]" />
+            Rendered Outputs
+          </p>
+          <h2 className="mt-6 font-serif text-4xl tracking-tight text-[var(--text-primary)] md:text-5xl">
+            Evidence of truth.
+          </h2>
+          <p className="mt-5 text-[1rem] leading-8 text-[var(--text-secondary)]">
+            We do not sell features. We provide instruments that generate verified artifacts.
+          </p>
+        </div>
 
-      {/* Artifact Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-6 w-full">
-         {artifacts.map((item, i) => (
-            <motion.div
-               key={i}
-               className="group lg-card relative bg-wabi-washi border border-wabi-sand/20 p-8 min-h-[320px] flex flex-col justify-between overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
-               initial={{ opacity: 0, y: 20 }}
-               whileInView={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.6, delay: item.delay }}
-               viewport={{ once: true }}
-            >
-               {/* Background Texture/Gradient */}
-               <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-wabi-sand/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-               
-               {/* Top Meta */}
-               <div className="relative z-10 flex justify-between items-start mb-8">
-                  <div className={`lg-control p-3 rounded-sm ${item.color}`}>
-                     <item.icon className="w-6 h-6" strokeWidth={1.5} />
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(0,0.55fr)]">
+          <div className="grid gap-6 md:grid-cols-3">
+            {artifacts.map((artifact) => {
+              const Icon = artifact.icon;
+              return (
+                <article key={artifact.title} className="hd-panel rounded-[28px] p-7">
+                  <div className="flex items-center justify-between">
+                    <div className="rounded-[16px] border border-[var(--border-subtle)] bg-white/70 p-3">
+                      <Icon className={`h-5 w-5 ${artifact.accent}`} strokeWidth={1.7} />
+                    </div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                      {artifact.meta}
+                    </p>
                   </div>
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-wabi-ink/30 group-hover:text-wabi-ink/50 transition-colors">
-                     {item.meta}
-                  </span>
-               </div>
-
-               {/* Content */}
-               <div className="relative z-10">
-                  <h3 className="font-serif text-2xl text-wabi-sumi mb-3 group-hover:text-wabi-gold transition-colors duration-300">
-                     {item.title}
+                  <h3 className="mt-8 font-serif text-3xl tracking-tight text-[var(--text-primary)]">
+                    {artifact.title}
                   </h3>
-                  <p className="font-sans text-sm text-wabi-sumi/60 leading-relaxed group-hover:text-wabi-sumi/80 transition-colors">
-                     {item.description}
+                  <p className="mt-5 text-sm leading-7 text-[var(--text-secondary)]">
+                    {artifact.description}
                   </p>
-               </div>
+                  <button className="mt-8 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
+                    <span>View sample</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </article>
+              );
+            })}
+          </div>
 
-               {/* Bottom Action */}
-               <button type="button" className="relative z-10 mt-8 lg-control flex items-center gap-2 rounded-xl px-2 py-1 text-xs font-mono uppercase tracking-widest text-wabi-ink/40 transition-colors duration-300 group-hover:text-wabi-sumi">
-                  <span>View Sample</span>
-                  <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
-               </button>
-            </motion.div>
-         ))}
+          <aside className="hd-panel-note rounded-[28px] p-6">
+            <p className="hd-metric-label" style={{color: 'var(--accent-rust)', opacity: 0.7}}>Research note</p>
+            <p className="mt-5 font-serif text-3xl italic leading-10 text-[var(--text-primary)]">
+              Verified artifacts are the visible edge of a much deeper audit discipline.
+            </p>
+            <div className="mt-10 border-t border-[rgba(166,133,100,0.2)] pt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+              Archive / Evidence / Causality
+            </div>
+          </aside>
+        </div>
       </div>
-
     </section>
   );
 }

@@ -1,167 +1,288 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-interface ModuleProps {
-  x: number;
-  y: number;
-  label: string;
-  type: string;
-  description: string;
-  specs: string;
-  delay: number;
-}
-
-const modules: ModuleProps[] = [
+const modules = [
   {
-    x: 20, y: 30,
+    key: "01",
     label: "Causal Discovery",
-    type: "INFERENCE_ENGINE",
-    description: "Infers directional cause-effect relationships from purely observational data using PC-Stable algorithms.",
-    specs: "NODES: 14k // DEPTH: 12 Layers",
-    delay: 0
+    type: "Inference Engine",
+    description: "Infers directional cause-effect relationships from observational data using disciplined graph search.",
+    specs: "Nodes: 14k // Depth: 12",
+    layer: "Layer 01",
+    graphLabel: "Discovery",
+    note: "Observational inference",
+    point: { x: 110, y: 92 },
   },
   {
-    x: 75, y: 20,
+    key: "02",
     label: "Temporal Dynamics",
-    type: "TIME_SERIES",
-    description: "Models time-lagged causal effects to distinguish instantaneous correlation from true causation.",
-    specs: "LAG_ORDER: t-4 // RESOLUTION: High",
-    delay: 0.2
+    type: "Time Series",
+    description: "Models time-lagged effects to distinguish instantaneous correlation from true causation.",
+    specs: "Lag order: t-4 // Resolution: High",
+    layer: "Layer 02",
+    graphLabel: "Temporal",
+    note: "Intervention bridge",
+    point: { x: 278, y: 58 },
   },
   {
-    x: 30, y: 70,
+    key: "03",
     label: "Counterfactual Engine",
-    type: "SIMULATION_CORE",
-    description: "Simulates 'What If' scenarios by mathematically detaching causal parents and injecting interventions.",
-    specs: "DO_CALCULUS: Active // BRANCHES: ∞",
-    delay: 0.4
+    type: "Simulation Core",
+    description: "Simulates what-if scenarios by detaching parents and injecting explicit interventions.",
+    specs: "Do-calculus: Active // Branches: ∞",
+    layer: "Layer 03",
+    graphLabel: "Counterfactual",
+    note: "Scenario expansion",
+    point: { x: 170, y: 246 },
   },
   {
-    x: 80, y: 65,
+    key: "04",
     label: "Axiom Validator",
-    type: "LOGIC_GATE",
-    description: "Enforces hard constraints based on laws of physics and logic to prevent hallucinations.",
-    specs: "SAFETY: Hard // LATENCY: <1ms",
-    delay: 0.6
-  }
+    type: "Logic Gate",
+    description: "Enforces hard physical and logical constraints so synthesis remains admissible.",
+    specs: "Safety: Hard // Latency: <1ms",
+    layer: "Layer 03",
+    graphLabel: "Axiom",
+    note: "Constraint gate",
+    point: { x: 368, y: 268 },
+  },
 ];
 
+const connections = [
+  ["01", "02"],
+  ["01", "03"],
+  ["02", "03"],
+  ["02", "04"],
+  ["03", "04"],
+] as const;
+
 export function CausalLattice() {
-  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const [activeKey, setActiveKey] = useState<string | null>("02");
+  const moduleMap = useMemo(
+    () => Object.fromEntries(modules.map((module) => [module.key, module])),
+    []
+  );
 
   return (
-    <section className="relative z-10 w-full py-32 overflow-hidden min-h-[800px] flex flex-col items-center">
-      
-      {/* Header */}
-      <div className="relative z-20 text-center mb-16">
-         <h2 className="font-serif text-4xl text-[var(--text-primary)] mb-2">System Architecture</h2>
-         <p className="font-mono text-xs text-[var(--text-muted)] uppercase tracking-widest">
-            The High-Dense Causal Blueprint
-         </p>
-      </div>
+    <section className="hd-section py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-6 md:px-8">
+        <div className="mb-10 max-w-2xl">
+          <p className="hd-kicker inline-flex items-center gap-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-rust)]" />
+            System Architecture
+          </p>
+          <h2 className="mt-6 font-serif text-4xl tracking-tight text-[var(--text-primary)] md:text-5xl">
+            The high-dense causal blueprint.
+          </h2>
+          <p className="mt-5 text-[1rem] leading-8 text-[var(--text-secondary)]">
+            A measured lattice of inference modules, rendered as a navigable blueprint
+            rather than a decorative network diagram.
+          </p>
+        </div>
 
-      {/* Desktop Graph (md+) */}
-      <div className="hidden md:block absolute inset-0 top-32 w-full h-full max-w-6xl mx-auto">
-         {/* SVG Connections Layer */}
-         <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-60 dark:opacity-80">
-            {/* Draw lines between nodes */}
-             <motion.path 
-                d="M 20% 30% L 75% 20%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
-             />
-             <motion.path 
-                d="M 20% 30% L 30% 70%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4" 
-             />
-             <motion.path 
-                d="M 30% 70% L 80% 65%" 
-                stroke="#C4A77D" strokeWidth="1"
-             />
-             <motion.path 
-                d="M 75% 20% L 80% 65%" 
-                stroke="#C4A77D" strokeWidth="1" strokeDasharray="4 4"
-             />
-         </svg>
-
-         {/* Interactive Nodes */}
-         {modules.map((node, i) => {
-            const isRight = node.x > 50;
-            const isBottom = node.y > 50;
-
-            return (
-               <motion.div
-                  key={i}
-                  className="absolute"
-                  style={{ left: `${node.x}%`, top: `${node.y}%` }}
-                  whileHover={{ scale: 1.05, zIndex: 10 }} 
-                  onMouseEnter={() => setActiveNode(i)}
-                  onMouseLeave={() => setActiveNode(null)}
-               >
-                  {/* The Node Point */}
-                  <div className="relative flex items-center justify-center cursor-pointer group w-6 h-6 -ml-3 -mt-3">
-                     <div className="w-3 h-3 bg-wabi-sumi rounded-full border border-wabi-gold shadow-[0_0_15px_rgba(196,167,125,0.3)] group-hover:scale-150 transition-transform duration-300"></div>
-                     
-                     {/* Label (Always Visible) */}
-                     <div className={`absolute ${isBottom ? 'top-6' : 'bottom-6'} whitespace-nowrap font-mono text-xs uppercase tracking-widest text-[var(--text-secondary)] bg-[var(--bg-card)]/80 backdrop-blur-sm px-2 py-1 rounded border border-[var(--border-subtle)]/30 transition-all duration-300 ${activeNode === i ? 'opacity-100 border-wabi-gold/50' : 'opacity-70'}`}>
-                        {node.label}
-                     </div>
-
-                     {/* Expanded Card (On Hover) - Smart Positioning */}
-                     <div className={`absolute ${isBottom ? 'bottom-8' : 'top-8'} ${isRight ? 'right-0' : 'left-0'} w-[400px] pointer-events-none transition-all duration-500 ease-out z-20 ${
-                        activeNode === i 
-                           ? 'opacity-100 translate-y-0' 
-                           : `opacity-0 ${isBottom ? 'translate-y-4' : '-translate-y-4'}`
-                     }`}>
-                        <div className="bg-glass-card backdrop-blur-sm border border-wabi-gold/30 p-6 shadow-2xl relative overflow-hidden rounded-sm transition-colors duration-500">
-                             {/* Decorative Vein */}
-                             <div className="absolute top-0 left-0 w-1 h-full bg-wabi-gold/50"></div>
-                             
-                             <div className="font-mono text-[9px] text-[var(--text-muted)] mb-3 flex justify-between">
-                                 <span>{node.specs}</span>
-                                 <span className="text-wabi-gold">ACTIVE</span>
-                             </div>
-                             <h3 className="font-serif text-xl text-[var(--text-primary)] mb-2">
-                                {node.label}
-                             </h3>
-                             <p className="font-sans text-sm text-[var(--text-secondary)] leading-relaxed">
-                                {node.description}
-                             </p>
-                             <div className="mt-4 pt-3 border-t border-[var(--border-subtle)]/10 font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-widest">
-                                {node.type}
-                             </div>
-                         </div>
-                     </div>
-                  </div>
-               </motion.div>
-            );
-         })}
-      </div>
-
-      {/* Mobile Feed (Vertical Trace) */}
-      <div className="md:hidden w-full px-6 relative">
-          <div className="absolute left-9 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-wabi-gold/30 to-transparent"></div>
-          
-          <div className="space-y-16">
-             {modules.map((node, i) => (
-                <div key={i} className="relative pl-12">
-                   {/* Node Dot */}
-                   <div className="absolute left-[9px] top-6 w-1.5 h-1.5 -ml-[3px] bg-wabi-sumi rounded-full border border-wabi-gold"></div>
-                   
-                   <div className="bg-white/40 backdrop-blur-sm border border-wabi-sand/20 p-6 rounded-sm">
-                      <div className="font-mono text-[9px] text-wabi-ink/40 mb-2">{node.specs}</div>
-                      <h3 className="font-serif text-lg text-wabi-sumi mb-2">{node.label}</h3>
-                      <p className="font-sans text-sm text-wabi-sumi/80 leading-relaxed mb-4">{node.description}</p>
-                      <div className="font-mono text-wabi-ink-light text-[10px] uppercase border-t border-wabi-sand/10 pt-2">
-                          {node.type}
-                      </div>
-                   </div>
-                </div>
-             ))}
+        <div className="hd-panel relative overflow-hidden rounded-[36px] p-6 md:p-8">
+          <div className="hidden border-b border-[var(--border-subtle)] pb-4 md:flex md:items-center md:justify-between">
+            <p className="hd-metric-label">Architectural lattice</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+              Verified blueprint
+            </p>
           </div>
-      </div>
 
+          <div className="mt-6 hidden gap-6 md:grid lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-start">
+            <div className="grid gap-5 md:grid-cols-2">
+              {modules.map((module) => (
+                <button
+                  key={module.key}
+                  type="button"
+                  onMouseEnter={() => setActiveKey(module.key)}
+                  onFocus={() => setActiveKey(module.key)}
+                  className={`hd-panel-soft rounded-[24px] p-5 text-left transition-all duration-200 md:p-6 ${
+                    activeKey === module.key
+                      ? "border-[rgba(185,127,84,0.34)] bg-white shadow-[0_10px_24px_rgba(185,127,84,0.08)]"
+                      : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+                    <div>
+                      <p className="hd-metric-label">{module.type}</p>
+                      <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                        {module.layer}
+                      </p>
+                    </div>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                      {module.key}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 font-serif text-[2rem] leading-tight tracking-tight text-[var(--text-primary)]">
+                    {module.label}
+                  </h3>
+                  <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
+                    {module.description}
+                  </p>
+                  <div className="mt-6 border-t border-[var(--border-subtle)] pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                    {module.specs}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="relative h-[560px] overflow-hidden rounded-[30px] border border-[var(--border-subtle)] bg-[#f7f4ee]">
+              <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between border-b border-[var(--border-subtle)] px-6 py-5">
+                <p className="hd-metric-label">Architectural lattice</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  Verified blueprint
+                </p>
+              </div>
+
+              <div className="pointer-events-none absolute inset-[22px] rounded-[22px] border border-[rgba(102,93,82,0.08)]" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-[var(--border-subtle)] px-6 py-5">
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  Causal blueprint
+                </span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  04 modules / stable
+                </span>
+              </div>
+
+              <svg
+                className="absolute inset-[60px_24px_56px]"
+                viewBox="0 0 560 360"
+                fill="none"
+                aria-hidden
+                onMouseLeave={() => setActiveKey(null)}
+              >
+                <rect x="30" y="24" width="500" height="300" rx="22" stroke="rgba(102,93,82,0.1)" />
+                <path d="M30 84 H530" stroke="rgba(102,93,82,0.08)" />
+                <path d="M30 204 H530" stroke="rgba(102,93,82,0.08)" />
+                <path d="M180 24 V324" stroke="rgba(102,93,82,0.06)" />
+                <path d="M340 24 V324" stroke="rgba(102,93,82,0.06)" />
+                <text x="52" y="49" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 01</text>
+                <text x="52" y="169" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 02</text>
+                <text x="52" y="289" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 03</text>
+                <text x="422" y="116" fill="rgba(97,89,79,0.72)" fontSize="9" letterSpacing="2">AUDIT TRACE</text>
+                <text x="420" y="282" fill="rgba(97,89,79,0.72)" fontSize="9" letterSpacing="2">HARD CONSTRAINT</text>
+
+                {connections.map(([from, to], index) => {
+                  const source = moduleMap[from];
+                  const target = moduleMap[to];
+                  const isActive = activeKey === from || activeKey === to;
+                  const isDimmed = activeKey && !isActive;
+                  const dashed = index !== 4;
+
+                  return (
+                    <motion.path
+                      key={`${from}-${to}`}
+                      d={`M ${source.point.x} ${source.point.y} L ${target.point.x} ${target.point.y}`}
+                      stroke={isActive ? "#b97f54" : "rgba(185,127,84,0.46)"}
+                      strokeWidth={isActive ? 1.9 : 1.35}
+                      strokeDasharray={dashed ? "7 7" : "0"}
+                      animate={dashed ? { strokeDashoffset: [0, -14] } : undefined}
+                      transition={dashed ? { duration: 3 + index * 0.4, repeat: Infinity, ease: "linear" } : undefined}
+                      opacity={isDimmed ? 0.18 : isActive ? 1 : 0.72}
+                    />
+                  );
+                })}
+
+                {modules.map((module) => {
+                  const isActive = activeKey === module.key;
+                  const isDimmed = activeKey && !isActive;
+
+                  return (
+                    <motion.g
+                      key={module.key}
+                      onMouseEnter={() => setActiveKey(module.key)}
+                      style={{ cursor: "pointer" }}
+                      animate={{ opacity: isDimmed ? 0.28 : 1 }}
+                    >
+                      <motion.circle
+                        cx={module.point.x}
+                        cy={module.point.y}
+                        r={isActive ? 10 : 7.5}
+                        fill={isActive ? "#b97f54" : "#cab5a1"}
+                        animate={{
+                          r: isActive ? [8.5, 10.5, 8.5] : [7.5, 8.2, 7.5],
+                        }}
+                        transition={{
+                          duration: isActive ? 1.4 : 2.8,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                      <motion.circle
+                        cx={module.point.x}
+                        cy={module.point.y}
+                        r={isActive ? 18 : 13}
+                        fill="transparent"
+                        stroke="rgba(185,127,84,0.22)"
+                        animate={{
+                          r: isActive ? [12, 20, 12] : [10, 14, 10],
+                          opacity: isActive ? [0.22, 0.46, 0.22] : [0.1, 0.18, 0.1],
+                        }}
+                        transition={{
+                          duration: isActive ? 1.6 : 3,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                      <rect
+                        x={module.point.x - module.graphLabel.length * 4.8 - 18}
+                        y={module.point.y - 50}
+                        width={module.graphLabel.length * 9.2 + 24}
+                        height={22}
+                        rx={11}
+                        fill="rgba(255,255,255,0.82)"
+                        stroke="rgba(102,93,82,0.08)"
+                      />
+                      <text
+                        x={module.point.x - module.graphLabel.length * 4.35}
+                        y={module.point.y - 35}
+                        fill="rgba(97,89,79,0.88)"
+                        fontSize="10"
+                        letterSpacing="2.4"
+                      >
+                        {module.graphLabel.toUpperCase()}
+                      </text>
+                      <text
+                        x={module.point.x - module.note.length * 2.8}
+                        y={module.point.y + 34}
+                        fill="rgba(97,89,79,0.62)"
+                        fontSize="8"
+                        letterSpacing="1.8"
+                      >
+                        {module.note.toUpperCase()}
+                      </text>
+                    </motion.g>
+                  );
+                })}
+              </svg>
+            </div>
+          </div>
+
+          <div className="space-y-5 md:hidden">
+            {modules.map((module) => (
+              <div key={module.key} className="hd-panel-soft rounded-[22px] p-5">
+                <div className="flex items-center justify-between">
+                  <p className="hd-metric-label">{module.type}</p>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                    {module.key}
+                  </span>
+                </div>
+                <h3 className="mt-4 font-serif text-2xl tracking-tight text-[var(--text-primary)]">
+                  {module.label}
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
+                  {module.description}
+                </p>
+                <div className="mt-5 border-t border-[var(--border-subtle)] pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+                  {module.specs}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

@@ -2,6 +2,7 @@
 
 import { motion, Variants } from "framer-motion";
 import { Eye, Hand, GitMerge } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const cards = [
   {
@@ -61,15 +62,21 @@ const cardVariants: Variants = {
   }
 };
 
-export function EpistemicCards() {
+export function EpistemicCards({
+  className,
+  compact = false,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
   return (
     <motion.div 
-      className="flex flex-col md:flex-row gap-4 md:gap-6 mb-16"
+      className={cn("grid gap-4 md:grid-cols-2", className)}
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      {cards.map((card, i) => {
+      {cards.map((card, index) => {
         const Icon = card.icon;
         return (
           <motion.div
@@ -77,36 +84,30 @@ export function EpistemicCards() {
             variants={cardVariants}
             className={`
               relative group overflow-hidden
-              w-64 h-40 p-6 rounded-2xl
-              backdrop-blur-md bg-glass-card
-              border ${card.border}
+              ${compact ? "min-h-[150px] rounded-[20px] p-5" : "min-h-[168px] rounded-[24px] p-6"}
+              border border-[var(--border-subtle)] bg-white
               flex flex-col justify-between
-              transition-all duration-500 hover:-translate-y-1 hover:shadow-wabi
+              transition-all duration-500 hover:-translate-y-1
+              ${index === 2 ? "md:col-span-2" : ""}
             `}
           >
-            {/* Ambient Background Glow */}
-            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${card.bg}`} />
+            <div className={`pointer-events-none absolute inset-x-0 top-0 h-px ${card.bg} opacity-70`} />
             
-            {/* Header */}
             <div className="relative z-10 flex justify-between items-start">
-              <span className={`font-mono text-xs uppercase tracking-widest ${card.color}`}>
+              <span className={`font-mono ${compact ? "text-[11px]" : "text-xs"} uppercase tracking-widest ${card.color}`}>
                 {card.level}
               </span>
-              <Icon className={`w-5 h-5 ${card.color} opacity-80`} strokeWidth={1.5} />
+              <Icon className={`${compact ? "h-[18px] w-[18px]" : "w-5 h-5"} ${card.color} opacity-80`} strokeWidth={1.5} />
             </div>
 
-            {/* Content */}
             <div className="relative z-10">
-              <h3 className="font-serif text-lg text-[var(--text-primary)] leading-none mb-1">
+              <h3 className={`mb-1 font-serif leading-none text-[var(--text-primary)] ${compact ? "text-[1.45rem]" : "text-lg"}`}>
                 {card.label}
               </h3>
-              <p className="font-mono text-[10px] text-[var(--text-muted)] uppercase tracking-tight">
+              <p className="font-mono text-[10px] uppercase tracking-tight text-[var(--text-muted)]">
                 {card.sub}
               </p>
             </div>
-            
-            {/* Decoration (Removed for cleanliness) */}
-            {/* <div className={`absolute -bottom-4 -right-4 w-20 h-20 rounded-full ${card.bg} blur-2xl pointer-events-none opacity-40`} /> */}
           </motion.div>
         );
       })}

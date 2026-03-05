@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Crimson_Pro, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Crimson_Pro, Playfair_Display, Newsreader, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
 
-const jetbrainsSans = JetBrains_Mono({
+const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -24,20 +26,21 @@ const playfairDisplay = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Wu-Weism | Wabi-Sabi Synthesis Engine",
-  description: "Synthesize ideas with a cinematic Wabi-Sabi interface.",
-  icons: {
-    icon: "/wu-wei-mark.png",
-    shortcut: "/wu-wei-mark.png",
-    apple: "/wu-wei-mark.png",
-  },
+  title: "Crucible - Automated Scientist",
+  description: "Sovereign Synthesis Engine",
 };
-
-import { ThemeProvider } from "@/components/theme-provider";
-import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
-
-// ... existing code ...
 
 export default function RootLayout({
   children,
@@ -46,19 +49,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-      </head>
-      <body className={`${jetbrainsSans.variable} ${jetbrainsMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} antialiased liquid-glass-v2`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${crimsonPro.variable} ${playfairDisplay.variable} ${newsreader.variable} ${jetbrainsMono.variable} antialiased`}
+      >
         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem={true}
-            storageKey="wu-weism-theme"
-            disableTransitionOnChange
-          >
-            <LiquidGlassRuntime />
-            {children}
-          </ThemeProvider>
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+          storageKey="wu-weism-theme"
+          disableTransitionOnChange
+        >
+          <LiquidGlassRuntime />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
