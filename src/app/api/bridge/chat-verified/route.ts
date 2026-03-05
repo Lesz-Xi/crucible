@@ -82,23 +82,20 @@ export async function POST(req: NextRequest) {
     if (clientIp) row.ip = clientIp;
     if (userAgent) row.user_agent = userAgent;
 
-    let { error, data } = await supabase
-      .from("bridge_verification_log")
-      .insert(row)
-      .select("id")
-      .single();
+    let { error, data } = await supabase.from("bridge_verification_log").insert(row).select("id").single();
 
-    // Backward-compat: some deployments have trace_id NOT NULL on this table.
-    if (error && /trace_id/i.test(error.message) && /not-null|null value/i.test(error.message)) {
-      const retryRow = {
-        ...row,
-        trace_id: parsed.data.requestId || randomUUID(),
-      };
-      const retry = await supabase
-        .from("bridge_verification_log")
-        .insert(retryRow)
-        .select("id")
-        .single();
+    // Backward-compat: adapt to legacy NOT NULL columns on older bridge_verification_log schemas.
+    const notNullMatch = error?.message.match(/null value in column "([^"]+)"/i);
+    if (error && notNullMatch) {
+      const requiredColumn = notNullMatch[1];
+      const retryRow: Record<string, unknown> = { ...row };
+
+      if (requiredColumn === "trace_id") retryRow.trace_id = parsed.data.requestId || randomUUID();
+      if (requiredColumn === "endpoint") retryRow.endpoint = "/api/bridge/chat-verified";
+      if (requiredColumn === "method") retryRow.method = req.method;
+      if (requiredColumn === "event_type") retryRow.event_type = "chat_verified";
+
+      const retry = await supabase.from("bridge_verification_log").insert(retryRow).select("id").single();
       error = retry.error;
       data = retry.data;
     }
