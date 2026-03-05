@@ -1,69 +1,83 @@
-import { Wind, Droplets, Circle, Sparkles } from "lucide-react";
+import { Wind, Droplets, Circle } from "lucide-react";
+
+const features = [
+  {
+    icon: Wind,
+    title: "Fukinsei",
+    subtitle: "Asymmetry",
+    description: "Detecting value in irregular data patterns that conventional models discard.",
+    meta: "Signal irregularities // retained",
+    accent: "bg-[#7b8a78]",
+    iconColor: "text-[#7b8a78]",
+  },
+  {
+    icon: Droplets,
+    title: "Shibumi",
+    subtitle: "Subtlety",
+    description: "Generating insights that are quiet but profound, prioritizing depth over noise.",
+    meta: "Compression bias // reduced",
+    accent: "bg-[var(--accent-rust)]",
+    iconColor: "text-[var(--accent-rust)]",
+  },
+  {
+    icon: Circle,
+    title: "Datsuzoku",
+    subtitle: "Transcendence",
+    description: "Breaking free from habituated thinking to discover genuinely novel connections.",
+    meta: "Novel linkages // admissible",
+    accent: "bg-[#8e877e]",
+    iconColor: "text-[#8e877e]",
+  },
+];
 
 export function Features() {
-  const features = [
-    {
-      icon: Wind,
-      iconClass: "text-wabi-moss",
-      toneClass: "from-wabi-moss/18",
-      title: "Fukinsei (Asymmetry)",
-      description: "Detecting value in irregular data patterns that conventional models discard.",
-    },
-    {
-      icon: Droplets,
-      iconClass: "text-wabi-clay",
-      toneClass: "from-wabi-clay/16",
-      title: "Shibumi (Subtlety)",
-      description: "Generating insights that are quiet but profound, prioritizing depth over noise.",
-    },
-    {
-      icon: Circle,
-      iconClass: "text-wabi-rust",
-      toneClass: "from-wabi-rust/16",
-      title: "Datsuzoku (Transcendence)",
-      description: "Breaking free from habituated thinking to discover genuinely novel connections.",
-    },
-  ];
-
   return (
-    <section id="features" className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:py-32">
-       <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 mb-4">
-             <div className="w-1.5 h-1.5 rounded-full bg-wabi-moss"></div>
-             <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">Core Capabilities</span>
+    <section id="features" className="hd-section bg-white py-16 md:py-20">
+      <div className="mx-auto max-w-7xl px-6 md:px-8">
+        <div className="mx-auto mb-16 max-w-3xl space-y-4 text-center">
+          <div className="mb-4 inline-flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust)]" />
+            <span className="hd-kicker text-[var(--accent-rust)]">Core Capabilities</span>
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl text-[var(--text-primary)]">
-             Organic Intelligence
+          <h2 className="font-serif text-4xl text-[var(--text-primary)] md:text-5xl">
+            Organic Intelligence
           </h2>
-          <p className="text-[var(--text-secondary)] leading-relaxed">
-             Beyond mere calculation. A synthesis engine designed to understand the 
-             nuance, context, and contradictions inherent in human knowledge.
+          <p className="leading-relaxed text-[var(--text-secondary)]">
+            Beyond mere calculation. A synthesis engine designed to understand the
+            nuance, context, and contradictions inherent in human knowledge.
           </p>
-       </div>
+        </div>
 
-       <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, idx) => {
-             const Icon = feature.icon;
-             return (
-               <div
-                 key={idx}
-                 className="group lg-card relative p-8 rounded-[22px] border border-[var(--border-subtle)]/70 bg-[var(--bg-secondary)]/78 shadow-wabi transition-all duration-[220ms] ease-out hover:bg-[var(--bg-secondary)] hover:-translate-y-0.5"
-               >
-                 <div className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r ${feature.toneClass} to-transparent`} />
-                 <div className="absolute top-6 right-6 opacity-15 group-hover:opacity-30 transition-opacity duration-[180ms]">
-                    <Sparkles className="w-6 h-6 text-[var(--text-primary)]" />
-                 </div>
+        <div className="grid gap-8 md:grid-cols-3">
+          {features.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <div
+                key={feature.title}
+                className="group relative rounded-[22px] border border-[var(--border-subtle)] bg-white p-8 transition-all duration-[220ms] ease-out hover:-translate-y-0.5"
+              >
+                <div className={`pointer-events-none absolute inset-x-0 top-0 h-px ${feature.accent} opacity-70`} />
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[16px] border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+                  <Icon className={`h-6 w-6 ${feature.iconColor}`} strokeWidth={1.8} />
+                </div>
 
-                 <div className="lg-control w-14 h-14 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/45 flex items-center justify-center mb-6 shadow-sm transition-transform duration-[220ms] ease-out group-hover:scale-[1.04]">
-                    <Icon className={`w-6 h-6 ${feature.iconClass}`} />
-                 </div>
+                <h3 className="mb-2 font-serif text-xl text-[var(--text-primary)]">
+                  {feature.title} ({feature.subtitle})
+                </h3>
+                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                  {feature.description}
+                </p>
 
-                 <h3 className="font-serif text-xl text-[var(--text-primary)] mb-3">{feature.title}</h3>
-                 <p className="font-mono text-xs leading-relaxed text-[var(--text-secondary)]">{feature.description}</p>
-               </div>
-             );
+                <div className="mt-8 border-t border-[var(--border-subtle)] pt-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                    {feature.meta}
+                  </p>
+                </div>
+              </div>
+            );
           })}
-       </div>
+        </div>
+      </div>
     </section>
   );
 }

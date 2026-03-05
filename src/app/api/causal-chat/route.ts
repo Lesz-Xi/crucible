@@ -1412,8 +1412,58 @@ ${sourceList}`;
                 .insert(assistantPayload);
               assistantError = retry.error;
             }
+
+            if (assistantError && /scientific_analysis|column/i.test(assistantError.message || "")) {
+              console.warn(
+                "[CausalChat] Failed writing scientific_analysis column. Retrying without scientific_analysis payload."
+              );
+              delete assistantPayload.scientific_analysis;
+              const retry = await supabase
+                .from("causal_chat_messages")
+                .insert(assistantPayload);
+              assistantError = retry.error;
+            }
+
+            if (assistantError && /causal_graph|column/i.test(assistantError.message || "")) {
+              console.warn(
+                "[CausalChat] Failed writing causal_graph column. Retrying without causal_graph payload."
+              );
+              delete assistantPayload.causal_graph;
+              const retry = await supabase
+                .from("causal_chat_messages")
+                .insert(assistantPayload);
+              assistantError = retry.error;
+            }
+
+            if (assistantError && /scm_tier1_used|scm_tier2_used|confidence_score|domain_classified|column/i.test(assistantError.message || "")) {
+              console.warn(
+                "[CausalChat] Failed writing optional assistant metadata columns. Retrying with minimal assistant payload."
+              );
+              delete assistantPayload.scm_tier1_used;
+              delete assistantPayload.scm_tier2_used;
+              delete assistantPayload.confidence_score;
+              delete assistantPayload.domain_classified;
+              const retry = await supabase
+                .from("causal_chat_messages")
+                .insert(assistantPayload);
+              assistantError = retry.error;
+            }
+
             if (assistantError) {
-              console.error("[Persistence] Failed to save assistant message:", assistantError);
+              console.error("[Persistence] Failed to save assistant message with rich payload, attempting minimal fallback:", assistantError);
+              const minimalAssistantPayload = {
+                session_id: sessionId,
+                role: "assistant",
+                content: fullText,
+              };
+              const fallback = await supabase
+                .from("causal_chat_messages")
+                .insert(minimalAssistantPayload);
+              assistantError = fallback.error;
+            }
+
+            if (assistantError) {
+              console.error("[Persistence] Failed to save assistant message even after minimal fallback:", assistantError);
             }
 
             console.log(`[Persistence] Saved session ${sessionId} and messages.`);

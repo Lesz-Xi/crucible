@@ -9,10 +9,10 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
  */
 export async function DELETE(
   req: NextRequest,
-  props: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const params = await props.params;
+    const { id: sessionId } = await params;
     // Initialize Supabase client
     const supabase = await createServerSupabaseClient();
     
@@ -25,19 +25,12 @@ export async function DELETE(
       );
     }
 
-    const sessionId = params.id;
-
-    let error, count;
-
     // Authenticated user: RLS policy enforces ownership automatically
-    const result = await supabase
+    const { error, count } = await supabase
       .from("causal_chat_sessions")
       .delete({ count: "exact" })
       .eq("id", sessionId)
       .eq("user_id", user.id);
-
-    error = result.error;
-    count = result.count;
 
     if (error) {
       console.error("[Delete Session] Supabase error:", error);

@@ -101,7 +101,11 @@ export async function POST(request: NextRequest) {
         experimentHistory: chatRequest.labContext.recentExperiments.map((exp) => ({
             id: exp.id,
             user_id: user.id,
-            tool_name: exp.tool_name,
+            // Back-compat guard: older type surfaces may not include 'analyze_scm_report' yet.
+            tool_name:
+                exp.tool_name === 'analyze_scm_report'
+                    ? 'simulate_scientific_phenomenon'
+                    : exp.tool_name,
             causal_role: 'observation' as const,
             input_hash: '',
             input_json: {} as never,
@@ -111,7 +115,7 @@ export async function POST(request: NextRequest) {
         isSidebarOpen: true,
         isNotebookExpanded: false,
         lastError: null,
-        llmConfig: { provider: 'anthropic', model: 'claude-sonnet-4-5' },
+        llmConfig: { provider: 'anthropic', model: 'claude-sonnet-4-6' },
         isModelSettingsOpen: false,
     });
 

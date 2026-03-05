@@ -2,10 +2,46 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, MessageSquare, Scale, Sparkles, GraduationCap } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { PixelArrowIcon, PixelChevronDownIcon } from "@/components/landing/PixelIcons";
+
+const navItems = [
+  {
+    href: "#features",
+    label: "Features",
+    links: [
+      { href: "#features", label: "Organic Intelligence" },
+      { href: "#process", label: "Synthesis Pipeline" },
+    ],
+  },
+  {
+    href: "#process",
+    label: "Process",
+    links: [
+      { href: "#process", label: "Protocol" },
+      { href: "#features", label: "Core capabilities" },
+    ],
+  },
+  {
+    href: "#models",
+    label: "Models",
+    links: [
+      { href: "#models", label: "Model Configuration" },
+      { href: "#api-setup", label: "API Provider Setup" },
+    ],
+  },
+  {
+    href: "#contact",
+    label: "Inquiry",
+    links: [
+      { href: "#contact", label: "Get in touch" },
+      { href: "/masa-white-paper.html", label: "White paper", external: true },
+    ],
+  },
+];
 
 export function Navbar() {
   const router = useRouter();
@@ -13,9 +49,11 @@ export function Navbar() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
+
     const loadAuthState = async () => {
       try {
         const user = await getCurrentUser();
@@ -34,17 +72,13 @@ export function Navbar() {
     };
 
     void loadAuthState();
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const ctaLabel = useMemo(() => {
-    if (isLoadingAuthState) return "Loading...";
-    return isSignedIn ? "Open Wu-Weism" : "Try Wu-Weism";
-  }, [isLoadingAuthState, isSignedIn]);
-
-  const handleTryWuWeism = async () => {
+  const handlePrimaryAction = async () => {
     setAuthError(null);
 
     if (isLoadingAuthState || isBusy) return;
@@ -55,14 +89,13 @@ export function Navbar() {
     }
 
     setIsBusy(true);
+
     try {
       const { error } = await signInWithGoogle();
       if (error) {
-        console.error("[Navbar] Failed to start Google sign-in:", error);
         setAuthError(error);
       }
-    } catch (error) {
-      console.error("[Navbar] Failed to start Google sign-in:", error);
+    } catch {
       setAuthError("Unable to start sign-in. Please try again.");
     } finally {
       setIsBusy(false);
@@ -70,117 +103,91 @@ export function Navbar() {
   };
 
   return (
-    <header className="absolute top-0 left-0 right-0 z-20 px-8 py-8 md:py-12">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="lg-control flex items-center gap-3 rounded-2xl px-2 py-1 transition-opacity hover:opacity-90">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center">
-            <Image
-              src="/wu-wei-logo-trim-transparent.png"
-              alt="Wu-Weism mark"
-              width={64}
-              height={64}
-              className="h-16 w-16 object-contain object-center"
-              unoptimized
-              priority
-            />
-          </span>
-          <span className="font-serif text-[2rem] leading-none tracking-[0.12em] text-[var(--foreground)] transition-colors duration-500">
-            Wu-Weism
-          </span>
-        </Link>
-        
-        <nav className="hidden md:flex items-center gap-12 font-mono text-xs uppercase tracking-widest text-[var(--text-secondary)]">
-          <a href="#features" className="lg-control rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]">
-            Features
-          </a>
-          <a href="#process" className="lg-control rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]">
-            Process
-          </a>
-          <a href="#pricing" className="lg-control rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]">
-            Pricing
-          </a>
-          <span className="text-[var(--border-subtle)]">|</span>
-          
-          <div className="flex items-center gap-6">
-            <Link 
-              href="/chat" 
-              className="lg-control group flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]"
-            >
-               <MessageSquare className="w-3 h-3 text-wabi-moss group-hover:scale-110 transition-transform" />
-               <span>Chat</span>
+    <header className="absolute inset-x-0 top-0 z-30">
+      <div className="mx-auto max-w-[1440px] px-6 pt-5 md:px-10 md:pt-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6 lg:gap-8">
+            <Link href="/" className="flex shrink-0 items-center">
+              <Image
+                src="/wu-wei-mark-true-alpha.png"
+                alt="Wu-Weism mark"
+                width={200}
+                height={154}
+                className="-ml-2 h-auto w-[80px] object-contain md:w-[90px] lg:-ml-4 lg:w-[100px]"
+                unoptimized
+                priority
+              />
             </Link>
-            <Link 
-              href="/hybrid" 
-              className="lg-control group flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]"
-            >
-               <Sparkles className="w-3 h-3 text-wabi-clay group-hover:scale-110 transition-transform" />
-               <span>Hybrid</span>
-            </Link>
+
+          <nav className="hidden items-center gap-6 lg:flex">
+            {navItems.map((item) => (
+              <div
+                key={item.href}
+                className="relative py-2"
+                onMouseEnter={() => setOpenMenu(item.label)}
+                onMouseLeave={() => setOpenMenu((current) => (current === item.label ? null : current))}
+              >
+                <button
+                  type="button"
+                  className="group inline-flex items-center gap-1.5 text-sm font-medium text-[var(--text-muted)] transition-colors duration-200 hover:text-[var(--text-primary)]"
+                >
+                  {item.label}
+                  <PixelChevronDownIcon className="h-3 w-3 text-[var(--text-muted)] transition-all duration-200 group-hover:translate-y-0.5 group-hover:text-[var(--text-primary)]" />
+                </button>
+
+                {openMenu === item.label && (
+                  <div className="absolute left-0 top-full pt-2 z-40">
+                    <div className="min-w-[220px] rounded-[18px] border border-[rgba(17,22,27,0.08)] bg-[#fffdfa] p-3 shadow-[0_12px_30px_rgba(17,22,27,0.06)]">
+                      <div className="space-y-1">
+                        {item.links.map((link) => (
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
+                            className="group flex items-center justify-between rounded-[12px] px-3 py-2.5 text-sm text-[var(--text-primary)] transition-colors duration-200 hover:bg-[var(--accent-rust-soft)]"
+                          >
+                            <span>{link.label}</span>
+                            <PixelArrowIcon className="h-3.5 w-3.5 text-[var(--accent-rust)] opacity-70 transition-transform duration-200 group-hover:translate-x-0.5" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+          </div>
+
+          <div className="flex items-center divide-x divide-[var(--border-subtle)] overflow-hidden rounded-md border border-[var(--border-subtle)] bg-white/40 shadow-sm backdrop-blur-md">
             <Link
-              href="/legal"
-              className="lg-control group flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]"
+              href="#contact"
+              className="group hidden items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-black/5 md:inline-flex"
             >
-               <Scale className="w-3 h-3 text-amber-500 group-hover:scale-110 transition-transform" />
-               <span>Legal</span>
+              <span>Contact Sales</span>
+              <PixelArrowIcon className="h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
             </Link>
-            <Link
-              href="/education"
-              className="lg-control group flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-colors hover:text-[var(--text-primary)]"
-            >
-               <GraduationCap className="w-3 h-3 text-emerald-500 group-hover:scale-110 transition-transform" />
-               <span>Learn</span>
-            </Link>
+
             <button
               type="button"
-              onClick={handleTryWuWeism}
+              onClick={handlePrimaryAction}
               disabled={isLoadingAuthState || isBusy}
-              className="lg-control inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] px-4 py-2 text-sm font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70 normal-case tracking-normal"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {(isLoadingAuthState || isBusy) && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>{ctaLabel}</span>
+              {(isLoadingAuthState || isBusy) && <Loader2 className="h-4 w-4 animate-spin" />}
+              <span>
+                {isLoadingAuthState ? "Loading" : isSignedIn ? "Open Instrument" : "Try Wu-Weism"}
+              </span>
             </button>
           </div>
-        </nav>
-      </div>
-
-      {authError && (
-        <div className="max-w-7xl mx-auto mt-2 hidden md:block text-right">
-          <p className="text-xs text-[var(--text-secondary)]">{authError}</p>
         </div>
-      )}
 
-      <nav className="md:hidden max-w-7xl mx-auto mt-4">
-        <div className="lg-panel rounded-[14px] border border-[var(--border-subtle)]/70 bg-[var(--bg-secondary)]/80 px-3 py-2 flex items-center justify-between gap-2">
-          <Link href="/chat" className="lg-control flex-1 min-w-0 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
-            <MessageSquare className="w-3 h-3 text-wabi-moss" />
-            <span>Chat</span>
-          </Link>
-          <Link href="/hybrid" className="lg-control flex-1 min-w-0 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
-            <Sparkles className="w-3 h-3 text-wabi-clay" />
-            <span>Hybrid</span>
-          </Link>
-          <Link href="/legal" className="lg-control flex-1 min-w-0 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
-            <Scale className="w-3 h-3 text-wabi-rust" />
-            <span>Legal</span>
-          </Link>
-          <Link href="/education" className="lg-control flex-1 min-w-0 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-[10px] font-mono uppercase tracking-[0.16em] text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
-            <GraduationCap className="w-3 h-3 text-wabi-clay" />
-            <span>Learn</span>
-          </Link>
-          <button
-            type="button"
-            onClick={handleTryWuWeism}
-            disabled={isLoadingAuthState || isBusy}
-            className="lg-control inline-flex items-center justify-center gap-1 rounded-md bg-[var(--text-primary)] px-2.5 py-1.5 text-[10px] font-semibold text-[var(--bg-primary)] transition-all duration-200 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-primary)] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {(isLoadingAuthState || isBusy) && <Loader2 className="w-3 h-3 animate-spin" />}
-            <span>{isSignedIn ? "Open" : "Try"}</span>
-          </button>
-        </div>
         {authError && (
-          <p className="mt-2 text-[10px] text-[var(--text-secondary)]">{authError}</p>
+          <p className="mt-2 text-right font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            {authError}
+          </p>
         )}
-      </nav>
+      </div>
     </header>
   );
 }

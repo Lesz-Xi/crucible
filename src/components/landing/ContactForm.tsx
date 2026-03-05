@@ -1,30 +1,54 @@
 export function ContactForm() {
   return (
-    <section id="contact" className="relative z-10 max-w-3xl mx-auto px-6 py-20 mb-20">
-       <div className="text-center mb-12">
-          <h2 className="font-serif text-3xl text-wabi-sumi mb-4">Join the Synthesis</h2>
-          <p className="text-wabi-ink-light">Request access to the beta program or schedule a demo.</p>
-       </div>
+    <section id="contact" className="hd-section py-16 md:py-20">
+      <div className="mx-auto max-w-5xl px-6 md:px-8">
+        <div className="mb-10 text-center">
+          <p className="hd-kicker inline-flex items-center gap-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-rust)]" />
+            Access Request
+          </p>
+          <h2 className="mt-6 font-serif text-4xl tracking-tight text-[var(--text-primary)] md:text-5xl">
+            Join the synthesis.
+          </h2>
+          <p className="mt-5 text-[1rem] leading-8 text-[var(--text-secondary)]">
+            Request access to the beta program or schedule a demo.
+          </p>
+        </div>
 
-       <form className="lg-card space-y-6 bg-white/40 p-8 rounded-[2rem] border border-wabi-sand/30">
-          <div className="grid md:grid-cols-2 gap-6">
-             <div className="space-y-2">
-                <label className="font-mono text-xs uppercase tracking-widest text-wabi-ink-light">Name</label>
-                <input type="text" className="lg-input w-full bg-white/50 border border-wabi-sand/40 rounded-xl px-4 py-3 focus:outline-none focus:border-wabi-clay transition-colors" />
-             </div>
-             <div className="space-y-2">
-                <label className="font-mono text-xs uppercase tracking-widest text-wabi-ink-light">Email</label>
-                <input type="email" className="lg-input w-full bg-white/50 border border-wabi-sand/40 rounded-xl px-4 py-3 focus:outline-none focus:border-wabi-clay transition-colors" />
-             </div>
+        <form className="hd-panel rounded-[34px] p-8 md:p-10">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <label className="hd-metric-label">Name</label>
+              <input
+                type="text"
+                className="lg-input mt-3 w-full rounded-[18px] border border-[var(--border-subtle)] px-4 py-3.5"
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <label className="hd-metric-label">Email</label>
+              <input
+                type="email"
+                className="lg-input mt-3 w-full rounded-[18px] border border-[var(--border-subtle)] px-4 py-3.5"
+                placeholder="name@institute.org"
+              />
+            </div>
           </div>
-          <div className="space-y-2">
-             <label className="font-mono text-xs uppercase tracking-widest text-wabi-ink-light">Inquiry</label>
-             <textarea rows={4} className="lg-input w-full bg-white/50 border border-wabi-sand/40 rounded-xl px-4 py-3 focus:outline-none focus:border-wabi-clay transition-colors"></textarea>
+
+          <div className="mt-6">
+            <label className="hd-metric-label">Inquiry</label>
+            <textarea
+              rows={5}
+              className="lg-input mt-3 w-full rounded-[22px] border border-[var(--border-subtle)] px-4 py-3.5"
+              placeholder="Describe the environment, team, or evidence workflow you want to support."
+            />
           </div>
-          <button className="lg-control w-full py-4 bg-wabi-clay text-white rounded-xl font-mono text-xs uppercase tracking-widest transition-colors shadow-sm hover:bg-wabi-clay/90">
-             Send Request
+
+          <button className="mt-8 w-full rounded-full bg-[var(--accent-dark)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-92">
+            Send Request
           </button>
-       </form>
+        </form>
+      </div>
     </section>
   );
 }
