@@ -71,11 +71,16 @@ export interface HypothesisSimulationInput {
     prediction?: string;
 }
 
+export interface SCMReportInput {
+    query: string;
+}
+
 export type LabToolInput =
     | ProteinFetchInput
     | SequenceAnalysisInput
     | DockingInput
-    | HypothesisSimulationInput;
+    | HypothesisSimulationInput
+    | SCMReportInput;
 
 // ── Result Types ─────────────────────────────────────────────
 
@@ -125,11 +130,16 @@ export interface SimulationResult {
     degraded: boolean;
 }
 
+export interface SCMReportResult {
+    reportId: string;
+}
+
 export type LabToolResult =
     | ProteinFetchResult
     | SequenceAnalysisResult
     | DockingResult
-    | SimulationResult;
+    | SimulationResult
+    | SCMReportResult;
 
 // ── Experiment Record (Extended) ─────────────────────────────
 
