@@ -27,6 +27,7 @@ export const RecentExperimentSnapshotSchema = z.object({
         'analyze_protein_sequence',
         'dock_ligand',
         'simulate_scientific_phenomenon',
+        'analyze_scm_report',
     ]),
     status: z.enum(['pending', 'success', 'failure']),
     summary: z.string().optional(), // pre-computed 1-line summary
@@ -95,6 +96,7 @@ export const CopilotToolNameSchema = z.enum([
     'analyze_protein_sequence',
     'dock_ligand',
     'simulate_scientific_phenomenon',
+    'analyze_scm_report',
 ]);
 
 export const CopilotRunToolRequestSchema = z.object({

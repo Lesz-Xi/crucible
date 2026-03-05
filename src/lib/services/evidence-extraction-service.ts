@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { LLMFactory } from "@/lib/ai/llm-factory";
 import { generateText } from "ai";
-import { ClaimRecord, SourceRecord, EvidenceTier } from "@/types/report-analysis";
+import { ClaimRecord, SourceRecord, EvidenceTier, ClaimClass, SCMEdgeSupport } from "@/types/report-analysis";
 
 export const EVIDENCE_EXTRACTION_METHOD_VERSION = "evidence-extractor-v1.0" as const;
 
@@ -64,26 +64,52 @@ Rules:
 
             if (!Array.isArray(extracted)) return [];
 
-            return extracted.map((c) => ({
-                claimId: uuidv4(),
-                computeRunId,
-                reportId,
-                claimText: c.text || "Unknown claim",
-                entities: c.entities || [],
-                sourceIds: [source.sourceId],
-                evidenceTier: (c.evidenceTier as EvidenceTier) || "UNKNOWN",
-                claimClass: c.claimClass || "INSUFFICIENT_EVIDENCE",
-                scmEdgeSupport: c.scmEdgeSupport || "speculative",
-                confidence: typeof c.confidence === 'number' ? c.confidence : 0.5,
-                warningCodes: [],
-                falsifierTests: c.falsifierTests || [],
+            const validClaimClasses: ClaimClass[] = [
+                "IDENTIFIED_CAUSAL",
+                "INFERRED_CAUSAL",
+                "ASSOCIATIONAL_ONLY",
+                "INSUFFICIENT_EVIDENCE",
+            ];
+            const validEdgeSupport: SCMEdgeSupport[] = ["observed", "inferred", "speculative"];
+            const validEvidenceTiers: EvidenceTier[] = ["A", "B", "C", "UNKNOWN"];
 
-                // M6.2 compliance provenance defaults (filled fully in DB layer typically)
-                provenanceModel: 'gemini-2.5-flash',
-                provenancePromptVersion: 'extraction-v1.0',
-                provenanceInputHash: 'dynamic', // Or calculated
-                provenanceMethodVersion: EVIDENCE_EXTRACTION_METHOD_VERSION
-            })) as ClaimRecord[];
+            return extracted.map((c) => {
+                const claimClass: ClaimClass = validClaimClasses.includes(c?.claimClass)
+                    ? c.claimClass
+                    : "INSUFFICIENT_EVIDENCE";
+
+                const scmEdgeSupport: SCMEdgeSupport = validEdgeSupport.includes(c?.scmEdgeSupport)
+                    ? c.scmEdgeSupport
+                    : "speculative";
+
+                const evidenceTier: EvidenceTier = validEvidenceTiers.includes(c?.evidenceTier)
+                    ? c.evidenceTier
+                    : "UNKNOWN";
+
+                const confidence = typeof c?.confidence === "number" ? Math.max(0, Math.min(1, c.confidence)) : 0.5;
+
+                return {
+                    claimId: uuidv4(),
+                    text: c?.text || "Unknown claim",
+                    entities: Array.isArray(c?.entities) ? c.entities : [],
+                    sourceIds: [source.sourceId],
+                    evidenceTier,
+                    claimClass,
+                    scmEdgeSupport,
+                    confidence,
+                    warningCodes: [],
+                    falsifierTests: Array.isArray(c?.falsifierTests) ? c.falsifierTests : [],
+                    provenance: {
+                        computeRunId,
+                        model: "gemini-2.5-flash",
+                        promptVersion: "extraction-v1.0",
+                        inputHash: `source:${source.sourceId}`,
+                        methodVersion: EVIDENCE_EXTRACTION_METHOD_VERSION,
+                        ingestionId: source.ingestionId,
+                        sourceTableIds: [source.sourceId],
+                    },
+                } satisfies ClaimRecord;
+            });
 
         } catch (err) {
             console.error(`[EvidenceExtractionService] Extraction failed for source ${source.url}:`, err);
