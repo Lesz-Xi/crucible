@@ -287,8 +287,8 @@ export default function LabPage() {
 
         try {
             const experiment = await createExperiment?.(
-                'analyze_scm_report' as any,
-                { query },
+                'analyze_scm_report',
+                { query } as { query: string },
                 'intervention'
             );
 
