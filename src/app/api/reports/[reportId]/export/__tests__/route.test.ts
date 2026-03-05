@@ -49,7 +49,7 @@ describe("POST /api/reports/[reportId]/export", () => {
       body: JSON.stringify({ format: "json" }),
     });
 
-    const res = await POST(req as any, { params: { reportId: "rpt-1" } } as any);
+    const res = await POST(req as any, { params: Promise.resolve({ reportId: "rpt-1" }) } as any);
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -65,7 +65,7 @@ describe("POST /api/reports/[reportId]/export", () => {
       body: JSON.stringify({ format: "markdown" }),
     });
 
-    const res = await POST(req as any, { params: { reportId: "rpt-1" } } as any);
+    const res = await POST(req as any, { params: Promise.resolve({ reportId: "rpt-1" }) } as any);
     const text = await res.text();
 
     expect(res.status).toBe(200);

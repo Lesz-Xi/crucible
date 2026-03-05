@@ -198,12 +198,11 @@ export class SCMReportOrchestrator {
         sources: scoredSources,
         claims,
         computeRunId,
+        reportId,
         provenance,
         pipelineConfig,
         noRuntimeGap: options.noRuntimeGap ?? retrievedSources.failedFamilies.length === 0,
       });
-
-      finalReport.meta.reportId = reportId;
 
       streamEmitter.emit({
         event: "report_stage_progress",

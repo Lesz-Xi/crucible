@@ -70,11 +70,11 @@ function toMarkdown(report: SCMGroundedReport): string {
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { reportId: string } }
+  { params }: { params: Promise<{ reportId: string }> }
 ) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { reportId } = params;
+    const { reportId } = await params;
 
     const body = await req.json().catch(() => ({}));
     const format = body.format || "json";

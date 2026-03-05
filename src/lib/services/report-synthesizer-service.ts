@@ -107,7 +107,7 @@ function buildFalsifierChecklist(claims: ClaimRecord[]): FalsifierChecklistItem[
 // Persist using Admin Client because Synthesis Engine uses passcode auth and userId="system"
 async function persistReport(
     report: SCMGroundedReport,
-    userId: string = "system"
+    userId?: string | null
 ): Promise<void> {
     const supabase = createServerSupabaseAdminClient();
     const { error } = await supabase.from("scm_reports").insert({
@@ -123,7 +123,7 @@ async function persistReport(
         method_version: report.meta.methodVersion,
         pipeline_config: report.meta.pipelineConfig,
         report_json: report,
-        user_id: userId,
+        user_id: userId ?? null,
         generated_at: report.meta.generatedAt,
     });
 
@@ -185,6 +185,7 @@ export interface SynthesizeReportParams {
     sources: SourceRecord[];
     claims: ClaimRecord[];
     computeRunId: string;
+    reportId?: string;
     provenance: ComputeProvenance;
     pipelineConfig: PipelineConfig;
     noRuntimeGap: boolean;
@@ -213,6 +214,7 @@ export class ReportSynthesizerService {
             sources,
             claims,
             computeRunId,
+            reportId,
             pipelineConfig,
             noRuntimeGap,
             userId,
@@ -238,7 +240,7 @@ export class ReportSynthesizerService {
         );
 
         const meta: ReportMeta = {
-            reportId: uuidv4(),
+            reportId: reportId ?? uuidv4(),
             reportVersion: 1,
             computeRunId,
             inputHash,
@@ -270,7 +272,7 @@ export class ReportSynthesizerService {
             decisionGuidance: narrative.decisionGuidance,
         };
 
-        persistReport(report, userId ?? "system").catch((err) =>
+        persistReport(report, userId ?? null).catch((err) =>
             console.error("[ReportSynthesizerService] Background persist error:", err)
         );
 

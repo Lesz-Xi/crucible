@@ -3,11 +3,11 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { reportId: string } }
+    { params }: { params: Promise<{ reportId: string }> }
 ) {
     try {
         const supabase = await createServerSupabaseClient();
-        const { reportId } = params;
+        const { reportId } = await params;
 
         if (!reportId) {
             return NextResponse.json({ error: "Missing reportId parameter." }, { status: 400 });
