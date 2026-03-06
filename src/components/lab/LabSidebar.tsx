@@ -35,10 +35,10 @@ export function LabSidebar() {
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
-            className="w-64 border-r border-white/10 lab-panel-elevated h-full flex flex-col glass-sidebar"
+            className="glass-sidebar flex h-full w-64 flex-col border-r border-[var(--lab-border)] lab-panel-elevated"
         >
-            <div className="p-4 border-b border-white/10 flex items-center gap-2">
-                <FlaskConical className="w-5 h-5 text-stone-600 dark:text-stone-300" />
+            <div className="flex items-center gap-2 border-b border-[var(--lab-border)] p-4">
+                <FlaskConical className="h-5 w-5 text-[var(--lab-accent-rust)]" />
                 <h1 className="lab-section-title text-sm">Bio-Lab Notebook</h1>
             </div>
 
@@ -58,16 +58,16 @@ export function LabSidebar() {
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => dispatch({ type: "SET_ACTIVE_TOOL", payload: tool.id as any })}
                                 className={cn(
-                                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left border border-transparent",
+                                    "w-full rounded-lg border px-3 py-2.5 text-left text-sm font-medium transition-all",
                                     state.activeTool === tool.id
-                                        ? "bg-white/40 shadow-sm border-white/20 text-stone-800 dark:text-stone-100 dark:bg-white/10"
-                                        : "hover:bg-white/20 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                                        ? "border-[var(--lab-border-strong)] bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)] shadow-[var(--lab-shadow-soft)]"
+                                        : "border-transparent text-[var(--lab-text-secondary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]"
                                 )}
                             >
-                                <tool.icon className={cn("w-4 h-4", state.activeTool === tool.id ? "text-amber-600/80 dark:text-amber-400/80" : "opacity-70")} />
+                                <tool.icon className={cn("h-4 w-4", state.activeTool === tool.id ? "text-[var(--lab-accent-rust)]" : "opacity-70")} />
                                 <div>
                                     <div className="leading-none font-serif tracking-wide">{tool.name}</div>
-                                    <div className="text-[10px] opacity-60 font-sans mt-0.5">{tool.description}</div>
+                                    <div className="mt-0.5 font-sans text-[10px] text-[var(--lab-text-tertiary)]">{tool.description}</div>
                                 </div>
                             </motion.button>
                         ))}
@@ -75,11 +75,11 @@ export function LabSidebar() {
                 </nav>
             </div>
 
-            <div className="p-4 border-t border-border space-y-3">
+            <div className="space-y-3 border-t border-[var(--lab-border)] p-4">
 
-                <div className="flex items-center gap-2 text-xs px-2">
-                    <div className={cn("w-2 h-2 rounded-full", state.isOffline ? "bg-red-500" : "bg-green-500")} />
-                    <span className="text-muted-foreground">{state.isOffline ? "Offline Mode" : "System Online"}</span>
+                <div className="flex items-center gap-2 px-2 text-xs">
+                    <div className={cn("h-2 w-2 rounded-full", state.isOffline ? "bg-[var(--lab-accent-rust)]" : "bg-[var(--lab-accent-moss)]")} />
+                    <span className="text-[var(--lab-text-secondary)]">{state.isOffline ? "Offline Mode" : "System Online"}</span>
                 </div>
             </div>
         </motion.aside>

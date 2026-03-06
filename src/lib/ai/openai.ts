@@ -7,18 +7,29 @@ export class OpenAIAdapter implements ClaudeModel {
     private modelId: string;
     private apiKey?: string;
 
-    constructor(modelId: string = "gpt-5-3-codex", apiKey?: string) {
+    constructor(modelId: string = "gpt-5.2-codex", apiKey?: string) {
         this.modelId = modelId;
         this.apiKey = apiKey;
     }
 
     async generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult> {
-        try {
-            const openai = createOpenAI({
-                apiKey: this.apiKey || process.env.OPENAI_API_KEY,
-            });
+        const candidateModels = Array.from(new Set([
+            this.modelId,
+            'gpt-5.2-codex',
+            'gpt-5.2',
+            'gpt-5-mini',
+            'gpt-4o'
+        ]));
 
-            const model = openai(this.modelId);
+        const openai = createOpenAI({
+            apiKey: this.apiKey || process.env.OPENAI_API_KEY,
+        });
+
+        let lastError: unknown = null;
+
+        for (const candidateModel of candidateModels) {
+            try {
+                const model = openai(candidateModel);
 
             // Map Anthropic tools to AI SDK tools if present
             // Note: AI SDK expects a different tool format (Zod schema). 
@@ -57,24 +68,42 @@ export class OpenAIAdapter implements ClaudeModel {
                 messages.push({ role: 'user', content: prompt });
             }
 
-            const result = await generateText({
-                model,
-                messages,
-                maxTokens: 4096, // OpenAI limit
-                temperature: 0.7,
-            } as any);
+                const result = await generateText({
+                    model,
+                    messages,
+                    maxTokens: 4096,
+                    temperature: 0.7,
+                } as any);
 
-            return {
-                response: {
-                    text: () => result.text,
-                    toolCalls: () => [], // TODO: Map result.toolCalls if we implement tool support
+                if (candidateModel !== this.modelId) {
+                    console.warn(`[OpenAI Adapter] Fallback model used: ${candidateModel} (requested: ${this.modelId})`);
                 }
-            };
 
-        } catch (error) {
-            console.error("[OpenAI Adapter] Generation failed:", error);
-            throw error;
+                return {
+                    response: {
+                        text: () => result.text,
+                        toolCalls: () => [],
+                        modelInfo: () => ({
+                            requestedModel: this.modelId,
+                            usedModel: candidateModel,
+                            fallbackApplied: candidateModel !== this.modelId,
+                        }),
+                    }
+                };
+            } catch (error) {
+                lastError = error;
+                const message = error instanceof Error ? error.message : String(error);
+                const maybeUnavailable = /model|not found|unsupported|does not exist|unavailable|404/i.test(message);
+                if (!maybeUnavailable) {
+                    console.error("[OpenAI Adapter] Generation failed:", error);
+                    throw error;
+                }
+                console.warn(`[OpenAI Adapter] Model unavailable (${candidateModel}), trying fallback...`);
+            }
         }
+
+        console.error("[OpenAI Adapter] All candidate models failed:", lastError);
+        throw (lastError instanceof Error ? lastError : new Error("All OpenAI model candidates failed"));
     }
 }
 

@@ -59,6 +59,9 @@ interface AssistantEventPayload {
   confidence?: number;
   model_key?: string;
   model_version?: string;
+  requested_model?: string;
+  used_model?: string;
+  provider?: string;
   primary?: string;
   allowed?: boolean;
   rationale?: string;
@@ -286,6 +289,7 @@ export function ChatWorkbenchV2() {
   const [dbSessionId, setDbSessionId] = useState<string | null>(null);
   const [currentDomain, setCurrentDomain] = useState<string>('unclassified');
   const [currentModelKey, setCurrentModelKey] = useState<string>('default');
+  const [modelFallbackNotice, setModelFallbackNotice] = useState<string | null>(null);
   const [lastDensity, setLastDensity] = useState<{ score: number; label: string; confidence: number } | null>(null);
   const currentDomainRef = useRef<string>('unclassified');
   const currentModelKeyRef = useRef<string>('default');
@@ -330,6 +334,7 @@ export function ChatWorkbenchV2() {
     currentDomainRef.current = 'unclassified';
     setCurrentModelKey('default');
     currentModelKeyRef.current = 'default';
+    setModelFallbackNotice(null);
     setLastDensity(null);
     // Clear refs for new generation
     assistantContentRef.current = '';
@@ -513,6 +518,7 @@ export function ChatWorkbenchV2() {
       const controller = new AbortController();
       loadAbortControllerRef.current = controller;
       setError(null);
+      setModelFallbackNotice(null);
 
       const cached = sessionCacheRef.current.get(sessionId);
       console.log('[DEBUG loadSession] cached?', !!cached, 'for', sessionId);
@@ -667,6 +673,14 @@ export function ChatWorkbenchV2() {
       if (eventName === 'provenance' && isRealModelKey(payload.model_key)) {
         setCurrentModelKey(payload.model_key);
         currentModelKeyRef.current = payload.model_key;
+        return;
+      }
+
+      if (eventName === 'model_fallback') {
+        const requested = payload.requested_model || 'requested model';
+        const used = payload.used_model || 'fallback model';
+        const provider = payload.provider ? `${payload.provider}: ` : '';
+        setModelFallbackNotice(`${provider}${requested} unavailable → routed to ${used}`);
         return;
       }
 
@@ -828,6 +842,7 @@ export function ChatWorkbenchV2() {
     }
 
     setError(null);
+    setModelFallbackNotice(null);
     setIsLoading(true);
     setGroundingSources([]);
     setGroundingStatus('idle');
@@ -1178,7 +1193,7 @@ export function ChatWorkbenchV2() {
                         <button
                           type="button"
                           onClick={() => void handleCopyMessage(message.id, message.content)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-white/55 text-xs text-[var(--lab-text-secondary)] transition hover:bg-white/80 dark:bg-[#27272a]/70"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-[var(--lab-input-bg)] text-xs text-[var(--lab-text-secondary)] transition hover:bg-[var(--lab-hover-bg)]"
                           title={copiedMessageId === message.id ? `Copied ${message.role === 'user' ? 'prompt' : 'response'}` : `Copy ${message.role === 'user' ? 'prompt' : 'response'}`}
                           aria-label={copiedMessageId === message.id ? 'Copied' : 'Copy message'}
                         >
@@ -1242,7 +1257,7 @@ export function ChatWorkbenchV2() {
               />
             ) : (
               <div className="px-6 pb-3 pt-2">
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-white/35 px-2 py-1.5 backdrop-blur-xl dark:bg-[#27272a]">
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] px-2 py-1.5">
                   <button
                     type="button"
                     className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
@@ -1265,6 +1280,11 @@ export function ChatWorkbenchV2() {
               </div>
             )}
             </div>
+            {modelFallbackNotice ? (
+              <div className="px-6 pb-2 text-xs text-[var(--lab-accent-rust)]">
+                ⚠️ Model fallback: {modelFallbackNotice}
+              </div>
+            ) : null}
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>

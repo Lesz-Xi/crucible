@@ -39,13 +39,14 @@ export class SCMReportOrchestrator {
    */
   async generateReport(
     query: string,
-    options: { k?: number; noRuntimeGap?: boolean; heartbeatIntervalMs?: number } = {},
+    options: { k?: number; noRuntimeGap?: boolean; heartbeatIntervalMs?: number; timeoutMs?: number } = {},
     streamEmitter: StreamingEventEmitter
   ): Promise<SCMGroundedReport> {
     const computeRunId = uuidv7();
     const reportId = uuidv7();
     const startTime = Date.now();
     const k = options.k || 20;
+    const timeoutMs = options.timeoutMs || 55_000; // Default 55s (safe buffer for 60s Vercel limit)
 
     let currentStage = 1;
     const heartbeatMs = Math.max(500, options.heartbeatIntervalMs ?? 10_000);
@@ -79,8 +80,17 @@ export class SCMReportOrchestrator {
       methodVersion: "scm-orchestrator-v1.0",
     };
 
+    // Helper to check if we're approaching timeout
+    const checkTimeout = () => {
+      const elapsed = Date.now() - startTime;
+      if (elapsed > timeoutMs) {
+        throw new Error(`Pipeline timeout after ${elapsed}ms (limit: ${timeoutMs}ms)`);
+      }
+    };
+
     try {
       currentStage = 1;
+      checkTimeout();
       streamEmitter.emit({
         event: "report_stage_progress",
         stage: 1,
@@ -113,6 +123,7 @@ export class SCMReportOrchestrator {
       }
 
       currentStage = 2;
+      checkTimeout();
       streamEmitter.emit({
         event: "report_stage_progress",
         stage: 2,
@@ -186,6 +197,7 @@ export class SCMReportOrchestrator {
       }
 
       currentStage = 4;
+      checkTimeout();
       streamEmitter.emit({
         event: "report_stage_progress",
         stage: 4,

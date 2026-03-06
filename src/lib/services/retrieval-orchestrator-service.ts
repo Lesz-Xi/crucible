@@ -15,6 +15,7 @@ import {
     extractDomain,
 } from "./source-scoring-service";
 import { v4 as uuidv4 } from "uuid";
+import { braveSearchRateLimiter } from "@/lib/utils/token-bucket";
 
 export const RETRIEVAL_ORCHESTRATOR_METHOD_VERSION =
     "retrieval-orchestrator-v1.0" as const;
@@ -114,6 +115,9 @@ async function fetchBraveResults(
         if (attempt > 0) {
             await sleep(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1));
         }
+
+        // Wait for rate limiter token before making request
+        await braveSearchRateLimiter.waitForToken(30_000);
 
         try {
             const response = await fetch(url.toString(), {

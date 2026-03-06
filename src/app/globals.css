@@ -56,6 +56,8 @@
   --font-geist-mono: "Geist Mono", "Courier New", monospace;
   --font-crimson: "Crimson Pro", "Times New Roman", serif;
   --font-playfair: "Playfair Display", serif;
+  --font-newsreader: "Newsreader", "Iowan Old Style", "Times New Roman", serif;
+  --font-jetbrains-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 
   /* 2041 Automated Scientist (feature namespace) */
   --lab-bg: #edf1f5;
@@ -2956,4 +2958,328 @@ body {
     background-size: 42px 42px;
     opacity: 0.03;
   }
+}
+
+/* ========================================
+   App Feature Theme System
+   Final override layer for Chat/Hybrid/Labs/Legal/Education/Epistemic
+   ======================================== */
+
+:root {
+  --lab-bg: #f7f6f2;
+  --lab-bg-elevated: #f3f1eb;
+  --lab-panel: #ffffff;
+  --lab-panel-soft: #fbfaf7;
+  --lab-sidebar: #f3f1eb;
+  --lab-border: rgba(102, 93, 82, 0.14);
+  --lab-border-strong: rgba(102, 93, 82, 0.22);
+  --lab-text-primary: #1f1b17;
+  --lab-text-secondary: #5f584f;
+  --lab-text-tertiary: #8d8479;
+  --lab-accent-rust: #b97f54;
+  --lab-accent-moss: #6f8271;
+  --lab-accent-slate: #6a7896;
+  --lab-shadow-soft: 0 8px 24px rgba(31, 27, 23, 0.05);
+  --lab-shadow-lift: 0 18px 42px rgba(31, 27, 23, 0.08);
+  --lab-shell-main: #f7f6f2;
+  --lab-shell-sidebar: #f3f1eb;
+  --lab-shell-footer: #fbfaf7;
+  --lab-input-bg: #ffffff;
+  --lab-input-border: rgba(102, 93, 82, 0.18);
+  --lab-hover-bg: rgba(185, 127, 84, 0.08);
+  --lab-active-bg: rgba(185, 127, 84, 0.14);
+
+  /* compatibility aliases for older app-feature code */
+  --lab-bg-secondary: var(--lab-hover-bg);
+  --lab-bg-tertiary: var(--lab-active-bg);
+  --lab-accent-clay: var(--lab-accent-rust);
+  --lab-accent-earth: var(--lab-accent-rust);
+}
+
+.dark {
+  --lab-bg: #11161b;
+  --lab-bg-elevated: #181d23;
+  --lab-panel: #1d232a;
+  --lab-panel-soft: #232a31;
+  --lab-sidebar: #161b21;
+  --lab-border: rgba(214, 201, 186, 0.12);
+  --lab-border-strong: rgba(214, 201, 186, 0.18);
+  --lab-text-primary: #f3ede4;
+  --lab-text-secondary: #c0b6aa;
+  --lab-text-tertiary: #8f877d;
+  --lab-accent-rust: #c38f62;
+  --lab-accent-moss: #8f9b86;
+  --lab-accent-slate: #93a0bb;
+  --lab-shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.30);
+  --lab-shadow-lift: 0 20px 48px rgba(0, 0, 0, 0.45);
+  --lab-shell-main: #11161b;
+  --lab-shell-sidebar: #161b21;
+  --lab-shell-footer: #181d23;
+  --lab-input-bg: #20272f;
+  --lab-input-border: rgba(214, 201, 186, 0.18);
+  --lab-hover-bg: rgba(195, 143, 98, 0.10);
+  --lab-active-bg: rgba(195, 143, 98, 0.16);
+}
+
+.app-feature-shell,
+.feature-chat,
+.feature-hybrid,
+.feature-legal,
+.feature-education,
+.feature-lab {
+  color: var(--lab-text-primary);
+}
+
+.lab-glass-system,
+.liquid-glass-v2,
+.chat-theme-shell,
+.app-feature-shell {
+  background: var(--lab-bg);
+  color: var(--lab-text-primary);
+}
+
+.lab-shell {
+  position: relative;
+  background: var(--lab-shell-main) !important;
+  color: var(--lab-text-primary);
+}
+
+.lab-shell::before,
+.bg-noise {
+  display: none !important;
+}
+
+.glass-sidebar,
+.lg-sidebar {
+  background: var(--lab-shell-sidebar) !important;
+  border-right: 1px solid var(--lab-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+.dark .glass-sidebar,
+.dark .lg-sidebar {
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.lab-panel,
+.lab-panel-elevated,
+.lab-card,
+.lab-card-interactive,
+.lab-metric-tile,
+.lab-kpi-card,
+.lab-empty-state,
+.scientific-protocol-card > div.bg-\[var\(--lab-panel\)\] {
+  border-color: var(--lab-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: var(--lab-text-primary);
+}
+
+.lab-panel {
+  background: var(--lab-panel) !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.lab-panel-elevated {
+  background: var(--lab-bg-elevated) !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.lab-card,
+.lab-card-interactive,
+.lab-metric-tile,
+.lab-kpi-card,
+.lab-empty-state {
+  background: var(--lab-panel) !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.lab-card-interactive:hover,
+.lab-kpi-card:hover {
+  border-color: var(--lab-border-strong) !important;
+  background: color-mix(in srgb, var(--lab-panel) 92%, var(--lab-hover-bg)) !important;
+  box-shadow: var(--lab-shadow-lift) !important;
+}
+
+.lab-empty-state {
+  border-style: solid !important;
+}
+
+.lab-rail-header {
+  border-bottom: 1px solid var(--lab-border) !important;
+  background: var(--lab-shell-sidebar) !important;
+}
+
+.lab-rail-body {
+  background: var(--lab-panel) !important;
+}
+
+.lab-chip-mono {
+  border-color: var(--lab-border) !important;
+  background: var(--lab-panel-soft) !important;
+  color: var(--lab-accent-rust) !important;
+}
+
+.lab-button-primary,
+.lab-button-secondary,
+.lab-nav-pill,
+.sidebar-history-item,
+.sidebar-history-item-active,
+.lg-control,
+.lg-dropdown {
+  border-color: var(--lab-border) !important;
+  color: var(--lab-text-primary);
+}
+
+.lab-button-primary {
+  background: var(--lab-text-primary) !important;
+  color: var(--lab-panel) !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.lab-button-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--lab-text-primary) 92%, var(--lab-accent-rust)) !important;
+  box-shadow: var(--lab-shadow-lift) !important;
+}
+
+.lab-button-secondary,
+.lab-nav-pill,
+.sidebar-history-item,
+.lg-dropdown {
+  background: var(--lab-panel) !important;
+  box-shadow: none !important;
+}
+
+.lab-button-secondary:hover:not(:disabled),
+.lab-nav-pill:hover,
+.sidebar-history-item:hover,
+.lg-control:hover {
+  background: var(--lab-hover-bg) !important;
+}
+
+.lab-button-secondary[data-active="true"],
+.lab-nav-pill[data-active="true"],
+.sidebar-history-item-active {
+  background: var(--lab-active-bg) !important;
+  border-color: var(--lab-border-strong) !important;
+  color: var(--lab-text-primary) !important;
+}
+
+.lab-input,
+.lab-select,
+.lab-textarea {
+  border-color: var(--lab-input-border) !important;
+  background: var(--lab-input-bg) !important;
+  color: var(--lab-text-primary) !important;
+  box-shadow: none !important;
+}
+
+.lab-input::placeholder,
+.lab-textarea::placeholder {
+  color: var(--lab-text-tertiary) !important;
+}
+
+.lab-input:focus,
+.lab-select:focus,
+.lab-textarea:focus {
+  border-color: var(--lab-border-strong) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--lab-accent-rust) 16%, transparent) !important;
+}
+
+.lab-divider-gradient {
+  background: linear-gradient(90deg, transparent, var(--lab-border-strong), transparent) !important;
+}
+
+.lab-scroll-region,
+.lab-scroll-region-minimal {
+  scrollbar-color: color-mix(in srgb, var(--lab-text-tertiary) 60%, transparent) transparent;
+}
+
+.lab-scroll-region::-webkit-scrollbar-thumb,
+.lab-scroll-region-minimal::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--lab-text-tertiary) 60%, transparent) !important;
+}
+
+.app-feature-shell .font-serif,
+.feature-chat .font-serif,
+.feature-hybrid .font-serif,
+.feature-legal .font-serif,
+.feature-education .font-serif,
+.feature-lab .font-serif {
+  color: var(--lab-text-primary);
+}
+
+.feature-chat .lab-panel,
+.feature-chat .lab-panel-elevated,
+.feature-hybrid .lab-panel,
+.feature-hybrid .lab-panel-elevated,
+.feature-legal .lab-panel,
+.feature-legal .lab-panel-elevated,
+.feature-education .lab-panel,
+.feature-education .lab-panel-elevated,
+.feature-lab .lab-panel,
+.feature-lab .lab-panel-elevated {
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.dark .lab-button-primary {
+  color: #11161b !important;
+}
+
+/* Hard stop: ensure app-feature dark mode cannot be overridden by legacy glass rules. */
+.dark .app-feature-shell,
+.dark .feature-chat,
+.dark .feature-hybrid,
+.dark .feature-legal,
+.dark .feature-education,
+.dark .feature-lab,
+.dark .lab-shell {
+  background: var(--lab-shell-main) !important;
+  color: var(--lab-text-primary) !important;
+}
+
+.dark .glass-sidebar,
+.dark .lg-sidebar {
+  background: var(--lab-shell-sidebar) !important;
+  border-color: var(--lab-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .lab-panel,
+.dark .lab-panel-elevated,
+.dark .lab-card,
+.dark .lab-card-interactive,
+.dark .lab-kpi-card,
+.dark .lab-metric-tile,
+.dark .edu-card,
+.dark .edu-card-soft,
+.dark .scientific-protocol-card,
+.dark .scientific-workbench-main,
+.dark .lg-panel,
+.dark .lg-card,
+.dark .lg-dropdown,
+.dark .lab-button-secondary,
+.dark .lab-nav-pill,
+.dark .sidebar-history-item,
+.dark .lg-control {
+  background: var(--lab-panel) !important;
+  border-color: var(--lab-border) !important;
+  color: var(--lab-text-primary) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.dark .lab-input,
+.dark .lab-select,
+.dark .lab-textarea,
+.dark .lg-input,
+.dark .lg-search {
+  background: var(--lab-input-bg) !important;
+  border-color: var(--lab-input-border) !important;
+  color: var(--lab-text-primary) !important;
 }

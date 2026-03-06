@@ -26,18 +26,26 @@ export class LLMFactory {
      */
     private static resolveApiMapping(modelId: string): string {
         const mapping: Record<string, string> = {
-            // Anthropic — mapped to Claude 4.5 tier (confirmed available on API key)
-            'claude-4-5-haiku': 'claude-haiku-4-5-20251001',
-            'claude-4-5-sonnet': 'claude-sonnet-4-5-20250929',
-            'claude-4-6-opus': 'claude-opus-4-5-20251101',
-            // OpenAI
-            'gpt-5-3-codex-spark': 'gpt-4o-mini',
-            'gpt-5-3-codex': 'gpt-4o',
-            'gpt-5-2': 'o1-preview',
-            // Gemini
-            'gemini-3-flash': 'gemini-1.5-flash',
-            'gemini-3-deep-think': 'gemini-1.5-pro',
-            'gemini-3-pro': 'gemini-1.5-pro'
+            // Anthropic (prefer current API aliases)
+            'claude-4-5-haiku': 'claude-haiku-4-5',
+            'claude-4-5-sonnet': 'claude-sonnet-4-6',
+            'claude-4-6-opus': 'claude-opus-4-6',
+
+            // OpenAI (prefer current GPT-5 family naming)
+            'gpt-5-3-codex-spark': 'gpt-5-mini',
+            'gpt-5-3-codex': 'gpt-5.2-codex',
+            'gpt-5-2': 'gpt-5.2',
+
+            // Gemini (stable-first routing for reliability)
+            'gemini-3-flash': 'gemini-2.5-flash',
+            'gemini-3-deep-think': 'gemini-2.5-pro',
+            'gemini-3-pro': 'gemini-3.1-pro',
+
+            // Back-compat aliases
+            'gpt-4o-mini': 'gpt-4o-mini',
+            'gpt-4o': 'gpt-4o',
+            'gemini-1.5-flash': 'gemini-1.5-flash',
+            'gemini-1.5-pro': 'gemini-1.5-pro'
         };
         return mapping[modelId] || modelId;
     }

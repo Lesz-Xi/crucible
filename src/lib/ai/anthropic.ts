@@ -64,6 +64,11 @@ export interface GenerateContentResult {
   response: {
     text: () => string;
     toolCalls: () => ToolCall[];
+    modelInfo?: () => {
+      requestedModel: string;
+      usedModel: string;
+      fallbackApplied: boolean;
+    };
   };
 }
 
@@ -96,17 +101,17 @@ class ClaudeAdapter implements ClaudeModel {
   private model: string;
   private apiKey?: string;
 
-  constructor(model: string = "claude-4-5-sonnet", apiKey?: string) { // Harmonized with AI_CONFIG (Feb 2026)
+  constructor(model: string = "claude-sonnet-4-6", apiKey?: string) {
     // Dynamic import to avoid circular dependencies if any, though it shouldn't be an issue here
     // But actually LLMFactory imports this file, so importing LLMFactory here creates a circular dependency.
     // Let's implement a local mapping function or just rely on LLMFactory mapping it first.
     // Actually, LLMFactory is already mapping it before calling getClaudeModel.
     // To be perfectly safe against direct instantiations:
     const mapping: Record<string, string> = {
-      // Claude 4.5 tier — confirmed available on API key (Feb 2026)
-      'claude-4-5-haiku': 'claude-haiku-4-5-20251001',
-      'claude-4-5-sonnet': 'claude-sonnet-4-5-20250929',
-      'claude-4-6-opus': 'claude-opus-4-5-20251101'
+      // Prefer current Anthropic aliases, keep friendly internal IDs
+      'claude-4-5-haiku': 'claude-haiku-4-5',
+      'claude-4-5-sonnet': 'claude-sonnet-4-6',
+      'claude-4-6-opus': 'claude-opus-4-6'
     };
     this.model = mapping[model] || model;
     this.apiKey = apiKey;
@@ -115,9 +120,13 @@ class ClaudeAdapter implements ClaudeModel {
   async generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult> {
     let attempts = 0;
     const maxAttempts = 3;
+    const requestedModel = this.model;
+    const fallbackModels = Array.from(new Set([this.model, 'claude-sonnet-4-6', 'claude-haiku-4-5']));
+    let fallbackIndex = 0;
 
     while (attempts < maxAttempts) {
       try {
+        this.model = fallbackModels[fallbackIndex] || this.model;
         const client = getAnthropicClient(this.apiKey);
 
         // Use provided messages or start fresh with prompt
@@ -202,10 +211,24 @@ class ClaudeAdapter implements ClaudeModel {
           response: {
             text: () => assembledText,
             toolCalls: () => collectedToolCalls,
+            modelInfo: () => ({
+              requestedModel,
+              usedModel: this.model,
+              fallbackApplied: requestedModel !== this.model,
+            }),
           },
         };
       } catch (error) {
         attempts++;
+        const message = error instanceof Error ? error.message : String(error);
+        const maybeUnavailable = /model|not found|unsupported|does not exist|unavailable|404/i.test(message);
+
+        if (maybeUnavailable && fallbackIndex < fallbackModels.length - 1) {
+          fallbackIndex += 1;
+          console.warn(`[Anthropic] Model unavailable (${this.model}), retrying with fallback ${fallbackModels[fallbackIndex]}...`);
+          continue;
+        }
+
         console.warn(`Claude API attempt ${attempts} failed:`, error);
 
         if (attempts >= maxAttempts) throw error;

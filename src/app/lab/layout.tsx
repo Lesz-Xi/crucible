@@ -1,18 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { LabProvider } from "@/lib/contexts/LabContext";
 import { LabNotebook } from "@/components/lab/LabNotebook";
 import { AppDashboardShell } from "@/components/dashboard/AppDashboardShell";
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
-    useEffect(() => {
-        document.body.classList.add('liquid-glass-v2', 'lab-glass-system');
-        return () => {
-            document.body.classList.remove('liquid-glass-v2', 'lab-glass-system');
-        };
-    }, []);
-
     return (
         <LabProvider>
             <AppDashboardShell>
