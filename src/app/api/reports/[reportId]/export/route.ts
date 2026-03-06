@@ -1,72 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { SCMGroundedReport } from "@/types/report-analysis";
-
-function toMarkdown(report: SCMGroundedReport): string {
-  const lines: string[] = [];
-  lines.push(`# SCM Grounded Report`);
-  lines.push("");
-  lines.push(`- **Report ID:** ${report.meta.reportId}`);
-  lines.push(`- **Query:** ${report.meta.query}`);
-  lines.push(`- **Causal Depth:** ${report.meta.causalDepth}`);
-  lines.push(`- **Generated At:** ${report.meta.generatedAt}`);
-  lines.push("");
-
-  lines.push(`## Executive Summary`);
-  lines.push("");
-  for (const item of report.executiveSummary || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push(`## Primary Hypotheses`);
-  lines.push("");
-  for (const h of report.primaryHypotheses || []) {
-    lines.push(`- **${h.text}** (confidence: ${h.confidence.toFixed?.(2) ?? h.confidence}, class: ${h.claimClass})`);
-  }
-  lines.push("");
-
-  lines.push(`## Counter Hypotheses`);
-  lines.push("");
-  for (const h of report.counterHypotheses || []) {
-    lines.push(`- **${h.text}** — ${h.rationale}`);
-  }
-  lines.push("");
-
-  lines.push(`## Decision Guidance`);
-  lines.push("");
-  lines.push(`### Safe to Conclude`);
-  for (const item of report.decisionGuidance?.safeConclude || []) lines.push(`- ${item}`);
-  lines.push("");
-  lines.push(`### Not Safe to Conclude`);
-  for (const item of report.decisionGuidance?.notSafeConclude || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push(`## Unknowns & Gaps`);
-  lines.push("");
-  for (const item of report.unknownsAndGaps || []) lines.push(`- ${item}`);
-  lines.push("");
-
-  lines.push(`## Falsifier Checklist`);
-  lines.push("");
-  for (const item of report.falsifierChecklist || []) {
-    lines.push(`- [${item.window}] claim=${item.claimId} :: ${item.test}`);
-  }
-  lines.push("");
-
-  lines.push(`## Sources`);
-  lines.push("");
-  for (const s of report.sources || []) {
-    lines.push(`- ${s.domain} — ${s.url}`);
-  }
-  lines.push("");
-
-  lines.push(`## Claims`);
-  lines.push("");
-  for (const c of report.claims || []) {
-    lines.push(`- (${c.claimClass} | ${c.evidenceTier} | ${c.confidence.toFixed?.(2) ?? c.confidence}) ${c.text}`);
-  }
-
-  return lines.join("\n");
-}
+import { generateSCMReportMarkdown } from "@/lib/services/scm-report-export";
 
 export async function POST(
   req: NextRequest,
@@ -96,11 +31,23 @@ export async function POST(
     const report = row.report_json as SCMGroundedReport;
 
     if (format === "markdown") {
-      const markdown = toMarkdown(report);
+      const markdown = generateSCMReportMarkdown(report, {
+        includeProvenance: true,
+        includeRawJSON: false,
+      });
+
+      // Generate friendly filename from query
+      const querySlug = report.meta.query
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .slice(0, 50);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+      const filename = `scm-report-${querySlug}-${timestamp}.md`;
+
       return new Response(markdown, {
         headers: {
           "Content-Type": "text/markdown; charset=utf-8",
-          "Content-Disposition": `attachment; filename="scm-report-${reportId}.md"`,
+          "Content-Disposition": `attachment; filename="${filename}"`,
         },
       });
     }
