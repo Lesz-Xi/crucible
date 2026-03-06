@@ -3227,3 +3227,59 @@ body {
 .dark .lab-button-primary {
   color: #11161b !important;
 }
+
+/* Hard stop: ensure app-feature dark mode cannot be overridden by legacy glass rules. */
+.dark .app-feature-shell,
+.dark .feature-chat,
+.dark .feature-hybrid,
+.dark .feature-legal,
+.dark .feature-education,
+.dark .feature-lab,
+.dark .lab-shell {
+  background: var(--lab-shell-main) !important;
+  color: var(--lab-text-primary) !important;
+}
+
+.dark .glass-sidebar,
+.dark .lg-sidebar {
+  background: var(--lab-shell-sidebar) !important;
+  border-color: var(--lab-border) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .lab-panel,
+.dark .lab-panel-elevated,
+.dark .lab-card,
+.dark .lab-card-interactive,
+.dark .lab-kpi-card,
+.dark .lab-metric-tile,
+.dark .edu-card,
+.dark .edu-card-soft,
+.dark .scientific-protocol-card,
+.dark .scientific-workbench-main,
+.dark .lg-panel,
+.dark .lg-card,
+.dark .lg-dropdown,
+.dark .lab-button-secondary,
+.dark .lab-nav-pill,
+.dark .sidebar-history-item,
+.dark .lg-control {
+  background: var(--lab-panel) !important;
+  border-color: var(--lab-border) !important;
+  color: var(--lab-text-primary) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.dark .lab-input,
+.dark .lab-select,
+.dark .lab-textarea,
+.dark .lg-input,
+.dark .lg-search {
+  background: var(--lab-input-bg) !important;
+  border-color: var(--lab-input-border) !important;
+  color: var(--lab-text-primary) !important;
+}
