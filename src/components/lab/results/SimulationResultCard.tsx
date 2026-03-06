@@ -24,7 +24,7 @@ function ExpandableSection({ title, icon: Icon, content, defaultOpen = false }: 
         <div className="border border-[var(--lab-border)] rounded-lg overflow-hidden">
             <button
                 onClick={() => setOpen(!open)}
-                className="w-full flex items-center justify-between px-3 py-2 bg-black/5 dark:bg-white/5 text-xs font-medium text-[var(--lab-text-secondary)] hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+                className="flex w-full items-center justify-between bg-[var(--lab-panel-soft)] px-3 py-2 text-xs font-medium text-[var(--lab-text-secondary)] transition-colors hover:bg-[var(--lab-hover-bg)]"
                 aria-expanded={open}
                 aria-label={`Toggle ${title}`}
             >
@@ -42,7 +42,7 @@ function ExpandableSection({ title, icon: Icon, content, defaultOpen = false }: 
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
                     >
-                        <pre className="px-3 py-2 text-[10px] font-mono text-[var(--lab-text-secondary)] bg-black/3 dark:bg-white/3 overflow-x-auto max-h-48 overflow-y-auto">
+                        <pre className="max-h-48 overflow-x-auto overflow-y-auto bg-[color-mix(in_srgb,var(--lab-panel-soft)_86%,transparent)] px-3 py-2 font-mono text-[10px] text-[var(--lab-text-secondary)]">
                             {content}
                         </pre>
                     </motion.div>
@@ -61,7 +61,7 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
         >
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
+                    <Sparkles className="w-4 h-4 text-[var(--lab-accent-rust)]" />
                     <h3 className="text-xs font-semibold text-[var(--lab-text-primary)] font-serif tracking-wide">
                         Simulation Results
                     </h3>
@@ -69,8 +69,8 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
                 <span className={cn(
                     "px-2 py-0.5 rounded-full text-[10px] font-medium border",
                     result.success
-                        ? "text-emerald-500 bg-emerald-500/10 border-emerald-500/30"
-                        : "text-red-500 bg-red-500/10 border-red-500/30"
+                        ? "border-[color-mix(in_srgb,var(--lab-accent-moss)_28%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-moss)_10%,transparent)] text-[var(--lab-accent-moss)]"
+                        : "border-[color-mix(in_srgb,var(--lab-accent-rust)_28%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_10%,transparent)] text-[var(--lab-accent-rust)]"
                 )}>
                     {result.success ? "Success" : "Failed"}
                 </span>
@@ -78,7 +78,7 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
 
             {/* Execution metrics */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5">
+                <div className="rounded-lg bg-[var(--lab-panel-soft)] p-2">
                     <div className="flex items-center gap-1 text-[10px] text-[var(--lab-text-tertiary)] mb-1">
                         <Clock className="w-3 h-3" />
                         Execution Time
@@ -88,7 +88,7 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
                     </div>
                 </div>
                 {result.execution.metrics && Object.keys(result.execution.metrics).length > 0 && (
-                    <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5">
+                    <div className="rounded-lg bg-[var(--lab-panel-soft)] p-2">
                         <div className="text-[10px] text-[var(--lab-text-tertiary)] mb-1">Metrics</div>
                         <div className="space-y-0.5">
                             {Object.entries(result.execution.metrics).map(([key, val]) => (
@@ -106,7 +106,7 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
 
             {/* Degraded warning */}
             {result.degraded && (
-                <div className="mb-3 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-600 dark:text-amber-400">
+                <div className="mb-3 rounded-lg border border-[color-mix(in_srgb,var(--lab-accent-rust)_20%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_10%,transparent)] p-2 text-[11px] text-[var(--lab-accent-rust)]">
                     ⚠ Result computed in degraded mode (accuracy may be reduced)
                 </div>
             )}
@@ -133,9 +133,9 @@ export function SimulationResultCard({ result }: SimulationResultCardProps) {
                     />
                 )}
                 {result.execution.error && (
-                    <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20">
-                        <div className="text-[10px] font-medium text-red-500 mb-1">Error</div>
-                        <pre className="text-[10px] font-mono text-red-400 whitespace-pre-wrap">
+                    <div className="rounded-lg border border-[color-mix(in_srgb,var(--lab-accent-rust)_24%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_10%,transparent)] p-2">
+                        <div className="mb-1 text-[10px] font-medium text-[var(--lab-accent-rust)]">Error</div>
+                        <pre className="whitespace-pre-wrap font-mono text-[10px] text-[var(--lab-accent-rust)]">
                             {result.execution.error}
                         </pre>
                     </div>
