@@ -15,7 +15,7 @@ export function ChatLayout({ children, onLoadSession, onNewChat }: ChatLayoutPro
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen w-full flex bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans">
+    <div className="flex min-h-screen w-full bg-[var(--lab-bg)] font-sans text-[var(--lab-text-primary)]">
       {/* Sidebar - Controlled - Sticky for page scroll */}
       <Sidebar 
         isOpen={isSidebarOpen} 
@@ -26,13 +26,13 @@ export function ChatLayout({ children, onLoadSession, onNewChat }: ChatLayoutPro
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 relative flex flex-col min-h-screen bg-[var(--bg-primary)] transition-all duration-300">
+      <div className="relative flex min-h-screen flex-1 flex-col bg-[var(--lab-bg)] transition-all duration-300">
         
         {/* Toggle Button - Floating Top Left */}
         <div className="absolute top-4 left-4 z-50">
-           <button 
+           <button
              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-             className="p-2 rounded-lg text-wabi-stone hover:bg-wabi-clay/10 hover:text-wabi-clay transition-colors"
+             className="rounded-lg border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] p-2 text-[var(--lab-text-secondary)] transition-colors hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-accent-rust)]"
              title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
            >
              {isSidebarOpen ? (
@@ -47,9 +47,6 @@ export function ChatLayout({ children, onLoadSession, onNewChat }: ChatLayoutPro
           <ThemeToggle />
         </div>
 
-        {/* Background depth layers */}
-        <div className="absolute inset-0 bg-noise opacity-[0.03] pointer-events-none z-0 fixed" />
-        
         {/* Child Content (Chat Interface) */}
         <div className="flex-1 relative z-10 p-0">
            {children}

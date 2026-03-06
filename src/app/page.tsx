@@ -22,11 +22,11 @@ export default function Home() {
       <Hero />
       <SynthesisPrism />
       <Features />
-      <FeatureRail />
       <Process />
       <ThreePillars />
       <ScientistModel />
       <CausalLattice />
+      <FeatureRail />
       {/* <CausalInk /> */}
       <ObsidianVault />
       <ArtifactShowcase />

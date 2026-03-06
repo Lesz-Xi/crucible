@@ -22,10 +22,10 @@ import { cn } from "@/lib/utils";
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
     const config = {
-        pending: { icon: Loader2, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30', spin: true },
-        success: { icon: CheckCircle2, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30', spin: false },
-        failure: { icon: AlertCircle, color: 'text-red-500 bg-red-500/10 border-red-500/30', spin: false },
-    }[status] || { icon: AlertCircle, color: 'text-gray-500 bg-gray-500/10 border-gray-500/30', spin: false };
+        pending: { icon: Loader2, color: 'text-[var(--lab-accent-rust)] bg-[var(--lab-hover-bg)] border-[var(--lab-border-strong)]', spin: true },
+        success: { icon: CheckCircle2, color: 'text-[var(--lab-accent-moss)] bg-[color-mix(in_srgb,var(--lab-accent-moss)_12%,transparent)] border-[color-mix(in_srgb,var(--lab-accent-moss)_30%,transparent)]', spin: false },
+        failure: { icon: AlertCircle, color: 'text-[var(--lab-accent-slate)] bg-[color-mix(in_srgb,var(--lab-accent-slate)_12%,transparent)] border-[color-mix(in_srgb,var(--lab-accent-slate)_30%,transparent)]', spin: false },
+    }[status] || { icon: AlertCircle, color: 'text-[var(--lab-text-tertiary)] bg-[var(--lab-panel-soft)] border-[var(--lab-border)]', spin: false };
 
     const Icon = config.icon;
     
@@ -40,13 +40,13 @@ function StatusBadge({ status }: { status: string }) {
 // Causal role badge
 function CausalRoleBadge({ role }: { role: string }) {
     const colors: Record<string, string> = {
-        observation: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
-        intervention: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
-        counterfactual: 'text-orange-400 bg-orange-500/10 border-orange-500/30',
+        observation: 'text-[var(--lab-accent-slate)] bg-[color-mix(in_srgb,var(--lab-accent-slate)_12%,transparent)] border-[color-mix(in_srgb,var(--lab-accent-slate)_28%,transparent)]',
+        intervention: 'text-[var(--lab-accent-rust)] bg-[var(--lab-hover-bg)] border-[var(--lab-border-strong)]',
+        counterfactual: 'text-[var(--lab-accent-moss)] bg-[color-mix(in_srgb,var(--lab-accent-moss)_12%,transparent)] border-[color-mix(in_srgb,var(--lab-accent-moss)_28%,transparent)]',
     };
     
     return (
-        <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${colors[role] || 'text-gray-400 bg-gray-500/10 border-gray-500/30'}`}>
+        <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${colors[role] || 'text-[var(--lab-text-tertiary)] bg-[var(--lab-panel-soft)] border-[var(--lab-border)]'}`}>
             {role}
         </span>
     );
@@ -69,7 +69,7 @@ function ExperimentCard({ experiment }: { experiment: LabExperiment }) {
         >
             <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-white/40 to-white/20 border border-white/30">
+                    <div className="rounded-lg border border-[var(--lab-border)] bg-[var(--lab-panel-soft)] p-2">
                         {toolIcons[experiment.tool_name] || <Database className="w-4 h-4" />}
                     </div>
                     <div>

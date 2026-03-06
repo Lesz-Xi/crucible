@@ -307,11 +307,11 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads]);
 
   return (
-    <div className={cn('app-feature-shell lab-glass-system lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>
+    <div className={cn('app-feature-shell lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>
       <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(
-          'glass-sidebar lg-sidebar relative border-r border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-md transition-all duration-200',
+          'glass-sidebar lg-sidebar relative border-r border-[var(--lab-border)] transition-all duration-200',
           collapsed ? 'w-[74px]' : 'w-[286px]',
         )}>
           <div className="flex h-full flex-col p-3">
@@ -342,7 +342,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     href={item.href}
                     className={cn(
                       "lab-nav-pill lg-control w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
-                      active ? "!bg-white/10 !border-[var(--lab-border)]" : "hover:!bg-white/6"
+                      active ? "!bg-[var(--lab-active-bg)] !border-[var(--lab-border)]" : "hover:!bg-[var(--lab-hover-bg)]"
                     )}
                     data-active={active ? 'true' : 'false'}
                     title={collapsed ? item.label : undefined}
@@ -359,7 +359,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   type="button"
                   className={cn(
                     "lab-nav-pill w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
-                    relicsOpen ? "!bg-white/10 !border-[var(--lab-border)]" : "hover:!bg-white/6"
+                    relicsOpen ? "!bg-[var(--lab-active-bg)] !border-[var(--lab-border)]" : "hover:!bg-[var(--lab-hover-bg)]"
                   )}
                   onClick={() => setRelicsOpen(!relicsOpen)}
                   title={collapsed ? "Relics" : undefined}
@@ -401,7 +401,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
-                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-white/6"
+                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-[var(--lab-hover-bg)]"
                       onClick={() => {
                         if (activeFolderId) createFolderFile(activeFolderId);
                         router.push('/chat?new=1');
@@ -414,7 +414,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
                     <button
                       type="button"
-                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-white/6"
+                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-[var(--lab-hover-bg)]"
                       onClick={() => {
                         createFolder();
                       }}
@@ -453,7 +453,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                         <span className="text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
                         <button
                           type="button"
-                          className="lg-control rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                          className="lg-control rounded p-1 opacity-0 transition-opacity hover:bg-[var(--lab-hover-bg)] group-hover:opacity-100"
                           onClick={() => removeFolder(folder.id)}
                           aria-label="Delete folder"
                           title="Delete folder"
@@ -482,7 +482,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                                 <span className="truncate" title={file.name}>{file.name}</span>
                                 <button
                                   type="button"
-                                  className="lg-control ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100"
+                                  className="lg-control ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-[var(--lab-hover-bg)] group-hover:opacity-100"
                                   onClick={() => removeFolderFile(folder.id, file.id)}
                                   aria-label="Remove file"
                                   title="Remove file"
@@ -522,7 +522,7 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                         <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                           <button
                             type="button"
-                            className="lg-control rounded-md p-1 hover:bg-white/10"
+                            className="lg-control rounded-md p-1 hover:bg-[var(--lab-hover-bg)]"
                             onClick={() => void handleDeleteThread(session.id)}
                             aria-label="Delete thread"
                             title="Delete thread"

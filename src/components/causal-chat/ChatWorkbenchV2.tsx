@@ -1193,7 +1193,7 @@ export function ChatWorkbenchV2() {
                         <button
                           type="button"
                           onClick={() => void handleCopyMessage(message.id, message.content)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-white/55 text-xs text-[var(--lab-text-secondary)] transition hover:bg-white/80 dark:bg-[#27272a]/70"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-[var(--lab-input-bg)] text-xs text-[var(--lab-text-secondary)] transition hover:bg-[var(--lab-hover-bg)]"
                           title={copiedMessageId === message.id ? `Copied ${message.role === 'user' ? 'prompt' : 'response'}` : `Copy ${message.role === 'user' ? 'prompt' : 'response'}`}
                           aria-label={copiedMessageId === message.id ? 'Copied' : 'Copy message'}
                         >
@@ -1257,7 +1257,7 @@ export function ChatWorkbenchV2() {
               />
             ) : (
               <div className="px-6 pb-3 pt-2">
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-white/35 px-2 py-1.5 backdrop-blur-xl dark:bg-[#27272a]">
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] px-2 py-1.5">
                   <button
                     type="button"
                     className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
@@ -1281,7 +1281,7 @@ export function ChatWorkbenchV2() {
             )}
             </div>
             {modelFallbackNotice ? (
-              <div className="px-6 pb-2 text-xs text-amber-700 dark:text-amber-300">
+              <div className="px-6 pb-2 text-xs text-[var(--lab-accent-rust)]">
                 ⚠️ Model fallback: {modelFallbackNotice}
               </div>
             ) : null}

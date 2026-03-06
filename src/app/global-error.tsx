@@ -1,20 +1,9 @@
 "use client";
 
-import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const jetbrainsSans = JetBrains_Mono({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export default function GlobalError({
-  error,
+  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -22,7 +11,7 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en">
-      <body className={`${jetbrainsSans.variable} ${jetbrainsMono.variable} antialiased bg-white text-black flex items-center justify-center h-screen flex-col gap-4`}>
+      <body className="flex h-screen flex-col items-center justify-center gap-4 bg-white text-black antialiased">
         <h2>Something went wrong!</h2>
         <button
             onClick={() => reset()}

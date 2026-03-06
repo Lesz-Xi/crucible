@@ -45,13 +45,13 @@ export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, g
       </section>
 
       {error ? (
-        <section className="lab-card border-red-300 bg-red-50/70">
-          <div className="flex items-start gap-2 text-red-700">
+        <section className="lab-card !border-[var(--lab-border-strong)] !bg-[var(--lab-panel-soft)]">
+          <div className="flex items-start gap-2 text-[var(--lab-accent-rust)]">
             <AlertTriangle className="mt-0.5 h-4 w-4" />
             <div>
               <p className="font-medium">{error}</p>
               {isBillingError ? (
-                <p className="mt-1 text-xs text-red-700/90">
+                <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">
                   Action: Open Anthropic Plans & Billing, add credits, then rerun analysis.
                 </p>
               ) : null}
