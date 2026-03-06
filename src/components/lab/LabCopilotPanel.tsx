@@ -304,9 +304,9 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
         type="button"
         onClick={onToggle}
         className={cn(
-          "flex h-full w-10 flex-col items-center justify-center gap-2",
-          "border-l border-[var(--lab-border)] bg-[var(--lab-panel-soft)]",
-          "text-[var(--lab-text-tertiary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)] transition-colors"
+          "flex flex-col items-center justify-center gap-2 w-10 h-full",
+          "border-l border-border/60 bg-card/20 backdrop-blur-sm",
+          "text-muted-foreground hover:text-foreground hover:bg-card/40 transition-colors"
         )}
         title="Open Lab Copilot"
       >
@@ -317,16 +317,16 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
   }
 
   return (
-    <div className="flex h-full w-[380px] shrink-0 flex-col border-l border-[var(--lab-border)] bg-[var(--lab-panel-soft)]">
+    <div className="flex flex-col h-full border-l border-border/60 bg-card/20 backdrop-blur-sm w-[380px] shrink-0">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-[var(--lab-border)] bg-[var(--lab-panel)] px-3 py-2.5">
-        <Bot className="w-4 h-4 text-[var(--lab-accent-rust)]" />
-        <span className="flex-1 text-xs font-semibold uppercase tracking-wider text-[var(--lab-text-primary)]">
+      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/60 bg-card/40">
+        <Bot className="w-4 h-4 text-primary" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-foreground flex-1">
           Lab Copilot
         </span>
 
         {/* Mode selector */}
-        <div className="flex overflow-hidden rounded-md border border-[var(--lab-border)] text-[10px]">
+        <div className="flex rounded-md overflow-hidden border border-border/60 text-[10px]">
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -335,8 +335,8 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
               className={cn(
                 "px-2 py-1 font-medium transition-colors",
                 mode === m.id
-                  ? "bg-[var(--lab-accent-rust)] text-[var(--lab-panel)]"
-                  : "text-[var(--lab-text-tertiary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               {m.label}
@@ -347,7 +347,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
         <button
           type="button"
           onClick={() => setShowSettings((v) => !v)}
-          className="text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-primary)] transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           title="Settings"
         >
           <Settings2 className="w-3.5 h-3.5" />
@@ -356,7 +356,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
         <button
           type="button"
           onClick={onToggle}
-          className="text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-primary)] transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           title="Close copilot"
         >
           <ChevronRight className="w-3.5 h-3.5" />
@@ -365,11 +365,11 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
 
       {/* Settings panel */}
       {showSettings && (
-        <div className="flex items-center gap-2 border-b border-[var(--lab-border)] bg-[var(--lab-panel-soft)] px-3 py-2">
-          <span className="text-[10px] uppercase tracking-wider text-[var(--lab-text-tertiary)]">
+        <div className="px-3 py-2 border-b border-border/60 bg-card/30 flex items-center gap-2">
+          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
             Level:
           </span>
-          <div className="flex overflow-hidden rounded-md border border-[var(--lab-border)] text-[10px]">
+          <div className="flex rounded-md overflow-hidden border border-border/60 text-[10px]">
             {LEVELS.map((l) => (
               <button
                 key={l.id}
@@ -378,8 +378,8 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
                 className={cn(
                   "px-2 py-1 font-medium transition-colors",
                   learningLevel === l.id
-                    ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_90%,var(--lab-panel))] text-[var(--lab-panel)]"
-                    : "text-[var(--lab-text-tertiary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]"
+                    ? "bg-primary/80 text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
                 {l.label}
@@ -391,12 +391,12 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
 
       {/* Context indicator */}
       {state.currentStructure && (
-        <div className="flex items-center gap-1.5 border-b border-[var(--lab-border)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_8%,var(--lab-panel))] px-3 py-1.5">
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--lab-accent-rust)]" />
-          <span className="font-mono text-[10px] text-[var(--lab-accent-rust)]">
+        <div className="px-3 py-1.5 border-b border-border/40 bg-primary/5 flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <span className="text-[10px] text-primary font-mono">
             {state.currentStructure.pdbId}
           </span>
-          <span className="text-[10px] text-[var(--lab-text-tertiary)]">loaded</span>
+          <span className="text-[10px] text-muted-foreground">loaded</span>
         </div>
       )}
 
@@ -404,12 +404,12 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4 min-h-0">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center py-8 space-y-3">
-            <Bot className="w-8 h-8 text-[var(--lab-text-tertiary)]/50" />
+            <Bot className="w-8 h-8 text-muted-foreground/40" />
             <div className="space-y-1">
-              <p className="text-sm font-medium text-[var(--lab-text-secondary)]">
+              <p className="text-sm font-medium text-muted-foreground">
                 Lab Copilot
               </p>
-              <p className="max-w-[220px] text-xs text-[var(--lab-text-tertiary)]">
+              <p className="text-xs text-muted-foreground/60 max-w-[220px]">
                 {state.currentStructure
                   ? `Ask about ${state.currentStructure.pdbId} — structure, mechanism, or function.`
                   : "Load a protein structure first, then ask questions about it."}
@@ -427,7 +427,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
                     key={starter}
                     type="button"
                     onClick={() => setPrompt(starter)}
-                    className="rounded-lg border border-[var(--lab-border)] px-3 py-2 text-left text-xs text-[var(--lab-text-secondary)] transition-all hover:border-[var(--lab-border-strong)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]"
+                    className="text-left text-xs px-3 py-2 rounded-lg border border-border/60 text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5 transition-all"
                   >
                     {starter}
                   </button>
@@ -474,7 +474,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
           <button
             type="button"
             onClick={() => setMessages([])}
-            className="flex items-center gap-1 text-[10px] text-[var(--lab-text-tertiary)] transition-colors hover:text-[var(--lab-text-primary)]"
+            className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
           >
             <X className="w-3 h-3" />
             Clear
@@ -484,7 +484,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
 
       {/* Input */}
       <div className="px-3 pb-3 pt-1">
-        <div className="flex items-end gap-2 rounded-xl border border-[var(--lab-input-border)] bg-[var(--lab-input-bg)] px-3 py-2 transition-colors focus-within:border-[var(--lab-border-strong)]">
+        <div className="flex items-end gap-2 rounded-xl border border-border/60 bg-background/60 px-3 py-2 focus-within:border-primary/50 transition-colors">
           <textarea
             ref={textareaRef}
             value={prompt}
@@ -498,7 +498,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
                 : "Ask about the loaded structure…"
             }
             rows={2}
-            className="flex-1 resize-none bg-transparent text-sm leading-relaxed text-[var(--lab-text-primary)] placeholder:text-[var(--lab-text-tertiary)] focus:outline-none"
+            className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none leading-relaxed"
           />
           <button
             type="button"
@@ -507,8 +507,8 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
             className={cn(
               "shrink-0 rounded-lg p-1.5 transition-all",
               prompt.trim() && !isSubmitting
-                ? "bg-[var(--lab-accent-rust)] text-[var(--lab-panel)] hover:brightness-105"
-                : "cursor-not-allowed text-[var(--lab-text-tertiary)]/50"
+                ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                : "text-muted-foreground/40 cursor-not-allowed"
             )}
           >
             {isSubmitting ? (
@@ -518,7 +518,7 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
             )}
           </button>
         </div>
-        <p className="mt-1 text-center text-[10px] text-[var(--lab-text-tertiary)]">
+        <p className="text-[10px] text-muted-foreground/50 mt-1 text-center">
           ↵ Send · Shift+↵ New line
         </p>
       </div>

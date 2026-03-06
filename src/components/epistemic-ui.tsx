@@ -32,7 +32,7 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             {index > 0 && (
               <div className={`
                 absolute left-[23px] top-0 h-[50%] w-[2px]
-                ${plan[index - 1].status === "completed" ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_46%,transparent)]" : "bg-[var(--lab-border)]"}
+                ${plan[index - 1].status === "completed" ? "bg-orange-500/50" : "bg-neutral-800"}
                 transition-colors
               `} />
             )}
@@ -41,7 +41,7 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             {index < plan.length - 1 && (
               <div className={`
                 absolute left-[23px] top-[50%] bottom-[-16px] w-[2px]
-                ${isCompleted ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_46%,transparent)]" : "bg-[var(--lab-border)]"}
+                ${isCompleted ? "bg-orange-500/50" : "bg-neutral-800"}
                 transition-colors
               `} />
             )}
@@ -50,8 +50,8 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             <div className={`
               absolute left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full border 
               flex items-center justify-center z-10 transition-all duration-300
-              ${isActive ? "bg-[var(--lab-accent-rust)] border-[var(--lab-accent-rust)] text-[var(--lab-panel)] shadow-[0_0_18px_color-mix(in_srgb,var(--lab-accent-rust)_32%,transparent)]" : 
-                isCompleted ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_12%,transparent)] border-[color-mix(in_srgb,var(--lab-accent-rust)_40%,transparent)] text-[var(--lab-accent-rust)]" : "bg-[var(--lab-panel)] border-[var(--lab-border)] text-[var(--lab-text-tertiary)]"}
+              ${isActive ? "bg-orange-500 border-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.5)]" : 
+                isCompleted ? "bg-orange-500/20 border-orange-500 text-orange-500" : "bg-[#0A0A0A] border-white/10"}
             `}>
               {isActive && <Loader2 className="w-3.5 h-3.5 text-white animate-spin" />}
               {isCompleted && <CheckCircle2 className="w-3.5 h-3.5" />}
@@ -59,26 +59,26 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
             </div>
 
             {/* Step Content */}
-              <div className={`
-                relative rounded-xl border p-5 transition-all duration-300
-              ${isActive ? "bg-[var(--lab-panel)] border-[color-mix(in_srgb,var(--lab-accent-rust)_32%,transparent)] shadow-[var(--lab-shadow-lift)] scale-[1.02] origin-left" : 
-                "bg-[var(--lab-panel-soft)] border-[var(--lab-border)] hover:bg-[var(--lab-panel)] hover:border-[var(--lab-border-strong)]"}
+            <div className={`
+              relative rounded-xl border p-5 transition-all duration-300
+              ${isActive ? "bg-[#0A0A0A] border-orange-500/30 shadow-lg shadow-orange-500/10 scale-[1.02] origin-left" : 
+                "bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10"}
             `}>
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h3 className={`font-medium tracking-tight ${isActive ? "text-[var(--lab-accent-rust)]" : "text-[var(--lab-text-primary)]"}`}>
+                  <h3 className={`font-medium tracking-tight ${isActive ? "text-orange-200" : "text-neutral-300"}`}>
                     {step.label}
                   </h3>
                   {step.description && (
-                     <p className="mt-0.5 max-w-[90%] text-[10px] leading-relaxed text-[var(--lab-text-tertiary)]">
+                     <p className="text-[10px] text-neutral-500 mt-0.5 max-w-[90%] leading-relaxed">
                         {step.description}
                      </p>
                   )}
                 </div>
                 <span className={`
                   text-[10px] uppercase tracking-wider font-mono font-bold px-2 py-1 rounded shrink-0
-                  ${isActive ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_12%,transparent)] text-[var(--lab-accent-rust)]" : 
-                    isCompleted ? "bg-[color-mix(in_srgb,var(--lab-accent-rust)_8%,transparent)] text-[var(--lab-accent-rust)]" : "text-[var(--lab-text-tertiary)]"}
+                  ${isActive ? "bg-orange-500/20 text-orange-300" : 
+                    isCompleted ? "bg-orange-500/10 text-orange-400" : "text-neutral-600"}
                 `}>
                   {step.status}
                 </span>
@@ -88,17 +88,17 @@ export function ExecutionStream({ plan, currentStepIndex }: { plan: ExecutionSte
               {(isActive || (isCompleted && step.logs.length > 0)) && (
                 <div className="mt-3 font-mono text-xs space-y-1">
                   {step.logs.slice(-10).map((log) => (
-                    <div key={log.id} className="flex items-start gap-3 text-[var(--lab-text-secondary)]">
-                      <span className="shrink-0 opacity-40">
+                    <div key={log.id} className="flex gap-3 items-start text-neutral-400">
+                      <span className="opacity-30 shrink-0">
                         {new Date(log.timestamp).toLocaleTimeString([], {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'})}
                       </span>
-                      <span className={isActive ? "text-[color-mix(in_srgb,var(--lab-accent-rust)_74%,var(--lab-text-primary))]" : "text-[var(--lab-text-tertiary)]"}>
+                      <span className={isActive ? "text-orange-200/80" : "text-neutral-500"}>
                          {log.message}
                       </span>
                     </div>
                   ))}
                   {isActive && (
-                     <div className="flex items-center gap-2 pt-1 text-[color-mix(in_srgb,var(--lab-accent-rust)_70%,transparent)] animate-pulse">
+                     <div className="flex gap-2 items-center text-orange-400/60 pt-1 animate-pulse">
                         <Activity className="w-3 h-3" />
                         <span>Processing...</span>
                      </div>
@@ -125,8 +125,8 @@ export function FileTreeItem({ file, level = 0, onSelect }: { file: VirtualFile,
         onClick={() => isFolder ? setIsOpen(!isOpen) : onSelect(file)}
         className={`
           flex items-center gap-2 py-1.5 px-3 rounded-lg cursor-pointer text-sm font-medium
-          hover:bg-[var(--lab-hover-bg)] transition-colors border border-transparent hover:border-[var(--lab-border)]
-          ${!isFolder ? "text-[var(--lab-text-secondary)]" : "text-[var(--lab-text-primary)]"}
+          hover:bg-white/5 transition-colors border border-transparent hover:border-white/5
+          ${!isFolder ? "text-neutral-400" : "text-neutral-200"}
         `}
         style={{ paddingLeft: `${level * 16 + 12}px` }}
       >
@@ -136,19 +136,19 @@ export function FileTreeItem({ file, level = 0, onSelect }: { file: VirtualFile,
           </span>
         )}
         
-        {isFolder ? <FolderOpen className="w-4 h-4 text-[var(--lab-accent-rust)]" /> : <FileTypeIcon filename={file.name} />}
+        {isFolder ? <FolderOpen className="w-4 h-4 text-orange-400" /> : <FileTypeIcon filename={file.name} />}
         
         <span className="truncate tracking-tight">{file.name}</span>
         
         {!isFolder && (
-          <span className="ml-auto text-[10px] text-[var(--lab-text-tertiary)] font-mono">
+          <span className="ml-auto text-[10px] text-neutral-600 font-mono">
             {formatBytes(file.size)}
           </span>
         )}
       </div>
 
       {isFolder && isOpen && file.children && (
-        <div className="ml-4 border-l border-[var(--lab-border)]">
+        <div className="border-l border-white/5 ml-4">
           {file.children.map((child) => (
             <FileTreeItem key={child.path} file={child} level={level} onSelect={onSelect} />
           ))}
@@ -159,10 +159,10 @@ export function FileTreeItem({ file, level = 0, onSelect }: { file: VirtualFile,
 }
 
 function FileTypeIcon({ filename }: { filename: string }) {
-  if (filename.endsWith('.json')) return <FileJson className="w-4 h-4 text-[var(--lab-accent-rust)]" />;
-  if (filename.endsWith('.md')) return <FileText className="w-4 h-4 text-[var(--lab-accent-moss)]" />;
-  if (filename.endsWith('.pdf')) return <FileText className="w-4 h-4 text-[var(--lab-accent-slate)]" />;
-  return <FileIcon className="w-4 h-4 text-[var(--lab-text-tertiary)]" />;
+  if (filename.endsWith('.json')) return <FileJson className="w-4 h-4 text-amber-500/80" />;
+  if (filename.endsWith('.md')) return <FileText className="w-4 h-4 text-emerald-500/80" />;
+  if (filename.endsWith('.pdf')) return <FileText className="w-4 h-4 text-rose-500/80" />;
+  return <FileIcon className="w-4 h-4 text-neutral-500" />;
 }
 
 function formatBytes(bytes: number) {
@@ -198,8 +198,8 @@ export function ChatInterface({ messages, onSendMessage, isTyping }: {
                 className={`
                   max-w-[90%] rounded-2xl px-5 py-4 text-sm leading-relaxed
                   ${isAgent 
-                    ? "border border-[var(--lab-border)] bg-[var(--lab-panel)] text-[var(--lab-text-primary)] shadow-[var(--lab-shadow-soft)]" 
-                    : "bg-[var(--lab-accent-rust)] text-[var(--lab-panel)] shadow-[var(--lab-shadow-soft)]"}
+                    ? "bg-[#0A0A0A] border border-white/5 text-neutral-200" 
+                    : "bg-orange-600/90 text-white shadow-lg shadow-orange-900/20"}
                 `}
               >
                 <div className="flex items-center gap-2 mb-2 opacity-50 text-[10px] font-mono uppercase tracking-wider">
@@ -213,10 +213,10 @@ export function ChatInterface({ messages, onSendMessage, isTyping }: {
         })}
         {isTyping && (
            <div className="flex justify-start">
-             <div className="flex items-center gap-1.5 rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] px-4 py-3 shadow-[var(--lab-shadow-soft)]">
-               <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--lab-accent-rust)]" />
-               <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--lab-accent-rust)] delay-75" />
-               <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--lab-accent-rust)] delay-150" />
+             <div className="bg-[#0A0A0A] rounded-2xl px-4 py-3 border border-white/5 flex items-center gap-1.5">
+               <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce" />
+               <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce delay-75" />
+               <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce delay-150" />
              </div>
            </div>
         )}

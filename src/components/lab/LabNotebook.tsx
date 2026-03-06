@@ -68,20 +68,20 @@ export function LabNotebook() {
   return (
     <div
       className={cn(
-        "flex flex-col border-t border-[var(--lab-border)] bg-[var(--lab-panel-soft)] transition-[height] duration-200",
+        "border-t border-border bg-card/20 backdrop-blur-sm flex flex-col transition-[height] duration-200",
         collapsed ? "h-12" : "h-64"
       )}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-[var(--lab-border)] bg-[var(--lab-panel)] p-2">
-        <BookOpen className="h-4 w-4 text-[var(--lab-text-tertiary)]" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--lab-text-tertiary)]">
+      <div className="p-2 border-b border-border flex items-center gap-2 bg-card/40">
+        <BookOpen className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Lab Notebook (Provenance Log)
         </span>
         <button
           type="button"
           onClick={toggleCollapsed}
-          className="ml-auto inline-flex items-center gap-1 rounded-md border border-[var(--lab-border)] px-2 py-1 text-[10px] uppercase tracking-wider text-[var(--lab-text-secondary)] hover:bg-[var(--lab-hover-bg)]"
+          className="ml-auto inline-flex items-center gap-1 rounded-md border border-[var(--lab-border)] px-2 py-1 text-[10px] uppercase tracking-wider text-[var(--lab-text-secondary)] hover:bg-white/10"
           title={collapsed ? "Open notebook" : "Close notebook"}
           aria-label={collapsed ? "Open notebook" : "Close notebook"}
         >
@@ -98,7 +98,7 @@ export function LabNotebook() {
       {!collapsed && (
         <div className="flex-1 p-4 overflow-y-auto">
           {state.experimentHistory.length === 0 ? (
-            <div className="py-8 text-center text-sm text-[var(--lab-text-tertiary)] opacity-60">
+            <div className="text-center text-muted-foreground text-sm py-8 opacity-50">
               No experiments recorded in this session.
             </div>
           ) : (
@@ -111,35 +111,35 @@ export function LabNotebook() {
                   return (
                     <div key={log.id} className="flex gap-3 text-sm group">
                       <div className="mt-0.5">
-                        <Bot className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                        <Bot className="w-4 h-4 text-teal-400" />
                       </div>
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="rounded bg-[color-mix(in_srgb,var(--lab-accent-moss)_12%,transparent)] px-1.5 py-0.5 font-mono text-xs font-bold text-[var(--lab-accent-moss)]">
+                          <span className="font-mono font-bold text-xs bg-teal-500/10 text-teal-400 px-1.5 py-0.5 rounded">
                             copilot_insight
                           </span>
-                          <span className="rounded border border-[color-mix(in_srgb,var(--lab-accent-slate)_30%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-slate)_8%,transparent)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--lab-accent-slate)]">
+                          <span className="text-[10px] px-1.5 py-0.5 rounded border border-blue-500/30 text-blue-500 bg-blue-500/5 uppercase tracking-widest font-semibold">
                             OBS(Y)
                           </span>
                           {input.structure && (
-                            <span className="text-[10px] font-mono text-[var(--lab-text-tertiary)]">
+                            <span className="text-[10px] font-mono text-muted-foreground">
                               {input.structure}
                             </span>
                           )}
-                          <span className="ml-auto font-mono text-xs text-[var(--lab-text-tertiary)]">
+                          <span className="text-xs text-muted-foreground ml-auto font-mono">
                             {new Date(log.created_at).toLocaleTimeString()}
                           </span>
                         </div>
-                        <div className="space-y-1 rounded border border-[color-mix(in_srgb,var(--lab-accent-moss)_22%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-moss)_8%,var(--lab-panel))] p-2 text-xs text-[var(--lab-text-secondary)]">
+                        <div className="text-xs text-muted-foreground bg-teal-500/5 border border-teal-500/20 p-2 rounded space-y-1">
                           <p>
-                            <span className="font-semibold text-[var(--lab-accent-moss)]">Obs: </span>
+                            <span className="text-teal-400 font-semibold">Obs: </span>
                             {input.observation}
                           </p>
                           <p>
-                            <span className="font-semibold text-[var(--lab-accent-moss)]">Hyp: </span>
+                            <span className="text-teal-400 font-semibold">Hyp: </span>
                             {input.hypothesis}
                           </p>
-                          <p className="text-[10px] text-[var(--lab-text-tertiary)]">
+                          <p className="text-[10px] text-muted-foreground/70">
                             Confidence: {Math.round(input.confidence * 100)}%
                           </p>
                         </div>
@@ -150,31 +150,31 @@ export function LabNotebook() {
 
                 // ── Standard Experiment Entry ──────────────────
                 return (
-                    <div key={log.id} className="flex gap-3 text-sm group">
-                      <div className="mt-0.5">
-                        {log.status === "success" && (
-                        <CheckCircle className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                  <div key={log.id} className="flex gap-3 text-sm group">
+                    <div className="mt-0.5">
+                      {log.status === "success" && (
+                        <CheckCircle className="w-4 h-4 text-emerald-500" />
                       )}
                       {log.status === "failure" && (
-                        <AlertTriangle className="h-4 w-4 text-[var(--lab-accent-rust)]" />
+                        <AlertTriangle className="w-4 h-4 text-red-500" />
                       )}
                       {log.status === "pending" && (
-                        <Clock className="h-4 w-4 animate-pulse text-[var(--lab-accent-rust)]" />
+                        <Clock className="w-4 h-4 text-amber-500 animate-pulse" />
                       )}
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="rounded bg-[color-mix(in_srgb,var(--lab-accent-rust)_10%,transparent)] px-1.5 py-0.5 font-mono text-xs font-bold text-[var(--lab-accent-rust)]">
+                        <span className="font-mono font-bold text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded">
                           {log.tool_name}
                         </span>
                         <span
                           className={cn(
-                            "rounded border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest",
+                            "text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-widest font-semibold",
                             log.causal_role === "intervention"
-                              ? "border-[color-mix(in_srgb,var(--lab-accent-rust)_26%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_8%,transparent)] text-[var(--lab-accent-rust)]"
+                              ? "border-purple-500/30 text-purple-500 bg-purple-500/5"
                               : log.causal_role === "observation"
-                              ? "border-[color-mix(in_srgb,var(--lab-accent-slate)_30%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-slate)_8%,transparent)] text-[var(--lab-accent-slate)]"
-                              : "border-[var(--lab-border)] text-[var(--lab-text-tertiary)]"
+                              ? "border-blue-500/30 text-blue-500 bg-blue-500/5"
+                              : "border-gray-500/30 text-gray-500"
                           )}
                         >
                           {log.causal_role === "intervention"
@@ -183,28 +183,28 @@ export function LabNotebook() {
                             ? "OBS(Y)"
                             : "CF"}
                         </span>
-                        <span className="ml-auto font-mono text-xs text-[var(--lab-text-tertiary)]">
+                        <span className="text-xs text-muted-foreground ml-auto font-mono">
                           {new Date(log.created_at).toLocaleTimeString()}
                         </span>
                       </div>
 
-                      <pre className="custom-scrollbar overflow-x-auto rounded border border-[var(--lab-border)] bg-[color-mix(in_srgb,var(--lab-panel-soft)_84%,transparent)] p-2 font-mono text-xs text-[var(--lab-text-secondary)]">
+                      <pre className="text-xs text-muted-foreground bg-muted/30 p-2 rounded overflow-x-auto font-mono custom-scrollbar">
                         {JSON.stringify(log.input_json, null, 2)}
                       </pre>
 
                       {log.status === "success" && log.result_json && (
-                        <div className="mt-2 border-l-2 border-[color-mix(in_srgb,var(--lab-accent-moss)_34%,transparent)] pl-2 text-xs">
-                          <span className="mb-1 block text-[10px] font-semibold uppercase text-[var(--lab-accent-moss)]">
+                        <div className="mt-2 text-xs border-l-2 border-emerald-500/30 pl-2">
+                          <span className="text-[10px] uppercase text-emerald-500 font-semibold mb-1 block">
                             Result
                           </span>
-                          <pre className="custom-scrollbar overflow-x-auto font-mono text-[var(--lab-text-secondary)]">
+                          <pre className="text-muted-foreground overflow-x-auto font-mono custom-scrollbar">
                             {JSON.stringify(log.result_json, null, 2)}
                           </pre>
                         </div>
                       )}
 
                       {log.error_message && (
-                        <div className="rounded border border-[color-mix(in_srgb,var(--lab-accent-rust)_24%,transparent)] bg-[color-mix(in_srgb,var(--lab-accent-rust)_10%,transparent)] p-2 text-xs text-[var(--lab-accent-rust)]">
+                        <div className="text-xs text-red-400 bg-red-900/10 p-2 rounded border border-red-500/20">
                           Error: {log.error_message}
                         </div>
                       )}
