@@ -21,8 +21,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <SynthesisPrism />
-      <FeatureRail />
       <Features />
+      <FeatureRail />
       <Process />
       <ThreePillars />
       <ScientistModel />
