@@ -1,8 +1,24 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+function isMarketingLightPath(pathname: string) {
+  return pathname === '/';
+}
+
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const requestHeaders = new Headers(request.headers);
+
+  if (isMarketingLightPath(request.nextUrl.pathname)) {
+    requestHeaders.set('x-theme-scope', 'marketing-light');
+  } else {
+    requestHeaders.delete('x-theme-scope');
+  }
+
+  let response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -22,7 +38,11 @@ export async function middleware(request: NextRequest) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-            response = NextResponse.next({ request });
+            response = NextResponse.next({
+              request: {
+                headers: requestHeaders,
+              },
+            });
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options)
             );
