@@ -12,12 +12,10 @@ import { ObsidianVault } from "@/components/landing/ObsidianVault";
 import { ArtifactShowcase } from "@/components/landing/ArtifactShowcase";
 import { FAQ } from "@/components/landing/FAQ";
 import { ContactForm } from "@/components/landing/ContactForm";
-import { LandingThemeLock } from "@/components/landing/LandingThemeLock";
 
 export default function Home() {
   return (
     <div className="theme-landing hd-page min-h-screen bg-[var(--bg-primary)]">
-      <LandingThemeLock />
       <Navbar />
       <Hero />
       <SynthesisPrism />
