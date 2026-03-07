@@ -2966,28 +2966,28 @@ body {
    ======================================== */
 
 :root {
-  --lab-bg: #f7f6f2;
-  --lab-bg-elevated: #f3f1eb;
-  --lab-panel: #ffffff;
-  --lab-panel-soft: #fbfaf7;
-  --lab-sidebar: #f3f1eb;
-  --lab-border: rgba(102, 93, 82, 0.14);
-  --lab-border-strong: rgba(102, 93, 82, 0.22);
-  --lab-text-primary: #1f1b17;
-  --lab-text-secondary: #5f584f;
-  --lab-text-tertiary: #8d8479;
-  --lab-accent-rust: #b97f54;
-  --lab-accent-moss: #6f8271;
-  --lab-accent-slate: #6a7896;
-  --lab-shadow-soft: 0 8px 24px rgba(31, 27, 23, 0.05);
-  --lab-shadow-lift: 0 18px 42px rgba(31, 27, 23, 0.08);
-  --lab-shell-main: #f7f6f2;
-  --lab-shell-sidebar: #f3f1eb;
-  --lab-shell-footer: #fbfaf7;
-  --lab-input-bg: #ffffff;
-  --lab-input-border: rgba(102, 93, 82, 0.18);
-  --lab-hover-bg: rgba(185, 127, 84, 0.08);
-  --lab-active-bg: rgba(185, 127, 84, 0.14);
+  --lab-bg: #ece2d4;
+  --lab-bg-elevated: #e4d6c4;
+  --lab-panel: #fffdf8;
+  --lab-panel-soft: #f7efe3;
+  --lab-sidebar: #ddd0bd;
+  --lab-border: rgba(84, 64, 45, 0.14);
+  --lab-border-strong: rgba(84, 64, 45, 0.24);
+  --lab-text-primary: #241a14;
+  --lab-text-secondary: #645648;
+  --lab-text-tertiary: #9a8877;
+  --lab-accent-rust: #ba7847;
+  --lab-accent-moss: #5f725b;
+  --lab-accent-slate: #697996;
+  --lab-shadow-soft: 0 10px 28px rgba(36, 26, 20, 0.06);
+  --lab-shadow-lift: 0 24px 56px rgba(36, 26, 20, 0.10);
+  --lab-shell-main: #ece2d4;
+  --lab-shell-sidebar: #ddd0bd;
+  --lab-shell-footer: #f2e8dc;
+  --lab-input-bg: #fffcf7;
+  --lab-input-border: rgba(84, 64, 45, 0.18);
+  --lab-hover-bg: rgba(186, 120, 71, 0.10);
+  --lab-active-bg: rgba(186, 120, 71, 0.16);
 
   /* compatibility aliases for older app-feature code */
   --lab-bg-secondary: var(--lab-hover-bg);
@@ -2997,28 +2997,28 @@ body {
 }
 
 .dark {
-  --lab-bg: #11161b;
-  --lab-bg-elevated: #181d23;
-  --lab-panel: #1d232a;
-  --lab-panel-soft: #232a31;
-  --lab-sidebar: #161b21;
-  --lab-border: rgba(214, 201, 186, 0.12);
-  --lab-border-strong: rgba(214, 201, 186, 0.18);
-  --lab-text-primary: #f3ede4;
-  --lab-text-secondary: #c0b6aa;
-  --lab-text-tertiary: #8f877d;
-  --lab-accent-rust: #c38f62;
-  --lab-accent-moss: #8f9b86;
-  --lab-accent-slate: #93a0bb;
-  --lab-shadow-soft: 0 10px 24px rgba(0, 0, 0, 0.30);
-  --lab-shadow-lift: 0 20px 48px rgba(0, 0, 0, 0.45);
-  --lab-shell-main: #11161b;
-  --lab-shell-sidebar: #161b21;
-  --lab-shell-footer: #181d23;
-  --lab-input-bg: #20272f;
-  --lab-input-border: rgba(214, 201, 186, 0.18);
-  --lab-hover-bg: rgba(195, 143, 98, 0.10);
-  --lab-active-bg: rgba(195, 143, 98, 0.16);
+  --lab-bg: #11161d;
+  --lab-bg-elevated: #171d26;
+  --lab-panel: #1c2430;
+  --lab-panel-soft: #202937;
+  --lab-sidebar: #151c25;
+  --lab-border: rgba(137, 151, 172, 0.18);
+  --lab-border-strong: rgba(165, 178, 198, 0.28);
+  --lab-text-primary: #ecf1f7;
+  --lab-text-secondary: #b4becb;
+  --lab-text-tertiary: #7f8998;
+  --lab-accent-rust: #c88c5b;
+  --lab-accent-moss: #7d9180;
+  --lab-accent-slate: #8ea2c7;
+  --lab-shadow-soft: 0 14px 32px rgba(4, 8, 15, 0.28);
+  --lab-shadow-lift: 0 24px 56px rgba(4, 8, 15, 0.42);
+  --lab-shell-main: #11161d;
+  --lab-shell-sidebar: #151c25;
+  --lab-shell-footer: #171d26;
+  --lab-input-bg: #202936;
+  --lab-input-border: rgba(165, 178, 198, 0.22);
+  --lab-hover-bg: rgba(142, 162, 199, 0.12);
+  --lab-active-bg: rgba(200, 140, 91, 0.18);
 }
 
 .app-feature-shell,
@@ -3034,13 +3034,16 @@ body {
 .liquid-glass-v2,
 .chat-theme-shell,
 .app-feature-shell {
-  background: var(--lab-bg);
+  background:
+    radial-gradient(circle at top left, rgba(255, 252, 246, 0.72), transparent 26%),
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-bg) 84%, white) 0%, var(--lab-bg) 100%);
   color: var(--lab-text-primary);
 }
 
 .lab-shell {
   position: relative;
-  background: var(--lab-shell-main) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-shell-main) 88%, white) 0%, var(--lab-shell-main) 100%) !important;
   color: var(--lab-text-primary);
 }
 
@@ -3051,16 +3054,21 @@ body {
 
 .glass-sidebar,
 .lg-sidebar {
-  background: var(--lab-shell-sidebar) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-shell-sidebar) 88%, white) 0%, var(--lab-shell-sidebar) 100%) !important;
   border-right: 1px solid var(--lab-border) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset -1px 0 0 rgba(255, 255, 255, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .dark .glass-sidebar,
 .dark .lg-sidebar {
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset -1px 0 0 rgba(236, 241, 247, 0.05),
+    inset 0 1px 0 rgba(236, 241, 247, 0.03);
 }
 
 .lab-panel,
@@ -3078,12 +3086,15 @@ body {
 }
 
 .lab-panel {
-  background: var(--lab-panel) !important;
-  box-shadow: var(--lab-shadow-soft) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-panel) 94%, white) 0%, var(--lab-panel) 100%) !important;
+  box-shadow:
+    var(--lab-shadow-soft) !important;
 }
 
 .lab-panel-elevated {
-  background: var(--lab-bg-elevated) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-bg-elevated) 92%, white) 0%, var(--lab-bg-elevated) 100%) !important;
   box-shadow: var(--lab-shadow-soft) !important;
 }
 
@@ -3092,14 +3103,16 @@ body {
 .lab-metric-tile,
 .lab-kpi-card,
 .lab-empty-state {
-  background: var(--lab-panel) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-panel) 94%, white) 0%, var(--lab-panel) 100%) !important;
   box-shadow: var(--lab-shadow-soft) !important;
 }
 
 .lab-card-interactive:hover,
 .lab-kpi-card:hover {
   border-color: var(--lab-border-strong) !important;
-  background: color-mix(in srgb, var(--lab-panel) 92%, var(--lab-hover-bg)) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-panel) 86%, white) 0%, color-mix(in srgb, var(--lab-panel) 92%, var(--lab-hover-bg)) 100%) !important;
   box-shadow: var(--lab-shadow-lift) !important;
 }
 
@@ -3109,11 +3122,11 @@ body {
 
 .lab-rail-header {
   border-bottom: 1px solid var(--lab-border) !important;
-  background: var(--lab-shell-sidebar) !important;
+  background: color-mix(in srgb, var(--lab-shell-sidebar) 90%, white) !important;
 }
 
 .lab-rail-body {
-  background: var(--lab-panel) !important;
+  background: linear-gradient(180deg, var(--lab-panel) 0%, color-mix(in srgb, var(--lab-panel) 96%, var(--lab-panel-soft)) 100%) !important;
 }
 
 .lab-chip-mono {
@@ -3148,7 +3161,7 @@ body {
 .lab-nav-pill,
 .sidebar-history-item,
 .lg-dropdown {
-  background: var(--lab-panel) !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lab-panel) 92%, white) 0%, var(--lab-panel) 100%) !important;
   box-shadow: none !important;
 }
 
@@ -3171,7 +3184,7 @@ body {
 .lab-select,
 .lab-textarea {
   border-color: var(--lab-input-border) !important;
-  background: var(--lab-input-bg) !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--lab-input-bg) 94%, white) 0%, var(--lab-input-bg) 100%) !important;
   color: var(--lab-text-primary) !important;
   box-shadow: none !important;
 }
@@ -3246,7 +3259,9 @@ body {
   border-color: var(--lab-border) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.04) !important;
+  box-shadow:
+    inset -1px 0 0 rgba(236, 241, 247, 0.05),
+    inset 0 1px 0 rgba(236, 241, 247, 0.03) !important;
 }
 
 .dark .lab-panel,
@@ -3272,6 +3287,26 @@ body {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: var(--lab-shadow-soft) !important;
+}
+
+.dark .lab-panel-elevated,
+.dark .edu-card-soft {
+  background: var(--lab-bg-elevated) !important;
+}
+
+.dark .lab-button-secondary:hover:not(:disabled),
+.dark .lab-nav-pill:hover,
+.dark .sidebar-history-item:hover,
+.dark .lg-control:hover {
+  background: var(--lab-hover-bg) !important;
+  border-color: var(--lab-border-strong) !important;
+}
+
+.dark .lab-button-secondary[data-active="true"],
+.dark .lab-nav-pill[data-active="true"],
+.dark .sidebar-history-item-active {
+  background: var(--lab-active-bg) !important;
+  border-color: var(--lab-border-strong) !important;
 }
 
 .dark .lab-input,
