@@ -26,10 +26,53 @@ const STOP_ENTITIES = new Set([
   "A",
   "An",
   "I",
+  "Do",
+  "Search",
+  "Find",
+  "Tell",
+  "Give",
+  "Show",
+  "Explain",
+  "Retrieve",
+]);
+
+const IMPERATIVE_LEAD_VERBS = new Set([
+  "do",
+  "search",
+  "find",
+  "tell",
+  "give",
+  "show",
+  "explain",
+  "retrieve",
+  "check",
+  "look",
+]);
+
+const SHORT_ENTITY_ALLOWLIST = new Set([
+  "AI",
+  "UK",
+  "US",
+  "EU",
+  "UN",
+  "UAE",
+  "IBM",
+  "MIT",
 ]);
 
 function normalizeEntity(entity: string): string {
   return entity.trim().replace(/[.,!?;:]+$/g, "");
+}
+
+function shouldDropImperativeLeadToken(token: string, text: string, matchIndex: number): boolean {
+  if (matchIndex > 1) return false;
+  if (!IMPERATIVE_LEAD_VERBS.has(token.toLowerCase())) return false;
+  return /\b(web\s*search|search\s+the\s+web|look\s+up|find\s+information|check)\b/i.test(text);
+}
+
+function isValidEntityLength(token: string): boolean {
+  if (token.length >= 3) return true;
+  return SHORT_ENTITY_ALLOWLIST.has(token.toUpperCase());
 }
 
 export function evaluateFactTrigger(input: string): FactTriggerResult {
@@ -50,10 +93,16 @@ export function evaluateFactTrigger(input: string): FactTriggerResult {
     entities.add(normalizeEntity(m.toLowerCase()));
   }
 
-  const entityMatches = text.match(ENTITY_CANDIDATE) || [];
-  for (const raw of entityMatches) {
+  const entityMatches = Array.from(text.matchAll(ENTITY_CANDIDATE));
+  for (const match of entityMatches) {
+    const raw = match[1] || "";
     const normalized = normalizeEntity(raw);
+    const index = typeof match.index === "number" ? match.index : -1;
+
     if (!normalized || STOP_ENTITIES.has(normalized)) continue;
+    if (!isValidEntityLength(normalized)) continue;
+    if (shouldDropImperativeLeadToken(normalized, text, index)) continue;
+
     entities.add(normalized);
   }
 

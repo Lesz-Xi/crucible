@@ -74,3 +74,57 @@ This work does not change:
 
 ## Next Useful Cleanup
 - Replace remaining legacy route-specific dark utility classes in older non-V2 or secondary panels if those paths are still product-relevant.
+
+---
+
+# Walkthrough — Grounding Relevance Hardening (2026-03-07)
+
+## Objective
+Eliminate retrieval relevance failures in causal-chat web grounding and prevent false confidence from off-topic sources.
+
+## Implemented Scope
+- Phase 1: query/entity hygiene
+- Phase 2: post-retrieval topical relevance gate
+- Phase 3 (hardening extension): confidence calibration + grounding provenance diagnostics
+
+## Files Changed
+- `src/lib/services/chat-fact-trigger.ts`
+- `src/lib/services/chat-web-grounding.ts`
+- `src/app/api/causal-chat/route.ts`
+- `src/lib/services/__tests__/chat-fact-trigger.test.ts`
+- `src/lib/services/__tests__/chat-web-grounding.test.ts`
+
+## Behavior Changes
+1. Imperative lead token (e.g., `Do`) is no longer treated as a subject entity.
+2. Query expansion no longer emits `founder/creator` for all entities.
+3. Grounding results now pass a topicality threshold gate.
+4. Zero relevant sources emit `web_grounding_failed` with `low_topical_relevance`.
+5. Confidence rationale now includes measurable support (`avg_topicality`, domains, sources).
+6. New additive SSE event `web_grounding_provenance` reports:
+   - generated queries
+   - raw candidates
+   - accepted count
+   - filtered count + reason breakdown
+   - threshold used
+
+## Test Evidence
+Command:
+```bash
+npx vitest run src/lib/services/__tests__/chat-fact-trigger.test.ts src/lib/services/__tests__/chat-web-grounding.test.ts
+```
+Result:
+- 2 test files passed
+- 6 tests passed
+
+## Runtime Replay Checklist
+1. In causal chat, submit:
+   - `Do a web search about this statement: Alexander was raised by private tutors`
+2. Verify SSE/event log includes `web_grounding_provenance`.
+3. Verify `web_grounding_completed` sources are topically relevant to Alexander/tutors OR `web_grounding_failed` with `low_topical_relevance`.
+4. Verify confidence is not high on off-topic sources.
+5. Submit control query:
+   - `Search for information about Hannibal Barca tactics`
+6. Confirm same guardrails apply.
+
+## Known Gap
+- Global `npx tsc --noEmit` currently fails due to existing workspace type-definition pollution unrelated to this patch.

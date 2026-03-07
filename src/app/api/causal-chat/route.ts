@@ -19,7 +19,7 @@ import type { AlignmentAuditReportRow } from "@/lib/services/alignment-audit";
 import { buildConversationContext, normalizeChatTurns, type ChatTurn } from "@/lib/services/conversation-context";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { evaluateFactTrigger } from "@/lib/services/chat-fact-trigger";
-import { assessFactualConfidence, searchChatGrounding } from "@/lib/services/chat-web-grounding";
+import { assessFactualConfidence, searchChatGroundingDetailed } from "@/lib/services/chat-web-grounding";
 import type { FactualConfidenceResult, GroundingSource } from "@/types/chat-grounding";
 import { buildCommonSenseInstructionBlock, evaluateCommonSensePolicy } from "@/lib/services/common-sense-governor";
 import { FEATURE_FLAGS } from "@/lib/config/feature-flags";
@@ -743,15 +743,35 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
               confidence: factTrigger.confidence,
             });
             try {
-              groundingSources = await searchChatGrounding(userQuestion, factTrigger.normalizedEntities, {
+              const groundingResult = await searchChatGroundingDetailed(userQuestion, factTrigger.normalizedEntities, {
                 topK: 5,
                 timeoutMs: 5000,
               });
-              sendEvent("web_grounding_completed", {
-                sourceCount: groundingSources.length,
-                topDomains: Array.from(new Set(groundingSources.map((source) => source.domain))).slice(0, 5),
-                sources: groundingSources,
+              groundingSources = groundingResult.sources;
+
+              sendEvent("web_grounding_provenance", {
+                rawQuestion: userQuestion,
+                normalizedEntities: factTrigger.normalizedEntities,
+                generatedQueries: groundingResult.diagnostics.generatedQueries,
+                rawCandidateCount: groundingResult.diagnostics.rawCandidateCount,
+                acceptedCount: groundingResult.diagnostics.acceptedCount,
+                filteredOutCount: groundingResult.diagnostics.filteredOutCount,
+                filteredOutReasons: groundingResult.diagnostics.filteredOutReasons,
+                topicalityThreshold: groundingResult.diagnostics.topicalityThreshold,
               });
+
+              if (groundingSources.length === 0) {
+                sendEvent("web_grounding_failed", {
+                  reason: "low_topical_relevance",
+                  message: "No topically relevant web sources passed grounding filters.",
+                });
+              } else {
+                sendEvent("web_grounding_completed", {
+                  sourceCount: groundingSources.length,
+                  topDomains: Array.from(new Set(groundingSources.map((source) => source.domain))).slice(0, 5),
+                  sources: groundingSources,
+                });
+              }
             } catch (groundingError) {
               console.error("[CausalChat] Web grounding failed:", groundingError);
               sendEvent("web_grounding_failed", {
@@ -761,7 +781,7 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
             }
           }
 
-          factualConfidence = assessFactualConfidence(userQuestion, groundingSources);
+          factualConfidence = assessFactualConfidence(userQuestion, groundingSources, factTrigger.normalizedEntities);
           sendEvent("factual_confidence_assessed", factualConfidence);
         }
 
