@@ -1,19 +1,18 @@
 'use client';
 
-import { useRef, useState, type ChangeEvent } from 'react';
-import { ChevronDown, Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, Square } from 'lucide-react';
-import { LiquidSegmentedControl } from '@/components/ui/liquid-segmented-control';
-
-interface QuickPromptOption {
-  id: string;
-  label: string;
-  snippet: string;
-}
+import { useMemo, useRef, useState, type ChangeEvent } from 'react';
+import { ChevronDown, Loader2, Paperclip, Send, Square } from 'lucide-react';
 
 export interface ComposerAttachment {
   name: string;
   mimeType: string;
   sizeBytes: number;
+}
+
+export interface SlashCommandOption {
+  id: string;
+  label: string;
+  description: string;
 }
 
 export interface ChatComposerV2Props {
@@ -26,17 +25,18 @@ export interface ChatComposerV2Props {
   placeholder?: string;
   operatorMode: 'explore' | 'intervene' | 'audit';
   onOperatorModeChange: (mode: 'explore' | 'intervene' | 'audit') => void;
-  quickPrompts?: readonly QuickPromptOption[];
-  selectedQuickPromptId?: string;
-  onQuickPromptSelect?: (id: string, snippet: string) => void;
-  evidenceRailOpen?: boolean;
-  onToggleEvidenceRail?: () => void;
-  focusMode?: boolean;
-  onToggleFocusMode?: () => void;
   attachments?: ComposerAttachment[];
   onAddAttachments?: (files: File[]) => void;
   onRemoveAttachment?: (name: string) => void;
+  slashCommands?: readonly SlashCommandOption[];
+  onSlashCommand?: (id: string) => void;
 }
+
+const MODE_LABELS: Record<'explore' | 'intervene' | 'audit', string> = {
+  explore: 'Diagnose',
+  intervene: 'Act',
+  audit: 'Validate',
+};
 
 export function ChatComposerV2({
   value,
@@ -48,20 +48,21 @@ export function ChatComposerV2({
   placeholder,
   operatorMode,
   onOperatorModeChange,
-  quickPrompts = [],
-  selectedQuickPromptId,
-  onQuickPromptSelect,
-  evidenceRailOpen = true,
-  onToggleEvidenceRail,
-  focusMode = false,
-  onToggleFocusMode,
   attachments = [],
   onAddAttachments,
   onRemoveAttachment,
+  slashCommands = [],
+  onSlashCommand,
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
-  const [shortcutMenuOpen, setShortcutMenuOpen] = useState(false);
+  const [modeMenuOpen, setModeMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const activeSlashQuery = value.startsWith('/') ? value.slice(1).toLowerCase() : '';
+  const filteredSlashCommands = useMemo(() => {
+    if (!activeSlashQuery) return slashCommands;
+    return slashCommands.filter((item) => item.label.toLowerCase().includes(activeSlashQuery) || item.id.toLowerCase().includes(activeSlashQuery));
+  }, [activeSlashQuery, slashCommands]);
 
   const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.currentTarget.files || []);
@@ -71,16 +72,10 @@ export function ChatComposerV2({
     event.currentTarget.value = '';
   };
 
-  const modeLabel: Record<'explore' | 'intervene' | 'audit', string> = {
-    explore: 'Diagnose',
-    intervene: 'Act',
-    audit: 'Validate',
-  };
-
   return (
-    <div className="lab-card !rounded-t-none border-0 !bg-transparent px-6 pb-0 pt-1 shadow-none">
+    <div className="workbench-composer-shell">
       <textarea
-        className="lab-textarea min-h-[92px]"
+        className="lab-textarea min-h-[88px]"
         placeholder={placeholder || 'State your hypothesis, mechanism, and desired intervention...'}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -88,13 +83,39 @@ export function ChatComposerV2({
         onKeyDown={(event) => {
           if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
+            if (value.startsWith('/') && filteredSlashCommands[0]) {
+              onSlashCommand?.(filteredSlashCommands[0].id);
+              return;
+            }
             if (canSend) onSend();
           }
         }}
       />
 
-      <div className="mt-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+      {value.startsWith('/') ? (
+        <div className="workbench-slash-menu">
+          {filteredSlashCommands.length === 0 ? (
+            <div className="workbench-empty-panel">No matching slash command.</div>
+          ) : (
+            filteredSlashCommands.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className="workbench-command-row w-full"
+                onClick={() => onSlashCommand?.(item.id)}
+              >
+                <div className="min-w-0 text-left">
+                  <div className="font-medium text-[var(--lab-text-primary)]">/{item.label}</div>
+                  <div className="truncate text-xs text-[var(--lab-text-secondary)]">{item.description}</div>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      ) : null}
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <input
             ref={fileInputRef}
             type="file"
@@ -105,7 +126,7 @@ export function ChatComposerV2({
           />
           <button
             type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            className="lab-button-secondary !px-3 !py-1.5 text-[11px]"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isLoading}
           >
@@ -113,73 +134,39 @@ export function ChatComposerV2({
             Attach
           </button>
 
-          <div className="w-[220px]">
-            <LiquidSegmentedControl
-              ariaLabel="Response mode"
-              value={operatorMode}
-              onChange={(mode) => onOperatorModeChange(mode)}
-              options={[
-                { value: 'explore', label: modeLabel.explore },
-                { value: 'intervene', label: modeLabel.intervene },
-                { value: 'audit', label: modeLabel.audit },
-              ]}
-            />
+          <div className="relative">
+            <button
+              type="button"
+              className="workbench-mode-chip"
+              onClick={() => setModeMenuOpen((current) => !current)}
+              aria-expanded={modeMenuOpen}
+            >
+              <span>{MODE_LABELS[operatorMode]}</span>
+              <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            {modeMenuOpen ? (
+              <div className="workbench-floating-panel left-0 top-[calc(100%+8px)] min-w-[180px]">
+                {(['explore', 'intervene', 'audit'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    className="workbench-command-row w-full"
+                    onClick={() => {
+                      onOperatorModeChange(mode);
+                      setModeMenuOpen(false);
+                    }}
+                  >
+                    <span>{MODE_LABELS[mode]}</span>
+                    {mode === operatorMode ? <span className="workbench-command-kind">Active</span> : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
-
-          {quickPrompts.length > 0 ? (
-            <div className="relative">
-              <button
-                type="button"
-                className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
-                onClick={() => setShortcutMenuOpen((current) => !current)}
-              >
-                <FlaskConical className="h-3.5 w-3.5" />
-                Scenarios
-                <ChevronDown className="h-3.5 w-3.5" />
-              </button>
-              {shortcutMenuOpen ? (
-                <div className="absolute left-0 z-20 mb-2 w-72 -translate-y-full rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-lg">
-                  {quickPrompts.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className="lab-card-interactive mb-1 w-full !p-2.5 text-left"
-                      data-active={selectedQuickPromptId === item.id ? 'true' : 'false'}
-                      onClick={() => {
-                        onQuickPromptSelect?.(item.id, item.snippet);
-                        setShortcutMenuOpen(false);
-                      }}
-                    >
-                      <p className="text-sm font-medium text-[var(--lab-text-primary)]">{item.label}</p>
-                      <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{item.snippet}</p>
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          <button
-            type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
-            onClick={onToggleEvidenceRail}
-            title={evidenceRailOpen ? 'Hide evidence rail' : 'Show evidence rail'}
-          >
-            {evidenceRailOpen ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-          </button>
-
-          <button
-            type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
-            onClick={onToggleFocusMode}
-            title={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
-            aria-pressed={focusMode}
-          >
-            <Focus className="h-3.5 w-3.5" />
-          </button>
         </div>
 
         <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">`/` for commands</span>
           <span className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">Enter to send</span>
           {isLoading ? (
             <button type="button" className="lab-button-secondary" onClick={onStop}>
@@ -196,7 +183,7 @@ export function ChatComposerV2({
       </div>
 
       {attachments.length > 0 ? (
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-3 flex flex-wrap gap-2">
           {attachments.map((file) => (
             <button
               key={file.name}

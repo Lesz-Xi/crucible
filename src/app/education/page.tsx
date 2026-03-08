@@ -644,7 +644,7 @@ export default function EducationPage() {
   };
   
   return (
-    <AppDashboardShell>
+    <AppDashboardShell feature="education">
       <main className="edu-page feature-education min-h-screen transition-colors duration-500">
       {/* Header */}
       <header className="edu-header px-8 py-6">
