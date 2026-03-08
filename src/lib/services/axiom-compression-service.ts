@@ -318,7 +318,6 @@ Confidence should be 0.0-1.0 based on how well the source supports the axiom.`;
   }
 }
 
-/**
- * Singleton instance for convenience.
- */
-export const axiomCompressionService = new AxiomCompressionService();
+export function createAxiomCompressionService(): AxiomCompressionService {
+  return new AxiomCompressionService();
+}
