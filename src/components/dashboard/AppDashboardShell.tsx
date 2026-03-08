@@ -13,11 +13,13 @@ import {
   Gavel,
   GraduationCap,
   LogOut,
+  Menu,
   MessageSquare,
   Moon,
   PanelRightOpen,
   Plus,
   Search,
+  ScrollText,
   Sun,
   Trash2,
   UserCircle2,
@@ -320,9 +322,12 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="wordmark-icon">
-          <PanelRightOpen className="h-4 w-4" />
+          <Menu className="h-4 w-4" />
         </div>
-        <span className="wordmark-text">Bio-Lab Notebook</span>
+        <div className="wordmark-text">
+          <span>BIO-LAB</span>
+          <span>NOTEBOOK</span>
+        </div>
         <div className="sidebar-header-actions">
           <button type="button" className="icon-btn" title="Search" aria-label="Search" onClick={() => setSearchOpen((current) => !current)}>
             <Search className="h-3.5 w-3.5" />
@@ -346,7 +351,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         })}
 
         <button type="button" className={cn('nav-item', isRelicActive && 'active')} onClick={() => setRelicsOpen((current) => !current)}>
-          <BookOpen className="h-3.5 w-3.5" />
+          <ScrollText className="h-3.5 w-3.5" />
           <span>Relics</span>
           <span className="chevron">{relicsOpen ? '▾' : '▸'}</span>
         </button>
@@ -463,7 +468,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       <div className="sidebar-footer">
         <button
           type="button"
-          className="theme-btn"
+          className="footer-item"
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         >
           {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
