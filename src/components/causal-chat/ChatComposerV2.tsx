@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, type ChangeEvent } from 'react';
-import { ChevronDown, Loader2, Paperclip, Send, Square } from 'lucide-react';
+import { ChevronDown, Eye, Loader2, Paperclip, ScanSearch, Send, Square } from 'lucide-react';
 
 export interface ComposerAttachment {
   name: string;
@@ -64,7 +64,7 @@ export function ChatComposerV2({
   };
 
   return (
-    <div className="input-box">
+    <div className="chat-composer-shell">
       <textarea
         className="input-textarea"
         placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need...'}
@@ -80,7 +80,7 @@ export function ChatComposerV2({
         }}
       />
 
-      <div className="input-toolbar">
+      <div className="chat-toolbar">
         <input
           ref={fileInputRef}
           type="file"
@@ -92,7 +92,7 @@ export function ChatComposerV2({
 
         <button
           type="button"
-          className="input-chip"
+          className="chat-toolbar-chip is-attach"
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled || isLoading}
         >
@@ -102,7 +102,7 @@ export function ChatComposerV2({
 
         <button
           type="button"
-          className="input-chip"
+          className="chat-toolbar-chip is-mode"
           onClick={() => onOperatorModeChange(operatorMode === 'explore' ? 'intervene' : operatorMode === 'intervene' ? 'audit' : 'explore')}
         >
           {MODE_LABELS[operatorMode]}
@@ -110,19 +110,19 @@ export function ChatComposerV2({
 
         <button
           type="button"
-          className="input-chip"
+          className="chat-toolbar-chip is-scenarios"
           onClick={() => onOperatorModeChange(operatorMode === 'explore' ? 'intervene' : operatorMode === 'intervene' ? 'audit' : 'explore')}
         >
           Scenarios
           <ChevronDown className="h-3 w-3" />
         </button>
 
-        <button type="button" className="input-chip" aria-label="Composer control one">
-          <Paperclip className="h-3 w-3" />
+        <button type="button" className="chat-toolbar-chip is-icon" aria-label="View output modes">
+          <Eye className="h-3 w-3" />
         </button>
 
-        <button type="button" className="input-chip" aria-label="Composer control two">
-          <Send className="h-3 w-3" />
+        <button type="button" className="chat-toolbar-chip is-icon" aria-label="Focus composer">
+          <ScanSearch className="h-3 w-3" />
         </button>
 
         <span className="enter-hint">Enter to send</span>

@@ -18,10 +18,12 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
   return (
     <aside className="rail">
       <div className="rail-header">
-        <span className={cn('rail-indicator', config.live && 'live')} />
-        <div className="min-w-0">
-          <div className="rail-title">Evidence Rail</div>
-          <div className="rail-sub">{config.subtitle || 'Live posture and provenance'}</div>
+        <div className="rail-header-status">
+          <span className={cn('rail-indicator', config.live && 'live')} />
+          <div className="min-w-0">
+            <div className="rail-title">Evidence Rail</div>
+            <div className="rail-sub">{config.subtitle || 'Live causal posture and provenance'}</div>
+          </div>
         </div>
       </div>
 
@@ -58,10 +60,10 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
             <span>Model Provenance</span>
           </div>
           <div className="rail-info-card">
-            {config.modelProvenance.title ? <strong className="block pb-1 text-[11px] text-[var(--text-2)]">{config.modelProvenance.title}</strong> : null}
-            <div className="text-[12px] leading-[1.55] text-[var(--text-2)]">{config.modelProvenance.text}</div>
+            {config.modelProvenance.title ? <strong className="rail-provenance-title">{config.modelProvenance.title}</strong> : null}
+            <div className="rail-provenance-copy">{config.modelProvenance.text}</div>
             {config.modelProvenance.actions?.length ? (
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="rail-actions">
                 {config.modelProvenance.actions.map((action) => (
                   action.href ? (
                     <a key={`${action.label}-${action.href}`} className="rail-link" href={action.href} target="_blank" rel="noreferrer">
@@ -83,7 +85,7 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
             <FileText className="h-3.5 w-3.5" />
             <span>Active Domain</span>
           </div>
-          <div className="rail-info-card unavailable">
+          <div className="rail-domain-card">
             <strong>{config.activeDomain.label || 'unavailable'}</strong>
           </div>
         </section>
@@ -123,7 +125,7 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
               })}
             </div>
           ) : (
-            <div className="unavailable">
+            <div className="unavailable rail-empty">
               <strong>unavailable</strong>
               No scientific evidence is available for this run.
             </div>
