@@ -58,6 +58,7 @@
   --font-playfair: "Playfair Display", serif;
   --font-newsreader: "Newsreader", "Iowan Old Style", "Times New Roman", serif;
   --font-jetbrains-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
+  --font-instrument-serif: "Instrument Serif", "Garamond", "IM Fell English", Georgia, serif;
 
   /* 2041 Automated Scientist (feature namespace) */
   --lab-bg: #edf1f5;
@@ -107,26 +108,26 @@
   --wabi-rust: #f87171;
   --wabi-stone: #52525b;
 
-  /* Automated Scientist dark tokens - Claude-inspired */
+  /* MASA Warm Dark — legacy compat layer */
   --shadow-grey: #000000;
-  --lab-bg: #09090b;       /* Obsidian Base */
-  --lab-bg-elevated: #18181b; /* Obsidian Surface */
-  --lab-panel: #09090b;
-  --lab-border: #27272a;   /* Solid border, no alpha for crispness */
-  --lab-text-primary: #e4e4e7; /* Zinc 200 - not pure white */
-  --lab-text-secondary: #a1a1aa;
-  --lab-text-tertiary: #71717a;
-  --lab-accent-clay: #a1a1aa;
-  --lab-accent-earth: #d4d4d8;
-  --lab-accent-moss: #71717a;
+  --lab-bg: #0E0D0C;
+  --lab-bg-elevated: #151412;
+  --lab-panel: #1C1A18;
+  --lab-border: rgba(255, 255, 255, 0.07);
+  --lab-text-primary: #F2EFE9;
+  --lab-text-secondary: rgba(242, 239, 233, 0.55);
+  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
+  --lab-accent-clay: #C8965A;
+  --lab-accent-earth: #C8965A;
+  --lab-accent-moss: #7d9c80;
   --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 
-  /* Codex parity tokens (dark) */
-  --codex-main: #181818;
-  --codex-surface: #1f1f1f;
-  --codex-surface-hover: #2a2a2a;
-  --codex-border: #303030;
+  /* Codex parity tokens (dark) — warm charcoal */
+  --codex-main: #0E0D0C;
+  --codex-surface: #1C1A18;
+  --codex-surface-hover: rgba(200, 150, 90, 0.08);
+  --codex-border: rgba(255, 255, 255, 0.07);
   
   /* Shadow adjustments for dark */
   --shadow-ambient: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -362,20 +363,22 @@
   border-color: color-mix(in srgb, var(--lab-text-secondary) 38%, var(--lab-border));
 }
 
-/* Unified Lab language for Chat/Legal/Hybrid/Education (dark mode only) */
+/* Unified Lab language for Chat/Legal/Hybrid/Education (dark mode only) — MASA Warm */
 .dark .feature-chat,
 .dark .feature-legal,
 .dark .feature-hybrid,
 .dark .feature-education {
-  --lab-bg: #050505;
-  --lab-bg-elevated: #0b0b0b;
-  --lab-panel: rgba(10, 10, 10, 0.84);
-  --lab-border: rgba(255, 255, 255, 0.10);
-  --lab-text-primary: #e9e9e9;
-  --lab-text-secondary: #a5a5a5;
-  --lab-text-tertiary: #7b7b7b;
-  --lab-shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.34);
-  --lab-shadow-lift: 0 16px 36px rgba(0, 0, 0, 0.46);
+  --lab-bg: #0E0D0C;
+  --lab-bg-elevated: #151412;
+  --lab-panel: rgba(28, 26, 24, 0.90);
+  --lab-border: rgba(255, 255, 255, 0.07);
+  --lab-text-primary: #F2EFE9;
+  --lab-text-secondary: rgba(242, 239, 233, 0.55);
+  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
+  --lab-accent-clay: #C8965A;
+  --lab-accent-earth: #C8965A;
+  --lab-shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.40);
+  --lab-shadow-lift: 0 16px 36px rgba(0, 0, 0, 0.55);
 }
 
 .feature-chat .lab-section-title,
@@ -711,10 +714,11 @@
 }
 
 .lab-panel-heading {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-instrument-serif), var(--font-playfair), serif;
   font-size: 28px;
-  font-weight: 600;
-  line-height: 1.1;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--lab-text-primary);
 }
 
@@ -970,10 +974,10 @@
 }
 
 .dark .feature-chat main.lab-panel {
-  background: #050505 !important; /* Deep solid black/gray */
+  background: #0E0D0C !important; /* Warm charcoal main */
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.05); /* Subtle separator highlight */
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.04);
 }
 
 /* Ensure the shell is transparent so the ChatPage background shows through */
@@ -987,17 +991,17 @@
 body.dark .scientific-protocol-card,
 body.dark .lab-card-interactive,
 body.dark .lab-card {
-  background: var(--glass-sidebar-bg) !important;
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation)) !important;
-  border-color: var(--glass-sidebar-border) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  background: #1C1A18 !important; /* Warm charcoal card */
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-color: rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
 }
 
 body.dark .scientific-protocol-card:hover,
 body.dark .lab-card-interactive:hover {
-  background: rgba(188, 184, 177, 0.25) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: #201E1B !important; /* Slightly lighter warm on hover */
+  border-color: rgba(200, 150, 90, 0.22) !important; /* amber border */
   box-shadow: var(--lab-shadow-lift);
 }
 
@@ -1553,8 +1557,8 @@ body.dark .lab-card-interactive:hover {
 .dark .lab-metric-tile,
 .dark .edu-card,
 .dark .edu-card-soft {
-  background: #09090b !important; /* Zinc 950 Solid */
-  border-color: #27272a !important; /* Zinc 800 Solid */
+  background: #1C1A18 !important; /* Warm Charcoal Surface */
+  border-color: rgba(255, 255, 255, 0.07) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   box-shadow: none !important;
@@ -1562,14 +1566,14 @@ body.dark .lab-card-interactive:hover {
 
 .dark .lab-panel-elevated,
 .dark .edu-card {
-  background: #18181b !important; /* Zinc 900 Solid */
+  background: #151412 !important; /* Warm Charcoal Elevated */
 }
 
 .dark .lab-button-secondary,
 .dark .lab-nav-pill,
 .dark .lab-chip-mono {
-  background: #27272a !important; /* Zinc 800 Solid */
-  border-color: #3f3f46 !important; /* Zinc 700 Solid */
+  background: #201E1B !important; /* Warm Charcoal Control */
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 /* Glass Inputs for Dark Mode (Apple-like) */
@@ -1621,7 +1625,13 @@ body.dark .lab-card-interactive:hover {
 .dark .glass-sidebar .lab-nav-pill:hover,
 .dark .glass-sidebar .lab-card-active,
 .dark .glass-sidebar .lab-button-secondary:hover {
-  background: var(--codex-surface-hover) !important;
+  background: rgba(200, 150, 90, 0.08) !important; /* warm amber hover */
+}
+
+.dark .glass-sidebar .lab-nav-pill[data-active="true"] {
+  background: rgba(200, 150, 90, 0.13) !important;
+  border-color: rgba(200, 150, 90, 0.18) !important;
+  color: #F2EFE9 !important;
 }
 
 .sidebar-history-item {
@@ -1760,8 +1770,8 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .glass-sidebar {
-  background: var(--codex-surface) !important;
-  border-color: var(--codex-border) !important;
+  background: #131210 !important; /* Warm sidebar base */
+  border-color: rgba(255, 255, 255, 0.07) !important;
 }
 
 /* Exact Codex parity for chat route (dark + light) */
@@ -1882,15 +1892,15 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .chat-theme-shell .glass-sidebar {
-  background: rgba(188, 184, 177, 0.2) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: #131210 !important; /* MASA warm sidebar */
+  border-color: rgba(255, 255, 255, 0.07) !important;
   border-width: 0.5px !important;
-  backdrop-filter: blur(40px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(190%) !important;
-  --lab-text-primary: #e8e6e3;
-  --lab-text-secondary: #a8a5a0;
-  --lab-text-tertiary: #807d78;
-  --lab-border: rgba(255, 255, 255, 0.08);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  --lab-text-primary: #F2EFE9;
+  --lab-text-secondary: rgba(242, 239, 233, 0.55);
+  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
+  --lab-border: rgba(255, 255, 255, 0.07);
 }
 
 .dark .chat-theme-shell .feature-chat.lab-shell {
@@ -3046,28 +3056,35 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 }
 
 .dark {
-  --lab-bg: #11161d;
-  --lab-bg-elevated: #171d26;
-  --lab-panel: #1c2430;
-  --lab-panel-soft: #202937;
-  --lab-sidebar: #151c25;
-  --lab-border: rgba(137, 151, 172, 0.18);
-  --lab-border-strong: rgba(165, 178, 198, 0.28);
-  --lab-text-primary: #ecf1f7;
-  --lab-text-secondary: #b4becb;
-  --lab-text-tertiary: #7f8998;
-  --lab-accent-rust: #c88c5b;
-  --lab-accent-moss: #7d9180;
+  /* MASA Warm Dark — Cinematic Charcoal */
+  --lab-bg: #0E0D0C;
+  --lab-bg-elevated: #151412;
+  --lab-panel: #1C1A18;
+  --lab-panel-soft: #201E1B;
+  --lab-sidebar: #131210;
+  --lab-border: rgba(255, 255, 255, 0.07);
+  --lab-border-strong: rgba(255, 255, 255, 0.13);
+  --lab-text-primary: #F2EFE9;
+  --lab-text-secondary: rgba(242, 239, 233, 0.55);
+  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
+  --lab-accent-rust: #C8965A;
+  --lab-accent-clay: #C8965A;
+  --lab-accent-earth: #C8965A;
+  --lab-accent-moss: #7d9c80;
   --lab-accent-slate: #8ea2c7;
-  --lab-shadow-soft: 0 14px 32px rgba(4, 8, 15, 0.28);
-  --lab-shadow-lift: 0 24px 56px rgba(4, 8, 15, 0.42);
-  --lab-shell-main: #11161d;
-  --lab-shell-sidebar: #151c25;
-  --lab-shell-footer: #171d26;
-  --lab-input-bg: #202936;
-  --lab-input-border: rgba(165, 178, 198, 0.22);
-  --lab-hover-bg: rgba(142, 162, 199, 0.12);
-  --lab-active-bg: rgba(200, 140, 91, 0.18);
+  --lab-shadow-soft: 0 14px 32px rgba(0, 0, 0, 0.35);
+  --lab-shadow-lift: 0 24px 56px rgba(0, 0, 0, 0.52);
+  --lab-shell-main: #0E0D0C;
+  --lab-shell-sidebar: #131210;
+  --lab-shell-footer: #151412;
+  --lab-input-bg: #1C1A18;
+  --lab-input-border: rgba(255, 255, 255, 0.10);
+  --lab-hover-bg: rgba(200, 150, 90, 0.08);
+  --lab-active-bg: rgba(200, 150, 90, 0.16);
+
+  /* Compatibility aliases */
+  --lab-bg-secondary: var(--lab-hover-bg);
+  --lab-bg-tertiary: var(--lab-active-bg);
 }
 
 .app-feature-shell,

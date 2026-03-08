@@ -318,8 +318,18 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
             <div className="mb-3 flex items-center justify-between gap-2">
               {collapsed ? null : (
                 <div className="flex items-center gap-2 px-1">
-                  <FlaskConical className="h-5 w-5 text-[var(--lab-text-primary)]" />
-                  <p className="lab-section-title text-sm">Bio-Lab Notebook</p>
+                  <FlaskConical className="h-4 w-4 text-[var(--lab-accent-clay,#C8965A)]" />
+                  <p
+                    className="text-[var(--lab-text-primary)] tracking-wide"
+                    style={{
+                      fontFamily: 'var(--font-instrument-serif, "Instrument Serif", Georgia, serif)',
+                      fontSize: '15px',
+                      fontWeight: 400,
+                      letterSpacing: '0.01em',
+                    }}
+                  >
+                    Bio-Lab Notebook
+                  </p>
                 </div>
               )}
               <div className="flex items-center gap-1">
@@ -348,7 +358,18 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon className="h-4 w-4" />
-                    {collapsed ? null : <span className="font-serif tracking-wide">{item.label}</span>}
+                    {collapsed ? null : (
+                      <span
+                        style={{
+                          fontFamily: 'var(--font-instrument-serif, "Instrument Serif", Georgia, serif)',
+                          fontSize: '13.5px',
+                          fontWeight: 400,
+                          letterSpacing: '0.02em',
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -511,9 +532,10 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                           isActive && "sidebar-history-item-active"
                         )}
                       >
-                        <button 
-                          type="button" 
-                          className="flex-1 truncate text-left font-serif tracking-wide text-[var(--lab-text-primary)]" 
+                        <button
+                          type="button"
+                          className="flex-1 truncate text-left text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] transition-colors"
+                          style={{ fontSize: '12.5px', lineHeight: '1.4' }}
                           onClick={() => openThread(session.id)}
                           title={session.title || 'Untitled thread'}
                         >
