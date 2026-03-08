@@ -31,7 +31,8 @@
     "governance:persistent-memory-integrity": "npx --yes tsx scripts/evaluate-persistent-memory-integrity.ts",
     "audit:migrations": "npx --yes tsx scripts/check-migration-state.ts",
     "agent:bootstrap": "bash ../.agent/scripts/agent-bootstrap.sh",
-    "test": "TMPDIR=/tmp npx vitest run"
+    "test": "TMPDIR=/tmp npx vitest run",
+    "prebuild": "node style-dictionary.config.js"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.44",
