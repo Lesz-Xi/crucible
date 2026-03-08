@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-  Crosshair,
-  Sparkles,
-  TrendingUp,
+  FlaskConical,
+  Microscope,
+  Scale,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -1086,7 +1086,7 @@ export function ChatWorkbenchV2() {
                     }}
                   >
                     <div className="protocol-icon">
-                      <Sparkles className="h-4 w-4" />
+                      <Microscope className="h-4 w-4" />
                     </div>
                     <h3>Causal Discovery</h3>
                     <p>Ingest observational data or papers to extract Structural Causal Models (SCM).</p>
@@ -1101,7 +1101,7 @@ export function ChatWorkbenchV2() {
                     }}
                   >
                     <div className="protocol-icon">
-                      <TrendingUp className="h-4 w-4" />
+                      <FlaskConical className="h-4 w-4" />
                     </div>
                     <h3>Intervention Planning</h3>
                     <p>Simulate do-calculus interventions (do(X)=y) to predict system behavior.</p>
@@ -1116,7 +1116,7 @@ export function ChatWorkbenchV2() {
                     }}
                   >
                     <div className="protocol-icon">
-                      <Crosshair className="h-4 w-4" />
+                      <Scale className="h-4 w-4" />
                     </div>
                     <h3>Counterfactual Audit</h3>
                     <p>Verify specific claims against the causal graph logic and evidence.</p>

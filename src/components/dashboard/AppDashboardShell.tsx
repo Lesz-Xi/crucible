@@ -13,7 +13,6 @@ import {
   Gavel,
   GraduationCap,
   LogOut,
-  Menu,
   MessageSquare,
   Moon,
   PanelRightOpen,
@@ -322,12 +321,9 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="wordmark-icon">
-          <Menu className="h-4 w-4" />
+          <FlaskConical className="h-4 w-4" />
         </div>
-        <div className="wordmark-text">
-          <span>BIO-LAB</span>
-          <span>NOTEBOOK</span>
-        </div>
+        <span className="wordmark-text">Bio-Lab Notebook</span>
         <div className="sidebar-header-actions">
           <button type="button" className="icon-btn" title="Search" aria-label="Search" onClick={() => setSearchOpen((current) => !current)}>
             <Search className="h-3.5 w-3.5" />
