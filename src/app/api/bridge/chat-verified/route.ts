@@ -3,6 +3,12 @@ import { z } from "zod";
 import { createPublicSupabaseClient } from "@/lib/supabase/public-server";
 import { randomUUID } from "crypto";
 
+/**
+ * Architecture note:
+ * This route is telemetry ingestion only. It must not become an authority for
+ * causal trust-state classification (verified/heuristic/warning/unknown)
+ * without a new ADR and contract update in report-analysis.
+ */
 const BridgePayloadSchema = z.object({
   sessionId: z.string().min(1).optional(),
   messageId: z.string().min(1).optional(),

@@ -26,7 +26,14 @@ describe("POST /api/reports/analyze", () => {
 
   it("streams report_complete SSE payload", async () => {
     generateReportMock.mockResolvedValueOnce({
-      meta: { reportId: "rpt-1" },
+      meta: {
+        reportId: "rpt-1",
+        causalDepth: "heuristic",
+        allowVerified: false,
+        verificationFailures: [
+          "Pipeline ran with a retrieval gap (Brave API unavailable or partial); conclusions may be incomplete.",
+        ],
+      },
       claims: [],
       sources: [],
       executiveSummary: [],
@@ -51,6 +58,9 @@ describe("POST /api/reports/analyze", () => {
     const text = await res.text();
     expect(text).toContain('"event":"report_complete"');
     expect(text).toContain('"reportId":"rpt-1"');
+    expect(text).toContain('"causalDepth":"heuristic"');
+    expect(text).toContain('"allowVerified":false');
+    expect(text).toContain('"verificationFailures"');
   });
 
   it("streams report_pipeline_error when orchestrator throws", async () => {

@@ -309,6 +309,42 @@ describe("deriveReportFramingState", () => {
         expect(deriveReportFramingState([passingResult, passingResult])).toBe("verified");
     });
 
+    it("returns heuristic when any claim is heuristic and none are unknown/warning", () => {
+        const results = [
+            {
+                framingState: "verified" as const,
+                warningCodes: [],
+                downgradeReasons: [],
+                gates: { provenanceComplete: true, evidenceTierSufficient: true, noRuntimeGap: true, falsifiersPresent: true },
+            },
+            {
+                framingState: "heuristic" as const,
+                warningCodes: ["VERIFIED_DOWNGRADED_RUNTIME_GAP" as const],
+                downgradeReasons: ["runtime gap"],
+                gates: { provenanceComplete: true, evidenceTierSufficient: true, noRuntimeGap: false, falsifiersPresent: true },
+            },
+        ];
+        expect(deriveReportFramingState(results)).toBe("heuristic");
+    });
+
+    it("returns warning when any claim is warning and none are unknown", () => {
+        const results = [
+            {
+                framingState: "heuristic" as const,
+                warningCodes: ["VERIFIED_DOWNGRADED_EVIDENCE_TIER" as const],
+                downgradeReasons: ["tier mismatch"],
+                gates: { provenanceComplete: true, evidenceTierSufficient: false, noRuntimeGap: true, falsifiersPresent: true },
+            },
+            {
+                framingState: "warning" as const,
+                warningCodes: ["VERIFIED_NOT_EVALUATED" as const],
+                downgradeReasons: ["not evaluated"],
+                gates: { provenanceComplete: true, evidenceTierSufficient: true, noRuntimeGap: true, falsifiersPresent: false },
+            },
+        ];
+        expect(deriveReportFramingState(results)).toBe("warning");
+    });
+
     it("returns unknown when empty", () => {
         expect(deriveReportFramingState([])).toBe("unknown");
     });
