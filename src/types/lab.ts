@@ -139,12 +139,17 @@ export interface SCMReportResult {
     reportId: string;
 }
 
+export interface LabToolFailureResult {
+    error: string;
+}
+
 export type LabToolResult =
     | ProteinFetchResult
     | SequenceAnalysisResult
     | DockingResult
     | SimulationResult
-    | SCMReportResult;
+    | SCMReportResult
+    | LabToolFailureResult;
 
 // ── Experiment Record (Extended) ─────────────────────────────
 

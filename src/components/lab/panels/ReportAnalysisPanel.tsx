@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Send, Loader2, AlertCircle, CheckCircle2, FileText } from "lucide-react";
-import { SCMGroundedReport, AnalyzeErrorResponse } from "@/types/report-analysis";
+import { SCMGroundedReport } from "@/types/report-analysis";
 import { ReportCanvas } from "@/components/reports/ReportCanvas";
 import { cn } from "@/lib/utils";
 
