@@ -65,20 +65,22 @@ export function ChatComposerV2({
 
   return (
     <div className="chat-composer-shell">
-      <textarea
-        className="input-textarea"
-        placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need...'}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        disabled={disabled}
-        rows={2}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault();
-            if (canSend) onSend();
-          }
-        }}
-      />
+      <div className="composer-textarea-shell">
+        <textarea
+          className="input-textarea"
+          placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need...'}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          disabled={disabled}
+          rows={2}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              if (canSend) onSend();
+            }
+          }}
+        />
+      </div>
 
       <div className="chat-toolbar">
         <input

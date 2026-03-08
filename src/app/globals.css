@@ -6161,3 +6161,442 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
     min-height: 100px;
   }
 }
+
+/* ========================================
+   Final authority block for MASA cinematic shell
+   ======================================== */
+
+.app-feature-shell {
+  --void-bg: #f2eee8;
+  --stage-bg: #f6f1ea;
+  --stage-bg-2: #f2ece5;
+  --stage-border: rgba(55, 40, 28, 0.12);
+  --stage-highlight: rgba(163, 107, 62, 0.08);
+  --stage-shadow: 0 20px 48px rgba(58, 43, 28, 0.08);
+  --module-bg: #f7f2ec;
+  --module-bg-2: #f2ede7;
+  --module-border: rgba(55, 40, 28, 0.11);
+  --module-shadow: 0 14px 30px rgba(58, 43, 28, 0.06);
+  --control-bg: rgba(247, 242, 236, 0.92);
+  --control-border: rgba(55, 40, 28, 0.12);
+  --control-hover: rgba(241, 233, 224, 0.96);
+  --console-bg: #f4efe8;
+  --console-bg-2: #efe8e0;
+  --console-border: rgba(55, 40, 28, 0.12);
+  --console-shadow: 0 18px 36px rgba(58, 43, 28, 0.07);
+  --amber-glow: rgba(205, 151, 88, 0.12);
+  --green-glow-soft: rgba(78, 158, 122, 0.14);
+}
+
+.dark .app-feature-shell {
+  --void-bg: #090807;
+  --stage-bg: #181412;
+  --stage-bg-2: #1c1715;
+  --stage-border: rgba(255, 255, 255, 0.085);
+  --stage-highlight: rgba(210, 162, 98, 0.08);
+  --stage-shadow: 0 24px 72px rgba(0, 0, 0, 0.42);
+  --module-bg: #171311;
+  --module-bg-2: #1a1513;
+  --module-border: rgba(255, 255, 255, 0.075);
+  --module-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
+  --control-bg: rgba(24, 20, 18, 0.84);
+  --control-border: rgba(255, 255, 255, 0.09);
+  --control-hover: rgba(35, 29, 26, 0.96);
+  --console-bg: #171310;
+  --console-bg-2: #1d1815;
+  --console-border: rgba(255, 255, 255, 0.08);
+  --console-shadow: 0 22px 56px rgba(0, 0, 0, 0.34);
+  --amber-glow: rgba(205, 151, 88, 0.12);
+  --green-glow-soft: rgba(78, 158, 122, 0.14);
+}
+
+.app-feature-shell {
+  background:
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--amber-glow) 68%, transparent) 0%, transparent 28%),
+    radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--stage-highlight) 36%, transparent) 0%, transparent 35%),
+    linear-gradient(180deg, color-mix(in srgb, var(--void-bg) 96%, black) 0%, var(--void-bg) 100%);
+}
+
+.main {
+  background:
+    radial-gradient(circle at 50% 10%, color-mix(in srgb, var(--amber-glow) 44%, transparent) 0%, transparent 22%),
+    linear-gradient(180deg, color-mix(in srgb, var(--void-bg) 94%, black) 0%, var(--void-bg) 100%);
+}
+
+.main-content-shell {
+  background: transparent;
+}
+
+.sidebar {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-1) 92%, black) 0%, color-mix(in srgb, var(--surface-1) 100%, black) 100%);
+  border-right: 1px solid color-mix(in srgb, var(--rule-strong) 76%, transparent);
+}
+
+.sidebar-header {
+  background: color-mix(in srgb, var(--surface-1) 94%, black);
+  border-bottom-color: color-mix(in srgb, var(--rule-strong) 78%, transparent);
+}
+
+.wordmark-icon {
+  color: var(--accent);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--amber-glow) 52%, transparent);
+}
+
+.wordmark-text,
+.rail-title,
+.sidebar-section-label,
+.rail-section-head {
+  letter-spacing: 0.27em;
+}
+
+.sidebar-header-actions {
+  gap: 6px;
+}
+
+.icon-btn {
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.icon-btn:hover {
+  border-color: color-mix(in srgb, var(--control-border) 88%, transparent);
+  background: color-mix(in srgb, var(--control-bg) 84%, transparent);
+}
+
+.nav-item {
+  min-height: 48px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: color-mix(in srgb, var(--text-2) 96%, white);
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.nav-item:hover {
+  border-color: color-mix(in srgb, var(--control-border) 82%, transparent);
+  background: color-mix(in srgb, var(--control-bg) 76%, transparent);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.nav-item.active {
+  border-color: color-mix(in srgb, var(--control-border) 92%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 92%, transparent), color-mix(in srgb, var(--surface-3) 86%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 36%, transparent), 0 14px 34px rgba(0, 0, 0, 0.14);
+}
+
+.action-btn,
+.footer-item {
+  border-color: color-mix(in srgb, var(--control-border) 88%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 94%, transparent), color-mix(in srgb, var(--surface-3) 82%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 24%, transparent);
+}
+
+.action-btn:hover,
+.footer-item:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-hover) 96%, transparent), color-mix(in srgb, var(--surface-3) 88%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 38%, transparent), 0 14px 30px rgba(0, 0, 0, 0.1);
+}
+
+.history-item,
+.folder-label {
+  color: color-mix(in srgb, var(--text-2) 98%, white);
+}
+
+.history-item:hover,
+.history-row.active,
+.folder-row.active {
+  background: color-mix(in srgb, var(--control-bg) 74%, transparent);
+  color: var(--text-1);
+}
+
+.chat-empty-shell {
+  justify-content: center;
+  padding: 34px 32px 48px;
+}
+
+.chat-stage-shell {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.chat-stage {
+  width: min(1060px, calc(100% - 72px));
+  margin-top: 20px;
+  border: 1px solid var(--stage-border);
+  border-radius: 30px;
+  padding: 34px 42px 28px;
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--stage-highlight) 70%, transparent) 0%, transparent 36%),
+    linear-gradient(180deg, var(--stage-bg) 0%, var(--stage-bg-2) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 38%, transparent), var(--stage-shadow);
+}
+
+.chat-stage-header {
+  margin-bottom: 28px;
+}
+
+.chat-stage-grid {
+  width: 100%;
+}
+
+.chat-empty-headline {
+  gap: 6px;
+  margin: 0;
+}
+
+.chat-empty-headline h1 {
+  color: color-mix(in srgb, var(--text-1) 96%, white);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
+}
+
+.chat-empty-headline p {
+  max-width: 560px;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--text-2) 92%, white);
+}
+
+.protocol-grid {
+  width: 100%;
+  gap: 20px;
+}
+
+.protocol-card,
+.protocol-card-shell {
+  min-height: 264px;
+  border-radius: 20px;
+  padding: 28px 30px 26px;
+  border: 1px solid var(--module-border);
+  background: linear-gradient(180deg, var(--module-bg) 0%, var(--module-bg-2) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 24%, transparent), var(--module-shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.protocol-card:hover,
+.protocol-card-shell:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--module-border) 86%, white);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--module-bg) 96%, white) 0%, color-mix(in srgb, var(--module-bg-2) 96%, white) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 44%, transparent), 0 22px 48px rgba(0, 0, 0, 0.18);
+}
+
+.protocol-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 28px;
+  border-radius: 14px;
+  border-color: color-mix(in srgb, var(--module-border) 88%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 92%, transparent), color-mix(in srgb, var(--surface-3) 82%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 24%, transparent);
+  color: color-mix(in srgb, var(--text-1) 82%, white);
+}
+
+.protocol-card h3,
+.protocol-card-shell h3 {
+  margin-bottom: 10px;
+}
+
+.protocol-card p,
+.protocol-card-shell p {
+  color: color-mix(in srgb, var(--text-2) 95%, white);
+}
+
+.input-area {
+  padding: 18px 28px 28px;
+  border-top-color: color-mix(in srgb, var(--rule-strong) 72%, transparent);
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--amber-glow) 14%, transparent) 100%);
+}
+
+.chat-composer-shell,
+.input-box {
+  border: 1px solid var(--console-border);
+  border-radius: 28px;
+  padding: 24px 26px 18px;
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--stage-highlight) 42%, transparent) 0%, transparent 34%),
+    linear-gradient(180deg, var(--console-bg) 0%, var(--console-bg-2) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 30%, transparent), var(--console-shadow);
+}
+
+.chat-composer-shell:focus-within,
+.input-box:focus-within {
+  border-color: color-mix(in srgb, var(--console-border) 96%, white);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 44%, transparent),
+    var(--console-shadow),
+    0 0 0 1px color-mix(in srgb, var(--amber-glow) 32%, transparent);
+}
+
+.composer-textarea-shell {
+  border: 1px solid color-mix(in srgb, var(--control-border) 76%, transparent);
+  border-radius: 22px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 96%, transparent), color-mix(in srgb, var(--surface-3) 84%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 18%, transparent);
+}
+
+.input-textarea {
+  min-height: 136px;
+  padding: 18px 20px;
+}
+
+.chat-toolbar {
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.chat-toolbar-chip,
+.input-chip {
+  min-height: 42px;
+  border-radius: 14px;
+  border-color: color-mix(in srgb, var(--control-border) 92%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 94%, transparent), color-mix(in srgb, var(--surface-3) 84%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 18%, transparent);
+}
+
+.chat-toolbar-chip:hover,
+.input-chip:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-hover) 96%, transparent), color-mix(in srgb, var(--surface-3) 90%, transparent));
+  border-color: color-mix(in srgb, var(--control-border) 98%, white);
+}
+
+.chat-toolbar-chip.is-icon {
+  width: 46px;
+}
+
+.send-btn {
+  min-width: 116px;
+  min-height: 46px;
+  border-radius: 14px;
+  border-color: color-mix(in srgb, var(--rule-strong) 92%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 90%, white), color-mix(in srgb, var(--surface-3) 84%, black));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 32px rgba(0, 0, 0, 0.14);
+}
+
+.send-btn:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 94%, white), color-mix(in srgb, var(--surface-3) 88%, black));
+}
+
+.rail {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 96%, black) 0%, color-mix(in srgb, var(--surface-2) 100%, black) 100%);
+  border-left-color: color-mix(in srgb, var(--rule-strong) 72%, transparent);
+}
+
+.rail-header {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 96%, black) 0%, color-mix(in srgb, var(--surface-2) 92%, transparent) 100%);
+  border-bottom-color: color-mix(in srgb, var(--rule-strong) 72%, transparent);
+}
+
+.rail-body {
+  padding: 18px 18px 28px;
+}
+
+.rail-section {
+  padding: 0;
+  border-bottom: 0;
+  margin-bottom: 18px;
+}
+
+.rail-section-head {
+  margin-bottom: 12px;
+  padding: 0 6px;
+}
+
+.rail-module {
+  border: 1px solid var(--module-border);
+  border-radius: 18px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--stage-highlight) 36%, transparent) 0%, transparent 34%),
+    linear-gradient(180deg, var(--module-bg) 0%, var(--module-bg-2) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 18%, transparent), var(--module-shadow);
+}
+
+.rail-module-compact {
+  padding: 14px;
+}
+
+.rail-module-evidence {
+  padding: 12px 16px;
+}
+
+.rung {
+  border-color: color-mix(in srgb, var(--module-border) 90%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 90%, transparent), color-mix(in srgb, var(--surface-3) 84%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 18%, transparent);
+}
+
+.rung.active {
+  border-color: color-mix(in srgb, var(--accent-border) 92%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-dim) 88%, transparent), color-mix(in srgb, var(--module-bg-2) 92%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 26%, transparent), 0 0 0 1px color-mix(in srgb, var(--amber-glow) 18%, transparent);
+}
+
+.rung-status {
+  margin-top: 14px;
+}
+
+.rail-info-card,
+.rail-domain-card {
+  border-color: color-mix(in srgb, var(--module-border) 94%, transparent);
+  border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 94%, transparent), color-mix(in srgb, var(--surface-3) 84%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--stage-highlight) 18%, transparent);
+}
+
+.rail-info-card.green {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--green-glow-soft) 84%, var(--control-bg)), color-mix(in srgb, var(--green-dim) 86%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--green-glow-soft) 48%, transparent), 0 0 0 1px color-mix(in srgb, var(--green-glow-soft) 26%, transparent);
+}
+
+.rail-link {
+  border-color: color-mix(in srgb, var(--control-border) 92%, transparent);
+  background: color-mix(in srgb, var(--control-bg) 86%, transparent);
+}
+
+.evidence-file {
+  padding: 14px 0;
+}
+
+.evidence-file:hover .file-icon,
+.evidence-file:hover .file-name {
+  color: var(--text-1);
+  border-color: color-mix(in srgb, var(--module-border) 92%, white);
+}
+
+.file-icon {
+  border-color: color-mix(in srgb, var(--module-border) 94%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--control-bg) 90%, transparent), color-mix(in srgb, var(--surface-3) 84%, transparent));
+}
+
+@media (max-width: 1279px) {
+  .chat-empty-shell {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .chat-stage {
+    width: 100%;
+    padding: 28px 24px 24px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .chat-stage {
+    margin-top: 42px;
+    border-radius: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .chat-empty-shell {
+    padding: 54px 16px 24px;
+  }
+
+  .chat-stage {
+    padding: 22px 18px 18px;
+    border-radius: 20px;
+  }
+
+  .chat-toolbar {
+    gap: 8px;
+  }
+}
