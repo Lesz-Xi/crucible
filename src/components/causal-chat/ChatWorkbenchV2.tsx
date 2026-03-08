@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
-  Crosshair,
-  Sparkles,
-  TrendingUp,
+  FlaskConical,
+  Microscope,
+  Scale,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -1071,64 +1071,56 @@ export function ChatWorkbenchV2() {
           <div className="chat-message-scroll">
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">
-                <div className="chat-stage-shell">
-                  <div className="chat-stage">
-                    <div className="chat-stage-header">
-                      <div className="chat-empty-headline">
-                        <h1>Scientific Workbench</h1>
-                        <p>Select a research protocol to begin your inquiry.</p>
-                      </div>
+                <div className="chat-empty-headline">
+                  <h1>Scientific Workbench</h1>
+                  <p>Select a research protocol to begin your inquiry.</p>
+                </div>
+
+                <div className="protocol-grid stagger">
+                  <button
+                    type="button"
+                    className="protocol-card"
+                    onClick={() => {
+                      setOperatorMode('explore');
+                      setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
+                    }}
+                  >
+                    <div className="protocol-icon">
+                      <Microscope className="h-4 w-4" />
                     </div>
+                    <h3>Causal Discovery</h3>
+                    <p>Ingest observational data or papers to extract Structural Causal Models (SCM).</p>
+                  </button>
 
-                    <div className="chat-stage-grid">
-                      <div className="protocol-grid stagger">
-                        <button
-                          type="button"
-                          className="protocol-card"
-                          onClick={() => {
-                            setOperatorMode('explore');
-                            setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
-                          }}
-                        >
-                          <div className="protocol-icon">
-                            <Sparkles className="h-4 w-4" />
-                          </div>
-                          <h3>Causal Discovery</h3>
-                          <p>Ingest observational data or papers to extract Structural Causal Models (SCM).</p>
-                        </button>
-
-                        <button
-                          type="button"
-                          className="protocol-card"
-                          onClick={() => {
-                            setOperatorMode('intervene');
-                            setPrompt('I need to simulate an intervention. Here is the scenario:');
-                          }}
-                        >
-                          <div className="protocol-icon">
-                            <TrendingUp className="h-4 w-4" />
-                          </div>
-                          <h3>Intervention Planning</h3>
-                          <p>Simulate do-calculus interventions (do(X)=y) to predict system behavior.</p>
-                        </button>
-
-                        <button
-                          type="button"
-                          className="protocol-card"
-                          onClick={() => {
-                            setOperatorMode('audit');
-                            setPrompt('Verify this claim against the known causal graph:');
-                          }}
-                        >
-                          <div className="protocol-icon">
-                            <Crosshair className="h-4 w-4" />
-                          </div>
-                          <h3>Counterfactual Audit</h3>
-                          <p>Verify specific claims against the causal graph logic and evidence.</p>
-                        </button>
-                      </div>
+                  <button
+                    type="button"
+                    className="protocol-card"
+                    onClick={() => {
+                      setOperatorMode('intervene');
+                      setPrompt('I need to simulate an intervention. Here is the scenario:');
+                    }}
+                  >
+                    <div className="protocol-icon">
+                      <FlaskConical className="h-4 w-4" />
                     </div>
-                  </div>
+                    <h3>Intervention Planning</h3>
+                    <p>Simulate do-calculus interventions (do(X)=y) to predict system behavior.</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="protocol-card"
+                    onClick={() => {
+                      setOperatorMode('audit');
+                      setPrompt('Verify this claim against the known causal graph:');
+                    }}
+                  >
+                    <div className="protocol-icon">
+                      <Scale className="h-4 w-4" />
+                    </div>
+                    <h3>Counterfactual Audit</h3>
+                    <p>Verify specific claims against the causal graph logic and evidence.</p>
+                  </button>
                 </div>
               </div>
             ) : (
