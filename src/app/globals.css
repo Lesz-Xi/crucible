@@ -1,3 +1,4 @@
+@import './generated-tokens.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -58,18 +59,7 @@
   --font-playfair: "Playfair Display", serif;
   --font-newsreader: "Newsreader", "Iowan Old Style", "Times New Roman", serif;
   --font-jetbrains-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
-  --font-instrument-serif: "Instrument Serif", "Garamond", "IM Fell English", Georgia, serif;
 
-  /* 2041 Automated Scientist (feature namespace) */
-  --lab-bg: #edf1f5;
-  --lab-bg-elevated: #e7ecf1;
-  --lab-panel: rgba(255, 255, 255, 0.58);
-  --lab-border: rgba(73, 84, 99, 0.16);
-  --lab-text-primary: #232a33;
-  --lab-text-secondary: #4a5766;
-  --lab-text-tertiary: #7c8794;
-  --lab-accent-clay: #9E7E6B;
-  --lab-accent-earth: #8B5E3C;
   --lab-accent-moss: #5F7555;
   --lab-shadow-soft: 0 8px 24px rgba(42, 38, 33, 0.08);
   --lab-shadow-lift: 0 12px 30px rgba(42, 38, 33, 0.12);
@@ -108,17 +98,7 @@
   --wabi-rust: #f87171;
   --wabi-stone: #52525b;
 
-  /* MASA Warm Dark — legacy compat layer */
   --shadow-grey: #000000;
-  --lab-bg: #0E0D0C;
-  --lab-bg-elevated: #151412;
-  --lab-panel: #1C1A18;
-  --lab-border: rgba(255, 255, 255, 0.07);
-  --lab-text-primary: #F2EFE9;
-  --lab-text-secondary: rgba(242, 239, 233, 0.55);
-  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
-  --lab-accent-clay: #C8965A;
-  --lab-accent-earth: #C8965A;
   --lab-accent-moss: #7d9c80;
   --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
@@ -3025,62 +3005,30 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
    ======================================== */
 
 :root {
-  --lab-bg: #ece2d4;
-  --lab-bg-elevated: #e4d6c4;
-  --lab-panel: #fffdf8;
-  --lab-panel-soft: #f7efe3;
-  --lab-sidebar: #ddd0bd;
-  --lab-border: rgba(84, 64, 45, 0.14);
   --lab-border-strong: rgba(84, 64, 45, 0.24);
-  --lab-text-primary: #241a14;
-  --lab-text-secondary: #645648;
-  --lab-text-tertiary: #9a8877;
-  --lab-accent-rust: #ba7847;
   --lab-accent-moss: #5f725b;
   --lab-accent-slate: #697996;
   --lab-shadow-soft: 0 10px 28px rgba(36, 26, 20, 0.06);
   --lab-shadow-lift: 0 24px 56px rgba(36, 26, 20, 0.10);
-  --lab-shell-main: #ece2d4;
-  --lab-shell-sidebar: #ddd0bd;
   --lab-shell-footer: #f2e8dc;
   --lab-input-bg: #fffcf7;
   --lab-input-border: rgba(84, 64, 45, 0.18);
-  --lab-hover-bg: rgba(186, 120, 71, 0.10);
-  --lab-active-bg: rgba(186, 120, 71, 0.16);
 
   /* compatibility aliases for older app-feature code */
   --lab-bg-secondary: var(--lab-hover-bg);
   --lab-bg-tertiary: var(--lab-active-bg);
-  --lab-accent-clay: var(--lab-accent-rust);
-  --lab-accent-earth: var(--lab-accent-rust);
 }
 
 .dark {
-  /* MASA Warm Dark — Cinematic Charcoal */
-  --lab-bg: #0E0D0C;
-  --lab-bg-elevated: #151412;
-  --lab-panel: #1C1A18;
   --lab-panel-soft: #201E1B;
-  --lab-sidebar: #131210;
-  --lab-border: rgba(255, 255, 255, 0.07);
   --lab-border-strong: rgba(255, 255, 255, 0.13);
-  --lab-text-primary: #F2EFE9;
-  --lab-text-secondary: rgba(242, 239, 233, 0.55);
-  --lab-text-tertiary: rgba(242, 239, 233, 0.30);
-  --lab-accent-rust: #C8965A;
-  --lab-accent-clay: #C8965A;
-  --lab-accent-earth: #C8965A;
   --lab-accent-moss: #7d9c80;
   --lab-accent-slate: #8ea2c7;
   --lab-shadow-soft: 0 14px 32px rgba(0, 0, 0, 0.35);
   --lab-shadow-lift: 0 24px 56px rgba(0, 0, 0, 0.52);
-  --lab-shell-main: #0E0D0C;
-  --lab-shell-sidebar: #131210;
   --lab-shell-footer: #151412;
   --lab-input-bg: #1C1A18;
   --lab-input-border: rgba(255, 255, 255, 0.10);
-  --lab-hover-bg: rgba(200, 150, 90, 0.08);
-  --lab-active-bg: rgba(200, 150, 90, 0.16);
 
   /* Compatibility aliases */
   --lab-bg-secondary: var(--lab-hover-bg);
@@ -3859,35 +3807,9 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
    ======================================== */
 
 .app-feature-shell {
-  --sidebar-w: 240px;
-  --rail-w: 300px;
-  --topbar-h: 44px;
-  --font-sans: 'Inter', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-serif: 'Instrument Serif', Georgia, serif;
-  --bg: #fafaf8;
-  --bg-2: #f4f2ee;
-  --bg-3: #edeae4;
-  --bg-4: #e5e2db;
-  --bg-hover: rgba(0, 0, 0, 0.03);
-  --bg-active: rgba(0, 0, 0, 0.055);
-  --border: rgba(0, 0, 0, 0.08);
-  --border-2: rgba(0, 0, 0, 0.14);
-  --text-1: #1a1917;
-  --text-2: rgba(26, 25, 23, 0.55);
-  --text-3: rgba(26, 25, 23, 0.32);
-  --accent: #a0693a;
-  --accent-dim: rgba(160, 105, 58, 0.1);
-  --accent-border: rgba(160, 105, 58, 0.22);
-  --green: #3a7d5e;
-  --green-dim: rgba(58, 125, 94, 0.1);
-  --red: #9b3e3e;
-  --red-dim: rgba(155, 62, 62, 0.1);
-  --card-bg: #ffffff;
+  --card-bg: var(--bg-2);
   --card-border: rgba(0, 0, 0, 0.08);
-  --input-bg: #ffffff;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --input-bg: var(--bg-3);
   min-height: 100vh;
   background: var(--bg);
   color: var(--text-1);
@@ -3895,29 +3817,9 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 }
 
 .dark .app-feature-shell {
-  --bg: #0e0d0c;
-  --bg-2: #151412;
-  --bg-3: #1c1a18;
-  --bg-4: #232120;
-  --bg-hover: rgba(255, 255, 255, 0.04);
-  --bg-active: rgba(255, 255, 255, 0.07);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-2: rgba(255, 255, 255, 0.12);
-  --text-1: #f2efe9;
-  --text-2: rgba(242, 239, 233, 0.55);
-  --text-3: rgba(242, 239, 233, 0.3);
-  --accent: #c8965a;
-  --accent-dim: rgba(200, 150, 90, 0.12);
-  --accent-border: rgba(200, 150, 90, 0.25);
-  --green: #4e9e7a;
-  --green-dim: rgba(78, 158, 122, 0.12);
-  --red: #c45c5c;
-  --red-dim: rgba(196, 92, 92, 0.12);
-  --card-bg: #151412;
+  --card-bg: var(--bg-2);
   --card-border: rgba(255, 255, 255, 0.07);
-  --input-bg: #1c1a18;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --input-bg: var(--bg-3);
 }
 
 .app-feature-shell * {
@@ -5075,16 +4977,6 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   --surface-3: #f7f5f0;
   --rule: rgba(0, 0, 0, 0.08);
   --rule-strong: rgba(0, 0, 0, 0.13);
-  --text-1: #1d1b19;
-  --text-2: rgba(29, 27, 25, 0.55);
-  --text-3: rgba(29, 27, 25, 0.32);
-  --accent: #a36b3e;
-  --accent-dim: rgba(163, 107, 62, 0.08);
-  --accent-border: rgba(163, 107, 62, 0.2);
-  --green: #5d9b7b;
-  --green-dim: rgba(93, 155, 123, 0.1);
-  --red: #a45d5d;
-  --red-dim: rgba(164, 93, 93, 0.09);
   --shell-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
   min-height: 100vh;
   background: var(--surface-0);
@@ -5099,16 +4991,6 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   --surface-3: #1a1816;
   --rule: rgba(255, 255, 255, 0.07);
   --rule-strong: rgba(255, 255, 255, 0.12);
-  --text-1: #f2efe9;
-  --text-2: rgba(242, 239, 233, 0.55);
-  --text-3: rgba(242, 239, 233, 0.3);
-  --accent: #c8965a;
-  --accent-dim: rgba(200, 150, 90, 0.09);
-  --accent-border: rgba(200, 150, 90, 0.22);
-  --green: #4e9e7a;
-  --green-dim: rgba(78, 158, 122, 0.14);
-  --red: #c45c5c;
-  --red-dim: rgba(196, 92, 92, 0.12);
   --shell-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
 }
 
