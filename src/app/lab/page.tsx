@@ -16,8 +16,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, EASE_OUT_EXPO } from "@/components/ui/motion";
 import { proteinStructureCache } from "@/lib/utils/rate-limiter";
 import { ScientificGateway } from "@/lib/services/scientific-gateway";
-import type { LabExperiment, LabToolId } from "@/types/lab";
+import type {
+    DockingResult,
+    LabExperiment,
+    SCMReportResult,
+    SequenceAnalysisResult,
+} from "@/types/lab";
 import { cn } from "@/lib/utils";
+import { useAppShellChrome } from "@/components/dashboard/AppShellChromeContext";
+import type { SCMGroundedReport, HonestFramingState, SourceRecord } from "@/types/report-analysis";
+import type { WorkbenchEvidenceItem, WorkbenchEvidenceRailConfig, WorkbenchTone } from "@/types/workbench";
 
 // Status badge component with Liquid Glass styling
 function StatusBadge({ status }: { status: string }) {
@@ -100,11 +108,12 @@ function ExperimentCard({ experiment }: { experiment: LabExperiment }) {
 
 export default function LabPage() {
     const { state, dispatch, createExperiment, updateExperimentResult } = useLab();
+    const shellChrome = useAppShellChrome();
     const [viewMode, setViewMode] = useState<'dashboard' | 'builder' | 'history' | 'tool'>('dashboard');
     const [isLoading, setIsLoading] = useState(false);
     const [fetchStatusMessage, setFetchStatusMessage] = useState<string | null>(null);
     const [fetchErrorMessage, setFetchErrorMessage] = useState<string | null>(null);
-    const [scmReport, setScmReport] = useState<any | null>(null);
+    const [scmReport, setScmReport] = useState<SCMGroundedReport | null>(null);
     const [copilotOpen, setCopilotOpen] = useState(false);
 
     // Scientific Gateway instance for tool operations
@@ -116,6 +125,97 @@ export default function LabPage() {
             setViewMode('tool');
         }
     }, [state.activeTool]);
+
+    const reportRailConfig = React.useMemo<WorkbenchEvidenceRailConfig>(() => {
+        const toneMap: Record<HonestFramingState, WorkbenchTone> = {
+            verified: 'green',
+            heuristic: 'amber',
+            warning: 'red',
+            unknown: 'neutral',
+        };
+
+        const activeLevelMap: Record<HonestFramingState, 'L1' | 'L2' | 'L3' | null> = {
+            verified: 'L3',
+            heuristic: 'L2',
+            warning: 'L1',
+            unknown: null,
+        };
+
+        const formatSourceMeta = (source: SourceRecord) => {
+            const parts = [
+                source.domain,
+                source.publishedAt ? new Date(source.publishedAt).toLocaleDateString() : 'Undated',
+                `Cred ${Math.round(source.credibilityScore * 100)}`,
+                `Corr ${Math.round(source.corroborationScore * 100)}`,
+            ];
+
+            return parts.join(' • ');
+        };
+
+        const evidenceItems: WorkbenchEvidenceItem[] = scmReport?.sources.map((source) => ({
+            id: source.sourceId,
+            title: source.excerpt.trim().slice(0, 96) || source.domain,
+            meta: formatSourceMeta(source),
+            href: source.url,
+            badge: source.domain,
+        })) ?? [];
+
+        const activeLevel = scmReport ? activeLevelMap[scmReport.meta.causalDepth] : null;
+        const alignmentTone = scmReport ? toneMap[scmReport.meta.causalDepth] : fetchErrorMessage ? 'red' : isLoading ? 'amber' : 'neutral';
+        const alignmentText = scmReport
+            ? scmReport.meta.verificationFailures[0]
+                || scmReport.executiveSummary[0]
+                || 'Report completed without a detailed alignment rationale.'
+            : fetchErrorMessage
+                ? fetchErrorMessage
+                : fetchStatusMessage || 'Awaiting scored output';
+
+        const provenanceText = scmReport
+            ? `Method ${scmReport.meta.methodVersion} • Generated ${new Date(scmReport.meta.generatedAt).toLocaleString()}`
+            : fetchErrorMessage
+                ? 'No verified model provenance was emitted for this run.'
+                : fetchStatusMessage || 'Awaiting report pipeline execution.';
+
+        return {
+            subtitle: scmReport ? 'SCM-grounded report posture and provenance' : 'Report analysis status and provenance',
+            live: isLoading || Boolean(scmReport),
+            causalDensity: {
+                activeLevel,
+                status: scmReport
+                    ? `${scmReport.meta.causalDepth} posture${scmReport.meta.allowVerified ? ' • verified gates satisfied' : ''}`
+                    : fetchErrorMessage || fetchStatusMessage || 'Awaiting scored output',
+            },
+            alignmentPosture: {
+                tone: alignmentTone,
+                text: alignmentText,
+            },
+            modelProvenance: {
+                title: scmReport?.meta.computeRunId || 'unavailable',
+                text: provenanceText,
+                actions: scmReport ? [
+                    {
+                        label: 'Open report JSON',
+                        href: `/api/scm/reports/${scmReport.meta.reportId}`,
+                    },
+                ] : undefined,
+            },
+            activeDomain: {
+                label: scmReport?.meta.query || 'unavailable',
+            },
+            scientificEvidence: evidenceItems,
+        };
+    }, [fetchErrorMessage, fetchStatusMessage, isLoading, scmReport]);
+
+    React.useEffect(() => {
+        if (!shellChrome) return;
+
+        if (state.activeTool === 'analyze_report') {
+            shellChrome.setEvidenceRailOverride(reportRailConfig);
+            return () => shellChrome.setEvidenceRailOverride(null);
+        }
+
+        shellChrome.setEvidenceRailOverride(null);
+    }, [reportRailConfig, shellChrome, state.activeTool]);
 
     // Panel close handler
     const handleClosePanel = () => {
@@ -144,7 +244,11 @@ export default function LabPage() {
                     body: JSON.stringify({ identifier: rawInput, source }),
                 });
 
-                const payload = await response.json().catch(() => ({} as any));
+                const payload: {
+                    success?: boolean;
+                    data?: { content?: string; resolvedId?: string };
+                    error?: string;
+                } = await response.json().catch(() => ({}));
                 if (!response.ok || !payload?.success || !payload?.data?.content) {
                     throw new Error(payload?.error || 'Failed to fetch protein structure');
                 }
@@ -199,9 +303,9 @@ export default function LabPage() {
                 // Call gateway's analyzeProteinSequence method
                 const result = await gateway.analyzeProteinSequence(sequence);
                 if (result.success && result.data) {
-                    await updateExperimentResult?.(experiment.id, result.data as any, 'success');
+                    await updateExperimentResult?.(experiment.id, result.data as SequenceAnalysisResult, 'success');
                 } else {
-                    await updateExperimentResult?.(experiment.id, { error: result.error } as any, 'failure');
+                    await updateExperimentResult?.(experiment.id, { error: result.error || 'Sequence analysis failed' }, 'failure');
                 }
             }
         } catch (err) {
@@ -229,15 +333,15 @@ export default function LabPage() {
             });
 
             if (!createRes.ok) {
-                const payload = await createRes.json().catch(() => ({}));
-                await updateExperimentResult?.(experiment.id, { error: payload?.error || 'Failed to create docking job' } as any, 'failure');
+                const payload: { error?: string } = await createRes.json().catch(() => ({}));
+                await updateExperimentResult?.(experiment.id, { error: payload.error || 'Failed to create docking job' }, 'failure');
                 return;
             }
 
             const createPayload = await createRes.json() as { jobId?: string };
             const jobId = createPayload.jobId;
             if (!jobId) {
-                await updateExperimentResult?.(experiment.id, { error: 'Missing docking job id' } as any, 'failure');
+                await updateExperimentResult?.(experiment.id, { error: 'Missing docking job id' }, 'failure');
                 return;
             }
 
@@ -248,21 +352,32 @@ export default function LabPage() {
                 attempts += 1;
                 const statusRes = await fetch(`/api/lab/docking/jobs/${jobId}`, { method: 'GET' });
                 if (!statusRes.ok) {
-                    const payload = await statusRes.json().catch(() => ({}));
-                    await updateExperimentResult?.(experiment.id, { error: payload?.error || 'Failed to query docking job' } as any, 'failure');
+                    const payload: { error?: string } = await statusRes.json().catch(() => ({}));
+                    await updateExperimentResult?.(experiment.id, { error: payload.error || 'Failed to query docking job' }, 'failure');
                     return;
                 }
 
-                const statusPayload = await statusRes.json() as { job?: { status?: string; result?: any; error?: string } };
+                const statusPayload = await statusRes.json() as {
+                    job?: {
+                        status?: string;
+                        result?: DockingResult;
+                        error?: string;
+                    };
+                };
                 const status = statusPayload.job?.status;
 
                 if (status === 'succeeded') {
-                    await updateExperimentResult?.(experiment.id, statusPayload.job?.result as any, 'success');
+                    if (!statusPayload.job?.result) {
+                        await updateExperimentResult?.(experiment.id, { error: 'Docking completed without a result payload' }, 'failure');
+                        return;
+                    }
+
+                    await updateExperimentResult?.(experiment.id, statusPayload.job.result, 'success');
                     return;
                 }
 
                 if (status === 'failed') {
-                    await updateExperimentResult?.(experiment.id, { error: statusPayload.job?.error || 'Docking failed' } as any, 'failure');
+                    await updateExperimentResult?.(experiment.id, { error: statusPayload.job?.error || 'Docking failed' }, 'failure');
                     return;
                 }
 
@@ -270,7 +385,7 @@ export default function LabPage() {
             }
 
     // Docking via panel... [Truncated for brevity since we are appending below this block]
-            await updateExperimentResult?.(experiment.id, { error: 'Docking job timed out' } as any, 'failure');
+            await updateExperimentResult?.(experiment.id, { error: 'Docking job timed out' }, 'failure');
         } catch (err) {
             console.error('Failed to dock ligand:', err);
         } finally {
@@ -304,10 +419,10 @@ export default function LabPage() {
                 try {
                     const errorPayload = await res.json();
                     if (errorPayload?.error) errorMsg = errorPayload.error;
-                } catch (e) {}
+                } catch {}
                 setFetchErrorMessage(errorMsg);
                 if (experiment) {
-                    await updateExperimentResult?.(experiment.id, { error: errorMsg } as any, 'failure');
+                    await updateExperimentResult?.(experiment.id, { error: errorMsg }, 'failure');
                 }
                 setIsLoading(false);
                 return;
@@ -335,7 +450,7 @@ export default function LabPage() {
                             } else if (data.event === 'report_pipeline_error') {
                                 setFetchErrorMessage(data.error);
                             }
-                        } catch (e) {
+                        } catch {
                             // ignore parse errors for partial chunks
                         }
                     }
@@ -353,7 +468,7 @@ export default function LabPage() {
                         setFetchStatusMessage(null);
                         
                         if (experiment) {
-                            await updateExperimentResult?.(experiment.id, { reportId: finalReportId } as any, 'success');
+                            await updateExperimentResult?.(experiment.id, { reportId: finalReportId } as SCMReportResult, 'success');
                         }
                     } else {
                         setFetchErrorMessage("Failed to load generated report.");
@@ -412,7 +527,7 @@ export default function LabPage() {
                             Structure: {state.currentStructure.pdbId}
                         </h2>
                         <button 
-                            onClick={() => dispatch({ type: 'LOAD_STRUCTURE', payload: null as any })}
+                            onClick={() => dispatch({ type: 'LOAD_STRUCTURE', payload: null })}
                             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                         >
                             Close Viewer
@@ -504,7 +619,7 @@ export default function LabPage() {
                         <div className="grid grid-cols-1 gap-1.5 md:grid-cols-4">
                             <button
                                 onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'fetch_structure' as any });
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'fetch_structure' });
                                     setViewMode('tool');
                                 }}
                                 className={cn(
@@ -517,7 +632,7 @@ export default function LabPage() {
                             </button>
                             <button
                                 onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_sequence' as any });
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_sequence' });
                                     setViewMode('tool');
                                 }}
                                 className={cn(
@@ -530,7 +645,7 @@ export default function LabPage() {
                             </button>
                             <button
                                 onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'dock_ligand' as any });
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'dock_ligand' });
                                     setViewMode('tool');
                                 }}
                                 className={cn(
@@ -543,7 +658,7 @@ export default function LabPage() {
                             </button>
                             <button
                                 onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_report' as any });
+                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_report' });
                                     setViewMode('tool');
                                 }}
                                 className={cn(

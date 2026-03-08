@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { SCMGroundedReport, HonestFramingState, WarningCode, WARNING_CODE_LABELS } from "@/types/report-analysis";
+import { SCMGroundedReport, HonestFramingState } from "@/types/report-analysis";
 import { ShieldAlert, ShieldCheck, ShieldQuestion, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +9,7 @@ interface TrustBadgeProps {
 
 export function TrustBadge({ report }: TrustBadgeProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { causalDepth, allowVerified, verificationFailures } = report.meta;
+  const { causalDepth, verificationFailures } = report.meta;
 
   const getConfig = (state: HonestFramingState) => {
     switch (state) {

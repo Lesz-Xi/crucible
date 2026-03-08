@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { BookOpen, Clock3 } from 'lucide-react';
 import type { LegalCase, LegalDiagnostics } from '@/types/legal';
 import { getAnalysisHistory, loadAnalysisFromHistory, saveAnalysisToHistory, type LegalHistoryEntry } from '@/lib/services/legal-history';
-import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { LegalAnalysisPanelV2, type LegalGateSummary } from '@/components/legal/LegalAnalysisPanelV2';
 import { LegalIntakePanelV2 } from '@/components/legal/LegalIntakePanelV2';
+import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface AnalysisStatus {
   stage: 'idle' | 'uploading' | 'extracting' | 'analyzing' | 'matching' | 'complete' | 'error';
@@ -264,168 +263,136 @@ export function LegalWorkbenchV2() {
     }
   };
 
+  const railConfig: WorkbenchEvidenceRailConfig = {
+    subtitle: 'Legal posture and evidence',
+    live: analysisStatus.stage !== 'idle' || latestClaimId !== null || documentNames.length > 0,
+    causalDensity: {
+      activeLevel: gateState?.allowedOutputClass === 'intervention_supported' ? 'L2' : gateState?.allowedOutputClass === 'intervention_inferred' ? 'L1' : null,
+      status: analysisStatus.message,
+    },
+    alignmentPosture: {
+      tone: gateState?.allowed ? 'green' : gateState ? 'red' : 'neutral',
+      text: gateState?.rationale || 'No unaudited intervention claims without identifiability gates.',
+    },
+    modelProvenance: {
+      title: latestClaimId || 'unavailable',
+      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : 'No verified model provenance was emitted for this run.',
+      actions: latestClaimId ? [
+        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
+        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
+        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
+      ] : undefined,
+    },
+    activeDomain: {
+      label: `${caseType}${jurisdiction ? ` · ${jurisdiction}` : ''}` || 'unavailable',
+    },
+    scientificEvidence: documentNames.slice(0, 6).map((name, index) => ({
+      id: `${name}-${index}`,
+      title: name,
+      meta: `${caseType} source document`,
+      badge: index === 0 ? `${documentNames.length} docs` : undefined,
+    })),
+  };
+
   return (
     <WorkbenchShell
       feature="legal"
-      header={
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="lab-chip-mono">Legal Causation Console</span>
-          <span className="workbench-inline-band">Intent → Action → Harm</span>
-          <span className="workbench-inline-band">Transport: {transportMode === 'idle' ? 'pending' : transportMode === 'sse' ? 'SSE stream' : 'JSON fallback'}</span>
-        </div>
-      }
-      drawer={{
-        title: 'Case Intake',
-        subtitle: 'Documents, jurisdiction, and legal context setup',
-        content: (
-          <div className="space-y-4">
-          <LegalIntakePanelV2
-            documentNames={documentNames}
-            caseTitle={caseTitle}
-            jurisdiction={jurisdiction}
-            caseType={caseType}
-            disabled={analysisStatus.stage === 'uploading' || analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching'}
-            onFilesRead={(docs, names) => {
-              setDocuments((previous) => [...previous, ...docs]);
-              setDocumentNames((previous) => [...previous, ...names]);
-            }}
-            onCaseTitleChange={setCaseTitle}
-            onJurisdictionChange={setJurisdiction}
-            onCaseTypeChange={setCaseType}
-            onAnalyze={runAnalysis}
-            onClear={clearAll}
-          />
+      evidenceRail={railConfig}
+      mainMode="split"
+      mainTopbar={
+        <>
+          <span className="topbar-tag">Legal Analysis Engine</span>
+          <div className="topbar-pipeline">
+            <span className={analysisStatus.stage !== 'idle' ? 'step done' : 'step'}>intake</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>extract</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>analyze</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>match</span>
           </div>
-        ),
-      }}
-      dockInitiallyOpen={analysisStatus.stage === 'complete'}
-      dockDefaultTab="diagnostics"
-      dock={{
-        tabs: [
-          {
-            id: 'context',
-            label: 'Context',
-            content: (
-              <div className="grid gap-3 md:grid-cols-3">
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Case Title</p>
-                  <p className="text-sm text-[var(--lab-text-primary)]">{caseTitle || 'Legal Analysis'}</p>
-                </section>
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Jurisdiction</p>
-                  <p className="text-sm text-[var(--lab-text-primary)]">{jurisdiction || 'Not set'}</p>
-                </section>
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Case Type</p>
-                  <p className="text-sm text-[var(--lab-text-primary)]">{caseType}</p>
-                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{documentNames.length} loaded documents</p>
-                </section>
+          <span className="topbar-phase">Phase: {analysisStatus.stage}</span>
+        </>
+      }
+      mainContent={
+        <div className="split-workspace">
+          <div className="split-sidebar">
+            <div className="hybrid-section-head">Case Intake</div>
+            <p className="hybrid-sub">Documents, jurisdiction, and legal context setup</p>
+
+            <div className="feature-panel-stack mt-5">
+              <div className="feature-panel-shell">
+                <LegalIntakePanelV2
+                  documentNames={documentNames}
+                  caseTitle={caseTitle}
+                  jurisdiction={jurisdiction}
+                  caseType={caseType}
+                  disabled={analysisStatus.stage === 'uploading' || analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching'}
+                  onFilesRead={(docs, names) => {
+                    setDocuments((previous) => [...previous, ...docs]);
+                    setDocumentNames((previous) => [...previous, ...names]);
+                  }}
+                  onCaseTitleChange={setCaseTitle}
+                  onJurisdictionChange={setJurisdiction}
+                  onCaseTypeChange={setCaseType}
+                  onAnalyze={runAnalysis}
+                  onClear={clearAll}
+                />
               </div>
-            ),
-          },
-          {
-            id: 'provenance',
-            label: 'Provenance',
-            badge: latestClaimId ? '1' : undefined,
-            content: (
-              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Intervention Gate</p>
-                  <p className="text-sm text-[var(--lab-text-secondary)]">{gateState?.rationale || 'Pending gate evaluation.'}</p>
-                </section>
-                {latestClaimId ? (
-                  <section className="workbench-dock-panel">
-                    <p className="lab-section-title !mb-2">Claim Lineage</p>
-                    <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <a className="workbench-link-action" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">Pretty view</a>
-                      <a className="workbench-link-action" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">JSON</a>
-                      <button type="button" className="workbench-link-action" onClick={() => void handleCopyClaimId(latestClaimId)}>Copy ID</button>
-                    </div>
-                    {claimCopied ? <p className="mt-2 text-[11px] text-[var(--lab-accent-moss)]">Copied.</p> : null}
-                  </section>
+
+              <div className="feature-panel-shell">
+                <div className="panel-section-head">Historical Analyses</div>
+                {historyLoading ? (
+                  <p className="text-sm text-[var(--text-2)]">Loading history...</p>
+                ) : history.length === 0 ? (
+                  <p className="text-sm text-[var(--text-3)]">No saved analyses.</p>
                 ) : (
-                  <div className="workbench-empty-panel">No claim lineage recorded yet.</div>
+                  <div className="space-y-2">
+                    {history.map((entry) => (
+                      <button key={entry.id} type="button" className="history-item" onClick={() => void loadHistoryEntry(entry.id)}>
+                        {entry.caseTitle}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-            ),
-          },
-          {
-            id: 'diagnostics',
-            label: 'Diagnostics',
-            content: (
-              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Diagnostics</p>
-                  {diagnostics ? (
-                    <div className="space-y-1.5 text-xs text-[var(--lab-text-secondary)]">
-                      <p>Docs: {diagnostics.documentCount} · Entities: {diagnostics.extractedEntities}</p>
-                      <p>Actions: {diagnostics.extractedActions} · Harms: {diagnostics.extractedHarms}</p>
-                      <p>Pairs: {diagnostics.actionHarmPairsAnalyzed}</p>
-                      <p>But-for pass (necessary/both): {diagnostics.butForNecessaryOrBoth}</p>
-                      <p>But-for sufficient-only: {diagnostics.butForSufficientOnly} · neither: {diagnostics.butForNeither}</p>
-                      <p>Low-confidence: {diagnostics.butForLowConfidence} · LLM-failure signals: {diagnostics.llmFailureSignals}</p>
-                      <p>Chains raw→dedup: {diagnostics.causalChainsBeforeDedup} → {diagnostics.causalChainsAfterDedup}</p>
-                      <p>Gate allowed/blocked: {diagnostics.gateAllowedChains}/{diagnostics.gateBlockedChains}</p>
-                    </div>
-                  ) : (
-                    <div className="workbench-empty-panel">No diagnostics yet.</div>
-                  )}
-                </section>
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Historical Analyses</p>
-                  {historyLoading ? (
-                    <p className="text-sm text-[var(--lab-text-secondary)]">Loading history...</p>
-                  ) : history.length === 0 ? (
-                    <div className="workbench-empty-panel">No saved analyses.</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {history.map((entry) => (
-                        <button key={entry.id} type="button" className="workbench-command-row w-full text-left" onClick={() => void loadHistoryEntry(entry.id)}>
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{entry.caseTitle}</p>
-                            <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{entry.createdAt.toLocaleString()}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </section>
-              </div>
-            ),
-          },
-          {
-            id: 'evidence',
-            label: 'Evidence',
-            content: (
-              <section className="workbench-dock-panel">
-                <div className="mb-2 flex items-center gap-2">
-                  <BookOpen className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                  <p className="lab-section-title !mb-0">Chain Metrics</p>
-                </div>
-                <p className="text-sm text-[var(--lab-text-secondary)]">
-                  {result
-                    ? `${result.causalChains.length} chains · ${result.precedents.length} precedents · ${Math.round((result.verdict?.confidence || 0) * 100)}% confidence`
-                    : 'No active verdict metrics.'}
-                </p>
-              </section>
-            ),
-          },
-        ],
-      }}
-      primary={
-        <PrimaryCanvas>
-          <div className="lab-scroll-region h-full p-4">
-            <LegalAnalysisPanelV2
-              statusMessage={analysisStatus.message}
-              progress={analysisStatus.progress}
-              stage={analysisStatus.stage}
-              result={result}
-              gateState={gateState}
-              error={error}
-            />
+            </div>
           </div>
-        </PrimaryCanvas>
+
+          <div className="split-canvas">
+            <div className="canvas-stats">
+              <div className="stat-card">
+                <div className="stat-label">Case Title</div>
+                <div className="stat-value">{caseTitle ? '1' : '0'}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Documents</div>
+                <div className="stat-value">{documentNames.length}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Transport</div>
+                <div className="stat-value">{transportMode === 'sse' ? 'S' : transportMode === 'json-fallback' ? 'J' : 'P'}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Diagnostics</div>
+                <div className="stat-value">{diagnostics ? diagnostics.documentCount : 0}</div>
+              </div>
+            </div>
+
+            <div className="canvas-body">
+              <div className="w-full">
+                <LegalAnalysisPanelV2
+                  statusMessage={analysisStatus.message}
+                  progress={analysisStatus.progress}
+                  stage={analysisStatus.stage}
+                  result={result}
+                  gateState={gateState}
+                  error={error}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       }
     />
   );

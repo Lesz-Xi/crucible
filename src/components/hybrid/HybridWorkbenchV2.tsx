@@ -1,15 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Activity,
-  AlertTriangle,
-  BookOpen,
-  CheckCircle2,
-  Clock3,
-  TrendingUp,
-} from 'lucide-react';
-import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { HybridInputPanelV2 } from '@/components/hybrid/HybridInputPanelV2';
 import { HybridResultPanelV2, type HybridResultData } from '@/components/hybrid/HybridResultPanelV2';
@@ -17,6 +8,7 @@ import { HybridProcessingTimelineV2 } from '@/components/hybrid/HybridProcessing
 import { HybridTimelineSummaryStripV2 } from '@/components/hybrid/HybridTimelineSummaryStripV2';
 import { createInitialTimelineReceipt, updateTimelineStage } from '@/lib/hybrid/timeline';
 import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from '@/types/hybrid-timeline';
+import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface HistoryEntry {
   id: string;
@@ -403,7 +395,7 @@ export function HybridWorkbenchV2() {
       .slice(0, 3);
   }, [result?.noveltyProof]);
 
-  const handleCopyClaimId = async (value: string) => {
+  const handleCopyClaimId = useCallback(async (value: string) => {
     try {
       await navigator.clipboard.writeText(value);
       setClaimCopied(true);
@@ -411,229 +403,145 @@ export function HybridWorkbenchV2() {
     } catch {
       setClaimCopied(false);
     }
-  };
+  }, []);
+
+  const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
+    subtitle: 'Live novelty and provenance',
+    live: stage !== 'input' || latestClaimId !== null || totalSources > 0,
+    causalDensity: {
+      activeLevel: stage === 'results' ? 'L2' : stage === 'processing' || stage === 'stabilizing' ? 'L1' : null,
+      status: latestEvent || 'Awaiting synthesis run',
+    },
+    alignmentPosture: {
+      tone: result?.noveltyGate?.decision === 'pass' ? 'green' : gatePreview?.decision === 'recover' ? 'amber' : gatePreview?.decision === 'fail' ? 'red' : 'neutral',
+      text: result?.noveltyGate?.reasons?.join(' ') || gatePreview?.reasons?.join(' ') || 'Awaiting novelty gate output.',
+    },
+    modelProvenance: {
+      title: latestClaimId || 'Runtime signal',
+      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : `${latestEvent}. Proof cards: ${result?.noveltyProof?.length || proofCount}.`,
+      actions: latestClaimId ? [
+        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
+        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
+        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
+      ] : undefined,
+    },
+    activeDomain: {
+      label: researchFocus || 'unavailable',
+    },
+    scientificEvidence: topOverlaps.slice(0, 6).map((item, index) => ({
+      id: `${item.title}-${index}`,
+      title: item.title,
+      meta: 'Similarity-backed prior art overlap',
+      badge: `${Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100)}%`,
+    })),
+  }), [claimCopied, gatePreview?.decision, gatePreview?.reasons, handleCopyClaimId, latestClaimId, latestEvent, proofCount, researchFocus, result?.noveltyGate?.decision, result?.noveltyGate?.reasons, result?.noveltyProof?.length, stage, topOverlaps, totalSources]);
 
   return (
     <WorkbenchShell
       feature="hybrid"
-      header={
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="lab-chip-mono">Hybrid Discovery Engine</span>
-          <span className="workbench-inline-band">Ingest → contradict → synthesize → prove novelty</span>
-          <span className="workbench-inline-band">Signal: {latestEvent}</span>
-        </div>
-      }
-      drawer={{
-        title: 'Run Setup',
-        subtitle: 'Source inventory, research focus, and execution controls',
-        content: (
-          <div className="space-y-4">
-          <HybridInputPanelV2
-            files={files}
-            companies={companies}
-            companyDraft={companyDraft}
-            researchFocus={researchFocus}
-            isRunning={stage === 'processing' || stage === 'stabilizing'}
-            canRun={canRun}
-            onFilesChange={setFiles}
-            onCompanyDraftChange={setCompanyDraft}
-            onResearchFocusChange={setResearchFocus}
-            onAddCompany={addCompany}
-            onRemoveCompany={(company) => setCompanies((prev) => prev.filter((entry) => entry !== company))}
-            onRemoveFile={(name) => setFiles((prev) => prev.filter((file) => file.name !== name))}
-            onRun={runSynthesis}
-            onCancelRun={cancelSynthesis}
-          />
-
-          {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
+      evidenceRail={railConfig}
+      mainMode="split"
+      mainTopbar={
+        <>
+          <span className="topbar-tag">Hybrid Discovery Engine</span>
+          <div className="topbar-pipeline">
+            <span className="step done">Ingest</span>
+            <span className="arrow">→</span>
+            <span className="step done">contradict</span>
+            <span className="arrow">→</span>
+            <span className="step done">synthesize</span>
+            <span className="arrow">→</span>
+            <span className="step">prove novelty</span>
           </div>
-        ),
-      }}
-      dockInitiallyOpen={stage === 'results'}
-      dockDefaultTab="diagnostics"
-      dock={{
-        tabs: [
-          {
-            id: 'context',
-            label: 'Context',
-            content: (
-              <div className="grid gap-3 md:grid-cols-3">
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Sources</p>
-                  <p className="text-sm text-[var(--lab-text-primary)]">{totalSources}</p>
-                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{files.length} files · {companies.length} companies</p>
-                </section>
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Research Focus</p>
-                  <p className="text-sm text-[var(--lab-text-secondary)]">{researchFocus || 'No focus constraint set.'}</p>
-                </section>
-                <section className="workbench-dock-panel">
-                  <p className="lab-section-title !mb-2">Stage</p>
-                  <p className="text-sm text-[var(--lab-text-primary)]">{stage}</p>
-                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{latestEvent}</p>
-                </section>
+          <span className="topbar-phase">Phase: {latestEvent}</span>
+        </>
+      }
+      mainContent={
+        <div className="split-workspace">
+          <div className="split-sidebar">
+            <div className="hybrid-section-head">Input Rail</div>
+            <p className="hybrid-sub">Source inventory, focus constraints, and execution</p>
+
+            <div className="feature-panel-stack mt-5">
+              <div className="feature-panel-shell">
+                <HybridInputPanelV2
+                  files={files}
+                  companies={companies}
+                  companyDraft={companyDraft}
+                  researchFocus={researchFocus}
+                  isRunning={stage === 'processing' || stage === 'stabilizing'}
+                  canRun={canRun}
+                  onFilesChange={setFiles}
+                  onCompanyDraftChange={setCompanyDraft}
+                  onResearchFocusChange={setResearchFocus}
+                  onAddCompany={addCompany}
+                  onRemoveCompany={(company) => setCompanies((prev) => prev.filter((entry) => entry !== company))}
+                  onRemoveFile={(name) => setFiles((prev) => prev.filter((file) => file.name !== name))}
+                  onRun={runSynthesis}
+                  onCancelRun={cancelSynthesis}
+                />
               </div>
-            ),
-          },
-          {
-            id: 'provenance',
-            label: 'Provenance',
-            badge: latestClaimId ? '1' : undefined,
-            content: (
-              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-                <section className="workbench-dock-panel">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                    <p className="lab-section-title !mb-0">Runtime Signal</p>
-                  </div>
-                  <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
-                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Proof cards: {result?.noveltyProof?.length || proofCount}</p>
-                </section>
-                {latestClaimId ? (
-                  <section className="workbench-dock-panel">
-                    <div className="mb-2 flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                      <p className="lab-section-title !mb-0">Claim Lineage</p>
-                    </div>
-                    <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <a className="workbench-link-action" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">Pretty view</a>
-                      <a className="workbench-link-action" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">JSON</a>
-                      <button type="button" className="workbench-link-action" onClick={() => void handleCopyClaimId(latestClaimId)}>Copy ID</button>
-                    </div>
-                    {claimCopied ? <p className="mt-2 text-[11px] text-[var(--lab-accent-moss)]">Copied.</p> : null}
-                  </section>
+
+              <div className="feature-panel-shell">
+                <div className="panel-section-head">Historical Runs</div>
+                {historyLoading ? (
+                  <p className="text-sm text-[var(--text-2)]">Loading...</p>
+                ) : history.length === 0 ? (
+                  <p className="text-sm text-[var(--text-3)]">No runs available.</p>
                 ) : (
-                  <div className="workbench-empty-panel">No claim lineage recorded for this run yet.</div>
+                  <div className="space-y-2">
+                    {history.slice(0, 6).map((entry) => (
+                      <button key={entry.id} type="button" className="history-item" onClick={() => void loadHistoricalRun(entry.id)}>
+                        {entry.synthesis_goal || entry.id}
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-            ),
-          },
-          {
-            id: 'evidence',
-            label: 'Evidence',
-            content: (
-              <div className="grid gap-3 lg:grid-cols-2">
-                <section className="workbench-dock-panel">
-                  <div className="mb-2 flex items-center gap-2">
-                    <BookOpen className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                    <p className="lab-section-title !mb-0">Top Prior-Art Overlaps</p>
-                  </div>
-                  {topOverlaps.length === 0 ? (
-                    <div className="workbench-empty-panel">No overlap data yet.</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {topOverlaps.map((item, index) => {
-                        const overlap = Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100);
-                        return (
-                          <div key={`${item.title}-${index}`} className="workbench-source-row">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{item.title}</p>
-                              <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">Similarity-backed prior art overlap.</p>
-                            </div>
-                            <span className="workbench-source-meta">{overlap}%</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </section>
-                <section className="workbench-dock-panel">
-                  <div className="mb-2 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                    <p className="lab-section-title !mb-0">Gate State</p>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-[var(--lab-text-secondary)]">
-                    {result?.noveltyGate?.decision === 'pass' ? <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" /> : <AlertTriangle className="h-4 w-4 text-[var(--lab-accent-earth)]" />}
-                    <span>{result?.noveltyGate?.decision || gatePreview?.decision || 'pending'}</span>
-                  </div>
-                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">
-                    pass={result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0} · blocked={result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0}
-                  </p>
-                </section>
+
+              {error ? <p className="text-sm text-red-700">{error}</p> : null}
+            </div>
+          </div>
+
+          <div className="split-canvas">
+            <div className="canvas-stats">
+              <div className="stat-card">
+                <div className="stat-label">Sources</div>
+                <div className="stat-value">{totalSources}</div>
               </div>
-            ),
-          },
-          {
-            id: 'diagnostics',
-            label: 'Diagnostics',
-            content: (
-              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-                <section className="workbench-dock-panel">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Clock3 className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                    <p className="lab-section-title !mb-0">Historical Runs</p>
-                  </div>
-                  {historyLoading ? (
-                    <p className="text-sm text-[var(--lab-text-secondary)]">Loading...</p>
-                  ) : history.length === 0 ? (
-                    <div className="workbench-empty-panel">No runs available.</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {history.slice(0, 8).map((entry) => (
-                        <button key={entry.id} type="button" className="workbench-command-row w-full text-left" onClick={() => void loadHistoricalRun(entry.id)}>
-                          <div className="min-w-0">
-                            <p className="truncate text-sm text-[var(--lab-text-primary)]">{entry.synthesis_goal || entry.id}</p>
-                            <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{entry.created_at ? new Date(entry.created_at).toLocaleString() : 'Unknown time'}</p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </section>
-                <section className="workbench-dock-panel">
-                  <div className="mb-2 flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                    <p className="lab-section-title !mb-0">Current Telemetry</p>
-                  </div>
-                  <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
-                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Matrix rows: {matrixStats.rows} · high confidence: {matrixStats.highConfidenceRows}</p>
-                  <p className="mt-1 text-xs text-[var(--lab-text-tertiary)]">Novelty proofs: {proofCount} · passing: {passingIdeas} · blocked: {blockedIdeas}</p>
-                </section>
+              <div className="stat-card">
+                <div className="stat-label">Validated Contradictions</div>
+                <div className="stat-value">{matrixStats.highConfidenceRows || contradictionCount}</div>
               </div>
-            ),
-          },
-        ],
-      }}
-      primary={
-        <PrimaryCanvas>
-          <div className="flex h-full flex-col p-4">
-            <div className="mb-4 grid grid-cols-4 gap-3">
-              <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Sources</p>
-                <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{totalSources}</p>
+              <div className="stat-card">
+                <div className="stat-label">Novelty Pass</div>
+                <div className="stat-value amber">{passingIdeas}</div>
               </div>
-              <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Validated Contradictions</p>
-                <p className="text-2xl font-semibold text-[var(--lab-text-primary)]">{matrixStats.highConfidenceRows || contradictionCount}</p>
-              </div>
-              <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Novelty Pass</p>
-                <p className="text-2xl font-semibold text-[var(--lab-accent-moss)]">{passingIdeas}</p>
-              </div>
-              <div className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Blocked Candidates</p>
-                <p className="text-2xl font-semibold text-[var(--lab-accent-earth)]">{blockedIdeas || Math.max(0, proofCount - passingIdeas)}</p>
+              <div className="stat-card">
+                <div className="stat-label">Blocked Candidates</div>
+                <div className="stat-value">{blockedIdeas || Math.max(0, proofCount - passingIdeas)}</div>
               </div>
             </div>
 
-            {(stage === 'processing' || stage === 'stabilizing') ? (
-              <HybridProcessingTimelineV2
-                stages={timelineReceipt?.stages || createInitialTimelineReceipt().stages}
-                latestSignal={latestEvent}
-                startedAt={timelineReceipt?.startedAt}
-                nowIso={timelineNow}
-                passCount={passingIdeas}
-                blockedCount={blockedIdeas || Math.max(0, proofCount - passingIdeas)}
-              />
-            ) : (
-              <div className="lab-scroll-region flex-1">
-                <HybridTimelineSummaryStripV2 receipt={timelineReceipt} gateDecision={result?.noveltyGate?.decision || gatePreview?.decision || null} />
-                <HybridResultPanelV2 result={result} stage={stage} />
-              </div>
-            )}
+            <div className="canvas-body">
+              {(stage === 'processing' || stage === 'stabilizing') ? (
+                <HybridProcessingTimelineV2
+                  stages={timelineReceipt?.stages || createInitialTimelineReceipt().stages}
+                  latestSignal={latestEvent}
+                  startedAt={timelineReceipt?.startedAt}
+                  nowIso={timelineNow}
+                  passCount={passingIdeas}
+                  blockedCount={blockedIdeas || Math.max(0, proofCount - passingIdeas)}
+                />
+              ) : (
+                <div className="w-full">
+                  <HybridTimelineSummaryStripV2 receipt={timelineReceipt} gateDecision={result?.noveltyGate?.decision || gatePreview?.decision || null} />
+                  <HybridResultPanelV2 result={result} stage={stage} />
+                </div>
+              )}
+            </div>
           </div>
-        </PrimaryCanvas>
+        </div>
       }
     />
   );
