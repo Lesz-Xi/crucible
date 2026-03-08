@@ -180,9 +180,9 @@ async function main() {
         '',
         renderBlock(':root', sections.root),
         '',
-        renderBlock('[data-theme="dark"]', sections.dark),
+        renderBlock(':root, .light', sections.light),
         '',
-        renderBlock('[data-theme="light"]', sections.light),
+        renderBlock('.dark', sections.dark),
         '',
       ].join('\n');
     },
