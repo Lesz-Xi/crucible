@@ -138,6 +138,27 @@ async function attachCounterfactualTracesToLegalChains(
   return { chains: tracedChains, traceIds };
 }
 
+async function resolveButForResults(
+  analyzer: ButForAnalyzer,
+  actions: LegalCase['timeline'],
+  harms: LegalCase['harms']
+): Promise<Map<string, ButForAnalysis>> {
+  const batched = await analyzer.analyzeMultiple(actions, harms);
+  if (batched.size > 0 || actions.length === 0 || harms.length === 0) {
+    return batched;
+  }
+
+  const fallbackResults = new Map<string, ButForAnalysis>();
+  for (const action of actions) {
+    for (const harm of harms) {
+      const result = await analyzer.analyze(action, harm);
+      fallbackResults.set(`${action.id}->${harm.id}`, result);
+    }
+  }
+
+  return fallbackResults;
+}
+
 /**
  * Deduplicate causal chains by grouping on Action ID
  * 
@@ -222,7 +243,10 @@ function evaluateLegalCausalGate(
       ...(chain.action.intent ? ['Intent'] : []),
       ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : []),
     ];
-    const knownConfounders = ['Intent', ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : [])];
+    const knownConfounders = [
+      'Intent',
+      ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : []),
+    ];
 
     const gate = evaluateInterventionGate(legalSCM, {
       treatment: 'Action',
@@ -512,7 +536,7 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
 
     // Step 2: Build causal chains (Intent → Action → Harm)
     console.log('[LegalReasoning] Building causal chains');
-    const butForResults = await butForAnalyzer.analyzeMultiple(extraction.timeline, extraction.harms);
+    const butForResults = await resolveButForResults(butForAnalyzer, extraction.timeline, extraction.harms);
     const rawChains: LegalCausalChain[] = [];
 
     for (const action of extraction.timeline) {
@@ -741,8 +765,9 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
         });
         
         // OPTIMIZED: Use batched analysis (single LLM call for all pairs)
-        const butForResults = await butForAnalyzer.analyzeMultiple(
-          extraction.timeline, 
+        const butForResults = await resolveButForResults(
+          butForAnalyzer,
+          extraction.timeline,
           extraction.harms
         );
         
