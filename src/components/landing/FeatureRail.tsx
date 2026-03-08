@@ -51,7 +51,7 @@ const relicApps = [
     subtitle: "Ritual Flow",
     description:
       "Trace intent, action, and harm with gate-aware liability analysis and explicit validation boundaries.",
-    meta: ["evidence rail", "counterfactual review", "audit gates"],
+    meta: ["evidence dock", "counterfactual review", "audit gates"],
     icon: Scale,
     accent: "text-[var(--accent-rust)]",
   },

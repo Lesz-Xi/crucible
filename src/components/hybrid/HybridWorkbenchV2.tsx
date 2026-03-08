@@ -9,10 +9,7 @@ import {
   Clock3,
   TrendingUp,
 } from 'lucide-react';
-import { ContextRail } from '@/components/workbench/ContextRail';
-import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
-import { StatusStrip } from '@/components/workbench/StatusStrip';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { HybridInputPanelV2 } from '@/components/hybrid/HybridInputPanelV2';
 import { HybridResultPanelV2, type HybridResultData } from '@/components/hybrid/HybridResultPanelV2';
@@ -418,20 +415,19 @@ export function HybridWorkbenchV2() {
 
   return (
     <WorkbenchShell
-      className="feature-hybrid"
-      statusStrip={
-        <StatusStrip
-          left={
-            <div className="flex items-center gap-3">
-              <span className="lab-chip-mono">Hybrid Discovery Engine</span>
-              <p className="text-sm text-[var(--lab-text-secondary)]">Ingest → contradict → synthesize → prove novelty</p>
-            </div>
-          }
-          right={<span className="lab-chip-mono">Phase: deterministic synthesis routing</span>}
-        />
+      feature="hybrid"
+      header={
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="lab-chip-mono">Hybrid Discovery Engine</span>
+          <span className="workbench-inline-band">Ingest → contradict → synthesize → prove novelty</span>
+          <span className="workbench-inline-band">Signal: {latestEvent}</span>
+        </div>
       }
-      contextRail={
-        <ContextRail title="Input Rail" subtitle="Source inventory, focus constraints, and execution">
+      drawer={{
+        title: 'Run Setup',
+        subtitle: 'Source inventory, research focus, and execution controls',
+        content: (
+          <div className="space-y-4">
           <HybridInputPanelV2
             files={files}
             companies={companies}
@@ -450,8 +446,155 @@ export function HybridWorkbenchV2() {
           />
 
           {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
-        </ContextRail>
-      }
+          </div>
+        ),
+      }}
+      dockInitiallyOpen={stage === 'results'}
+      dockDefaultTab="diagnostics"
+      dock={{
+        tabs: [
+          {
+            id: 'context',
+            label: 'Context',
+            content: (
+              <div className="grid gap-3 md:grid-cols-3">
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Sources</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{totalSources}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{files.length} files · {companies.length} companies</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Research Focus</p>
+                  <p className="text-sm text-[var(--lab-text-secondary)]">{researchFocus || 'No focus constraint set.'}</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Stage</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{stage}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{latestEvent}</p>
+                </section>
+              </div>
+            ),
+          },
+          {
+            id: 'provenance',
+            label: 'Provenance',
+            badge: latestClaimId ? '1' : undefined,
+            content: (
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+                <section className="workbench-dock-panel">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-[var(--lab-accent-earth)]" />
+                    <p className="lab-section-title !mb-0">Runtime Signal</p>
+                  </div>
+                  <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
+                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Proof cards: {result?.noveltyProof?.length || proofCount}</p>
+                </section>
+                {latestClaimId ? (
+                  <section className="workbench-dock-panel">
+                    <div className="mb-2 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                      <p className="lab-section-title !mb-0">Claim Lineage</p>
+                    </div>
+                    <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <a className="workbench-link-action" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">Pretty view</a>
+                      <a className="workbench-link-action" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">JSON</a>
+                      <button type="button" className="workbench-link-action" onClick={() => void handleCopyClaimId(latestClaimId)}>Copy ID</button>
+                    </div>
+                    {claimCopied ? <p className="mt-2 text-[11px] text-[var(--lab-accent-moss)]">Copied.</p> : null}
+                  </section>
+                ) : (
+                  <div className="workbench-empty-panel">No claim lineage recorded for this run yet.</div>
+                )}
+              </div>
+            ),
+          },
+          {
+            id: 'evidence',
+            label: 'Evidence',
+            content: (
+              <div className="grid gap-3 lg:grid-cols-2">
+                <section className="workbench-dock-panel">
+                  <div className="mb-2 flex items-center gap-2">
+                    <BookOpen className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                    <p className="lab-section-title !mb-0">Top Prior-Art Overlaps</p>
+                  </div>
+                  {topOverlaps.length === 0 ? (
+                    <div className="workbench-empty-panel">No overlap data yet.</div>
+                  ) : (
+                    <div className="space-y-2">
+                      {topOverlaps.map((item, index) => {
+                        const overlap = Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100);
+                        return (
+                          <div key={`${item.title}-${index}`} className="workbench-source-row">
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{item.title}</p>
+                              <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">Similarity-backed prior art overlap.</p>
+                            </div>
+                            <span className="workbench-source-meta">{overlap}%</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+                <section className="workbench-dock-panel">
+                  <div className="mb-2 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                    <p className="lab-section-title !mb-0">Gate State</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-[var(--lab-text-secondary)]">
+                    {result?.noveltyGate?.decision === 'pass' ? <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" /> : <AlertTriangle className="h-4 w-4 text-[var(--lab-accent-earth)]" />}
+                    <span>{result?.noveltyGate?.decision || gatePreview?.decision || 'pending'}</span>
+                  </div>
+                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">
+                    pass={result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0} · blocked={result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0}
+                  </p>
+                </section>
+              </div>
+            ),
+          },
+          {
+            id: 'diagnostics',
+            label: 'Diagnostics',
+            content: (
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                <section className="workbench-dock-panel">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Clock3 className="h-4 w-4 text-[var(--lab-accent-earth)]" />
+                    <p className="lab-section-title !mb-0">Historical Runs</p>
+                  </div>
+                  {historyLoading ? (
+                    <p className="text-sm text-[var(--lab-text-secondary)]">Loading...</p>
+                  ) : history.length === 0 ? (
+                    <div className="workbench-empty-panel">No runs available.</div>
+                  ) : (
+                    <div className="space-y-2">
+                      {history.slice(0, 8).map((entry) => (
+                        <button key={entry.id} type="button" className="workbench-command-row w-full text-left" onClick={() => void loadHistoricalRun(entry.id)}>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm text-[var(--lab-text-primary)]">{entry.synthesis_goal || entry.id}</p>
+                            <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{entry.created_at ? new Date(entry.created_at).toLocaleString() : 'Unknown time'}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </section>
+                <section className="workbench-dock-panel">
+                  <div className="mb-2 flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-[var(--lab-accent-earth)]" />
+                    <p className="lab-section-title !mb-0">Current Telemetry</p>
+                  </div>
+                  <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
+                  <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Matrix rows: {matrixStats.rows} · high confidence: {matrixStats.highConfidenceRows}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-tertiary)]">Novelty proofs: {proofCount} · passing: {passingIdeas} · blocked: {blockedIdeas}</p>
+                </section>
+              </div>
+            ),
+          },
+        ],
+      }}
       primary={
         <PrimaryCanvas>
           <div className="flex h-full flex-col p-4">
@@ -491,98 +634,6 @@ export function HybridWorkbenchV2() {
             )}
           </div>
         </PrimaryCanvas>
-      }
-      evidenceRail={
-        <EvidenceRail title="Evidence Rail" subtitle="Telemetry, prior-art confidence, and run history">
-          <div className="space-y-3">
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Activity className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                <p className="lab-section-title !mb-0">Runtime Signal</p>
-              </div>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{latestEvent}</p>
-              <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">Proof cards: {result?.noveltyProof?.length || proofCount}</p>
-            </div>
-
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Gate State</p>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-[var(--lab-text-secondary)]">
-                {result?.noveltyGate?.decision === 'pass' ? <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" /> : <AlertTriangle className="h-4 w-4 text-[var(--lab-accent-earth)]" />}
-                <span>{result?.noveltyGate?.decision || gatePreview?.decision || 'pending'}</span>
-              </div>
-              <p className="mt-2 text-xs text-[var(--lab-text-tertiary)]">
-                pass={result?.noveltyGate?.passingIdeas || gatePreview?.passingIdeas || 0} · blocked={result?.noveltyGate?.blockedIdeas || gatePreview?.blockedIdeas || 0}
-              </p>
-            </div>
-
-            {latestClaimId ? (
-              <div className="lab-metric-tile">
-                <div className="mb-2 flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                  <p className="lab-section-title !mb-0">Claim Lineage</p>
-                </div>
-                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
-                    Open pretty view
-                  </a>
-                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
-                    Open JSON
-                  </a>
-                  <button
-                    type="button"
-                    className="text-xs text-[var(--lab-text-secondary)] underline"
-                    onClick={() => void handleCopyClaimId(latestClaimId)}
-                  >
-                    Copy Claim ID
-                  </button>
-                </div>
-                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
-              </div>
-            ) : null}
-
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Top Prior-Art Overlaps</p>
-              </div>
-              {topOverlaps.length === 0 ? (
-                <p className="text-sm text-[var(--lab-text-tertiary)]">No overlap data yet.</p>
-              ) : (
-                <ul className="space-y-1 text-xs text-[var(--lab-text-secondary)]">
-                  {topOverlaps.map((item, index) => {
-                    const overlap = Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100);
-                    return <li key={`${item.title}-${index}`}>{item.title} ({overlap}%)</li>;
-                  })}
-                </ul>
-              )}
-            </div>
-
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                <p className="lab-section-title !mb-0">Historical Runs</p>
-              </div>
-              {historyLoading ? (
-                <p className="text-sm text-[var(--lab-text-secondary)]">Loading...</p>
-              ) : history.length === 0 ? (
-                <p className="text-sm text-[var(--lab-text-tertiary)]">No runs available.</p>
-              ) : (
-                <div className="space-y-2">
-                  {history.slice(0, 8).map((entry) => (
-                    <button key={entry.id} type="button" className="lab-card-interactive w-full text-left !p-2.5" onClick={() => void loadHistoricalRun(entry.id)}>
-                      <p className="truncate text-sm text-[var(--lab-text-primary)]">{entry.synthesis_goal || entry.id}</p>
-                      <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]"><Clock3 className="h-3.5 w-3.5" />{entry.created_at ? new Date(entry.created_at).toLocaleString() : 'Unknown time'}</p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </EvidenceRail>
       }
     />
   );

@@ -1,82 +1,135 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
+import { WorkbenchDock } from '@/components/workbench/WorkbenchDock';
+import type {
+  CommandHubItem,
+  WorkbenchDockConfig,
+  WorkbenchDockTab,
+  WorkbenchDrawerConfig,
+} from '@/types/workbench';
 
 export interface WorkbenchShellProps {
-  contextRail: ReactNode;
+  feature: 'chat' | 'hybrid' | 'legal' | 'report' | 'education' | 'lab';
+  header?: ReactNode;
+  navRail?: ReactNode;
   primary: ReactNode;
-  evidenceRail: ReactNode;
-  statusStrip?: ReactNode;
-  className?: string;
-  contextRailOpen?: boolean;
-  evidenceRailOpen?: boolean;
+  drawer?: WorkbenchDrawerConfig;
+  dock?: WorkbenchDockConfig;
+  dockDefaultTab?: WorkbenchDockTab;
+  dockInitiallyOpen?: boolean;
   readingMode?: boolean;
+  commandItems?: CommandHubItem[];
+}
+
+function resolveInitialTab(dock: WorkbenchDockConfig | undefined, preferred: WorkbenchDockTab | undefined): WorkbenchDockTab {
+  if (preferred && dock?.tabs.some((tab) => tab.id === preferred)) {
+    return preferred;
+  }
+  return dock?.tabs[0]?.id || 'evidence';
 }
 
 export function WorkbenchShell({
-  contextRail,
+  feature,
+  header,
+  navRail,
   primary,
-  evidenceRail,
-  statusStrip,
-  className,
-  contextRailOpen = true,
-  evidenceRailOpen = true,
+  drawer,
+  dock,
+  dockDefaultTab,
+  dockInitiallyOpen = false,
   readingMode = false,
+  commandItems,
 }: WorkbenchShellProps) {
-  const [mobileTab, setMobileTab] = useState<'context' | 'primary' | 'evidence'>('primary');
-  const isChatFeature = className?.includes('feature-chat') ?? false;
+  const storageKey = `workbench-preferences:${feature}`;
+  const defaultTab = resolveInitialTab(dock, dockDefaultTab);
+  const [dockOpen, setDockOpen] = useState(dockInitiallyOpen);
+  const [dockHeight, setDockHeight] = useState(260);
+  const [activeDockTab, setActiveDockTab] = useState<WorkbenchDockTab>(defaultTab);
 
-  const desktopGridCols = contextRailOpen && evidenceRailOpen
-    ? '320px minmax(720px,1fr) 360px'
-    : contextRailOpen
-      ? '320px minmax(760px,1fr)'
-      : evidenceRailOpen
-        ? 'minmax(760px,1fr) 360px'
-        : 'minmax(920px,1fr)';
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(storageKey);
+      if (!raw) return;
+      const saved = JSON.parse(raw) as { dockOpen?: boolean; dockHeight?: number; dockTab?: WorkbenchDockTab };
+      if (typeof saved.dockOpen === 'boolean') setDockOpen(saved.dockOpen);
+      if (typeof saved.dockHeight === 'number') setDockHeight(saved.dockHeight);
+      if (saved.dockTab && dock?.tabs.some((tab) => tab.id === saved.dockTab)) {
+        setActiveDockTab(saved.dockTab);
+      }
+    } catch {
+      // Ignore malformed local preferences.
+    }
+  }, [dock?.tabs, storageKey]);
 
-  const tabletGridCols = contextRailOpen ? '300px minmax(0,1fr)' : 'minmax(0,1fr)';
+  useEffect(() => {
+    if (!dock?.tabs.length) return;
+    if (!dock.tabs.some((tab) => tab.id === activeDockTab)) {
+      setActiveDockTab(resolveInitialTab(dock, dockDefaultTab));
+    }
+  }, [activeDockTab, dock, dockDefaultTab]);
 
-  const panelHeight = isChatFeature ? '100svh' : 'calc(100svh - 116px)';
+  useEffect(() => {
+    if (!dockDefaultTab || !dock?.tabs.some((tab) => tab.id === dockDefaultTab)) return;
+    setActiveDockTab(dockDefaultTab);
+  }, [dock, dockDefaultTab]);
+
+  useEffect(() => {
+    if (dockInitiallyOpen) {
+      setDockOpen(true);
+    }
+  }, [dockInitiallyOpen]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          density: 'dense',
+          dockOpen,
+          dockHeight,
+          dockTab: activeDockTab,
+          drawerPinned: false,
+          focusMode: readingMode,
+        }),
+      );
+    } catch {
+      // Ignore storage failures.
+    }
+  }, [activeDockTab, dockHeight, dockOpen, readingMode, storageKey]);
+
+  const dockContent = useMemo(() => {
+    if (!dock?.tabs.length) return null;
+    return (
+      <WorkbenchDock
+        sections={dock.tabs}
+        activeTab={activeDockTab}
+        isOpen={dockOpen}
+        height={dockHeight}
+        onToggleOpen={() => setDockOpen((current) => !current)}
+        onTabChange={setActiveDockTab}
+        onHeightChange={setDockHeight}
+      />
+    );
+  }, [activeDockTab, dock, dockHeight, dockOpen]);
 
   return (
-    <AppDashboardShell readingMode={readingMode}>
-      <div className={cn('lab-shell lg-shell min-h-screen w-full', className)}>
-        {statusStrip}
-
-        <div
-          className={cn(
-            'mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8',
-            isChatFeature ? 'max-w-none pb-0 pt-0 pl-0 pr-0 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0' : 'pb-5 pt-2',
-          )}
-        >
-          <div className={cn('hidden lg:grid', isChatFeature ? 'lg:gap-0' : 'lg:gap-4')} style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-            {evidenceRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
+    <AppDashboardShell
+      feature={feature}
+      header={header}
+      navRail={navRail}
+      drawer={drawer}
+      commandItems={commandItems}
+      readingMode={readingMode}
+    >
+      <div className={cn('lab-shell workbench-surface min-h-screen w-full', `feature-${feature}`)} data-density="dense">
+        <div className="mx-auto flex h-full max-w-[1760px] min-w-0 flex-col px-3 pb-3 pt-3 md:px-5 lg:px-6">
+          <div className="workbench-primary-surface min-h-0 flex-1 overflow-hidden">
+            {primary}
           </div>
-
-          <div className={cn('hidden md:grid lg:hidden', isChatFeature ? 'md:gap-0' : 'md:gap-4')} style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-          </div>
-
-          <div className="md:hidden">
-            <div className={cn('mb-3 grid gap-2', contextRailOpen && evidenceRailOpen ? 'grid-cols-3' : contextRailOpen || evidenceRailOpen ? 'grid-cols-2' : 'grid-cols-1')}>
-              {contextRailOpen ? (
-                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
-              ) : null}
-              <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
-              {evidenceRailOpen ? (
-                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
-              ) : null}
-            </div>
-
-            {contextRailOpen && mobileTab === 'context' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{contextRail}</section> : null}
-            {mobileTab === 'primary' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{primary}</section> : null}
-            {evidenceRailOpen && mobileTab === 'evidence' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{evidenceRail}</section> : null}
-          </div>
+          {dockContent}
         </div>
       </div>
     </AppDashboardShell>

@@ -54,7 +54,7 @@ describe("POST /api/bridge/chat-verified", () => {
     expect(fromMock).toHaveBeenCalledWith("bridge_verification_log");
     expect(insertMock).toHaveBeenCalledTimes(1);
 
-    const insertedRow = insertMock.mock.calls[0][0] as Record<string, unknown>;
+    const insertedRow = (insertMock.mock.calls as unknown[][]).at(0)?.[0] as Record<string, unknown>;
     expect(insertedRow.source).toBe("scm-report");
     expect(insertedRow.verdict).toBe("verified");
     expect(insertedRow.request_id).toBe("req-1");
@@ -98,7 +98,7 @@ describe("POST /api/bridge/chat-verified", () => {
     expect(json).not.toHaveProperty("verificationDecision");
     expect(json).not.toHaveProperty("verificationFailures");
 
-    const insertedRow = insertMock.mock.calls[0][0] as Record<string, unknown>;
+    const insertedRow = (insertMock.mock.calls as unknown[][]).at(0)?.[0] as Record<string, unknown>;
     expect(insertedRow).not.toHaveProperty("causalDepth");
     expect(insertedRow).not.toHaveProperty("verificationDecision");
     expect(insertedRow).not.toHaveProperty("verificationFailures");

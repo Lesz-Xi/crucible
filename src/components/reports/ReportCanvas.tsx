@@ -67,6 +67,13 @@ export function ReportCanvas({ report }: ReportCanvasProps) {
                 </span>
               </div>
               <p className="text-white/90 leading-relaxed mb-4">{hyp.text}</p>
+
+              {report.sources[i] ? (
+                <div className="mb-4 inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.14em] text-white/55">
+                  <Link2 className="w-3 h-3" />
+                  <span className="truncate">{report.sources[i].domain}</span>
+                </div>
+              ) : null}
               
               {hyp.supportingClaimIds && hyp.supportingClaimIds.length > 0 && (
                 <div className="flex items-center gap-2 text-xs text-white/50 pt-3 border-t border-white/10">

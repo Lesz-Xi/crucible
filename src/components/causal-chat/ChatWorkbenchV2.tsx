@@ -4,43 +4,30 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
-  ArrowDown,
-  ArrowRight,
-  ChevronDown,
-  FileText,
   Focus,
   FlaskConical,
   Moon,
-  MessageSquare,
   Microscope,
-  Network,
-  Plus,
   Scale,
-  Send,
   Sun,
   ShieldCheck,
-  Sparkles,
-  StopCircle,
-  Upload,
-  X,
 } from 'lucide-react';
 import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import { CausalGauges } from '@/components/workbench/CausalGauges';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
-import { cn } from '@/lib/utils';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
 import { ThinkingAnimation } from '@/components/causal-chat/ThinkingAnimation';
-import { EvidenceRail } from '@/components/workbench/EvidenceRail';
 import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
 import { ScientificEvidenceList } from '@/components/causal-chat/ScientificEvidenceList';
+import type { CommandHubItem, WorkbenchDockTab } from '@/types/workbench';
 
 interface WorkbenchMessage {
   id: string;
@@ -304,9 +291,9 @@ export function ChatWorkbenchV2() {
   const [claimCopied, setClaimCopied] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
-  const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
   const [focusMode, setFocusMode] = useState(false);
-  const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
+  const selectedQuickPrompt: QuickPromptId = 'growth-drop';
+  const [preferredDockTab, setPreferredDockTab] = useState<WorkbenchDockTab>('evidence');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
   const { resolvedTheme, setTheme } = useTheme();
@@ -352,37 +339,20 @@ export function ChatWorkbenchV2() {
 
 
   useEffect(() => {
-    const savedEvidenceRail = window.localStorage.getItem('chat-v3-evidence-rail');
-    if (savedEvidenceRail === 'closed') setEvidenceRailOpen(false);
-
     const savedFocusMode = window.localStorage.getItem('chat-v3-focus-mode');
     if (savedFocusMode === 'on') {
       setFocusMode(true);
-      setEvidenceRailOpen(false);
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
       const isMetaToggle = (event.metaKey || event.ctrlKey) && !event.altKey;
       if (!isMetaToggle) return;
 
-      if (event.key === ']') {
-        event.preventDefault();
-        setEvidenceRailOpen((current) => {
-          const next = !current;
-          window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
-          return next;
-        });
-      }
-
       if (event.key.toLowerCase() === 'f') {
         event.preventDefault();
         setFocusMode((current) => {
           const next = !current;
           window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
-          if (next) {
-            setEvidenceRailOpen(false);
-            window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
-          }
           return next;
         });
       }
@@ -1075,35 +1045,45 @@ export function ChatWorkbenchV2() {
     }
   }, []);
 
-  const handleQuickPrompt = useCallback((id: string, snippet: string) => {
-    const matched = QUICK_PROMPTS.find((item) => item.id === id);
-    if (matched) setSelectedQuickPrompt(matched.id);
-    setPrompt(snippet);
-  }, []);
-
-  const toggleEvidenceRail = useCallback(() => {
-    setEvidenceRailOpen((current) => {
-      const next = !current;
-      window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
-      if (next) {
-        setFocusMode(false);
-        window.localStorage.setItem('chat-v3-focus-mode', 'off');
-      }
-      return next;
-    });
-  }, []);
-
   const toggleFocusMode = useCallback(() => {
     setFocusMode((current) => {
       const next = !current;
       window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
-      if (next) {
-        setEvidenceRailOpen(false);
-        window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
-      }
       return next;
     });
   }, []);
+
+  const handleSlashCommand = useCallback((id: string) => {
+    if (id === 'scenario') {
+      const selected = QUICK_PROMPTS.find((item) => item.id === selectedQuickPrompt) || QUICK_PROMPTS[0];
+      setOperatorMode('explore');
+      setPrompt(selected.snippet);
+      return;
+    }
+
+    if (id === 'intervene') {
+      setOperatorMode('intervene');
+      setPrompt('I need to simulate an intervention. Here is the scenario: ');
+      return;
+    }
+
+    if (id === 'audit') {
+      setOperatorMode('audit');
+      setPrompt('Verify this claim against the known causal graph: ');
+      return;
+    }
+
+    if (id === 'focus') {
+      toggleFocusMode();
+      setPrompt('');
+      return;
+    }
+
+    if (id === 'theme') {
+      setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+      setPrompt('');
+    }
+  }, [resolvedTheme, selectedQuickPrompt, setTheme, toggleFocusMode]);
 
   const handleAddAttachments = useCallback((files: File[]) => {
     setAttachments((previous) => {
@@ -1129,17 +1109,191 @@ export function ChatWorkbenchV2() {
 
   const domainDisplay = isRealDomain(currentDomain) ? currentDomain : 'unavailable';
   const modelDisplay = isRealModelKey(currentModelKey) ? currentModelKey : 'unavailable';
+  const dockHasContent = groundingSources.length > 0 || factualConfidence !== null || latestClaimId !== null || messages.length > 0;
+  const inlineGroundingSources = groundingSources.slice(0, 3);
+  const chatCommandItems = useMemo<CommandHubItem[]>(() => ([
+    {
+      id: 'chat-focus-mode',
+      label: focusMode ? 'Exit reading mode' : 'Enter reading mode',
+      kind: 'toggle',
+      icon: Focus,
+      keywords: ['focus', 'reading', 'distraction free'],
+      run: () => toggleFocusMode(),
+      featureScope: ['chat'],
+    },
+    {
+      id: 'chat-open-evidence',
+      label: 'Open evidence dock',
+      kind: 'action',
+      icon: Microscope,
+      keywords: ['evidence', 'sources', 'citations'],
+      run: () => setPreferredDockTab('evidence'),
+      featureScope: ['chat'],
+    },
+    {
+      id: 'chat-open-provenance',
+      label: 'Open provenance dock',
+      kind: 'action',
+      icon: ShieldCheck,
+      keywords: ['provenance', 'claims', 'model'],
+      run: () => setPreferredDockTab('provenance'),
+      featureScope: ['chat'],
+    },
+    {
+      id: 'chat-insert-scenario',
+      label: 'Insert scenario prompt',
+      kind: 'action',
+      icon: FlaskConical,
+      keywords: ['scenario', 'prompt', 'template'],
+      run: () => handleSlashCommand('scenario'),
+      featureScope: ['chat'],
+    },
+  ]), [focusMode, handleSlashCommand, toggleFocusMode]);
 
   return (
     <WorkbenchShell
-      className="feature-chat"
-      evidenceRailOpen={evidenceRailOpen}
+      feature="chat"
+      header={
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="lab-chip-mono">Scientific Workbench</span>
+          <span className="workbench-inline-band">{operatorMode === 'explore' ? 'Diagnose' : operatorMode === 'intervene' ? 'Act' : 'Validate'}</span>
+          <span className="workbench-inline-band">Domain: {domainDisplay}</span>
+          <span className="workbench-inline-band">Density: {lastDensity?.label || 'Pending'}</span>
+        </div>
+      }
       readingMode={focusMode}
-      contextRail={<div />}
+      commandItems={chatCommandItems}
+      dockDefaultTab={preferredDockTab}
+      dockInitiallyOpen={dockHasContent}
+      dock={{
+        tabs: [
+          {
+            id: 'evidence',
+            label: 'Evidence',
+            badge: groundingSources.length || undefined,
+            content: (
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1.25fr)_minmax(260px,0.75fr)]">
+                <section className="workbench-dock-panel">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Microscope className="h-4 w-4 text-[var(--lab-accent-earth)]" />
+                    <p className="lab-section-title !mb-0">Grounding Sources</p>
+                  </div>
+                  {groundingSources.length > 0 ? (
+                    <div className="space-y-2">
+                      {groundingSources.slice(0, 8).map((source) => (
+                        <a key={`${source.rank}-${source.link}`} href={source.link} target="_blank" rel="noreferrer" className="workbench-source-row">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">[{source.rank}] {source.title}</p>
+                            <p className="mt-1 line-clamp-2 text-xs text-[var(--lab-text-secondary)]">{source.snippet || source.domain}</p>
+                          </div>
+                          <span className="workbench-source-meta">{source.domain}</span>
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="workbench-empty-panel">No grounded sources linked to this thread yet.</div>
+                  )}
+                </section>
+                <div className="space-y-3">
+                  <ScientificEvidenceList />
+                  {factualConfidence ? (
+                    <section className="workbench-dock-panel">
+                      <p className="lab-section-title !mb-2">Factual Confidence</p>
+                      <p className="text-sm text-[var(--lab-text-primary)]">{factualConfidence.level}</p>
+                      <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{factualConfidence.rationale}</p>
+                    </section>
+                  ) : null}
+                </div>
+              </div>
+            ),
+          },
+          {
+            id: 'context',
+            label: 'Context',
+            content: (
+              <div className="grid gap-3 md:grid-cols-3">
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Operator Mode</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{operatorMode === 'explore' ? 'Diagnose' : operatorMode === 'intervene' ? 'Act' : 'Validate'}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">Current interaction stance for this conversation.</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Active Domain</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{domainDisplay}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">Restored from the latest classified assistant output.</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Alignment Posture</p>
+                  <p className="text-sm text-[var(--lab-text-secondary)]">{alignmentPosture}</p>
+                </section>
+              </div>
+            ),
+          },
+          {
+            id: 'provenance',
+            label: 'Provenance',
+            badge: latestClaimId ? '1' : undefined,
+            content: (
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <section className="workbench-dock-panel">
+                  <CausalGauges density={lastDensity} posture={alignmentPosture} modelKey={modelDisplay} provenanceAvailable={modelDisplay !== 'unavailable'} />
+                </section>
+                <div className="space-y-3">
+                  {latestClaimId ? (
+                    <section className="workbench-dock-panel">
+                      <div className="mb-2 flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+                        <p className="lab-section-title !mb-0">Claim Lineage</p>
+                      </div>
+                      <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <a className="workbench-link-action" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">Pretty view</a>
+                        <a className="workbench-link-action" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">JSON</a>
+                        <button type="button" className="workbench-link-action" onClick={() => void handleCopyClaimId(latestClaimId)}>Copy ID</button>
+                      </div>
+                      {claimCopied ? <p className="mt-2 text-[11px] text-[var(--lab-accent-moss)]">Copied.</p> : null}
+                    </section>
+                  ) : (
+                    <div className="workbench-empty-panel">No claim lineage recorded yet.</div>
+                  )}
+                </div>
+              </div>
+            ),
+          },
+          {
+            id: 'diagnostics',
+            label: 'Diagnostics',
+            content: (
+              <div className="grid gap-3 md:grid-cols-3">
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Fallbacks</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{modelFallbackNotice || 'No model fallback triggered.'}</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Grounding Sync</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{usedGroundingFallback ? 'Fallback reconstruction used' : 'Primary grounding path active'}</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{groundingStatus === 'failed' ? groundingError || 'Grounding failed.' : `Status: ${groundingStatus}`}</p>
+                </section>
+                <section className="workbench-dock-panel">
+                  <p className="lab-section-title !mb-2">Thread Metrics</p>
+                  <p className="text-sm text-[var(--lab-text-primary)]">{messages.length} messages</p>
+                  <p className="mt-1 text-xs text-[var(--lab-text-secondary)]">{attachments.length} pending attachments</p>
+                </section>
+              </div>
+            ),
+          },
+        ],
+      }}
       primary={
         <PrimaryCanvas>
           <div className="flex h-full min-h-0 flex-col">
-            <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
+            <div className="lab-scroll-region flex-1 space-y-4 px-4 pb-3 pt-4 md:px-6">
+              <div className="flex flex-wrap gap-2">
+                <span className="workbench-inline-band">Alignment: {alignmentPosture}</span>
+                <span className="workbench-inline-band">Model: {modelDisplay}</span>
+                <button type="button" className="workbench-inline-band" onClick={() => setPreferredDockTab('provenance')}>Open provenance</button>
+                <button type="button" className="workbench-inline-band" onClick={() => setPreferredDockTab('evidence')}>Open evidence</button>
+              </div>
               {messages.length === 0 ? (
                 <div className="scientific-workbench-main mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="mb-8 text-center">
@@ -1182,7 +1336,7 @@ export function ChatWorkbenchV2() {
                   </div>
                 </div>
               ) : (
-                messages.map((message) => (
+                messages.map((message, index) => (
                   <article
                     key={message.id}
                     className={message.role === 'user' ? 'lab-card-interactive ml-auto max-w-[88%]' : 'lab-card mr-auto max-w-[92%]'}
@@ -1216,6 +1370,15 @@ export function ChatWorkbenchV2() {
                     ) : (
                       <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
                     )}
+                    {message.role === 'assistant' && index === messages.length - 1 && inlineGroundingSources.length > 0 ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {inlineGroundingSources.map((source) => (
+                          <a key={`${source.rank}-${source.link}`} href={source.link} target="_blank" rel="noreferrer" className="workbench-citation-strip">
+                            <span>[{source.rank}] {source.title}</span>
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
                     {message.isStreaming ? (
                       <ThinkingAnimation
                         stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}
@@ -1237,16 +1400,17 @@ export function ChatWorkbenchV2() {
                 isLoading={isLoading}
                 operatorMode={operatorMode}
                 onOperatorModeChange={setOperatorMode}
-                quickPrompts={QUICK_PROMPTS}
-                selectedQuickPromptId={selectedQuickPrompt}
-                onQuickPromptSelect={handleQuickPrompt}
-                evidenceRailOpen={evidenceRailOpen}
-                onToggleEvidenceRail={toggleEvidenceRail}
-                focusMode={focusMode}
-                onToggleFocusMode={toggleFocusMode}
                 attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
                 onAddAttachments={handleAddAttachments}
                 onRemoveAttachment={handleRemoveAttachment}
+                slashCommands={[
+                  { id: 'scenario', label: 'scenario', description: 'Insert the selected research scenario template.' },
+                  { id: 'intervene', label: 'intervene', description: 'Switch to intervention mode and scaffold a do(X)=value prompt.' },
+                  { id: 'audit', label: 'audit', description: 'Switch to counterfactual audit mode.' },
+                  { id: 'focus', label: 'focus', description: 'Toggle reading mode.' },
+                  { id: 'theme', label: 'theme', description: 'Toggle light and dark mode.' },
+                ]}
+                onSlashCommand={handleSlashCommand}
                 placeholder={
                   operatorMode === 'intervene'
                     ? 'Describe the action you want to take, expected impact, and guardrails...'
@@ -1281,119 +1445,14 @@ export function ChatWorkbenchV2() {
             )}
             </div>
             {modelFallbackNotice ? (
-              <div className="px-6 pb-2 text-xs text-[var(--lab-accent-rust)]">
-                ⚠️ Model fallback: {modelFallbackNotice}
+              <div className="px-6 pb-2 text-xs text-[var(--lab-accent-earth)]">
+                Model fallback: {modelFallbackNotice}
               </div>
             ) : null}
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
           </div>
         </PrimaryCanvas>
       }
-      evidenceRail={
-        <EvidenceRail title="Evidence Rail" subtitle="Live causal posture and provenance">
-          <CausalGauges
-            density={lastDensity}
-            posture={alignmentPosture}
-            modelKey={modelDisplay}
-            provenanceAvailable={modelDisplay !== "unavailable"}
-          />
-          
-          <div className="mt-6 space-y-4 border-t border-[var(--lab-border)] pt-6">
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Network className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Active Domain</p>
-              </div>
-              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
-            </div>
-
-            <ScientificEvidenceList />
-
-            {latestClaimId ? (
-              <div className="lab-metric-tile">
-                <div className="mb-2 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                  <p className="lab-section-title !mb-0">Claim Lineage</p>
-                </div>
-                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <a
-                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
-                    href={`/claims/${latestClaimId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open pretty view
-                  </a>
-                  <a
-                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
-                    href={`/api/claims/${latestClaimId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open JSON
-                  </a>
-                  <button
-                    type="button"
-                    className="text-xs text-[var(--lab-text-secondary)] underline"
-                    onClick={() => void handleCopyClaimId(latestClaimId)}
-                  >
-                    Copy Claim ID
-                  </button>
-                </div>
-                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
-              </div>
-            ) : null}
-
-            {(groundingStatus !== 'idle' || groundingSources.length > 0 || factualConfidence) ? (
-              <div className="lab-metric-tile">
-                <div className="mb-2 flex items-center gap-2">
-                  <Network className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                  <p className="lab-section-title !mb-0">Grounding Sources</p>
-                </div>
-                <p className="text-xs text-[var(--lab-text-secondary)]">
-                  {groundingStatus === 'searching' && 'Searching web sources...'}
-                  {groundingStatus === 'ready' && `${groundingSources.length} sources linked.`}
-                  {groundingStatus === 'failed' && (groundingError || 'Verification incomplete.')}
-                  {groundingStatus === 'idle' && 'No factual web-grounding triggered.'}
-                </p>
-                {factualConfidence ? (
-                  <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
-                    Confidence: <span className="font-semibold text-[var(--lab-text-primary)]">{factualConfidence.level}</span>
-                  </p>
-                ) : null}
-                {usedGroundingFallback ? (
-                  <p className="mt-2 inline-flex rounded-full border border-[var(--lab-border)] px-2 py-1 text-[10px] font-mono uppercase tracking-wide text-[var(--lab-text-tertiary)]">
-                    Grounding source sync fallback used
-                  </p>
-                ) : null}
-                {groundingSources.length > 0 ? (
-                  <div className="mt-3 space-y-2">
-                    {groundingSources.slice(0, 5).map((source) => (
-                      <a
-                        key={`${source.rank}-${source.link}`}
-                        href={source.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block rounded-md border border-[var(--lab-border)] p-2 transition hover:bg-[var(--lab-bg-elevated)]"
-                      >
-                        <p className="text-xs font-semibold text-[var(--lab-text-primary)]">[{source.rank}] {source.title}</p>
-                        <p className="mt-1 line-clamp-2 text-[11px] text-[var(--lab-text-secondary)]">{source.snippet || source.domain}</p>
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-
-            <button type="button" className="lab-button-secondary w-full" onClick={resetThread}>
-              <FlaskConical className="h-4 w-4" />
-              Start controlled intervention
-            </button>
-          </div>
-        </EvidenceRail>
-      }
-      contextRailOpen={false}
     />
   );
 }
