@@ -37,7 +37,6 @@ import {
   AlertCircle,
   Download,
   Crown,
-  Shield
 } from "lucide-react";
 import { downloadMarkdown, SynthesisExportData } from "@/lib/services/markdown-export-service";
 import { StreamEvent } from "@/lib/streaming-event-emitter";
@@ -273,64 +272,54 @@ export default function HybridSynthesisPage() {
 
   return (
     <AccessKeyGate>
-      <div className="flex flex-col min-h-screen bg-[#030303] text-neutral-200 font-sans selection:bg-orange-500/30 relative overflow-x-hidden">
-
-      {/* Header */}
-      <header className="border-b border-white/5 bg-[#030303]/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="w-full px-6 lg:px-12 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 relative">
-<img src="/upsclae-logo-new.png" alt="Crucible Logo" className="w-full h-full object-contain drop-shadow-md" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-mono font-bold text-white tracking-wider">
-                    Crucible
-                  </h1>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setHistoryOpen(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-neutral-300 text-sm rounded-lg border border-white/10 hover:border-white/20 transition-all"
-                >
-                  <History className="w-3.5 h-3.5" />
-                  <span>History</span>
-                </button>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-mono font-bold rounded-lg border border-indigo-500/20 uppercase tracking-wider">
-                  <Shield className="w-3 h-3" />
-                  <span>Phase 3: Orthogonality Active</span>
-                </div>
-                {stage === "results" && (
-                  <button
-                    onClick={resetToNew}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 text-sm rounded-lg border border-orange-500/20 transition-all"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>New</span>
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+      {/* ── MASA Page Topbar ── */}
+      <div className="topbar" style={{ justifyContent: "space-between", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-2)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            Dialectical Synthesis
+          </span>
+          <span style={{ padding: "2px 7px", borderRadius: 3, background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid var(--accent-border-2)", fontFamily: "var(--font-mono)", fontSize: 8.5, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+            Phase 3 · Orthogonality
+          </span>
         </div>
-      </header>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button
+            onClick={() => setHistoryOpen(true)}
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", background: "var(--bg-3)", border: "1px solid var(--border)", color: "var(--text-2)", fontSize: 12, borderRadius: "var(--radius-sm)", cursor: "pointer", fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+            className="transitional"
+          >
+            <History style={{ width: 12, height: 12 }} />
+            History
+          </button>
+          {stage === "results" && (
+            <button
+              onClick={resetToNew}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", background: "var(--accent-dim)", border: "1px solid var(--accent-border-2)", color: "var(--accent)", fontSize: 12, borderRadius: "var(--radius-sm)", cursor: "pointer", fontFamily: "var(--font-mono)", letterSpacing: "0.04em" }}
+              className="transitional"
+            >
+              <Plus style={{ width: 12, height: 12 }} />
+              New
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Feature Scroll Area ── */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "24px 32px" }}>
 
       {/* Main Content */}
-      <main className={`mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 transition-all duration-700 ${
+      <div className={`mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-700 ${
         stage === "processing" ? "w-full max-w-[98vw]" : "max-w-[1600px]"
       }`}>
         {/* Input Stage */}
         {stage === "input" && (
           <div className="w-full max-w-[1536px] mx-auto space-y-8 px-8">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-mono font-bold tracking-tight text-white">
+              <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 28, color: "var(--text-1)", letterSpacing: "-0.01em" }}>
                 Dialectical Synthesis Engine
               </h2>
-              <p className="text-neutral-400 max-w-xl mx-auto leading-relaxed">
-                Upload research papers and analyze companies. The Sovereign Mastermind will detect 
+              <p style={{ color: "var(--text-3)", maxWidth: 480, margin: "0 auto", lineHeight: 1.65 }}>
+                Upload research papers and analyze companies. The engine will detect 
                 contradictions between sources and generate novel ideas that bridge opposing claims.
               </p>
             </div>
@@ -810,6 +799,8 @@ export default function HybridSynthesisPage() {
           </div>
         )}
 
+      </div>{/* inner content */}
+
         {/* History Sidebar Drawer */}
         {historyOpen && (
           <div 
@@ -818,61 +809,63 @@ export default function HybridSynthesisPage() {
           >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             <div 
-              className="relative w-full max-w-md h-full bg-[#0A0A0A] border-l border-white/10 shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
+              className="relative w-full max-w-md h-full border-l shadow-2xl animate-in slide-in-from-right duration-300 flex flex-col"
+              style={{ background: "var(--bg-2)", borderColor: "var(--border)" }}
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-800 flex items-center justify-between">
-                <h2 className="text-xl font-bold text-neutral-200 flex items-center gap-2 font-mono uppercase tracking-wider">
-                  <History className="w-5 h-5 text-orange-500" />
+              <div className="p-6 border-b flex items-center justify-between" style={{ borderColor: "var(--border)" }}>
+                <h2 style={{ fontFamily: "var(--font-mono)", fontSize: 13, fontWeight: 600, color: "var(--text-1)", display: "flex", alignItems: "center", gap: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  <History style={{ width: 14, height: 14, color: "var(--accent)" }} />
                   Synthesis History
                 </h2>
                 <button 
                   onClick={() => setHistoryOpen(false)}
-                  className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                  style={{ padding: 6, borderRadius: "var(--radius-sm)", background: "transparent", border: "none", cursor: "pointer", color: "var(--text-3)" }}
                   aria-label="Close history"
                 >
-                  <Plus className="w-5 h-5 text-gray-500 rotate-45" />
+                  <Plus style={{ width: 16, height: 16, transform: "rotate(45deg)" }} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto p-4" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {isHistoryLoading ? (
                   <div className="flex flex-col items-center justify-center h-40 gap-3">
-                    <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
-                    <p className="text-sm text-gray-500 font-medium">Retrieving archives...</p>
+                    <Loader2 style={{ width: 24, height: 24, color: "var(--accent)" }} className="animate-spin" />
+                    <p className="label-mono" style={{ color: "var(--text-3)" }}>Retrieving archives...</p>
                   </div>
                 ) : historicalRuns.length === 0 ? (
-                  <p className="text-center text-gray-500 py-20">No archives found.</p>
+                  <p style={{ textAlign: "center", color: "var(--text-4)", padding: "60px 0", fontFamily: "var(--font-mono)", fontSize: 11 }}>No archives found.</p>
                 ) : (
                   historicalRuns.map((run) => (
                     <button
                       key={run.id}
                       onClick={() => loadHistoricalRun(run.id)}
-                      className="w-full p-4 rounded-xl bg-white/5 border border-white/5 hover:border-orange-500/50 hover:bg-white/10 transition-all text-left group"
+                      style={{ width: "100%", padding: 14, borderRadius: "var(--radius-sm)", background: "var(--bg-3)", border: "1px solid var(--border)", cursor: "pointer", textAlign: "left" }}
+                      className="transitional"
                     >
-                      <div className="flex items-start justify-between mb-2">
-                         <span className="text-xs text-neutral-500 flex items-center gap-1 font-mono">
-                           <Clock className="w-3 h-3" />
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
+                         <span className="label-mono" style={{ color: "var(--text-4)", display: "flex", alignItems: "center", gap: 4 }}>
+                           <Clock style={{ width: 10, height: 10 }} />
                            {new Date(run.created_at).toLocaleDateString()}
                          </span>
-                         <span className="px-1.5 py-0.5 text-[10px] bg-orange-500/10 text-orange-400 rounded border border-orange-500/20 font-mono tracking-wider">
+                         <span style={{ padding: "2px 6px", fontSize: 9, background: "var(--accent-dim)", color: "var(--accent)", borderRadius: 3, border: "1px solid var(--accent-border-2)", fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}>
                            {run.total_ideas} Ideas
                          </span>
                       </div>
-                      <h4 className="text-sm font-semibold text-neutral-200 group-hover:text-white transition-colors line-clamp-2 mb-2 font-mono">
+                      <h4 style={{ fontSize: 12, fontWeight: 600, color: "var(--text-1)", fontFamily: "var(--font-mono)", letterSpacing: "0.02em", marginBottom: 4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                         {run.sources?.[0]?.name || "Untitled Run"}
                         {run.sources?.length > 1 && ` + ${run.sources.length - 1} more`}
                       </h4>
-                      <div className="flex items-center justify-between text-[10px] text-neutral-500">
-                         <span className="uppercase tracking-wider font-bold">{run.status}</span>
-                         <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform text-orange-500" />
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                         <span className="label-mono" style={{ color: "var(--text-4)" }}>{run.status}</span>
+                         <ChevronRight style={{ width: 11, height: 11, color: "var(--accent)" }} />
                       </div>
                     </button>
                   ))
                 )}
               </div>
               
-              <div className="p-6 border-t border-white/5 bg-[#0A0A0A]">
+              <div style={{ padding: "16px 24px", borderTop: "1px solid var(--border)" }}>
                 <TacticalButton
                   onClick={resetToNew}
                   icon={Plus}
@@ -883,8 +876,7 @@ export default function HybridSynthesisPage() {
             </div>
           </div>
         )}
-      </main>
-    </div>
-  </AccessKeyGate>
+      </div>{/* scroll area */}
+    </AccessKeyGate>
 );
 }
