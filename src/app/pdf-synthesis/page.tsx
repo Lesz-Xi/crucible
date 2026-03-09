@@ -12,10 +12,26 @@ export default function PDFSynthesisRedirect() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center space-y-4">
-      <Loader2 className="w-8 h-8 text-orange-500 animate-spin" />
-      <p className="text-neutral-400 font-mono text-sm uppercase tracking-wider">
-        Redirecting to Unified Synthesis Engine...
+    <div
+      style={{
+        minHeight: "100%",
+        background: "var(--bg)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 16,
+      }}
+    >
+      <Loader2
+        style={{ width: 28, height: 28, color: "var(--accent)" }}
+        className="animate-spin"
+      />
+      <p
+        className="label-mono"
+        style={{ color: "var(--text-3)" }}
+      >
+        Loading Protocol Ingestion Engine...
       </p>
     </div>
   );

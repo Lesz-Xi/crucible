@@ -1,26 +1,123 @@
 @import "tailwindcss";
+@import "./generated-tokens.css";
 
+/* ─── Global Resets ─────────────────────────────────────── */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ─── Custom Scrollbar (3px) ─────────────────────────────── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
+
+/* ─── Selective Transitions — never on * ─────────────────── */
+.transitional {
+  transition:
+    background-color 0.2s var(--ease),
+    border-color 0.2s var(--ease),
+    color 0.15s var(--ease);
+}
+
+/* ─── Easing Tokens (not in tokens.json) ────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ease:        cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:    cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Three-Zone Shell ───────────────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr var(--rail-w);
+  height: 100vh;
+  overflow: hidden;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F0EFF4;
-    --foreground: #171717;
-  }
+/* ─── Sidebar Zone ───────────────────────────────────────── */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Main Zone ──────────────────────────────────────────── */
+.main {
+  position: relative;
+  overflow: hidden auto;
+  background: var(--bg);
+}
+
+/* Ambient amber glow — radial from top center */
+.main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 90% 55% at 50% -5%,
+    rgba(200, 150, 90, 0.055) 0%,
+    transparent 70%
+  );
+}
+
+/* Light mode glow */
+:root:not(.dark) .main::before {
+  background: radial-gradient(
+    ellipse 90% 55% at 50% -5%,
+    rgba(160, 105, 58, 0.04) 0%,
+    transparent 70%
+  );
+}
+
+/* ─── Evidence Rail Zone ──────────────────────────────────── */
+.rail {
+  display: flex;
+  flex-direction: column;
+  background: var(--rail-bg);
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* ─── Topbar ──────────────────────────────────────────────── */
+.topbar {
+  display: flex;
+  align-items: center;
+  height: var(--topbar-h);
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ─── Mono Label Utility ──────────────────────────────────── */
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ─── Live Pulse Indicator ────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.live-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s ease-in-out infinite;
 }

@@ -61,27 +61,25 @@ export default function EpistemicPage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-[#F0EFF4] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+      <div style={{ minHeight: "100%", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Loader2 style={{ width: 32, height: 32, color: "var(--accent)" }} className="animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-[#F0EFF4] text-gray-900 flex flex-col overflow-hidden">
+    <div style={{ height: "100%", background: "var(--bg)", color: "var(--text-1)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* Top Bar */}
-      <header className="h-14 border-b border-gray-200 flex items-center px-6 lg:px-12 justify-between bg-white/80 backdrop-blur">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ArrowLeft className="w-5 h-5 text-gray-500 hover:text-gray-900" />
+      <header style={{ height: "var(--topbar-h)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", padding: "0 24px", justifyContent: "space-between", background: "var(--bg-2)", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <Link href="/" style={{ padding: 8, borderRadius: "var(--radius-sm)", color: "var(--text-3)", display: "flex" }} className="transitional">
+            <ArrowLeft style={{ width: 16, height: 16 }} />
           </Link>
           <div>
-            <h1 className="font-semibold text-sm text-gray-800 flex items-center gap-2">
-              <div className="w-12 h-12 relative">
-                <img src="/upsclae-logo-new.png" alt="Crucible Logo" className="w-full h-full object-contain drop-shadow-md" />
-              </div>
+            <h1 style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 500, color: "var(--text-2)", display: "flex", alignItems: "center", gap: 8, letterSpacing: "0.08em", textTransform: "uppercase" }}>
               Epistemic Audit
-              <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 text-[10px] uppercase tracking-wider font-bold">
+              <span style={{ padding: "2px 7px", borderRadius: 3, background: "var(--accent-dim)", color: "var(--accent)", border: "1px solid var(--accent-border-2)", fontFamily: "var(--font-mono)", fontSize: 8.5, letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
+                Active
               </span>
             </h1>
           </div>
@@ -89,10 +87,10 @@ export default function EpistemicPage() {
       </header>
 
       {/* 3-Pane Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         
         {/* Left: Chat (Negotiation) */}
-        <div className="w-[350px] border-r border-gray-200 flex flex-col bg-[#F0EFF4]">
+        <div style={{ width: 350, borderRight: "1px solid var(--border)", display: "flex", flexDirection: "column", background: "var(--sidebar-bg)", flexShrink: 0 }}>
            <ChatInterface 
              messages={session.messages} 
              onSendMessage={handleSendMessage}
@@ -101,26 +99,26 @@ export default function EpistemicPage() {
         </div>
 
         {/* Center: Execution Stream (Glass Box) */}
-        <div className="flex-1 flex flex-col bg-white relative shadow-sm">
-          <div className="absolute top-4 right-4 z-10">
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "var(--bg)", position: "relative" }}>
+          <div style={{ position: "absolute", top: 14, right: 14, zIndex: 10 }}>
              {/* Mock controls for demo */}
              {session.status === "generating_conjecture" && (
                <button 
                  onClick={() => handleSendMessage("Approved. Proceed.")}
-                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm rounded-lg shadow-lg shadow-emerald-900/20 font-medium transition-all"
+                 style={{ padding: "7px 14px", background: "var(--green-dim)", border: "1px solid var(--green-border)", color: "var(--green)", fontSize: 12, fontFamily: "var(--font-mono)", borderRadius: "var(--radius-sm)", cursor: "pointer", letterSpacing: "0.06em", textTransform: "uppercase" }}
                >
                  Approve Conjecture
                </button>
              )}
           </div>
           
-          <div className="flex-1 overflow-y-auto">
+          <div style={{ flex: 1, overflowY: "auto" }}>
              {session.plan.length === 0 ? (
-               <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-4">
-                 <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center">
-                   <Loader2 className="w-8 h-8 text-gray-300" />
+               <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                 <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bg-3)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                   <Loader2 style={{ width: 28, height: 28, color: "var(--text-4)" }} className="animate-spin" />
                  </div>
-                 <p className="text-sm font-medium">Waiting for conjecture generation...</p>
+                 <p style={{ fontSize: 12, color: "var(--text-3)", fontFamily: "var(--font-mono)", letterSpacing: "0.08em", textTransform: "uppercase" }}>Awaiting conjecture generation...</p>
                </div>
              ) : (
                <ExecutionStream plan={session.plan} currentStepIndex={session.currentStepIndex} />
@@ -128,28 +126,28 @@ export default function EpistemicPage() {
           </div>
         </div>
 
-        {/* Right: Session Explorer (VFS) */}
-        <div className="w-[300px] border-l border-gray-200 bg-gray-50/50 flex flex-col">
-          <div className="p-3 border-b border-gray-200 text-xs font-bold text-gray-600 uppercase tracking-widest">
-            Session Directory
+        {/* Right: Session Explorer (Evidence Rail) */}
+        <div style={{ width: 300, borderLeft: "1px solid var(--border)", background: "var(--rail-bg)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+          <div className="topbar" style={{ borderBottom: "1px solid var(--border)" }}>
+            <span className="label-mono" style={{ color: "var(--text-4)" }}>Session Directory</span>
           </div>
-          <div className="flex-1 overflow-y-auto p-2">
+          <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
             {session.fileSystem.map((file) => (
               <FileTreeItem key={file.path} file={file} onSelect={setSelectedFile} />
             ))}
           </div>
           
           {/* Mini File Preview */}
-          <div className="h-[200px] border-t border-gray-200 bg-white p-4 text-xs font-mono overflow-auto shadow-inner">
+          <div style={{ height: 200, borderTop: "1px solid var(--border)", background: "var(--bg-2)", padding: 14, fontFamily: "var(--font-mono)", fontSize: 11, overflowY: "auto" }}>
              {selectedFile ? (
-               <div className="space-y-2">
-                 <div className="font-bold text-gray-900">{selectedFile.name}</div>
-                 <div className="text-gray-600 whitespace-pre-wrap leading-relaxed">
+               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                 <div style={{ fontWeight: 600, color: "var(--text-1)" }}>{selectedFile.name}</div>
+                 <div style={{ color: "var(--text-3)", whiteSpace: "pre-wrap", lineHeight: 1.65 }}>
                    {selectedFile.content || "(Binary Content or Empty)"}
                  </div>
                </div>
              ) : (
-               <span className="text-gray-400 italic">Select a file to preview...</span>
+               <span style={{ color: "var(--text-4)", fontStyle: "italic" }}>Select a file to preview...</span>
              )}
           </div>
         </div>
