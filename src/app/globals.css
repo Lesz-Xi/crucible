@@ -109,6 +109,25 @@ html, body {
   text-transform: uppercase;
 }
 
+/* ─── Sidebar Nav Link ────────────────────────────────────── */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  margin: 0 6px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: background-color 0.2s var(--ease), color 0.15s var(--ease);
+}
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+
 /* ─── Live Pulse Indicator ────────────────────────────────── */
 @keyframes pulse {
   0%, 100% { opacity: 1; }

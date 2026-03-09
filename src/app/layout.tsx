@@ -91,31 +91,7 @@ export default function RootLayout({
                 <a
                   key={item.href}
                   href={item.href}
-                  className="transitional"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "7px 10px",
-                    margin: "0 6px",
-                    borderRadius: "var(--radius-sm)",
-                    fontSize: 13,
-                    color: "var(--text-2)",
-                    textDecoration: "none",
-                    position: "relative",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background =
-                      "var(--bg-hover)";
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--text-1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLAnchorElement).style.background =
-                      "transparent";
-                    (e.currentTarget as HTMLAnchorElement).style.color =
-                      "var(--text-2)";
-                  }}
+                  className="nav-link"
                 >
                   {item.label}
                 </a>
