@@ -307,323 +307,291 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
   }, [recentThreads]);
 
   return (
-    <div className={cn('app-feature-shell lg-shell w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]', isChatRoute ? 'h-screen' : 'min-h-screen')}>
+    <div className={cn('app-feature-shell', isChatRoute ? 'h-screen' : 'min-h-screen')}>
       <div className={cn('flex', isChatRoute ? 'h-screen' : 'min-h-screen')}>
         {!readingMode ? (
         <aside className={cn(
-          'glass-sidebar lg-sidebar relative border-r border-[var(--lab-border)] transition-all duration-200',
-          collapsed ? 'w-[74px]' : 'w-[286px]',
+          'sidebar relative transition-all duration-200',
+          collapsed ? 'collapsed' : '',
         )}>
-          <div className="flex h-full flex-col p-3">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              {collapsed ? null : (
-                <div className="flex items-center gap-2 px-1">
-                  <FlaskConical className="h-4 w-4 text-[var(--lab-accent-clay,#C8965A)]" />
-                  <p
-                    className="text-[var(--lab-text-primary)] tracking-wide"
-                    style={{
-                      fontFamily: 'var(--font-instrument-serif, "Instrument Serif", Georgia, serif)',
-                      fontSize: '15px',
-                      fontWeight: 400,
-                      letterSpacing: '0.01em',
-                    }}
-                  >
-                    Bio-Lab Notebook
-                  </p>
-                </div>
-              )}
-              <div className="flex items-center gap-1">
-                <button type="button" className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" aria-label="Search">
-                  <Search className="h-4 w-4" />
-                </button>
-                <button type="button" className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opacity-60 hover:opacity-100" onClick={toggleSidebar} aria-label="Toggle sidebar">
-                  {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
+          <div className="sidebar-header">
+            {collapsed ? null : (
+              <>
+                <div className="wordmark-icon"></div>
+                <span style={{ fontFamily: 'var(--font-instrument-serif)', fontSize: '15px', fontWeight: 400, letterSpacing: '0.01em' }}>Synthetic Mind</span>
+              </>
+            )}
+            <button type="button" className="action-button !bg-transparent !border-none !p-1.5 opacity-60 hover:opacity-100 ml-auto" onClick={toggleSidebar} aria-label="Toggle sidebar">
+              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </button>
+          </div>
 
-            <nav className={cn("flex flex-col gap-1.5", collapsed ? "items-center" : "")}>
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      "lab-nav-pill lg-control w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
-                      active ? "!bg-[var(--lab-active-bg)] !border-[var(--lab-border)]" : "hover:!bg-[var(--lab-hover-bg)]"
-                    )}
-                    data-active={active ? 'true' : 'false'}
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {collapsed ? null : (
-                      <span
-                        style={{
-                          fontFamily: 'var(--font-instrument-serif, "Instrument Serif", Georgia, serif)',
-                          fontSize: '13.5px',
-                          fontWeight: 400,
-                          letterSpacing: '0.02em',
-                        }}
-                      >
-                        {item.label}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-
-              {/* Relics Menu - Moved to align with other nav items */}
-              <div className="relative">
-                <button
-                  type="button"
-                  className={cn(
-                    "lab-nav-pill w-full justify-start !rounded-lg !border-transparent !bg-transparent px-3 py-2",
-                    relicsOpen ? "!bg-[var(--lab-active-bg)] !border-[var(--lab-border)]" : "hover:!bg-[var(--lab-hover-bg)]"
-                  )}
-                  onClick={() => setRelicsOpen(!relicsOpen)}
-                  title={collapsed ? "Relics" : undefined}
+          <div className="sidebar-content">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn("nav-item", active ? "active" : "")}
+                  title={collapsed ? item.label : undefined}
                 >
-                  <Menu className="h-4 w-4" />
-                  {collapsed ? null : <span className="font-serif tracking-wide">Relics</span>}
-                  {!collapsed && <ChevronDown className={cn("h-3 w-3 transition-transform", relicsOpen ? "rotate-180" : "")} />}
-                </button>
+                  <Icon className="h-4 w-4" />
+                  {collapsed ? null : <span style={{ fontFamily: 'var(--font-instrument-serif)', fontSize: '13.5px', fontWeight: 400, letterSpacing: '0.02em' }}>{item.label}</span>}
+                </Link>
+              );
+            })}
 
-                {relicsOpen && (
-                  <div className={cn(
-                    "absolute z-[60] mt-2 min-w-[160px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-1.5 shadow-xl lg-dropdown",
-                    collapsed ? "left-full ml-2 top-0" : "left-0 top-full"
-                  )}>
-                    {RELICS_ITEMS.map((sub) => {
-                      const SubIcon = sub.icon;
-                      const subActive = pathname === sub.href;
-                      return (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          onClick={() => setRelicsOpen(false)}
-                          className="lg-control flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-[var(--lab-text-secondary)] transition-colors hover:bg-[var(--lab-bg-elevated)] hover:text-[var(--lab-text-primary)]"
-                          data-active={subActive}
-                        >
-                          <SubIcon className="h-4 w-4" />
-                          <span>{sub.label}</span>
-                        </Link>
-                      );
-                    })}
-                  </div>
+            {/* Relics Menu */}
+            <div className="relative w-full">
+              <button
+                type="button"
+                className={cn(
+                  "nav-item w-full",
+                  relicsOpen ? "active" : ""
                 )}
-              </div>
-            </nav>
+                onClick={() => setRelicsOpen(!relicsOpen)}
+                title={collapsed ? "Relics" : undefined}
+              >
+                <Menu className="h-4 w-4" />
+                {collapsed ? null : <span className="font-serif tracking-wide text-left flex-1" style={{ fontSize: '13.5px' }}>Relics</span>}
+                {!collapsed && <ChevronDown className={cn("h-4 w-4 transition-transform", relicsOpen ? "rotate-180" : "")} />}
+              </button>
 
-            {isChatRoute && !collapsed ? (
-              <div className="mt-6 flex-1 overflow-hidden">
-                <div className="px-1 space-y-1">
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-[var(--lab-hover-bg)]"
-                      onClick={() => {
-                        if (activeFolderId) createFolderFile(activeFolderId);
-                        router.push('/chat?new=1');
-                        window.dispatchEvent(new Event('newChat'));
-                      }}
-                    >
-                      <Plus className="h-4 w-4" />
-                      <span className="font-serif tracking-wide">New chat</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="lab-nav-pill lg-control w-full justify-center !rounded-lg !border-[var(--lab-border)] !bg-transparent px-3 py-2 hover:!bg-[var(--lab-hover-bg)]"
-                      onClick={() => {
-                        createFolder();
-                      }}
-                      title="New Folder"
-                    >
-                      <FolderPlus className="h-4 w-4" />
-                      <span className="font-serif tracking-wide">New folder</span>
-                    </button>
-                  </div>
-
-                  <div className="pt-4 pb-1">
-                    <p className="px-3 lab-section-title text-[10px] opacity-70">Folders</p>
-                  </div>
-                </div>
-
-                <div className="lab-scroll-region-minimal h-[68vh] space-y-0.5 pt-1 overflow-y-auto pr-1">
-                  {/* Folders Section */}
-                  {folders.map(folder => (
-                    <div key={folder.id} className="group mb-1">
-                      <div
-                        className={cn(
-                          "flex w-full items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium transition-colors",
-                          activeFolderId === folder.id
-                            ? "bg-[var(--lab-bg-secondary)] text-[var(--lab-text-primary)]"
-                            : "text-[var(--lab-text-secondary)] hover:bg-[var(--lab-bg-secondary)] hover:text-[var(--lab-text-primary)]",
-                        )}
-                      >
-                        <button
-                          type="button"
-                          className="lg-control flex min-w-0 flex-1 items-center gap-2 rounded-md text-left"
-                          onClick={() => toggleFolder(folder.id)}
-                        >
-                          {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                          <span className="truncate">{folder.name}</span>
-                        </button>
-                        <span className="text-[10px] opacity-50">{folderFiles[folder.id]?.length ?? 0}</span>
-                        <button
-                          type="button"
-                          className="lg-control rounded p-1 opacity-0 transition-opacity hover:bg-[var(--lab-hover-bg)] group-hover:opacity-100"
-                          onClick={() => removeFolder(folder.id)}
-                          aria-label="Delete folder"
-                          title="Delete folder"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                      
-                      {folderOpenState[folder.id] && (
-                        <div className="ml-2 pl-2 border-l border-[var(--lab-border)] mt-0.5 space-y-0.5">
-                          <button
-                            type="button"
-                            className="lg-control flex items-center gap-1.5 px-2 py-1 text-[10px] font-medium opacity-70 hover:opacity-100 hover:bg-[var(--lab-bg-secondary)] rounded-md transition-colors"
-                            onClick={() => createFolderFile(folder.id, undefined, true)}
-                            title="Create file in folder"
-                          >
-                            <Plus className="h-3 w-3" />
-                            <span>New file</span>
-                          </button>
-                          {(folderFiles[folder.id] ?? []).length === 0 ? (
-                            <div className="px-2 py-1 text-[10px] opacity-40 italic">Empty folder</div>
-                          ) : (
-                            (folderFiles[folder.id] ?? []).map((file) => (
-                              <div key={file.id} className="group lg-control flex items-center gap-1.5 rounded-md px-2 py-1 text-[11px] text-[var(--lab-text-secondary)]">
-                                <FileText className="h-3.5 w-3.5 opacity-70" />
-                                <span className="truncate" title={file.name}>{file.name}</span>
-                                <button
-                                  type="button"
-                                  className="lg-control ml-auto rounded p-1 opacity-0 transition-opacity hover:bg-[var(--lab-hover-bg)] group-hover:opacity-100"
-                                  onClick={() => removeFolderFile(folder.id, file.id)}
-                                  aria-label="Remove file"
-                                  title="Remove file"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Threads List */}
-                  <div className="pt-3 pb-1">
-                    <p className="px-3 lab-section-title text-[10px] opacity-70">History</p>
-                  </div>
-                  {filteredThreads.slice(0, 48).map((session) => {
-                    const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
+              {relicsOpen && (
+                <div className={cn(
+                  "absolute z-[60] mt-2 min-w-[160px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-1.5 shadow-[var(--lab-shadow-lift)]",
+                  collapsed ? "left-full ml-2 top-0" : "left-0 top-full"
+                )}>
+                  {RELICS_ITEMS.map((sub) => {
+                    const SubIcon = sub.icon;
+                    const subActive = pathname === sub.href;
                     return (
-                      <div 
-                        key={session.id} 
+                      <Link
+                        key={sub.href}
+                        href={sub.href}
+                        onClick={() => setRelicsOpen(false)}
                         className={cn(
-                          "group sidebar-history-item relative",
-                          isActive && "sidebar-history-item-active"
+                          "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] transition-colors",
+                          subActive ? "bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)]" : "text-[var(--lab-text-secondary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]"
                         )}
                       >
-                        <button
-                          type="button"
-                          className="flex-1 truncate text-left text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] transition-colors"
-                          style={{ fontSize: '12.5px', lineHeight: '1.4' }}
-                          onClick={() => openThread(session.id)}
-                          title={session.title || 'Untitled thread'}
-                        >
-                          {session.title || 'Untitled thread'}
-                        </button>
-                        <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                          <button
-                            type="button"
-                            className="lg-control rounded-md p-1 hover:bg-[var(--lab-hover-bg)]"
-                            onClick={() => void handleDeleteThread(session.id)}
-                            aria-label="Delete thread"
-                            title="Delete thread"
-                            disabled={deletingThreadId === session.id}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </div>
+                        <SubIcon className="h-4 w-4" />
+                        <span className="font-serif tracking-wide">{sub.label}</span>
+                      </Link>
                     );
                   })}
-                  {recentThreads.length === 0 ? <div className="px-3 py-4 text-xs italic opacity-40">No threads yet.</div> : null}
+                </div>
+              )}
+            </div>
+
+            {isChatRoute && !collapsed ? (
+              <div className="mt-4 flex flex-col flex-1 min-h-0">
+                <div className="action-buttons pr-1">
+                  <button
+                    className="btn btn-outline flex-1"
+                    onClick={() => {
+                      if (activeFolderId) createFolderFile(activeFolderId);
+                      router.push('/chat?new=1');
+                      window.dispatchEvent(new Event('newChat'));
+                    }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    <span className="font-serif tracking-wide">New chat</span>
+                  </button>
+                  <button
+                    className="btn btn-outline"
+                    style={{ width: '40px', padding: 0, justifyContent: 'center' }}
+                    onClick={() => createFolder()}
+                    title="New Folder"
+                  >
+                    <FolderPlus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto mt-4 pr-1 lab-scroll-region space-y-2 pb-2">
+                  <div>
+                    <div className="sidebar-section-label">Folders</div>
+                    {folders.map(folder => (
+                      <div key={folder.id} className="group mb-1">
+                        <div
+                          className={cn(
+                            "flex w-full items-center gap-1.5 rounded-xl px-2.5 py-2 text-[13px] font-medium transition-colors",
+                            activeFolderId === folder.id
+                              ? "bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)]"
+                              : "text-[var(--lab-text-secondary)] hover:bg-[var(--lab-hover-bg)] hover:text-[var(--lab-text-primary)]",
+                          )}
+                        >
+                          <button
+                            type="button"
+                            className="flex min-w-0 flex-1 items-center gap-2 text-left bg-transparent border-none p-0 focus:outline-none"
+                            onClick={() => toggleFolder(folder.id)}
+                          >
+                            {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5 text-[var(--lab-accent-clay)]" /> : <FolderMinus className="h-3.5 w-3.5 opacity-60" />}
+                            <span className="truncate flex-1">{folder.name}</span>
+                          </button>
+                          <span className="text-[10px] opacity-50 font-mono">{folderFiles[folder.id]?.length ?? 0}</span>
+                          <button
+                            type="button"
+                            className="rounded leading-none opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 bg-transparent border-none p-1 focus:outline-none text-[var(--lab-text-secondary)] hover:text-red-400"
+                            onClick={() => removeFolder(folder.id)}
+                            aria-label="Delete folder"
+                            title="Delete folder"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                        
+                        {folderOpenState[folder.id] && (
+                          <div className="ml-3 pl-2 border-l border-[var(--lab-border)] mt-1 mb-2 space-y-0.5">
+                            <button
+                              type="button"
+                              className="flex items-center gap-1.5 px-2 py-1.5 w-full text-left text-[11px] font-medium opacity-60 hover:opacity-100 hover:bg-[var(--lab-hover-bg)] rounded-md transition-colors border-none bg-transparent"
+                              onClick={() => createFolderFile(folder.id, undefined, true)}
+                              title="Create file in folder"
+                            >
+                              <Plus className="h-3 w-3" />
+                              <span className="font-serif tracking-wide">New file</span>
+                            </button>
+                            {(folderFiles[folder.id] ?? []).length === 0 ? (
+                              <div className="px-2 py-1 text-[11px] opacity-40 italic font-serif">Empty folder</div>
+                            ) : (
+                              (folderFiles[folder.id] ?? []).map((file) => (
+                                <div key={file.id} className="group flex items-center gap-1.5 rounded-md px-2 py-1.5 text-[12px] text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] hover:bg-[var(--lab-hover-bg)]">
+                                  <FileText className="h-3.5 w-3.5 opacity-50 shrink-0" />
+                                  <span className="truncate flex-1 font-serif tracking-wide" title={file.name}>{file.name}</span>
+                                  <button
+                                    type="button"
+                                    className="rounded leading-none opacity-0 transition-opacity hover:opacity-100 group-hover:opacity-100 border-none bg-transparent p-1 focus:outline-none hover:text-[var(--lab-error)]"
+                                    onClick={() => removeFolderFile(folder.id, file.id)}
+                                    aria-label="Remove file"
+                                    title="Remove file"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4">
+                    <div className="sidebar-section-label">History</div>
+                    {filteredThreads.slice(0, 48).map((session) => {
+                      const isActive = pathname === '/chat' && new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('sessionId') === session.id;
+                      return (
+                        <div 
+                          key={session.id} 
+                          className={cn(
+                            "history-item group relative",
+                            isActive && "active"
+                          )}
+                        >
+                          <button
+                            type="button"
+                            className="flex-1 truncate text-left border-none bg-transparent p-0 flex items-center h-full w-full"
+                            onClick={() => openThread(session.id)}
+                            title={session.title || 'Untitled thread'}
+                          >
+                            <span className="truncate font-serif tracking-wide text-[12.5px] leading-relaxed">{session.title || 'Untitled thread'}</span>
+                          </button>
+                          <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 absolute right-1 top-1/2 -translate-y-1/2 bg-[var(--lab-bg)] pl-2">
+                            <button
+                              type="button"
+                              className="rounded p-1 text-[var(--lab-text-secondary)] hover:text-[var(--lab-error)] hover:bg-[var(--lab-hover-bg)] border-none bg-transparent flex items-center justify-center transition-colors"
+                              onClick={(e) => { e.stopPropagation(); void handleDeleteThread(session.id); }}
+                              aria-label="Delete thread"
+                              title="Delete thread"
+                              disabled={deletingThreadId === session.id}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {recentThreads.length === 0 ? <div className="history-item"><span className="opacity-40 italic font-serif">No threads yet.</span></div> : null}
+                  </div>
                 </div>
               </div>
             ) : null}
 
-            <div className={cn('mt-auto space-y-2', isChatRoute && !collapsed ? 'pt-8' : '')}>
-              {isChatRoute && !collapsed ? <div className="lab-divider-gradient mb-2" /> : null}
+            <div style={{ flex: 1 }}></div>
+
+            {isChatRoute && !collapsed ? <div className="lab-divider-gradient mb-2 mt-4" /> : null}
+
+            <button
+              type="button"
+              className="nav-item w-full"
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              title={collapsed ? 'Toggle theme' : undefined}
+            >
+              {mounted && resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {collapsed ? null : <span className="font-serif tracking-wide text-left flex-1" style={{ fontSize: '13.5px' }}>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
+            </button>
+
+            <Link href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="nav-item w-full" title={collapsed ? 'Documentation' : undefined}>
+              <BookOpen className="h-4 w-4" />
+              {collapsed ? null : <span className="font-serif tracking-wide text-left flex-1" style={{ fontSize: '13.5px' }}>Documentation</span>}
+            </Link>
+
+            <SidebarModelSettings collapsed={collapsed} />
+
+            <div className="relative w-full">
               <button
                 type="button"
-                className="lab-nav-pill lg-control w-full"
-                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                title={collapsed ? 'Toggle theme' : undefined}
+                className="nav-item w-full"
+                onClick={() => setAccountOpen((v) => !v)}
+                title={collapsed ? 'Account' : undefined}
               >
-                {mounted && resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                {collapsed ? null : <span className="font-serif tracking-wide">{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>}
+                <div className="avatar">
+                  {initials}
+                </div>
+                {collapsed ? null : (
+                  <span className="min-w-0 flex-1 truncate text-left font-serif tracking-wide text-[13.5px]">
+                    {userEmail || 'Account'}
+                  </span>
+                )}
+                {collapsed ? null : <ChevronDown className="h-4 w-4" />}
               </button>
 
-              <Link href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="lab-nav-pill lg-control" title={collapsed ? 'Documentation' : undefined}>
-                <BookOpen className="h-4 w-4" />
-                {collapsed ? null : <span className="font-serif tracking-wide">Documentation</span>}
-              </Link>
-
-              <SidebarModelSettings collapsed={collapsed} />
-
-              <div className="relative">
-                <button
-                  type="button"
-                  className="lab-nav-pill lg-control w-full"
-                  onClick={() => setAccountOpen((v) => !v)}
-                  title={collapsed ? 'Account' : undefined}
-                >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-[var(--lab-border)] text-[10px] font-semibold">
-                    {initials}
-                  </span>
-                  {collapsed ? null : (
-                    <span className="min-w-0 flex-1 truncate text-left font-serif tracking-wide">
-                      {userEmail || 'Account'}
-                    </span>
-                  )}
-                  {collapsed ? null : <ChevronDown className="h-4 w-4" />}
-                </button>
-
-                {accountOpen ? (
-                  <div className={cn(
-                    'absolute z-50 min-w-[190px] rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-xl lg-dropdown',
-                    collapsed ? 'bottom-12 left-0' : 'bottom-12 right-0',
-                  )}>
-                    <div className="mb-1 px-2 py-1 text-xs text-[var(--lab-text-tertiary)]">Signed in</div>
-                    <div className="mb-2 truncate px-2 text-xs text-[var(--lab-text-secondary)]">{userEmail || 'Anonymous session'}</div>
-                    <button
-                      type="button"
-                      className="lab-nav-pill lg-control w-full"
-                      onClick={() => {
-                        setAccountOpen(false);
-                        router.push('/chat');
-                      }}
-                    >
-                      <UserCircle2 className="h-4 w-4" />
-                      <span className="font-serif tracking-wide">Workspace</span>
-                    </button>
-                    <button type="button" className="lab-nav-pill lg-control mt-1 w-full" onClick={() => void handleSignOut()}>
-                      <LogOut className="h-4 w-4" />
-                      <span className="font-serif tracking-wide">Sign out</span>
-                    </button>
+              {accountOpen && (
+                <div className={cn(
+                  'absolute z-50 min-w-[200px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] backdrop-blur-xl p-2 shadow-[var(--lab-shadow-lift)]',
+                  collapsed ? 'bottom-12 left-0' : 'bottom-12 right-0',
+                )}>
+                  <div className="mb-1 px-3 py-2">
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--lab-text-tertiary)] mb-0.5">Signed in</div>
+                    <div className="truncate text-[13.5px] font-serif text-[var(--lab-text-primary)]">{userEmail || 'Anonymous session'}</div>
                   </div>
-                ) : null}
-              </div>
+                  <div className="lab-divider-gradient my-1" />
+                  <button
+                    type="button"
+                    className="nav-item w-full !px-3 !py-2 !gap-3 !h-auto"
+                    onClick={() => {
+                      setAccountOpen(false);
+                      router.push('/chat');
+                    }}
+                  >
+                    <UserCircle2 className="h-4 w-4 opacity-70" />
+                    <span className="font-serif tracking-wide flex-1 text-left" style={{ fontSize: '13.5px' }}>Workspace</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    className="nav-item w-full !px-3 !py-2 !gap-3 !h-auto text-[var(--lab-error)] hover:!bg-[var(--lab-error)]/10" 
+                    onClick={() => void handleSignOut()}
+                  >
+                    <LogOut className="h-4 w-4 opacity-70" />
+                    <span className="font-serif tracking-wide flex-1 text-left" style={{ fontSize: '13.5px' }}>Sign out</span>
+                  </button>
+                </div>
+              )}
             </div>
+
           </div>
         </aside>
         ) : null}

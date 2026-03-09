@@ -79,18 +79,18 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
   const activeProvider = AI_CONFIG.providers[localConfig.provider as AIProviderId];
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative w-full" ref={ref}>
       <button
         type="button"
         className={cn(
-            "lab-nav-pill lg-control w-full",
-            isOpen && 'bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)] font-medium'
+            "nav-item w-full",
+            isOpen && 'active'
         )}
         onClick={() => setIsOpen((v) => !v)}
         title={collapsed ? 'Model Settings' : undefined}
       >
         <Cpu className="h-4 w-4" />
-        {collapsed ? null : <span className="font-serif tracking-wide">Model Settings</span>}
+        {collapsed ? null : <span className="font-serif tracking-wide text-left flex-1" style={{ fontSize: '13.5px' }}>Model Settings</span>}
       </button>
 
       <AnimatePresence>

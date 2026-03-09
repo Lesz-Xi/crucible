@@ -52,14 +52,14 @@ export function WorkbenchShell({
           )}
         >
           <div className={cn('hidden lg:grid', isChatFeature ? 'lg:gap-0' : 'lg:gap-4')} style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-            {evidenceRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
+            {contextRailOpen ? <aside className={cn('sidebar lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'main lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
+            {evidenceRailOpen ? <aside className={cn('rail lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
           </div>
 
           <div className={cn('hidden md:grid lg:hidden', isChatFeature ? 'md:gap-0' : 'md:gap-4')} style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
+            {contextRailOpen ? <aside className={cn('sidebar lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
+            <main className={cn(isChatFeature ? 'main lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
           </div>
 
           <div className="md:hidden">

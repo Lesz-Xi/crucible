@@ -1138,20 +1138,19 @@ export function ChatWorkbenchV2() {
       contextRail={<div />}
       primary={
         <PrimaryCanvas>
-          <div className="flex h-full min-h-0 flex-col">
-            <div className="lab-scroll-region flex-1 space-y-4 px-6 pb-3 pt-5">
+          <div className="chat-viewport">
+            <div className="chat-container">
               {messages.length === 0 ? (
-                <div className="scientific-workbench-main mx-auto max-w-4xl w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="mb-8 text-center">
-                    <h1 className="font-serif text-3xl font-medium tracking-tight text-[var(--lab-text-primary)] mb-2">
-                      Scientific Workbench
-                    </h1>
-                    <p className="text-[var(--lab-text-secondary)]">
+                <div className="mx-auto w-full max-w-[900px] flex flex-col my-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="workbench-headline text-center mb-12">
+                    <div className="workbench-eyebrow">Synthesis Engine</div>
+                    <h1>Scientific <em>Workbench</em></h1>
+                    <p className="mt-4">
                       Select a research protocol to begin your inquiry.
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
                     <ProtocolCard
                       title="Causal Discovery"
                       description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
@@ -1225,9 +1224,7 @@ export function ChatWorkbenchV2() {
                   </article>
                 ))
               )}
-            </div>
-
-            <div className="mt-auto">
+            </div>            <div className="input-area mt-auto">
             {!focusMode ? (
               <ChatComposerV2
                 value={prompt}
@@ -1279,13 +1276,15 @@ export function ChatWorkbenchV2() {
                 </div>
               </div>
             )}
-            </div>
+            
             {modelFallbackNotice ? (
               <div className="px-6 pb-2 text-xs text-[var(--lab-accent-rust)]">
                 ⚠️ Model fallback: {modelFallbackNotice}
               </div>
             ) : null}
             {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
+            
+            </div>
           </div>
         </PrimaryCanvas>
       }
