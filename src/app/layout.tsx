@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { 
+  Search, PanelRight, MessageSquare, Atom, FileText, 
+  Plus, FolderPlus, Sun, Moon, Settings, ChevronDown, 
+  Paperclip, Activity, Zap, File
+} from "lucide-react";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Crucible — Automated Scientist",
+  title: "Bio-Lab Notebook",
   description:
     "A causal research workbench for contradiction-driven synthesis, novelty proofing, and scientific governance.",
 };
@@ -33,6 +38,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // We determine light/dark mode later or let it be light by default.
+  // We'll leave out `.dark` for now, or just let CSS variables handle it.
   return (
     <html
       lang="en"
@@ -42,81 +49,119 @@ export default function RootLayout({
         <div className="shell">
           {/* ── Sidebar ── */}
           <nav className="sidebar" aria-label="Primary navigation">
-            {/* Wordmark */}
-            <div className="topbar">
-              <div
-                style={{
-                  width: 24, height: 24,
-                  borderRadius: "var(--radius-sm)",
-                  background: "var(--accent-dim)",
-                  border: "1px solid var(--accent-border)",
-                  color: "var(--accent)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ width: 13, height: 13 }}>
-                  <path d="M4 2.5C4 2.5 3 5 5 7c2 2 1 4.5 1 4.5" strokeLinecap="round"/>
-                  <path d="M7.5 2.5C7.5 2.5 6.5 5 8.5 7c2 2 1 4.5 1 4.5" strokeLinecap="round"/>
-                </svg>
+            {/* Wordmark & Quick Actions */}
+            <div className="topbar" style={{ justifyContent: "space-between" }}>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <div style={{ color: "#D4A96C" }}>
+                  <svg fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" style={{ width: 18, height: 18 }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                  </svg>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", fontFamily: "var(--font-mono)", fontSize: "10px", fontWeight: "bold", letterSpacing: "0.15em", lineHeight: "1.2", color: "var(--text-1)", textTransform: "uppercase" }}>
+                  <span>Bio-Lab</span>
+                  <span>Notebook</span>
+                </div>
               </div>
-              <span style={{ fontFamily: "var(--font-serif)", fontSize: 14, color: "var(--text-1)", letterSpacing: "0.01em" }}>
-                Crucible
-              </span>
+              <div style={{ display: "flex", gap: "12px", color: "var(--text-3)" }}>
+                <Search size={14} style={{ cursor: "pointer" }} />
+                <PanelRight size={14} style={{ cursor: "pointer" }} />
+              </div>
             </div>
 
-            {/* Nav items */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
-              <p className="label-mono" style={{ color: "var(--text-4)", padding: "14px 18px 5px" }}>
-                Protocols
-              </p>
-              {[
-                { href: "/",              label: "Scientific Workbench" },
-                { href: "/hybrid",        label: "Hybrid Synthesis" },
-                { href: "/epistemic",     label: "Epistemic Analysis" },
-                { href: "/pdf-synthesis", label: "Protocol Ingestion" },
-              ].map((item) => (
-                <a key={item.href} href={item.href} className="nav-link">
-                  {item.label}
+            <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+              {/* Main Nav */}
+              <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                <a href="/" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", borderRadius: "6px", background: "var(--bg-3)", color: "var(--text-1)", fontSize: "13px", fontWeight: 500, textDecoration: "none" }}>
+                  <MessageSquare size={16} />
+                  Chat
                 </a>
-              ))}
+                <a href="/hybrid" className="nav-link" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", borderRadius: "6px", color: "var(--text-2)", fontSize: "13px", textDecoration: "none" }}>
+                  <Atom size={16} />
+                  Hybrid
+                </a>
+                <div className="nav-link" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px", borderRadius: "6px", color: "var(--text-2)", fontSize: "13px", cursor: "pointer" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <FileText size={16} />
+                    Relics
+                  </div>
+                  <ChevronDown size={14} />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ padding: "0 14px 16px", display: "flex", gap: "8px" }}>
+                <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", padding: "6px 0", background: "var(--bg-1)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--text-2)", fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer" }}>
+                  <Plus size={12} /> New chat
+                </button>
+                <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", padding: "6px 0", background: "var(--bg-1)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--text-2)", fontSize: "11px", fontFamily: "var(--font-mono)", cursor: "pointer" }}>
+                  <FolderPlus size={12} /> New folder
+                </button>
+              </div>
+
+              {/* Folders & History */}
+              <div style={{ padding: "0 14px 12px" }}>
+                <p className="label-mono" style={{ color: "var(--text-4)", padding: "0 4px 8px" }}>Folders</p>
+                {/* Empty folders for now */}
+              </div>
+              <div style={{ padding: "0 14px", flex: 1 }}>
+                <p className="label-mono" style={{ color: "var(--text-4)", padding: "0 4px 8px" }}>History</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                  {[
+                    "# From Persia to the Modern M...",
+                    "Why do you think your system ...",
+                    "Prompt (Nuanced, evidence-fir...",
+                    "Prompt (Nuanced, evidence-fir...",
+                    "Prompt (Nuanced, evidence-fir...",
+                    "Do a web search on what is Op...",
+                    "Do you have Causal architecture?",
+                    "What would happen if AGI wer...",
+                  ].map((item, i) => (
+                    <div key={i} style={{ padding: "6px 8px", fontSize: "12px", color: "var(--text-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", cursor: "pointer", borderRadius: "4px" }} className="nav-link">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Bottom actions */}
-            <div style={{ padding: "8px 0", borderTop: "1px solid var(--border)" }}>
-              {[
-                { label: "Dark mode" },
-                { label: "Documentation" },
-                { label: "Model Settings" },
-              ].map((item) => (
-                <div key={item.label} className="nav-link" style={{ cursor: "pointer" }}>
-                  {item.label}
-                </div>
-              ))}
+            <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: "2px" }}>
+              <div className="nav-link" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "6px", color: "var(--text-2)", fontSize: "12px", cursor: "pointer" }}>
+                <Sun size={14} /> Dark mode
+              </div>
+              <div className="nav-link" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "6px", color: "var(--text-2)", fontSize: "12px", cursor: "pointer" }}>
+                <FileText size={14} /> Documentation
+              </div>
+              <div className="nav-link" style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 12px", borderRadius: "6px", color: "var(--text-2)", fontSize: "12px", cursor: "pointer" }}>
+                <Settings size={14} /> Model Settings
+              </div>
             </div>
 
             {/* User row */}
-            <div className="topbar" style={{ borderTop: "1px solid var(--border)", borderBottom: "none" }}>
-              <div
-                style={{
-                  width: 22, height: 22, borderRadius: "50%",
-                  background: "var(--accent-dim)",
-                  border: "1px solid var(--accent-border)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "var(--font-mono)", fontSize: 8.5, color: "var(--accent)",
-                }}
-              >
-                WU
+            <div className="topbar" style={{ borderTop: "1px solid var(--border)", borderBottom: "none", cursor: "pointer", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{
+                    width: 20, height: 20, borderRadius: "50%",
+                    background: "var(--accent-dim)",
+                    border: "1px solid var(--accent-border)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontFamily: "var(--font-mono)", fontSize: "8px", color: "var(--accent)",
+                  }}
+                >
+                  CO
+                </div>
+                <span style={{ fontSize: "12px", color: "var(--text-2)" }}>
+                  codewithafar@gmail.com
+                </span>
               </div>
-              <span style={{ fontSize: 12, color: "var(--text-2)" }}>
-                wuweism.com
-              </span>
+              <ChevronDown size={14} style={{ color: "var(--text-3)" }} />
             </div>
           </nav>
 
           {/* ── Main Content ── */}
-          <main className="main" style={{ position: "relative" }}>
-            <div style={{ position: "relative", zIndex: 1 }}>
+          <main className="main" style={{ position: "relative", display: "flex", flexDirection: "column" }}>
+            <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column" }}>
               {children}
             </div>
           </main>
@@ -124,16 +169,13 @@ export default function RootLayout({
           {/* ── Evidence Rail ── */}
           <aside className="rail" aria-label="Evidence rail">
             {/* Rail header */}
-            <div className="rail-header">
-              <div className="rail-indicator live" />
-              <span className="label-mono" style={{ color: "var(--text-3)" }}>
+            <div className="rail-header" style={{ padding: "14px 18px", borderBottom: "none" }}>
+              <span className="label-mono" style={{ color: "var(--text-2)", fontSize: "10px" }}>
                 Evidence Rail
               </span>
             </div>
-
-            {/* Sub-label */}
-            <div style={{ padding: "8px 14px 0", borderBottom: "1px solid var(--border)" }}>
-              <p style={{ fontSize: 11, color: "var(--text-3)", paddingBottom: 10 }}>
+            <div style={{ padding: "0 18px 14px", borderBottom: "1px solid var(--border)" }}>
+              <p style={{ fontSize: "12px", color: "var(--text-3)" }}>
                 Live causal posture and provenance
               </p>
             </div>
@@ -141,17 +183,14 @@ export default function RootLayout({
             {/* Rail body */}
             <div style={{ flex: 1, overflowY: "auto" }}>
 
-              {/* ── Causal Density — L1/L2/L3 pill tabs ── */}
+              {/* ── Causal Density ── */}
               <div className="rail-section">
                 <div className="rail-section-head">
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.5 }}>
-                    <circle cx="5" cy="5" r="3.5"/>
-                    <path d="M5 2.5V5l1.5 1" strokeLinecap="round"/>
-                  </svg>
+                  <Activity size={14} style={{ opacity: 0.5 }} />
                   Causal Density
                 </div>
                 {/* L1/L2/L3 Pill-Tab Strip */}
-                <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
                   {[
                     { id: "L1", name: "Association" },
                     { id: "L2", name: "Intervention" },
@@ -160,24 +199,24 @@ export default function RootLayout({
                     <div
                       key={rung.id}
                       style={{
-                        flex: 1, textAlign: "center", padding: "7px 6px",
+                        flex: 1, textAlign: "center", padding: "12px 6px",
                         borderRadius: "var(--radius-sm)",
-                        background: i === 1 ? "var(--bg-2)" : "var(--bg-3)",
-                        border: `1px solid ${i === 1 ? "var(--border-2)" : "var(--border)"}`,
-                        cursor: "pointer",
+                        background: "var(--bg-1)",
+                        border: "1px solid var(--border)",
+                        opacity: 0.5,
                       }}
                     >
-                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 600, color: i === 1 ? "var(--text-1)" : "var(--text-3)", letterSpacing: "0.04em" }}>
+                      <div style={{ fontSize: 16, fontWeight: 500, color: "var(--text-1)", marginBottom: 2 }}>
                         {rung.id}
                       </div>
-                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--text-4)", letterSpacing: "0.04em", marginTop: 1 }}>
+                      <div style={{ fontSize: 9, color: "var(--text-3)" }}>
                         {rung.name}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="rung-status-line">
-                  <strong>Active rung: unavailable</strong>{" "}
+                <div className="rung-status-line" style={{ color: "var(--text-3)", fontSize: "12px" }}>
+                  Active rung: <strong>unavailable</strong><br/>
                   Awaiting scored output
                 </div>
               </div>
@@ -188,7 +227,7 @@ export default function RootLayout({
                   <span className="status-dot green" />
                   Alignment Posture
                 </div>
-                <div className="rail-info-card green">
+                <div className="rail-info-card green" style={{ fontSize: "12px", background: "rgba(78, 158, 122, 0.1)", border: "1px solid rgba(78, 158, 122, 0.2)", color: "var(--text-2)", padding: "16px" }}>
                   No unaudited intervention claims without identifiability gates.
                 </div>
               </div>
@@ -199,9 +238,9 @@ export default function RootLayout({
                   <span className="status-dot idle" />
                   Model Provenance
                 </div>
-                <div className="unavail">
-                  <strong>unavailable</strong>
-                  No verified model provenance was emitted for this run.
+                <div className="unavail" style={{ fontSize: "12px" }}>
+                  <strong>unavailable</strong><br/>
+                  <span style={{ color: "var(--text-3)" }}>No verified model provenance was emitted for this run.</span>
                 </div>
               </div>
 
@@ -211,33 +250,34 @@ export default function RootLayout({
                   <span className="status-dot idle" />
                   Active Domain
                 </div>
-                <div className="unavail">unavailable</div>
+                <div className="unavail" style={{ fontSize: "12px" }}>unavailable</div>
               </div>
 
               {/* ── Scientific Evidence ── */}
               <div className="rail-section" style={{ borderBottom: "none" }}>
                 <div className="rail-section-head">
-                  <span className="status-dot idle" />
+                  <FileText size={14} style={{ opacity: 0.5 }} />
                   Scientific Evidence
                 </div>
-                {[
-                  { name: "AI-Alignment-Failure.pdf",    meta: "15 days ago" },
-                  { name: "Disagreement-AI-Alignment.pdf", meta: "22 days ago" },
-                  { name: "Anomaly-Detection.pdf",       meta: "29 days ago" },
-                ].map((f) => (
-                  <div key={f.name} className="evidence-file">
-                    <div className="file-icon">
-                      <svg width="11" height="11" viewBox="0 0 12 14" fill="none" stroke="currentColor" strokeWidth="1.4">
-                        <rect x="1" y="1" width="10" height="12" rx="1.5"/>
-                        <path d="M3.5 5h5M3.5 7.5h5M3.5 10h3" strokeLinecap="round"/>
-                      </svg>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px" }}>
+                  {[
+                    { name: "AI-Alignment-Failure.pdf",    meta: "54", time: "14 days ago" },
+                    { name: "Disagreement-AI-Alignment.pdf", meta: "58", time: "21 days ago" },
+                    { name: "Anomaly-Detection.pdf",       meta: "151", time: "22 days ago" },
+                  ].map((f) => (
+                    <div key={f.name} style={{ display: "flex", gap: "10px", padding: "12px", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", background: "var(--bg-1)" }}>
+                      <File size={16} style={{ color: "var(--text-3)", marginTop: "2px", flexShrink: 0 }} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: "12px", color: "var(--text-1)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</div>
+                        <div style={{ fontSize: "10px", color: "var(--text-4)", marginTop: "4px", display: "flex", gap: "6px", alignItems: "center" }}>
+                          <File size={10} /> {f.meta}
+                          <span style={{ color: "transparent" }}>.</span>
+                          {f.time}
+                        </div>
+                      </div>
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                      <div className="file-name">{f.name}</div>
-                      <div className="file-meta">{f.meta}</div>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
             </div>
