@@ -28,6 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://wu-weism.com"),
   title: "Bio-Lab Notebook",
   description:
     "A causal research workbench for contradiction-driven synthesis, novelty proofing, and scientific governance.",
