@@ -318,7 +318,6 @@ Confidence should be 0.0-1.0 based on how well the source supports the axiom.`;
   }
 }
 
-/**
- * Singleton instance for convenience.
- */
-export const axiomCompressionService = new AxiomCompressionService();
+// Do not instantiate this service at module scope. Some route modules are
+// evaluated during build, and missing runtime credentials must degrade
+// gracefully instead of crashing prerender/build analysis.

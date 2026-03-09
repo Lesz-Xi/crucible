@@ -12,16 +12,20 @@ interface ProtocolCardProps {
   tag?: string;
 }
 
-export function ProtocolCard({ title, description, icon: Icon, onClick, variant = 'default', tag = 'PROTOCOL' }: ProtocolCardProps) {
+export function ProtocolCard({ title, description, icon: Icon, onClick, variant = 'default', tag = '' }: ProtocolCardProps) {
   return (
     <button
       onClick={onClick}
       className={cn("protocol-card w-full text-left", variant === 'featured' && "selected")}
     >
       <div className="card-icon"><Icon size={16} /></div>
-      <div className="card-tag">{tag}</div>
-      <div style={{ color: 'var(--text-1)', fontSize: '14px', fontWeight: 500, marginBottom: '6px' }}>{title}</div>
-      <div style={{ color: 'var(--text-2)', fontSize: '12px', lineHeight: 1.5 }}>{description}</div>
+      {tag ? <div className="card-tag">{tag}</div> : null}
+      <h3>{title}</h3>
+      <p>{description}</p>
+      <div className="card-footer">
+        <span />
+        <span className="card-arrow">→</span>
+      </div>
     </button>
   );
 }

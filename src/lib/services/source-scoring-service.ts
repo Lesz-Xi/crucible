@@ -60,7 +60,11 @@ export function computeRecencyScore(publishedAt?: string): number {
     const published = new Date(publishedAt).getTime();
     if (Number.isNaN(published)) return UNKNOWN_RECENCY_SCORE;
 
-    const daysOld = (Date.now() - published) / (1000 * 60 * 60 * 24);
+    // Score recency at UTC day granularity so repeated calls with the same
+    // input stay deterministic within a run instead of drifting by milliseconds.
+    const nowDay = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    const publishedDay = Math.floor(published / (1000 * 60 * 60 * 24));
+    const daysOld = nowDay - publishedDay;
     return Math.max(0, Math.min(1, 1 - daysOld / RECENCY_DECAY_DAYS));
 }
 

@@ -1,8 +1,7 @@
 'use client';
 
 import { useRef, useState, type ChangeEvent } from 'react';
-import { ChevronDown, Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, Square } from 'lucide-react';
-import { LiquidSegmentedControl } from '@/components/ui/liquid-segmented-control';
+import { Eye, EyeOff, Focus, FlaskConical, Loader2, Paperclip, Send, Square } from 'lucide-react';
 
 interface QuickPromptOption {
   id: string;
@@ -71,14 +70,20 @@ export function ChatComposerV2({
     event.currentTarget.value = '';
   };
 
-  const modeLabel: Record<'explore' | 'intervene' | 'audit', string> = {
-    explore: 'Diagnose',
-    intervene: 'Act',
-    audit: 'Validate',
+  const cycleMode = () => {
+    if (operatorMode === 'explore') {
+      onOperatorModeChange('intervene');
+      return;
+    }
+    if (operatorMode === 'intervene') {
+      onOperatorModeChange('audit');
+      return;
+    }
+    onOperatorModeChange('explore');
   };
 
   return (
-    <div className="lab-card !rounded-t-none border-0 !bg-transparent px-6 pb-0 pt-1 shadow-none">
+    <div className="input-composer">
       <textarea
         className="lab-textarea min-h-[92px]"
         placeholder={placeholder || 'State your hypothesis, mechanism, and desired intervention...'}
@@ -93,8 +98,8 @@ export function ChatComposerV2({
         }}
       />
 
-      <div className="mt-2 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+      <div className="input-toolbar">
+        <div className="flex items-center gap-2 flex-wrap">
           <input
             ref={fileInputRef}
             type="file"
@@ -105,37 +110,34 @@ export function ChatComposerV2({
           />
           <button
             type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            className="input-chip"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isLoading}
           >
-            <Paperclip className="h-3.5 w-3.5" />
+            <Paperclip className="h-3 w-3" />
             Attach
           </button>
 
-          <div className="w-[220px]">
-            <LiquidSegmentedControl
-              ariaLabel="Response mode"
-              value={operatorMode}
-              onChange={(mode) => onOperatorModeChange(mode)}
-              options={[
-                { value: 'explore', label: modeLabel.explore },
-                { value: 'intervene', label: modeLabel.intervene },
-                { value: 'audit', label: modeLabel.audit },
-              ]}
-            />
-          </div>
+          <button
+            type="button"
+            className="input-chip"
+            onClick={cycleMode}
+            title={`Current mode: ${operatorMode}`}
+          >
+            <FlaskConical className="h-3 w-3" />
+            DAV Mode
+          </button>
 
           {quickPrompts.length > 0 ? (
             <div className="relative">
               <button
                 type="button"
-                className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+                className="input-chip"
                 onClick={() => setShortcutMenuOpen((current) => !current)}
               >
-                <FlaskConical className="h-3.5 w-3.5" />
+                <FlaskConical className="h-3 w-3" />
                 Scenarios
-                <ChevronDown className="h-3.5 w-3.5" />
+                <span className="chip-chevron">▾</span>
               </button>
               {shortcutMenuOpen ? (
                 <div className="absolute left-0 z-20 mb-2 w-72 -translate-y-full rounded-xl border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)] p-2 shadow-lg">
@@ -161,33 +163,35 @@ export function ChatComposerV2({
 
           <button
             type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            className="input-chip"
             onClick={onToggleEvidenceRail}
             title={evidenceRailOpen ? 'Hide evidence rail' : 'Show evidence rail'}
           >
-            {evidenceRailOpen ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {evidenceRailOpen ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
           </button>
 
           <button
             type="button"
-            className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+            className="input-chip"
             onClick={onToggleFocusMode}
             title={focusMode ? 'Exit focus mode' : 'Enter focus mode'}
             aria-pressed={focusMode}
           >
-            <Focus className="h-3.5 w-3.5" />
+            <Focus className="h-3 w-3" />
           </button>
         </div>
 
+        <div className="input-spacer" />
+
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[10px] text-[var(--lab-text-tertiary)]">Enter to send</span>
+          <span className="enter-hint">↵ to send</span>
           {isLoading ? (
-            <button type="button" className="lab-button-secondary" onClick={onStop}>
+            <button type="button" className="input-chip" onClick={onStop}>
               <Square className="h-4 w-4" />
               Stop
             </button>
           ) : (
-            <button type="button" className="lab-button-primary" onClick={onSend} disabled={!canSend}>
+            <button type="button" className="send-btn" onClick={onSend} disabled={!canSend}>
               {disabled ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Send
             </button>
@@ -201,11 +205,11 @@ export function ChatComposerV2({
             <button
               key={file.name}
               type="button"
-              className="lab-nav-pill"
+              className="input-chip"
               onClick={() => onRemoveAttachment?.(file.name)}
               title="Remove attachment"
             >
-              <Paperclip className="h-3.5 w-3.5" />
+              <Paperclip className="h-3 w-3" />
               {file.name}
             </button>
           ))}

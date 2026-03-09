@@ -1,77 +1,56 @@
-# App Feature Theme Redesign Implementation Plan
+# MASA-on-Main Recovery Implementation Plan
 
-## Objective
-Apply a unified paper-first light/dark theme system across all app-feature surfaces without changing route contracts, APIs, or behavioral flows.
+## Mission
+Port the MASA chat shell styling onto current `origin/main` without regressing the modern landing page or authenticated app routes.
 
-## Scope
-- Chat
-- Hybrid
-- Labs
-- Legal
-- Educational
-- Epistemic
-- Shared workbench shell primitives
+## Baseline decision
+- Functional baseline: current `origin/main`
+- Visual references only:
+  - `design-system/MASA_Prototype.html`
+  - `masa_agent_prompt.md.resolved`
+- Explicitly rejected baseline: `269ef40`
 
-## Files Changed
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/globals.css`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/chat/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/hybrid/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/legal/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/education/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/epistemic/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/lab/layout.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/lab/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/app/page.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/ThemeToggle.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/causal-chat/ChatInput.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/causal-chat/ChatLayout.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/causal-chat/ChatWorkbenchV2.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/dashboard/AppDashboardShell.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/dashboard/SidebarModelSettings.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/legal/LegalAnalysisPanelV2.tsx`
-- `/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/lab/LabSidebar.tsx`
+## Architecture choice
+- Keep current route structure and feature entrypoints
+- Keep current `ThemeProvider` and Next.js app structure
+- Apply MASA shell styling by editing the current shell/components and token CSS
+- Allow TSX changes where current markup diverges from the prototype
 
-## Token System
-### Light Mode
-- Main app canvas: `#f7f6f2`
-- Sidebar shell: `#f3f1eb`
-- Primary cards: `#ffffff`
-- Soft inset panels: `#fbfaf7`
-- Accent rust: `#b97f54`
-- Accent moss: `#6f8271`
-- Accent slate: `#6a7896`
+## Files in scope
+- `src/app/generated-tokens.css`
+- `src/app/globals.css`
+- `src/components/dashboard/AppDashboardShell.tsx`
+- `src/components/workbench/WorkbenchShell.tsx`
+- `src/components/causal-chat/ChatWorkbenchV2.tsx`
+- `src/components/causal-chat/ChatComposerV2.tsx`
+- `src/components/causal-chat/ProtocolCard.tsx`
+- `src/components/causal-chat/ScientificEvidenceList.tsx`
+- `src/components/workbench/CausalGauges.tsx`
 
-### Dark Mode
-- Background: `#11161b`
-- Elevated shell: `#181d23`
-- Panel: `#1d232a`
-- Soft panel: `#232a31`
-- Sidebar: `#161b21`
-- Accent rust: `#c38f62`
-- Accent moss: `#8f9b86`
-- Accent slate: `#93a0bb`
+## Additional hard-gate fixes required on this baseline
+- Remove eager module-scope Supabase service construction that breaks `next build`
+- Restore legal route deterministic fallback for mocked/empty `analyzeMultiple()` results
+- Fix deterministic source scoring drift caused by millisecond `Date.now()` usage
+- Fix strict TypeScript test typing in `chat-verified` route tests
 
-## Implementation Strategy
-1. Replace legacy translucent/glass route wrappers with semantic lab surfaces.
-2. Centralize app-shell behavior in `globals.css` via `--lab-*` tokens and shared utility overrides.
-3. Normalize sidebar, composer, panel, and popover surfaces to the new paper/obsidian-paper model.
-4. Keep landing tokens separate from app tokens.
-5. Preserve all functional controls and route behavior.
+## Acceptance criteria mapping
+- `/` remains the existing multi-section landing page
+- `/chat` uses MASA sidebar/main/rail styling on current main architecture
+- `/hybrid`, `/legal`, `/education`, `/lab` remain reachable
+- `pnpm -s build` passes
+- `./node_modules/.bin/tsc --noEmit` passes
+- `./node_modules/.bin/vitest run` passes
+- Manual runtime verification remains required for `/chat` in preview/prod
 
-## Acceptance Criteria Mapping
-- Sidebar uses `#f3f1eb` in light mode: implemented via `--lab-shell-sidebar` and `.glass-sidebar`.
-- Main canvas uses `#f7f6f2`: implemented via `--lab-bg` and route wrappers.
-- Main cards are white: implemented via `--lab-panel` and `.lab-card` / `.lab-panel`.
-- Dark mode is aligned, not neon: implemented via obsidian-paper token set and shared overrides.
-- No API or schema changes: preserved.
-- Landing page keeps separate palette: preserved.
+## Risks and controls
+- Risk: old prototype styles overriding current app semantics
+  - Control: port only visual shell patterns, not old route/layout structure
+- Risk: build breaks from env-dependent services in route import graphs
+  - Control: remove module-scope singleton exports for server services
+- Risk: source-of-truth drift repeats
+  - Control: document prototype as visual reference only, not branch baseline
 
-## Verification Targets
-- `npx tsc --noEmit`
-- `npm run build`
-- Local runtime smoke for `/chat`, `/hybrid`, `/lab`, `/legal`, `/education`, `/epistemic`
-
-## Known Non-Theme Issues
-- `npx vitest run` currently fails in pre-existing suites unrelated to this theme work:
-  - `src/lib/services/__tests__/benchmark-governance.test.ts`
-  - `src/app/api/legal-reasoning/__tests__/route.test.ts`
+## HUMAN FOLLOW-UP REQUIRED
+- Confirm deployment branch is the clean main-based recovery branch, not the old stacked branch chain
+- Verify preview/prod `/chat` manually after deploy in both dark and light mode
+- Confirm environment parity for Supabase and any external AI/search keys in the intended deployment target
