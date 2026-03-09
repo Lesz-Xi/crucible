@@ -17,7 +17,9 @@ import { ThinkingAnimation } from '@/components/causal-chat/ThinkingAnimation';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
+import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
+import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface WorkbenchMessage {
@@ -999,8 +1001,11 @@ export function ChatWorkbenchV2() {
   }, []);
 
   const domainDisplay = isRealDomain(currentDomain) ? currentDomain : 'unavailable';
-  const modelDisplay = isRealModelKey(currentModelKey) ? currentModelKey : 'unavailable';
   const inlineGroundingSources = groundingSources.slice(0, 3);
+  const modelProvenanceState = buildModelProvenanceDisplayState({
+    modelKey: currentModelKey,
+    latestClaimId,
+  });
   const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
     subtitle: 'Live causal posture and provenance',
     live: groundingSources.length > 0 || latestClaimId !== null || messages.length > 0,
@@ -1028,8 +1033,8 @@ export function ChatWorkbenchV2() {
       text: factualConfidence?.rationale || alignmentPosture,
     },
     modelProvenance: {
-      title: modelDisplay,
-      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : modelFallbackNotice || 'No verified model provenance was emitted for this run.',
+      title: modelProvenanceState.title,
+      text: modelProvenanceState.text,
       actions: latestClaimId ? [
         { label: 'Pretty view', href: `/claims/${latestClaimId}` },
         { label: 'JSON', href: `/api/claims/${latestClaimId}` },
@@ -1057,8 +1062,7 @@ export function ChatWorkbenchV2() {
     lastDensity,
     latestClaimId,
     messages.length,
-    modelDisplay,
-    modelFallbackNotice,
+    modelProvenanceState,
   ]);
 
   return (
@@ -1077,50 +1081,35 @@ export function ChatWorkbenchV2() {
                 </div>
 
                 <div className="protocol-grid stagger">
-                  <button
-                    type="button"
-                    className="protocol-card"
+                  <ProtocolCard
+                    icon={Microscope}
+                    title="Causal Discovery"
+                    description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
                     onClick={() => {
                       setOperatorMode('explore');
                       setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
                     }}
-                  >
-                    <div className="protocol-icon">
-                      <Microscope className="h-4 w-4" />
-                    </div>
-                    <h3>Causal Discovery</h3>
-                    <p>Ingest observational data or papers to extract Structural Causal Models (SCM).</p>
-                  </button>
+                  />
 
-                  <button
-                    type="button"
-                    className="protocol-card"
+                  <ProtocolCard
+                    icon={FlaskConical}
+                    title="Intervention Planning"
+                    description="Simulate do-calculus interventions (do(X)=y) to predict system behavior."
                     onClick={() => {
                       setOperatorMode('intervene');
                       setPrompt('I need to simulate an intervention. Here is the scenario:');
                     }}
-                  >
-                    <div className="protocol-icon">
-                      <FlaskConical className="h-4 w-4" />
-                    </div>
-                    <h3>Intervention Planning</h3>
-                    <p>Simulate do-calculus interventions (do(X)=y) to predict system behavior.</p>
-                  </button>
+                  />
 
-                  <button
-                    type="button"
-                    className="protocol-card"
+                  <ProtocolCard
+                    icon={Scale}
+                    title="Counterfactual Audit"
+                    description="Verify specific claims against the causal graph logic and evidence."
                     onClick={() => {
                       setOperatorMode('audit');
                       setPrompt('Verify this claim against the known causal graph:');
                     }}
-                  >
-                    <div className="protocol-icon">
-                      <Scale className="h-4 w-4" />
-                    </div>
-                    <h3>Counterfactual Audit</h3>
-                    <p>Verify specific claims against the causal graph logic and evidence.</p>
-                  </button>
+                  />
                 </div>
               </div>
             ) : (

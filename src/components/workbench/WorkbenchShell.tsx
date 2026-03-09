@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PanelRightOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
+import { useAppShellChrome } from '@/components/dashboard/AppShellChromeContext';
 import { WorkbenchEvidenceRail } from '@/components/workbench/WorkbenchEvidenceRail';
 import type { WorkbenchShellProps } from '@/types/workbench';
 
@@ -16,6 +17,8 @@ export function WorkbenchShell({
   mainMode = 'canvas',
 }: WorkbenchShellProps) {
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
+  const shellChrome = useAppShellChrome();
+  const resolvedEvidenceRail = shellChrome?.evidenceRailOverride || evidenceRail;
 
   return (
     <AppDashboardShell feature={feature}>
@@ -29,12 +32,12 @@ export function WorkbenchShell({
           <div className="main-content-shell">{mainContent}</div>
           {inputArea ? <div className="input-area">{inputArea}</div> : null}
         </main>
-        <WorkbenchEvidenceRail config={evidenceRail} />
+        <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
 
         {mobileRailOpen ? (
           <div className="mobile-rail-overlay" onClick={() => setMobileRailOpen(false)}>
             <div className="mobile-rail-panel" onClick={(event) => event.stopPropagation()}>
-              <WorkbenchEvidenceRail config={evidenceRail} />
+              <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
             </div>
           </div>
         ) : null}

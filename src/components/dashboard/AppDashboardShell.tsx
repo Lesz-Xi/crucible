@@ -27,7 +27,6 @@ import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { SidebarModelSettings } from './SidebarModelSettings';
-import { WorkbenchEvidenceRail } from '@/components/workbench/WorkbenchEvidenceRail';
 import { AppShellChromeProvider } from './AppShellChromeContext';
 import type { WorkbenchEvidenceRailConfig, WorkbenchFeature } from '@/types/workbench';
 
@@ -296,27 +295,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   };
 
   const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
-  const defaultSurfaceRail: WorkbenchEvidenceRailConfig = {
-    subtitle: feature === 'education' ? 'Learning posture and provenance' : 'Live posture and provenance',
-    live: false,
-    causalDensity: {
-      activeLevel: null,
-      status: 'Awaiting scored output',
-    },
-    alignmentPosture: {
-      tone: 'neutral',
-      text: 'No auditable posture has been emitted for this surface yet.',
-    },
-    modelProvenance: {
-      title: 'unavailable',
-      text: 'No verified model provenance was emitted for this run.',
-    },
-    activeDomain: {
-      label: feature === 'education' ? 'education' : feature,
-    },
-    scientificEvidence: [],
-  };
-
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
@@ -501,7 +479,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
 
   return (
     <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={cn('app-feature-shell', `feature-${feature}`)}>
+      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`)}>
       <button type="button" className="mobile-shell-trigger" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
         <PanelRightOpen className="h-4 w-4" />
       </button>
@@ -517,16 +495,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       ) : null}
 
       <div className="app-shell-main">
-        {feature === 'education' || feature === 'lab' ? (
-          <div className="shell app-shell">
-            <main className="main">
-              <div className="main-content-shell">{children}</div>
-            </main>
-            <WorkbenchEvidenceRail config={evidenceRailOverride || defaultSurfaceRail} />
-          </div>
-        ) : (
-          children
-        )}
+        {children}
       </div>
       </div>
     </AppShellChromeProvider>

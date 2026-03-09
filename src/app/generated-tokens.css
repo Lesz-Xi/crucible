@@ -20,8 +20,8 @@
   --font-serif: Instrument Serif, Georgia, serif;
   --font-instrument-serif: Instrument Serif, Georgia, serif;
   --font-size-base: 13px;
-  --font-size-hero: 42px;
-  --font-size-lg: 22px;
+  --font-size-hero: 56px;
+  --font-size-lg: 24px;
   --font-size-md: 14px;
   --font-size-micro: 9px;
   --font-size-sm: 12px;
@@ -41,9 +41,9 @@
   --radius-base: 8px;
   --radius: 8px;
   --radius-full: 999px;
-  --radius-lg: 12px;
+  --radius-lg: 14px;
   --radius-sm: 5px;
-  --radius-xl: 16px;
+  --radius-xl: 18px;
   --sizing-avatar: 22px;
   --sizing-dot: 5px;
   --sizing-icon: 34px;
