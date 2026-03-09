@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
     >
       <body>
         <div className="shell">
@@ -44,13 +44,12 @@ export default function RootLayout({
           <nav className="sidebar" aria-label="Primary navigation">
             {/* Wordmark */}
             <div className="topbar">
-              {/* MASA wordmark chip — twin wave strokes */}
               <div
                 style={{
                   width: 24, height: 24,
                   borderRadius: "var(--radius-sm)",
                   background: "var(--accent-dim)",
-                  border: "1px solid var(--accent-border-2)",
+                  border: "1px solid var(--accent-border)",
                   color: "var(--accent)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0,
@@ -61,27 +60,18 @@ export default function RootLayout({
                   <path d="M7.5 2.5C7.5 2.5 6.5 5 8.5 7c2 2 1 4.5 1 4.5" strokeLinecap="round"/>
                 </svg>
               </div>
-              <span
-                style={{
-                  fontFamily: "var(--font-serif)",
-                  fontSize: 14,
-                  color: "var(--text-1)",
-                  letterSpacing: "0.01em",
-                }}
-              >
+              <span style={{ fontFamily: "var(--font-serif)", fontSize: 14, color: "var(--text-1)", letterSpacing: "0.01em" }}>
                 Crucible
               </span>
             </div>
 
             {/* Nav items */}
             <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
-              <p
-                className="label-mono"
-                style={{ color: "var(--text-4)", padding: "14px 18px 5px" }}
-              >
+              <p className="label-mono" style={{ color: "var(--text-4)", padding: "14px 18px 5px" }}>
                 Protocols
               </p>
               {[
+                { href: "/",              label: "Scientific Workbench" },
                 { href: "/hybrid",        label: "Hybrid Synthesis" },
                 { href: "/epistemic",     label: "Epistemic Analysis" },
                 { href: "/pdf-synthesis", label: "Protocol Ingestion" },
@@ -92,11 +82,21 @@ export default function RootLayout({
               ))}
             </div>
 
+            {/* Bottom actions */}
+            <div style={{ padding: "8px 0", borderTop: "1px solid var(--border)" }}>
+              {[
+                { label: "Dark mode" },
+                { label: "Documentation" },
+                { label: "Model Settings" },
+              ].map((item) => (
+                <div key={item.label} className="nav-link" style={{ cursor: "pointer" }}>
+                  {item.label}
+                </div>
+              ))}
+            </div>
+
             {/* User row */}
-            <div
-              className="topbar"
-              style={{ borderTop: "1px solid var(--border)", borderBottom: "none" }}
-            >
+            <div className="topbar" style={{ borderTop: "1px solid var(--border)", borderBottom: "none" }}>
               <div
                 style={{
                   width: 22, height: 22, borderRadius: "50%",
@@ -127,75 +127,117 @@ export default function RootLayout({
             <div className="rail-header">
               <div className="rail-indicator live" />
               <span className="label-mono" style={{ color: "var(--text-3)" }}>
-                Evidence
+                Evidence Rail
               </span>
-              <span
-                style={{
-                  marginLeft: "auto",
-                  fontFamily: "var(--font-mono)", fontSize: 8.5,
-                  color: "var(--text-4)", letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                }}
-              >
-                Idle
-              </span>
+            </div>
+
+            {/* Sub-label */}
+            <div style={{ padding: "8px 14px 0", borderBottom: "1px solid var(--border)" }}>
+              <p style={{ fontSize: 11, color: "var(--text-3)", paddingBottom: 10 }}>
+                Live causal posture and provenance
+              </p>
             </div>
 
             {/* Rail body */}
             <div style={{ flex: 1, overflowY: "auto" }}>
 
-              {/* ── Causal Density Section ── */}
+              {/* ── Causal Density — L1/L2/L3 pill tabs ── */}
               <div className="rail-section">
                 <div className="rail-section-head">
-                  <span className="status-dot amber" />
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ opacity: 0.5 }}>
+                    <circle cx="5" cy="5" r="3.5"/>
+                    <path d="M5 2.5V5l1.5 1" strokeLinecap="round"/>
+                  </svg>
                   Causal Density
                 </div>
-                <div className="rung-bars">
+                {/* L1/L2/L3 Pill-Tab Strip */}
+                <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
                   {[
-                    { id: "L1", name: "Association",    pct: "42%", active: false },
-                    { id: "L2", name: "Intervention",   pct: "18%", active: true  },
-                    { id: "L3", name: "Counterfactual", pct: "0%",  active: false },
-                  ].map((rung) => (
-                    <div key={rung.id} className={`rung-bar-row${rung.active ? " active" : ""}`}>
-                      <span className="rung-label">{rung.id}</span>
-                      <div className="rung-track">
-                        <div className="rung-fill" style={{ width: rung.pct }} />
+                    { id: "L1", name: "Association" },
+                    { id: "L2", name: "Intervention" },
+                    { id: "L3", name: "Counterfactual" },
+                  ].map((rung, i) => (
+                    <div
+                      key={rung.id}
+                      style={{
+                        flex: 1, textAlign: "center", padding: "7px 6px",
+                        borderRadius: "var(--radius-sm)",
+                        background: i === 1 ? "var(--bg-2)" : "var(--bg-3)",
+                        border: `1px solid ${i === 1 ? "var(--border-2)" : "var(--border)"}`,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, fontWeight: 600, color: i === 1 ? "var(--text-1)" : "var(--text-3)", letterSpacing: "0.04em" }}>
+                        {rung.id}
                       </div>
-                      <span className="rung-name">{rung.name}</span>
+                      <div style={{ fontFamily: "var(--font-mono)", fontSize: 8, color: "var(--text-4)", letterSpacing: "0.04em", marginTop: 1 }}>
+                        {rung.name}
+                      </div>
                     </div>
                   ))}
                 </div>
                 <div className="rung-status-line">
-                  <strong>Pearl L2</strong> active — do-calculus scaffolding primed.
-                  Awaiting source ingestion to advance to L3.
+                  <strong>Active rung: unavailable</strong>{" "}
+                  Awaiting scored output
                 </div>
               </div>
 
-              {/* ── Synthesis Confidence Section ── */}
+              {/* ── Alignment Posture ── */}
               <div className="rail-section">
                 <div className="rail-section-head">
-                  <span className="status-dot idle" />
-                  Synthesis Confidence
+                  <span className="status-dot green" />
+                  Alignment Posture
                 </div>
-                <div className="confidence-label">
-                  <span>Novelty Score</span>
-                  <strong>—</strong>
-                </div>
-                <div className="meter-track">
-                  <div className="meter-fill amber" style={{ width: "0%" }} />
+                <div className="rail-info-card green">
+                  No unaudited intervention claims without identifiability gates.
                 </div>
               </div>
 
-              {/* ── Sources Section ── */}
+              {/* ── Model Provenance ── */}
               <div className="rail-section">
                 <div className="rail-section-head">
                   <span className="status-dot idle" />
-                  Sources
+                  Model Provenance
                 </div>
                 <div className="unavail">
-                  <strong>No protocol active</strong>
-                  Select a research mode to begin ingesting sources.
+                  <strong>unavailable</strong>
+                  No verified model provenance was emitted for this run.
                 </div>
+              </div>
+
+              {/* ── Active Domain ── */}
+              <div className="rail-section">
+                <div className="rail-section-head">
+                  <span className="status-dot idle" />
+                  Active Domain
+                </div>
+                <div className="unavail">unavailable</div>
+              </div>
+
+              {/* ── Scientific Evidence ── */}
+              <div className="rail-section" style={{ borderBottom: "none" }}>
+                <div className="rail-section-head">
+                  <span className="status-dot idle" />
+                  Scientific Evidence
+                </div>
+                {[
+                  { name: "AI-Alignment-Failure.pdf",    meta: "15 days ago" },
+                  { name: "Disagreement-AI-Alignment.pdf", meta: "22 days ago" },
+                  { name: "Anomaly-Detection.pdf",       meta: "29 days ago" },
+                ].map((f) => (
+                  <div key={f.name} className="evidence-file">
+                    <div className="file-icon">
+                      <svg width="11" height="11" viewBox="0 0 12 14" fill="none" stroke="currentColor" strokeWidth="1.4">
+                        <rect x="1" y="1" width="10" height="12" rx="1.5"/>
+                        <path d="M3.5 5h5M3.5 7.5h5M3.5 10h3" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div className="file-name">{f.name}</div>
+                      <div className="file-meta">{f.meta}</div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
             </div>
