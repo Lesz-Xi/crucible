@@ -58,6 +58,39 @@
   /* Shadows */
   --shadow-sm:   0 1px 3px rgba(0,0,0,0.4);
   --shadow-md:   0 4px 16px rgba(0,0,0,0.5);
+
+  /* ── Lab component aliases (--lab-*) ────────────────────── */
+  --lab-bg:              #0e0e0e;
+  --lab-bg-primary:      #0e0e0e;
+  --lab-bg-secondary:    #141414;
+  --lab-bg-tertiary:     #1a1a1a;
+  --lab-bg-elevated:     #1e1e1e;
+  --lab-panel:           #141414;
+  --lab-panel-soft:      #1a1a1a;
+  --lab-shell-sidebar:   #111111;
+  --lab-hover-bg:        rgba(255,255,255,0.04);
+  --lab-active-bg:       rgba(200,144,52,0.09);
+  --lab-input-bg:        #1a1a1a;
+  --lab-input-border:    rgba(255,255,255,0.10);
+
+  --lab-border:          rgba(255,255,255,0.08);
+  --lab-border-strong:   rgba(255,255,255,0.16);
+
+  --lab-text-primary:    #e8e4dc;
+  --lab-text-secondary:  #9e9a93;
+  --lab-text-tertiary:   #6a6660;
+
+  --lab-accent-earth:    #c89034;
+  --lab-accent-clay:     #c07040;
+  --lab-accent-rust:     #c05050;
+  --lab-accent-moss:     #4e9e7a;
+  --lab-accent-slate:    #6080a0;
+  --lab-accent-violet:   #8060c0;
+
+  --lab-error:           #c05050;
+
+  --lab-shadow-soft:     0 1px 3px rgba(0,0,0,0.35);
+  --lab-shadow-lift:     0 4px 16px rgba(0,0,0,0.5);
 }
 
 /* ─── LIGHT MODE ──────────────────────────────────────────── */
@@ -98,4 +131,37 @@
   /* Shadows */
   --shadow-sm:   0 1px 3px rgba(0,0,0,0.12);
   --shadow-md:   0 4px 16px rgba(0,0,0,0.14);
+
+  /* ── Lab component aliases (--lab-*) ────────────────────── */
+  --lab-bg:              #f5f2ed;
+  --lab-bg-primary:      #f5f2ed;
+  --lab-bg-secondary:    #ede9e2;
+  --lab-bg-tertiary:     #e4dfd7;
+  --lab-bg-elevated:     #f8f5f0;
+  --lab-panel:           #ede9e2;
+  --lab-panel-soft:      #e4dfd7;
+  --lab-shell-sidebar:   #ede9e2;
+  --lab-hover-bg:        rgba(0,0,0,0.04);
+  --lab-active-bg:       rgba(160,104,40,0.07);
+  --lab-input-bg:        #ede9e2;
+  --lab-input-border:    rgba(0,0,0,0.10);
+
+  --lab-border:          rgba(0,0,0,0.09);
+  --lab-border-strong:   rgba(0,0,0,0.18);
+
+  --lab-text-primary:    #1c1a17;
+  --lab-text-secondary:  #57524c;
+  --lab-text-tertiary:   #8c877f;
+
+  --lab-accent-earth:    #a06828;
+  --lab-accent-clay:     #9a5430;
+  --lab-accent-rust:     #a03838;
+  --lab-accent-moss:     #3a7d5e;
+  --lab-accent-slate:    #4a6080;
+  --lab-accent-violet:   #604898;
+
+  --lab-error:           #a03838;
+
+  --lab-shadow-soft:     0 1px 3px rgba(0,0,0,0.08);
+  --lab-shadow-lift:     0 4px 16px rgba(0,0,0,0.12);
 }
