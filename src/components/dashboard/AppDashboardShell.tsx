@@ -311,24 +311,28 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           >
             {sidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
           </button>
-          <button
-            type="button"
-            className="icon-btn"
-            title="Back"
-            aria-label="Back"
-            onClick={() => window.history.back()}
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-          </button>
-          <button
-            type="button"
-            className="icon-btn"
-            title="Forward"
-            aria-label="Forward"
-            onClick={() => window.history.forward()}
-          >
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          {!sidebarCollapsed && (
+            <>
+              <button
+                type="button"
+                className="icon-btn"
+                title="Back"
+                aria-label="Back"
+                onClick={() => window.history.back()}
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                className="icon-btn"
+                title="Forward"
+                aria-label="Forward"
+                onClick={() => window.history.forward()}
+              >
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
