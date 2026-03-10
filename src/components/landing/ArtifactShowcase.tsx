@@ -26,7 +26,7 @@ const artifacts = [
 
 export function ArtifactShowcase() {
   return (
-    <section className="hd-section bg-white py-16 md:py-20">
+    <section className="hd-section py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-12 max-w-2xl">
           <p className="hd-kicker inline-flex items-center gap-3">
@@ -46,9 +46,9 @@ export function ArtifactShowcase() {
             {artifacts.map((artifact) => {
               const Icon = artifact.icon;
               return (
-                <article key={artifact.title} className="hd-panel rounded-[28px] p-7">
+                <article key={artifact.title} className="marketing-card rounded-[28px] p-7">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-[16px] border border-[var(--border-subtle)] bg-white/70 p-3">
+                    <div className="rounded-[16px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] p-3">
                       <Icon className={`h-5 w-5 ${artifact.accent}`} strokeWidth={1.7} />
                     </div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">

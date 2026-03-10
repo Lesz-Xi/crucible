@@ -117,7 +117,7 @@ export function ScientistModel() {
             </p>
           </div>
 
-          <div className="absolute inset-x-6 bottom-6 top-24 rounded-[28px] border border-[var(--border-subtle)] bg-[#f8f5ef]">
+          <div className="absolute inset-x-6 bottom-6 top-24 rounded-[28px] border border-[var(--border-subtle)] bg-[radial-gradient(circle_at_top,rgba(255,224,194,0.08),rgba(11,11,12,0.98)_58%)]">
             <Canvas
               frameloop={isInView ? "always" : "never"}
               gl={{ alpha: true, antialias: true }}

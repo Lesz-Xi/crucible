@@ -66,7 +66,7 @@ export function SynthesisPrism() {
           </div>
 
           {/* DAG canvas area */}
-          <div className="absolute inset-x-6 bottom-6 top-[72px] overflow-hidden rounded-[24px] border border-[rgba(166,133,100,0.14)] bg-[#f4ede2]">
+          <div className="absolute inset-x-6 bottom-6 top-[72px] overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[radial-gradient(circle_at_top,rgba(255,224,194,0.08),rgba(12,12,13,0.98)_58%)]">
             <CausalDAGPanel isActive={isInView} />
           </div>
 

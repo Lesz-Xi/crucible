@@ -100,7 +100,7 @@ export function CausalLattice() {
                   onFocus={() => setActiveKey(module.key)}
                   className={`hd-panel-soft rounded-[24px] p-5 text-left transition-all duration-200 md:p-6 ${
                     activeKey === module.key
-                      ? "border-[rgba(185,127,84,0.34)] bg-white shadow-[0_10px_24px_rgba(185,127,84,0.08)]"
+                      ? "border-[rgba(255,224,194,0.26)] bg-[rgba(255,224,194,0.08)] shadow-[0_18px_40px_rgba(0,0,0,0.24)]"
                       : ""
                   }`}
                 >
@@ -128,7 +128,7 @@ export function CausalLattice() {
               ))}
             </div>
 
-            <div className="relative h-[560px] overflow-hidden rounded-[30px] border border-[var(--border-subtle)] bg-[#f7f4ee]">
+            <div className="relative h-[560px] overflow-hidden rounded-[30px] border border-[var(--border-subtle)] bg-[radial-gradient(circle_at_top,rgba(255,224,194,0.08),rgba(11,11,12,0.98)_52%)]">
               <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between border-b border-[var(--border-subtle)] px-6 py-5">
                 <p className="hd-metric-label">Architectural lattice</p>
                 <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -136,7 +136,7 @@ export function CausalLattice() {
                 </p>
               </div>
 
-              <div className="pointer-events-none absolute inset-[22px] rounded-[22px] border border-[rgba(102,93,82,0.08)]" />
+              <div className="pointer-events-none absolute inset-[22px] rounded-[22px] border border-[rgba(255,255,255,0.06)]" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between border-t border-[var(--border-subtle)] px-6 py-5">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
                   Causal blueprint
@@ -153,16 +153,16 @@ export function CausalLattice() {
                 aria-hidden
                 onMouseLeave={() => setActiveKey(null)}
               >
-                <rect x="30" y="24" width="500" height="300" rx="22" stroke="rgba(102,93,82,0.1)" />
-                <path d="M30 84 H530" stroke="rgba(102,93,82,0.08)" />
-                <path d="M30 204 H530" stroke="rgba(102,93,82,0.08)" />
-                <path d="M180 24 V324" stroke="rgba(102,93,82,0.06)" />
-                <path d="M340 24 V324" stroke="rgba(102,93,82,0.06)" />
-                <text x="52" y="49" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 01</text>
-                <text x="52" y="169" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 02</text>
-                <text x="52" y="289" fill="rgba(97,89,79,0.56)" fontSize="9" letterSpacing="2">LAYER 03</text>
-                <text x="422" y="116" fill="rgba(97,89,79,0.72)" fontSize="9" letterSpacing="2">AUDIT TRACE</text>
-                <text x="420" y="282" fill="rgba(97,89,79,0.72)" fontSize="9" letterSpacing="2">HARD CONSTRAINT</text>
+                <rect x="30" y="24" width="500" height="300" rx="22" stroke="rgba(255,255,255,0.09)" />
+                <path d="M30 84 H530" stroke="rgba(255,255,255,0.08)" />
+                <path d="M30 204 H530" stroke="rgba(255,255,255,0.08)" />
+                <path d="M180 24 V324" stroke="rgba(255,255,255,0.05)" />
+                <path d="M340 24 V324" stroke="rgba(255,255,255,0.05)" />
+                <text x="52" y="49" fill="rgba(200,200,203,0.56)" fontSize="9" letterSpacing="2">LAYER 01</text>
+                <text x="52" y="169" fill="rgba(200,200,203,0.56)" fontSize="9" letterSpacing="2">LAYER 02</text>
+                <text x="52" y="289" fill="rgba(200,200,203,0.56)" fontSize="9" letterSpacing="2">LAYER 03</text>
+                <text x="422" y="116" fill="rgba(255,224,194,0.72)" fontSize="9" letterSpacing="2">AUDIT TRACE</text>
+                <text x="420" y="282" fill="rgba(255,224,194,0.72)" fontSize="9" letterSpacing="2">HARD CONSTRAINT</text>
 
                 {connections.map(([from, to], index) => {
                   const source = moduleMap[from];
@@ -232,13 +232,13 @@ export function CausalLattice() {
                         width={module.graphLabel.length * 9.2 + 24}
                         height={22}
                         rx={11}
-                        fill="rgba(255,255,255,0.82)"
-                        stroke="rgba(102,93,82,0.08)"
+                        fill="rgba(24,24,24,0.92)"
+                        stroke="rgba(255,255,255,0.08)"
                       />
                       <text
                         x={module.point.x - module.graphLabel.length * 4.35}
                         y={module.point.y - 35}
-                        fill="rgba(97,89,79,0.88)"
+                        fill="rgba(238,238,238,0.88)"
                         fontSize="10"
                         letterSpacing="2.4"
                       >
@@ -247,7 +247,7 @@ export function CausalLattice() {
                       <text
                         x={module.point.x - module.note.length * 2.8}
                         y={module.point.y + 34}
-                        fill="rgba(97,89,79,0.62)"
+                        fill="rgba(200,200,203,0.62)"
                         fontSize="8"
                         letterSpacing="1.8"
                       >

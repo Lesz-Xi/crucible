@@ -15,7 +15,7 @@ import { ContactForm } from "@/components/landing/ContactForm";
 
 export default function Home() {
   return (
-    <div className="theme-landing hd-page min-h-screen bg-[var(--bg-primary)]">
+    <div className="theme-landing marketing-shell hd-page min-h-screen bg-[var(--bg-primary)]">
       <Navbar />
       <Hero />
       <SynthesisPrism />

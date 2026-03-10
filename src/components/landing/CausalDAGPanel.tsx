@@ -106,7 +106,7 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
     <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden p-5">
       {/* Top-right label */}
       <div className="absolute right-5 top-4 text-right">
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--accent-rust)] opacity-75">
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--accent-rust)] opacity-85">
           Pearl's SCM
         </p>
         <p className="mt-0.5 font-mono text-[8.5px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
@@ -202,11 +202,11 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
             style={{ transformOrigin: `${n.x}px ${n.y}px` }}
           >
             {/* Drop shadow */}
-            <circle cx={n.x + 1} cy={n.y + 2} r={R} fill="rgba(60,40,20,0.07)" />
+            <circle cx={n.x + 1} cy={n.y + 2} r={R} fill="rgba(0,0,0,0.28)" />
             {/* Fill */}
             <circle
               cx={n.x} cy={n.y} r={R}
-              fill="#fdf9f5"
+              fill="#181818"
               stroke={n.stroke}
               strokeWidth={1.6}
               strokeDasharray={n.latent ? "4 2.5" : undefined}

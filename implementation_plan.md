@@ -1,56 +1,57 @@
-# MASA-on-Main Recovery Implementation Plan
+# Dark Marketing Redesign Implementation Plan
 
 ## Mission
-Port the MASA chat shell styling onto current `origin/main` without regressing the modern landing page or authenticated app routes.
-
-## Baseline decision
-- Functional baseline: current `origin/main`
-- Visual references only:
-  - `design-system/MASA_Prototype.html`
-  - `masa_agent_prompt.md.resolved`
-- Explicitly rejected baseline: `269ef40`
+Redesign the public marketing experience for `/` and `/how-it-works` into a unified dark-mode system that uses the semantic tokens from `landing-page-design-v2.md`, preserves the MASA/Wu-Weism editorial voice, and upgrades the UI toward a denser sci-lab presentation without changing route structure or backend behavior.
 
 ## Architecture choice
-- Keep current route structure and feature entrypoints
-- Keep current `ThemeProvider` and Next.js app structure
-- Apply MASA shell styling by editing the current shell/components and token CSS
-- Allow TSX changes where current markup diverges from the prototype
+- Keep the current Next.js route structure and existing CTA destinations.
+- Move marketing theming to a dedicated dark scope controlled by middleware + root layout.
+- Centralize the redesign in `src/app/globals.css` via a shared dark marketing token/primitives layer.
+- Rebuild the highest-impact landing and architecture sections to consume shared dark surfaces, button treatments, card treatments, and interactive states instead of hardcoded light backgrounds.
+- Preserve authenticated/app-route theming outside the marketing scope.
 
-## Files in scope
-- `src/app/generated-tokens.css`
+## Exact files changed
 - `src/app/globals.css`
-- `src/components/dashboard/AppDashboardShell.tsx`
-- `src/components/workbench/WorkbenchShell.tsx`
-- `src/components/causal-chat/ChatWorkbenchV2.tsx`
-- `src/components/causal-chat/ChatComposerV2.tsx`
-- `src/components/causal-chat/ProtocolCard.tsx`
-- `src/components/causal-chat/ScientificEvidenceList.tsx`
-- `src/components/workbench/CausalGauges.tsx`
-
-## Additional hard-gate fixes required on this baseline
-- Remove eager module-scope Supabase service construction that breaks `next build`
-- Restore legal route deterministic fallback for mocked/empty `analyzeMultiple()` results
-- Fix deterministic source scoring drift caused by millisecond `Date.now()` usage
-- Fix strict TypeScript test typing in `chat-verified` route tests
+- `src/app/layout.tsx`
+- `src/app/page.tsx`
+- `src/app/how-it-works/page.tsx`
+- `src/middleware.ts`
+- `src/components/landing/Navbar.tsx`
+- `src/components/landing/Hero.tsx`
+- `src/components/landing/EpistemicCards.tsx`
+- `src/components/landing/Features.tsx`
+- `src/components/landing/Process.tsx`
+- `src/components/landing/ThreePillars.tsx`
+- `src/components/landing/SynthesisPrism.tsx`
+- `src/components/landing/ScientistModel.tsx`
+- `src/components/landing/CausalDAGPanel.tsx`
+- `src/components/landing/CausalLattice.tsx`
+- `src/components/landing/FeatureRail.tsx`
+- `src/components/landing/ObsidianVault.tsx`
+- `src/components/landing/ArtifactShowcase.tsx`
+- `src/components/landing/FAQ.tsx`
+- `src/components/landing/ContactForm.tsx`
+- `src/components/architecture/ArchitectureHero.tsx`
+- `src/components/architecture/SystemOverview.tsx`
 
 ## Acceptance criteria mapping
-- `/` remains the existing multi-section landing page
-- `/chat` uses MASA sidebar/main/rail styling on current main architecture
-- `/hybrid`, `/legal`, `/education`, `/lab` remain reachable
-- `pnpm -s build` passes
-- `./node_modules/.bin/tsc --noEmit` passes
-- `./node_modules/.bin/vitest run` passes
-- Manual runtime verification remains required for `/chat` in preview/prod
+- `/` remains the multi-section landing page, but now renders with a dark-first marketing shell, modernized hero, upgraded cards, and higher-density interaction styling.
+- `/how-it-works` remains the architecture route and now shares the same dark marketing scope and public-facing visual language.
+- Existing CTA destinations remain intact: `/chat`, `#contact`, and `/masa-white-paper.html`.
+- No backend API, schema, or persistence behavior changed.
+- Marketing routes no longer depend on the old light-only theme lock path.
 
-## Risks and controls
-- Risk: old prototype styles overriding current app semantics
-  - Control: port only visual shell patterns, not old route/layout structure
-- Risk: build breaks from env-dependent services in route import graphs
-  - Control: remove module-scope singleton exports for server services
-- Risk: source-of-truth drift repeats
-  - Control: document prototype as visual reference only, not branch baseline
+## Automated evidence
+- `npx tsc --noEmit` passed.
+- `npx vitest run` passed: `53` test files, `341` tests passed, `1` skipped.
+- `npm run build` passed.
+
+## Manual verification still required
+- Browser-check `/` and `/how-it-works` on desktop and mobile for layout, contrast, and animation quality.
+- Verify navbar dropdowns, auth CTA states, `#contact` navigation, and white-paper links.
+- Confirm no light-theme flash appears on marketing routes.
+- Validate reduced-motion behavior and keyboard/focus states for nav, cards, accordions, and form inputs.
 
 ## HUMAN FOLLOW-UP REQUIRED
-- Confirm deployment branch is the clean main-based recovery branch, not the old stacked branch chain
-- Verify preview/prod `/chat` manually after deploy in both dark and light mode
-- Confirm environment parity for Supabase and any external AI/search keys in the intended deployment target
+- Open preview/prod and manually smoke-test `/` and `/how-it-works` after deployment.
+- Confirm the deployed branch points to the intended Supabase/environment target, even though this redesign introduced no schema or env changes.

@@ -2,14 +2,14 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 function isMarketingLightPath(pathname: string) {
-  return pathname === '/';
+  return pathname === '/' || pathname.startsWith('/how-it-works');
 }
 
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
   if (isMarketingLightPath(request.nextUrl.pathname)) {
-    requestHeaders.set('x-theme-scope', 'marketing-light');
+    requestHeaders.set('x-theme-scope', 'marketing-dark');
   } else {
     requestHeaders.delete('x-theme-scope');
   }
