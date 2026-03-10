@@ -1,15 +1,17 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   BookOpen,
-  Bot,
+  FileText,
   FlaskConical,
   Folder,
   FolderMinus,
   FolderPlus,
+  Gauge,
   Gavel,
   GraduationCap,
   LogOut,
@@ -18,7 +20,6 @@ import {
   PanelRightOpen,
   Plus,
   Search,
-  ScrollText,
   Sun,
   Trash2,
   UserCircle2,
@@ -54,7 +55,7 @@ interface SidebarFolderFile {
 
 const PRIMARY_NAV = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/hybrid', label: 'Hybrid', icon: Bot },
+  { href: '/hybrid', label: 'Hybrid', icon: Gauge, badge: 'New' },
 ] as const;
 
 const RELICS_NAV = [
@@ -69,7 +70,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [relicsOpen, setRelicsOpen] = useState(true);
+  const [relicsOpen, setRelicsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -87,6 +88,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const activeSessionId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('sessionId')
     : null;
+  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
 
   useEffect(() => {
     setMounted(true);
@@ -185,6 +187,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     if (!query) return recentThreads;
     return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(query));
   }, [recentThreads, searchQuery]);
+
+  useEffect(() => {
+    if (isRelicActive) setRelicsOpen(true);
+  }, [isRelicActive]);
 
   const createFolder = () => {
     const name = prompt('Enter folder name:');
@@ -294,20 +300,29 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     router.refresh();
   };
 
-  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
         <div className="wordmark-icon">
-          <FlaskConical className="h-4 w-4" />
+          <Image src="/wu-wei-mark-no-bg.png" alt="" width={18} height={18} className="wordmark-mark" />
         </div>
         <span className="wordmark-text">Bio-Lab Notebook</span>
         <div className="sidebar-header-actions">
           <button type="button" className="icon-btn" title="Search" aria-label="Search" onClick={() => setSearchOpen((current) => !current)}>
             <Search className="h-3.5 w-3.5" />
           </button>
-          <button type="button" className="icon-btn" title="Toggle layout" aria-label="Toggle layout" onClick={() => setRelicsOpen((current) => !current)}>
-            <PanelRightOpen className="h-3.5 w-3.5" />
+          <button
+            type="button"
+            className="icon-btn"
+            title="New chat"
+            aria-label="New chat"
+            onClick={() => {
+              router.push('/chat?new=1');
+              window.dispatchEvent(new Event('newChat'));
+              setMobileSidebarOpen(false);
+            }}
+          >
+            <Plus className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -320,12 +335,13 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
             <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
               <Icon className="h-3.5 w-3.5" />
               <span>{item.label}</span>
+              {'badge' in item && item.badge ? <span className="nav-badge">{item.badge}</span> : null}
             </Link>
           );
         })}
 
         <button type="button" className={cn('nav-item', isRelicActive && 'active')} onClick={() => setRelicsOpen((current) => !current)}>
-          <ScrollText className="h-3.5 w-3.5" />
+          <FileText className="h-3.5 w-3.5" />
           <span>Relics</span>
           <span className="chevron">{relicsOpen ? '▾' : '▸'}</span>
         </button>
@@ -376,41 +392,41 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         </button>
       </div>
 
-      <div className="sidebar-section-label">Folders</div>
-      <div className="history-list is-folders">
-        {folders.length === 0 ? (
-          <div className="history-item muted">No folders yet.</div>
-        ) : (
-          folders.map((folder) => (
-            <div key={folder.id} className="folder-block">
-              <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
-                <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
-                  {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                  <span>{folder.name}</span>
-                </button>
-                <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              {folderOpenState[folder.id] ? (
-                <div className="folder-files">
-                  <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
-                    + New file
+      {folders.length > 0 ? (
+        <>
+          <div className="sidebar-section-label">Folders</div>
+          <div className="history-list is-folders">
+            {folders.map((folder) => (
+              <div key={folder.id} className="folder-block">
+                <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                  <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                    {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                    <span>{folder.name}</span>
                   </button>
-                  {(folderFiles[folder.id] ?? []).map((file) => (
-                    <div key={file.id} className="folder-file-row">
-                      <span className="history-item">{file.name}</span>
-                      <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                  <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              ) : null}
-            </div>
-          ))
-        )}
-      </div>
+                {folderOpenState[folder.id] ? (
+                  <div className="folder-files">
+                    <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                      + New file
+                    </button>
+                    {(folderFiles[folder.id] ?? []).map((file) => (
+                      <div key={file.id} className="folder-file-row">
+                        <span className="history-item">{file.name}</span>
+                        <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className="sidebar-section-label history-label">History</div>
       <div className="history-list">

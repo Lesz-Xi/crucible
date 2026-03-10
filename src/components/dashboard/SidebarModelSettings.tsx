@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, X, Save, Key, Thermometer, ShieldCheck } from 'lucide-react';
+import { Cpu, X, Save, Thermometer, ShieldCheck, Settings2 } from 'lucide-react';
 import { useLab } from '../../lib/contexts/LabContext';
 import { AI_CONFIG, AIProviderId } from '../../config/ai-models';
 import { LLMConfig } from '../../types/lab';
@@ -89,7 +89,7 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
         onClick={() => setIsOpen((v) => !v)}
         title={collapsed ? 'Model Settings' : undefined}
       >
-        <Cpu className="h-4 w-4" />
+        <Settings2 className="h-4 w-4" />
         {collapsed ? null : <span className="font-serif tracking-wide">Model Settings</span>}
       </button>
 

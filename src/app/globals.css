@@ -7934,3 +7934,355 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
     padding: 16px;
   }
 }
+
+/* Sidebar authority block: MASA reference sidebar */
+.canonical-workbench-shell .sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--surface-1);
+  border-right: 1px solid var(--rule);
+}
+
+.canonical-workbench-shell .sidebar-header {
+  height: 86px;
+  padding: 18px 16px 12px;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.canonical-workbench-shell .wordmark-icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  border: 1px solid var(--accent-border-2);
+  background: color-mix(in srgb, var(--surface-3) 88%, var(--surface-1));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.canonical-workbench-shell .wordmark-mark {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.canonical-workbench-shell .wordmark-text {
+  max-width: none;
+  flex: 1;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .sidebar-header-actions {
+  gap: 8px;
+}
+
+.canonical-workbench-shell .icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-3);
+}
+
+.canonical-workbench-shell .icon-btn:hover {
+  background: color-mix(in srgb, var(--bg-hover) 100%, transparent);
+  border-color: transparent;
+}
+
+.canonical-workbench-shell .sidebar-nav {
+  padding: 12px 12px 0;
+}
+
+.canonical-workbench-shell .nav-item {
+  position: relative;
+  min-height: 54px;
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.canonical-workbench-shell .nav-item:hover {
+  background: color-mix(in srgb, var(--bg-hover) 68%, transparent);
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .nav-item.active {
+  background: color-mix(in srgb, var(--bg-active) 88%, var(--surface-3));
+  border-color: color-mix(in srgb, var(--accent-border-2) 72%, var(--rule));
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.canonical-workbench-shell .nav-item .chevron {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+.canonical-workbench-shell .nav-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-border-2);
+  background: color-mix(in srgb, var(--accent-dim) 68%, transparent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.canonical-workbench-shell .sidebar-search {
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--surface-0) 92%, var(--surface-2));
+  font-size: 12px;
+}
+
+.canonical-workbench-shell .sidebar-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 18px 16px 0;
+}
+
+.canonical-workbench-shell .action-btn {
+  min-height: 52px;
+  padding: 0 16px;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 400;
+  gap: 9px;
+}
+
+.canonical-workbench-shell .action-btn:hover {
+  background: color-mix(in srgb, var(--bg-hover) 60%, transparent);
+  border-color: var(--rule-strong);
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .sidebar-section-label {
+  margin: 26px 0 8px;
+  padding: 0 28px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-4);
+}
+
+.canonical-workbench-shell .history-list {
+  padding: 0 18px;
+}
+
+.canonical-workbench-shell .history-list.is-folders {
+  margin-bottom: 2px;
+}
+
+.canonical-workbench-shell .history-row,
+.canonical-workbench-shell .folder-row,
+.canonical-workbench-shell .folder-file-row {
+  gap: 6px;
+  border-radius: 10px;
+}
+
+.canonical-workbench-shell .history-row.active,
+.canonical-workbench-shell .folder-row.active {
+  background: transparent;
+}
+
+.canonical-workbench-shell .history-item,
+.canonical-workbench-shell .folder-label {
+  min-height: 34px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text-3);
+  background: transparent;
+}
+
+.canonical-workbench-shell .history-list:not(.is-folders) .history-item:not(.muted)::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-4) 72%, transparent);
+  flex: 0 0 6px;
+}
+
+.canonical-workbench-shell .history-item:hover,
+.canonical-workbench-shell .folder-label:hover {
+  background: transparent;
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .history-item.muted {
+  padding-left: 12px;
+  color: var(--text-4);
+  font-style: italic;
+}
+
+.canonical-workbench-shell .folder-action {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.canonical-workbench-shell .history-row:hover .folder-action,
+.canonical-workbench-shell .folder-row:hover .folder-action,
+.canonical-workbench-shell .folder-file-row:hover .folder-action {
+  opacity: 1;
+}
+
+.canonical-workbench-shell .folder-files {
+  margin-left: 18px;
+  padding-left: 10px;
+  border-left: 1px solid var(--rule);
+}
+
+.canonical-workbench-shell .sidebar-footer {
+  margin-top: auto;
+  padding: 18px 16px 10px;
+  border-top: 1px solid var(--rule);
+}
+
+.canonical-workbench-shell .footer-item {
+  min-height: 46px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 400;
+  justify-content: flex-start;
+}
+
+.canonical-workbench-shell .footer-item svg,
+.canonical-workbench-shell .footer-settings .lab-nav-pill svg {
+  width: 15px;
+  height: 15px;
+}
+
+.canonical-workbench-shell .footer-item:hover {
+  background: transparent;
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .footer-settings {
+  padding: 0;
+}
+
+.canonical-workbench-shell .footer-settings .relative {
+  width: 100%;
+}
+
+.canonical-workbench-shell .footer-settings .lab-nav-pill {
+  min-height: 46px;
+  justify-content: flex-start;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.canonical-workbench-shell .footer-settings .lab-nav-pill:hover {
+  background: transparent;
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .footer-settings .lab-nav-pill span {
+  font-family: inherit;
+  font-size: inherit;
+  letter-spacing: 0;
+}
+
+.canonical-workbench-shell .user-row {
+  margin: 0 16px 18px;
+  min-height: 54px;
+  padding: 0 14px;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .user-avatar {
+  width: 30px;
+  height: 30px;
+  background: color-mix(in srgb, var(--accent-dim) 88%, transparent);
+  border: 1px solid var(--accent-border-2);
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.canonical-workbench-shell .user-email {
+  font-size: 14px;
+}
+
+.canonical-workbench-shell .user-row > .chevron {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-4);
+}
+
+.canonical-workbench-shell .account-popover {
+  border: 1px solid var(--rule);
+  background: var(--surface-3);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .canonical-workbench-shell .wordmark-icon {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.dark .canonical-workbench-shell .nav-item.active {
+  background: linear-gradient(90deg, rgba(42, 28, 12, 0.94) 0%, rgba(28, 20, 12, 0.92) 100%);
+}
+
+.dark .canonical-workbench-shell .action-btn,
+.dark .canonical-workbench-shell .nav-badge {
+  background: rgba(18, 16, 14, 0.56);
+}
