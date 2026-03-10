@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, type ChangeEvent } from 'react';
-import { ChevronDown, Eye, Loader2, Paperclip, ScanSearch, Send, Square } from 'lucide-react';
+import { ChevronDown, Loader2, Paperclip, Send, Square } from 'lucide-react';
 
 export interface ComposerAttachment {
   name: string;
@@ -33,9 +33,9 @@ export interface ChatComposerV2Props {
 }
 
 const MODE_LABELS: Record<'explore' | 'intervene' | 'audit', string> = {
-  explore: 'DiagnoseActValidate',
-  intervene: 'DiagnoseActValidate',
-  audit: 'DiagnoseActValidate',
+  explore: 'DAV Mode',
+  intervene: 'DAV Mode',
+  audit: 'DAV Mode',
 };
 
 export function ChatComposerV2({
@@ -68,7 +68,7 @@ export function ChatComposerV2({
       <div className="composer-textarea-shell">
         <textarea
           className="input-textarea"
-          placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need...'}
+          placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need to understand…'}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
@@ -119,15 +119,8 @@ export function ChatComposerV2({
           <ChevronDown className="h-3 w-3" />
         </button>
 
-        <button type="button" className="chat-toolbar-chip is-icon" aria-label="View output modes">
-          <Eye className="h-3 w-3" />
-        </button>
-
-        <button type="button" className="chat-toolbar-chip is-icon" aria-label="Focus composer">
-          <ScanSearch className="h-3 w-3" />
-        </button>
-
-        <span className="enter-hint">Enter to send</span>
+        <div className="input-spacer" />
+        <span className="enter-hint">↵ to send</span>
 
         {isLoading ? (
           <button type="button" className="send-btn" onClick={onStop}>

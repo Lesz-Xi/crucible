@@ -388,7 +388,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         </button>
         <button type="button" className="action-btn" onClick={createFolder}>
           <FolderPlus className="h-3 w-3" />
-          New folder
+          Folder
         </button>
       </div>
 

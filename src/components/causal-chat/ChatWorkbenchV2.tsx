@@ -2,11 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import {
-  FlaskConical,
-  Microscope,
-  Scale,
-} from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -1007,7 +1002,7 @@ export function ChatWorkbenchV2() {
     latestClaimId,
   });
   const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
-    subtitle: 'Live causal posture and provenance',
+    subtitle: 'Live causal posture',
     live: groundingSources.length > 0 || latestClaimId !== null || messages.length > 0,
     causalDensity: {
       activeLevel:
@@ -1076,15 +1071,17 @@ export function ChatWorkbenchV2() {
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">
                 <div className="chat-empty-headline">
-                  <h1>Scientific Workbench</h1>
-                  <p>Select a research protocol to begin your inquiry.</p>
+                  <div className="workbench-eyebrow">Sovereign Synthesis Engine</div>
+                  <h1>Scientific<br /><em>Workbench</em></h1>
+                  <p>Select a research protocol to begin your inquiry into the causal structure of the world.</p>
                 </div>
 
                 <div className="protocol-grid stagger">
                   <ProtocolCard
-                    icon={Microscope}
+                    tag="Protocol 01"
+                    iconKind="discovery"
                     title="Causal Discovery"
-                    description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
+                    description="Ingest observational data or papers to extract Structural Causal Models (SCM) from raw evidence."
                     onClick={() => {
                       setOperatorMode('explore');
                       setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
@@ -1092,9 +1089,10 @@ export function ChatWorkbenchV2() {
                   />
 
                   <ProtocolCard
-                    icon={FlaskConical}
+                    tag="Protocol 02"
+                    iconKind="intervention"
                     title="Intervention Planning"
-                    description="Simulate do-calculus interventions (do(X)=y) to predict system behavior."
+                    description="Simulate do-calculus interventions (do(X)=y) to predict how the system responds to external actions."
                     onClick={() => {
                       setOperatorMode('intervene');
                       setPrompt('I need to simulate an intervention. Here is the scenario:');
@@ -1102,9 +1100,10 @@ export function ChatWorkbenchV2() {
                   />
 
                   <ProtocolCard
-                    icon={Scale}
+                    tag="Protocol 03"
+                    iconKind="audit"
                     title="Counterfactual Audit"
-                    description="Verify specific claims against the causal graph logic and evidence."
+                    description="Verify specific claims against the causal graph logic, evidence corpus, and falsification criteria."
                     onClick={() => {
                       setOperatorMode('audit');
                       setPrompt('Verify this claim against the known causal graph:');
