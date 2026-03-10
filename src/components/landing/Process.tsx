@@ -23,11 +23,11 @@ const steps = [
 
 export function Process() {
   return (
-    <section id="process" className="hd-section bg-white py-16 md:py-20">
+    <section id="process" className="hd-section py-16 md:py-20">
       <div className="mx-auto grid max-w-7xl gap-16 px-6 md:px-8 lg:grid-cols-2 lg:items-start">
         <div>
-          <div className="hd-kicker mb-8 inline-flex items-center gap-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-rust)]" />
+          <div className="marketing-pill mb-8 inline-flex w-fit items-center gap-3 px-4 py-2">
+            <span className="marketing-dot" />
             Protocol
           </div>
           <h2 className="hd-serif-display text-[3.6rem] text-[var(--text-primary)] md:text-[5rem]">
@@ -42,13 +42,13 @@ export function Process() {
           </p>
         </div>
 
-        <div className="relative space-y-14">
-          <div className="absolute left-[1.7rem] top-5 bottom-5 w-px bg-[var(--border-subtle)]" />
-          <div className="absolute left-[1.7rem] top-5 bottom-5 w-px bg-[var(--accent-rust)]" />
+        <div className="marketing-section-surface relative space-y-5 rounded-[30px] p-6 md:p-8">
+          <div className="absolute left-[2rem] top-10 bottom-10 w-px bg-[var(--border-subtle)]" />
+          <div className="absolute left-[2rem] top-10 bottom-10 w-px bg-[linear-gradient(180deg,var(--accent-rust),rgba(136,166,138,0.7))]" />
 
           {steps.map((step) => (
-            <div key={step.num} className="relative pl-20">
-              <div className="absolute left-[1.32rem] top-2 z-10 h-4 w-4 rounded-full border border-[var(--border-subtle)] bg-white" />
+            <div key={step.num} className="marketing-card relative rounded-[24px] pl-20 pr-5 py-5">
+              <div className="absolute left-[1.48rem] top-6 z-10 h-4 w-4 rounded-full border border-[rgba(255,224,194,0.24)] bg-[var(--bg-primary)] shadow-[0_0_0_5px_rgba(17,17,17,0.85)]" />
               <div>
                 <p className="hd-kicker mb-3">Step {step.num}</p>
                 <h3 className="font-sans text-[2.15rem] font-semibold tracking-tight text-[var(--text-primary)]">

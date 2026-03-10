@@ -50,7 +50,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="hd-panel rounded-[22px]">
+    <div className="marketing-card rounded-[22px]">
       <button
         onClick={() => setIsOpen((value) => !value)}
         className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left"
