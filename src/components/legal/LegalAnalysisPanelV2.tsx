@@ -24,7 +24,7 @@ export interface LegalAnalysisPanelV2Props {
 export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, gateState, error }: LegalAnalysisPanelV2Props) {
   const isBillingError = (error || '').toLowerCase().includes('anthropic credits depleted');
 
-  if (!result && !error) {
+  if (!result && !error && stage === 'idle') {
     return (
       <div className="lab-empty-state h-full">
         <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Legal Causal Reasoner</p>

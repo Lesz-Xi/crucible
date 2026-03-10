@@ -32,8 +32,11 @@ import { ClaimLedgerService } from "@/lib/services/claim-ledger-service";
 import { processChatAttachments, type ChatAttachment } from "@/lib/science/chat-scientific-bridge";
 import type { ScientificAnalysisResponse } from "@/lib/science/scientific-analysis-service";
 import { buildAttachmentSequentialThinkingReport } from "@/lib/science/sequential-thinking-assembler";
-
 import { getRecentScientificEvidence } from "@/lib/science/epistemic-data-bridge";
+import {
+  buildAttachmentTitleMemoryAnswer,
+  extractAttachmentNamesFromAssistantContent,
+} from "@/lib/science/attachment-memory";
 
 // Using Node.js runtime for full access to filesystem (schema loading)
 // export const runtime = "edge"; // Removed: Edge doesn't support 'path' module
@@ -270,27 +273,6 @@ function inferExpectedRungHint(
   if (normalizedMode === "audit") return 2;
 
   return 1;
-}
-
-function extractAttachmentNamesFromAssistantContent(content: string): string[] {
-  if (typeof content !== "string" || content.length === 0) return [];
-  const lines = content.split("\n");
-  const out: string[] = [];
-  let inSourceBlock = false;
-
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
-    if (/^source files\s*:/i.test(line)) {
-      inSourceBlock = true;
-      continue;
-    }
-    if (!inSourceBlock) continue;
-    if (!line.startsWith("-")) break;
-    const name = line.replace(/^-+\s*/, "").trim();
-    if (name) out.push(name);
-  }
-
-  return Array.from(new Set(out));
 }
 
 async function loadRecentAttachmentMemory(
@@ -1171,6 +1153,15 @@ ${sourceList}`;
         fullText = currentResponse.response.text();
         fullTextAccumulator = fullText;  // Mirror to outer scope for catch-block fallback
         chunkCount = 1;
+
+        const attachmentTitleMemoryAnswer =
+          normalizedAttachments.length === 0
+            ? buildAttachmentTitleMemoryAnswer(userQuestion, recentAttachmentFileNames)
+            : null;
+        if (attachmentTitleMemoryAnswer) {
+          fullText = attachmentTitleMemoryAnswer;
+          fullTextAccumulator = fullText;
+        }
 
         if (factTrigger.shouldSearch && groundingSources.length > 0) {
           const citationMatches = fullText.match(/\[(\d+)\]/g) || [];

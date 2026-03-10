@@ -54,7 +54,8 @@ export async function middleware(request: NextRequest) {
 
     await supabase.auth.getUser();
   } catch {
-    return NextResponse.next({ request });
+    // Fail open while preserving request header mutations (e.g. x-theme-scope).
+    return response;
   }
 
   return response;
