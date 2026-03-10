@@ -36,7 +36,7 @@ export default function ChatPage() {
 
   if (useV2) {
     return (
-      <div className="min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
+      <div className="chat-dark-shell min-h-screen w-full bg-[var(--lab-bg)] text-[var(--lab-text-primary)]">
         <Suspense fallback={<div className="lab-shell min-h-screen" />}>
           <ChatWorkbenchV2 />
         </Suspense>
