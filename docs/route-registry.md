@@ -104,5 +104,6 @@ This registry is enforced by:
 
 | Date | Change | Commit | Author |
 |------|--------|--------|--------|
+| 2026-03-10 | PR #11: `/education` and `/lab` shell migrated from `AppDashboardShell` to `WorkbenchShell`. No route paths added or removed — UI shell component change only. `/chat`, `/hybrid`, `/legal` shell parity also updated. Last Verified updated for all affected routes. | `15eff3d` | @Lesz-Xi |
 | 2026-03-10 | Backfilled current app route surface and verified `/api/legal-reasoning` fallback route change for PR #10 | `4a4637d` | @Lesz-Xi |
 | 2026-02-07 | Registry created with 4 active routes | _pending_ | @gemini |
