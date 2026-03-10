@@ -17,11 +17,11 @@ export class DomainClassifier {
 
     // Legal domain (Phase 28.Legal) - Intent → Action → Harm causal chain
     legal: /defendant|plaintiff|liability|negligence|but[- ]?for|proximate cause|causation|tort|mens rea|intent to|criminal|civil case|lawsuit|court|verdict|damages|harm caused|injury caused|breach of duty|duty of care|foreseeability|intervening cause|superseding cause|comparative fault|strict liability|product liability|wrongful death|personal injury|malpractice|precedent|case law|statute|legal argument/i,
-
+    
     // Educational domain - Learning science, student performance, interventions
     education: /student|learning|study habits|motivation|academic|performance|grades|GPA|tutoring|spaced repetition|active recall|retrieval practice|cognitive load|growth mindset|fixed mindset|deliberate practice|mastery learning|prerequisite|study strategies|educational|lecture|quiz|exam|homework|office hours|peer collaboration|metacognition|self-efficacy|procrastination|learning style|personalized learning|adaptive learning|educational intervention|study skills|test anxiety|academic achievement|study environment|family support.*learning|sleep.*study|retention|flashcard|anki|practice test/i,
     iml: /interpretable machine learning|interpretability|explainability|post-hoc|feature attribution|saliency|partial dependence|shapley|surrogate model|lime|model opacity|causal divergence|confounder|data manifold|extrapolation artifact|sensitivity analysis|interpretation lagrangian|h_stat|h_ml/i,
-
+    
     scaling_laws: /scaling law|geoffrey west|power law|metabolic rate|superlinear|sublinear|carrying capacity|finite\.time\.singularity|kleiber|beta.*0\.75|beta.*1\.15|N\^beta|cities scale|companies scale|innovation cycle|regime|M\^.*3\/4/i,
     cognitive_psychology: /system 1|system 2|heuristic|cognitive bias|prospect theory|loss aversion|reference point|kahneman|WYSIATI|availability heuristic|anchoring|representativeness|thinking fast|dual\.process/i,
     evolutionary_biology: /kin selection|altruism|hamilton|relatedness|inclusive fitness|haplodiploidy|eusocial|selfish gene/i,
@@ -43,13 +43,7 @@ export class DomainClassifier {
       }
     }
 
-    // 2. Short Conversational / Abstract Fallback
-    if (question.length < 50) {
-      console.log(`[DomainClassifier] Short question fallback: abstract`);
-      return { primary: "abstract", confidence: 0.6 };
-    }
-
-    // 3. LLM Fallback for ambiguous or novel domains
+    // 2. LLM Fallback for ambiguous or novel domains
     console.log(`[DomainClassifier] No keyword match, falling back to LLM`);
     return this.llmClassify(question);
   }

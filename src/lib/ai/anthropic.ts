@@ -72,23 +72,9 @@ export interface GenerateContentResult {
   };
 }
 
-export interface StreamContentResult {
-  textStream: AsyncIterable<string>;
-  response: Promise<{
-    text: () => string;
-    toolCalls: () => ToolCall[];
-    modelInfo?: () => {
-      requestedModel: string;
-      usedModel: string;
-      fallbackApplied: boolean;
-    };
-  }>;
-}
-
 // Adapter Interface to mimic Gemini's GenerativeModel, extended for Tools
 export interface ClaudeModel {
   generateContent(prompt: string, options?: GenerateContentOptions): Promise<GenerateContentResult>;
-  streamContent?(prompt: string, options?: GenerateContentOptions): Promise<StreamContentResult>;
 }
 
 function extractTextFromMessageContent(content: Array<Anthropic.ContentBlock>): string {
@@ -253,50 +239,6 @@ class ClaudeAdapter implements ClaudeModel {
     }
 
     throw new Error("Unreachable");
-  }
-
-  async streamContent(prompt: string, options?: GenerateContentOptions): Promise<StreamContentResult> {
-    const client = getAnthropicClient(this.apiKey);
-    const messages: Array<Anthropic.MessageParam> = options?.messages
-      ? [...options.messages]
-      : [{ role: "user", content: prompt }];
-
-    const stream = client.messages.stream({
-      model: this.model,
-      max_tokens: 8192,
-      messages,
-      system: options?.system,
-      tools: options?.tools as Anthropic.Tool[] | undefined,
-      tool_choice: options?.toolChoice as any,
-      temperature: options?.temperature,
-    });
-
-    const textStream = (async function* () {
-      for await (const event of stream) {
-        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-          yield event.delta.text;
-        }
-      }
-    })();
-
-    const responsePromise = stream.finalMessage().then(msg => {
-      const textChunk = extractTextFromMessageContent(msg.content);
-      const toolCalls = extractToolCallsFromMessageContent(msg.content);
-      return {
-        text: () => textChunk,
-        toolCalls: () => toolCalls,
-        modelInfo: () => ({
-          requestedModel: this.model,
-          usedModel: this.model,
-          fallbackApplied: false,
-        }),
-      };
-    });
-
-    return {
-      textStream,
-      response: responsePromise,
-    };
   }
 }
 

@@ -495,8 +495,6 @@ export async function POST(req: NextRequest) {
       let compactionReceipt: CompactionReceipt | null = null;
       let scientificAnalysis: ScientificAnalysisResponse[] = [];
       let recentAttachmentFileNames: string[] = [];
-      let attachmentMemoryPromise: Promise<string[]> | null = null;
-      let scientificEvidencePromise: Promise<any[]> | null = null;
       let fullTextAccumulator = "";  // Outer-scope mirror of fullText for catch-block fallback persistence
 
       const scientificPromise = normalizedAttachments.length > 0
@@ -599,11 +597,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (normalizedAttachments.length === 0 && sessionId && supabase) {
-          attachmentMemoryPromise = loadRecentAttachmentMemory(supabase, sessionId);
-        }
-
-        if (!scientificPromise && user?.id) {
-          scientificEvidencePromise = getRecentScientificEvidence(user.id, 5);
+          recentAttachmentFileNames = await loadRecentAttachmentMemory(supabase, sessionId);
         }
 
         // FAST-PATH: Detect simple conversational queries (greetings, identity, pleasantries)
@@ -727,8 +721,6 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
           enabled: groundingEnabled,
         });
 
-        let groundingPromise: Promise<any> | null = null;
-
         if (factTrigger.shouldSearch) {
           if (normalizedAttachments.length > 0) {
             sendEvent("web_grounding_failed", {
@@ -750,19 +742,47 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
               entities: factTrigger.normalizedEntities,
               confidence: factTrigger.confidence,
             });
-            // PARALLEL GROUNDING: Do not await here.
-            groundingPromise = searchChatGroundingDetailed(userQuestion, factTrigger.normalizedEntities, {
-              topK: 5,
-              timeoutMs: 4000,
-            }).catch(groundingError => {
+            try {
+              const groundingResult = await searchChatGroundingDetailed(userQuestion, factTrigger.normalizedEntities, {
+                topK: 5,
+                timeoutMs: 5000,
+              });
+              groundingSources = groundingResult.sources;
+
+              sendEvent("web_grounding_provenance", {
+                rawQuestion: userQuestion,
+                normalizedEntities: factTrigger.normalizedEntities,
+                generatedQueries: groundingResult.diagnostics.generatedQueries,
+                rawCandidateCount: groundingResult.diagnostics.rawCandidateCount,
+                acceptedCount: groundingResult.diagnostics.acceptedCount,
+                filteredOutCount: groundingResult.diagnostics.filteredOutCount,
+                filteredOutReasons: groundingResult.diagnostics.filteredOutReasons,
+                topicalityThreshold: groundingResult.diagnostics.topicalityThreshold,
+              });
+
+              if (groundingSources.length === 0) {
+                sendEvent("web_grounding_failed", {
+                  reason: "low_topical_relevance",
+                  message: "No topically relevant web sources passed grounding filters.",
+                });
+              } else {
+                sendEvent("web_grounding_completed", {
+                  sourceCount: groundingSources.length,
+                  topDomains: Array.from(new Set(groundingSources.map((source) => source.domain))).slice(0, 5),
+                  sources: groundingSources,
+                });
+              }
+            } catch (groundingError) {
               console.error("[CausalChat] Web grounding failed:", groundingError);
               sendEvent("web_grounding_failed", {
                 reason: "search_error",
                 message: groundingError instanceof Error ? groundingError.message : "Grounding search failed.",
               });
-              return null;
-            });
+            }
           }
+
+          factualConfidence = assessFactualConfidence(userQuestion, groundingSources, factTrigger.normalizedEntities);
+          sendEvent("factual_confidence_assessed", factualConfidence);
         }
 
         // 1. Domain Classification
@@ -800,10 +820,10 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
 
         const solver = new CausalSolver();
         const cfGenerator = new CounterfactualGenerator();
+        await cfGenerator.initialize();
 
         // Check for Do-Calculus Intervention
         if (intervention && intervention.node_id) {
-          await cfGenerator.initialize();
           const subjectScm = scmContext.tier2 || scmContext.primaryScm;
           const outcomeVar =
             typeof intervention.outcome_var === "string" && intervention.outcome_var.trim().length > 0
@@ -932,22 +952,12 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
           scientificAnalysis = bridgeResult.analyses;
           scientificSummaryForContext = bridgeResult.summaryForContext;
           scientificWarnings = bridgeResult.warnings;
-        } else if (scientificEvidencePromise) {
+        } else if (user?.id) {
           try {
-            const history = await scientificEvidencePromise;
-            if (history && history.length > 0) {
-              recentAttachmentFileNames = history.map(h => h.fileName);
-            }
+            const history = await getRecentScientificEvidence(user.id, 5);
+            recentAttachmentFileNames = history.map(h => h.fileName);
           } catch (err) {
             console.error("Failed to fetch recent scientific evidence:", err);
-          }
-        }
-
-        if (attachmentMemoryPromise && recentAttachmentFileNames.length === 0) {
-          try {
-            recentAttachmentFileNames = await attachmentMemoryPromise;
-          } catch (err) {
-            console.error("Failed to fetch recent attachment memory:", err);
           }
         }
 
@@ -1023,38 +1033,6 @@ MEMORY POLICY:
 - Do not claim missing attachment history when this memory is present.`;
         }
 
-        // 3.5 Await Grounding Promise before rendering final prompt
-        if (groundingPromise) {
-          const groundingResult = await groundingPromise;
-          if (groundingResult) {
-            groundingSources = groundingResult.sources;
-            sendEvent("web_grounding_provenance", {
-              rawQuestion: userQuestion,
-              normalizedEntities: factTrigger.normalizedEntities,
-              generatedQueries: groundingResult.diagnostics.generatedQueries,
-              rawCandidateCount: groundingResult.diagnostics.rawCandidateCount,
-              acceptedCount: groundingResult.diagnostics.acceptedCount,
-              filteredOutCount: groundingResult.diagnostics.filteredOutCount,
-              filteredOutReasons: groundingResult.diagnostics.filteredOutReasons,
-              topicalityThreshold: groundingResult.diagnostics.topicalityThreshold,
-            });
-            if (groundingSources.length === 0) {
-              sendEvent("web_grounding_failed", { reason: "low_topical_relevance", message: "No topically relevant web sources." });
-            } else {
-              sendEvent("web_grounding_completed", {
-                sourceCount: groundingSources.length,
-                topDomains: Array.from(new Set(groundingSources.map((s: any) => s.domain))).slice(0, 5),
-                sources: groundingSources,
-              });
-            }
-          }
-        }
-
-        if (factTrigger.shouldSearch) {
-          factualConfidence = assessFactualConfidence(userQuestion, groundingSources, factTrigger.normalizedEntities);
-          sendEvent("factual_confidence_assessed", factualConfidence);
-        }
-
         if (factTrigger.shouldSearch) {
           const sourceList =
             groundingSources.length > 0
@@ -1108,119 +1086,145 @@ ${sourceList}`;
         // We use 'any' cast here to avoid strict type dependency on @anthropic-ai/sdk in this file, 
         // relying on the structural compatibility with the adapter.
         let messages: any[] = [{ role: "user", content: finalPrompt }];
+        let currentResponse = await model.generateContent(finalPrompt, { tools, messages });
+
+        // Tool Loop
+        let toolCalls = currentResponse.response.toolCalls();
         let loopCount = 0;
         const MAX_TOOL_LOOPS = 5;
-        let toolCalls: any[] = [];
-        let currentResponse: any;
 
-        while (loopCount < MAX_TOOL_LOOPS) {
-          if (model.streamContent) {
-            const streamTask = await model.streamContent(finalPrompt, { tools, messages });
-            for await (const token of streamTask.textStream) {
-              if (token) {
-                fullText += token;
-                sendEvent("answer_chunk", { text: token });
-              }
-            }
-            currentResponse = await streamTask.response;
-          } else {
-            currentResponse = await model.generateContent(finalPrompt, { tools, messages });
-            const textPart = currentResponse.response.text();
-            if (textPart) {
-              fullText += textPart;
-              sendEvent("answer_chunk", { text: textPart });
-            }
-          }
-
-          toolCalls = currentResponse.response.toolCalls() || [];
-          if (toolCalls.length === 0) {
-            const finalModelInfo = currentResponse.response.modelInfo?.();
-            if (finalModelInfo?.fallbackApplied) {
-              sendEvent("model_fallback", {
-                provider: providerId,
-                requested_model: finalModelInfo.requestedModel,
-                used_model: finalModelInfo.usedModel,
-              });
-            }
-            break;
-          }
-
+        while (toolCalls.length > 0 && loopCount < MAX_TOOL_LOOPS) {
           loopCount++;
           console.log(`[CausalChat] Tool usage detected (Loop ${loopCount}):`, toolCalls.map(tc => tc.name));
 
+          // 1. Append Assistant Message (Text + ToolUse) to history
           const assistantContent: any[] = [];
           const textPart = currentResponse.response.text();
-          if (textPart) assistantContent.push({ type: "text", text: textPart });
-
+          if (textPart) {
+            assistantContent.push({ type: "text", text: textPart });
+          }
           toolCalls.forEach(tc => {
-            assistantContent.push({ type: "tool_use", id: tc.id, name: tc.name, input: tc.input });
+            assistantContent.push({
+              type: "tool_use",
+              id: tc.id,
+              name: tc.name,
+              input: tc.input
+            });
           });
           messages.push({ role: "assistant", content: assistantContent });
 
+          // 2. Execute Tools
           const toolResults: any[] = [];
+
           for (const tc of toolCalls) {
             let output: any = { error: "Unknown tool" };
+
             try {
               if (tc.name === "simulate_scientific_phenomenon") {
-                output = await scientificGateway.simulate(tc.input.thesis, tc.input.mechanism, tc.input.prediction);
+                const { thesis, mechanism, prediction } = tc.input as any;
+                output = await scientificGateway.simulate(thesis, mechanism, prediction);
               } else if (tc.name === "perform_mathematical_analysis") {
-                output = await scientificGateway.calculate(tc.input.operation, tc.input.data);
+                const { operation, data } = tc.input as any;
+                output = await scientificGateway.calculate(operation, data);
               } else if (tc.name === "verify_law_compliance") {
-                output = await scientificGateway.verify(tc.input.claim);
+                const { claim } = tc.input as any;
+                output = await scientificGateway.verify(claim);
               } else if (tc.name === "fetch_protein_structure") {
-                output = await scientificGateway.fetchProteinStructure(tc.input.pdbId);
+                const { pdbId } = tc.input as any;
+                output = await scientificGateway.fetchProteinStructure(pdbId);
               } else if (tc.name === "analyze_protein_sequence") {
-                output = await scientificGateway.analyzeProteinSequence(tc.input.sequence);
+                const { sequence } = tc.input as any;
+                output = await scientificGateway.analyzeProteinSequence(sequence);
               } else if (tc.name === "dock_ligand") {
-                output = await scientificGateway.dockLigand(tc.input.pdbId, tc.input.smiles, tc.input.seed);
+                const { pdbId, smiles, seed } = tc.input as any;
+                output = await scientificGateway.dockLigand(pdbId, smiles, seed);
               }
             } catch (err: any) {
               output = { error: err.message || String(err) };
             }
-            toolResults.push({ type: "tool_result", tool_use_id: tc.id, content: JSON.stringify(output) });
+
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tc.id,
+              content: JSON.stringify(output)
+            });
           }
+
+          // 3. Append User Message (Tool Results) to history
           messages.push({ role: "user", content: toolResults });
+
+          // 4. Call Model Again
+          currentResponse = await model.generateContent(finalPrompt, { tools, messages });
+          toolCalls = currentResponse.response.toolCalls();
         }
 
+        const finalModelInfo = currentResponse.response.modelInfo?.();
+        if (finalModelInfo?.fallbackApplied) {
+          sendEvent("model_fallback", {
+            provider: providerId,
+            requested_model: finalModelInfo.requestedModel,
+            used_model: finalModelInfo.usedModel,
+          });
+        }
+
+        // Final text after tool loop
+        fullText = currentResponse.response.text();
         fullTextAccumulator = fullText;  // Mirror to outer scope for catch-block fallback
         chunkCount = 1;
 
-        if (normalizedAttachments.length > 0) {
-          const newText = buildAttachmentSequentialThinkingReport(scientificAnalysis, scientificWarnings);
-          const shaped = enforceAttachmentOutputContractShape(newText);
-          const polished = polishContractPresentation(shaped);
-          if (polished !== fullText) {
-            sendEvent("answer_chunk", { text: "\n\n" + polished });
-            fullText += "\n\n" + polished;
-          }
-        } else {
-          let newlyAddedText = "";
-          if (factTrigger.shouldSearch && groundingSources.length > 0) {
-            const citationMatches = fullText.match(/\[(\d+)\]/g) || [];
-            const citedIds = new Set<number>(citationMatches.map((t: string) => Number(t.replace(/[^0-9]/g, ""))).filter((v: number) => Number.isFinite(v) && v > 0));
-            if (citedIds.size === 0) {
-              newlyAddedText += `\n\nSources:\n` + groundingSources.map((s: any) => `[${s.rank}] ${s.title} — ${s.link}`).join("\n");
-            } else {
-              const cited = groundingSources.filter((s: any) => citedIds.has(s.rank));
-              const added = groundingSources.filter((s: any) => !citedIds.has(s.rank));
-              const u = cited.length > 0 ? `Sources used: ${cited.map((s: any) => `[${s.rank}]`).join(" ")}` : "";
-              const a = added.length > 0 ? `Additional retrieved: ${added.map((s: any) => `[${s.rank}]`).join(" ")}` : "";
-              const rec = [u, a].filter(Boolean).join("\n");
-              if (rec) newlyAddedText += `\n\n${rec}`;
+        if (factTrigger.shouldSearch && groundingSources.length > 0) {
+          const citationMatches = fullText.match(/\[(\d+)\]/g) || [];
+          const citedIds = new Set<number>(
+            citationMatches
+              .map((token) => Number(token.replace(/[^0-9]/g, "")))
+              .filter((value) => Number.isFinite(value) && value > 0)
+          );
+
+          if (citedIds.size === 0) {
+            const sourcesFooter = groundingSources
+              .map((source) => `[${source.rank}] ${source.title} — ${source.link}`)
+              .join("\n");
+            fullText = `${fullText}\n\nSources:\n${sourcesFooter}`;
+          } else {
+            const citedList = groundingSources.filter((source) => citedIds.has(source.rank));
+            const additionalList = groundingSources.filter((source) => !citedIds.has(source.rank));
+
+            const usedLine = citedList.length > 0
+              ? `Sources used: ${citedList.map((source) => `[${source.rank}]`).join(" ")}`
+              : "";
+            const additionalLine = additionalList.length > 0
+              ? `Additional retrieved (not directly cited): ${additionalList.map((source) => `[${source.rank}]`).join(" ")}`
+              : "";
+
+            const reconciliation = [usedLine, additionalLine].filter(Boolean).join("\n");
+            if (reconciliation) {
+              fullText = `${fullText}\n\n${reconciliation}`;
             }
           }
-          if (factTrigger.shouldSearch && factualConfidence.level === "insufficient" && !/(cannot verify|unable to verify|insufficient evidence|could not verify)/i.test(fullText)) {
-            newlyAddedText = `I cannot verify this claim with high confidence from available sources right now.\n\n` + newlyAddedText;
-            // Since it alters the beginning in the db, we just stream the warning at the end.
-          }
-          if (newlyAddedText) {
-            fullText += newlyAddedText;
-            sendEvent("answer_chunk", { text: newlyAddedText });
-          }
         }
+
+        if (
+          factTrigger.shouldSearch &&
+          factualConfidence.level === "insufficient" &&
+          !/(cannot verify|unable to verify|insufficient evidence|could not verify)/i.test(fullText)
+        ) {
+          fullText = `I cannot verify this claim with high confidence from available sources right now.\n\n${fullText}`;
+        }
+
+        // Deterministic post-generation guard: enforce Automated Scientist persona and strip legacy phrasing.
         fullText = sanitizeAutomatedScientistTone(fullText);
 
-        console.log("[Streaming] Generation complete.");
+        // Deterministic sequential-thinking contract assembler for attachment-first responses:
+        // Section 1 -> Section 2 -> Section 3 are computed in-code to prevent drift/leakage.
+        if (normalizedAttachments.length > 0) {
+          fullText = buildAttachmentSequentialThinkingReport(scientificAnalysis, scientificWarnings);
+          fullText = enforceAttachmentOutputContractShape(fullText);
+          fullText = polishContractPresentation(fullText);
+        }
+
+        // Send the full response as a single chunk
+        sendEvent("answer_chunk", { text: fullText });
+        console.log("[Streaming] Response sent as single chunk.");
 
         // Analyze chunk for causal density
         const densityUpdate = analyzer.onChunk(fullText);
