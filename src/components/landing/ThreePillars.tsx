@@ -39,11 +39,11 @@ const pillars = [
 
 export function ThreePillars() {
   return (
-    <section className="hd-section bg-white py-16 md:py-20">
+    <section className="hd-section py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-12 max-w-3xl">
-          <div className="mb-4 inline-flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[var(--accent-rust)]" />
+          <div className="marketing-pill mb-4 inline-flex w-fit items-center gap-2 px-4 py-2">
+            <div className="marketing-dot" />
             <span className="hd-kicker">Architecture</span>
           </div>
           <h2 className="font-serif text-4xl text-[var(--text-primary)] md:text-5xl">
@@ -63,10 +63,10 @@ export function ThreePillars() {
             return (
               <article
                 key={pillar.title}
-                className="group relative flex flex-col rounded-[2rem] border border-[var(--border-subtle)] bg-white p-8 transition-all hover:border-[var(--border-strong)] lg:p-10"
+                className="marketing-card group relative flex flex-col rounded-[2rem] p-8 lg:p-10"
               >
                 <div className="mb-8 flex items-start justify-between">
-                  <div className={`rounded-[16px] border border-[var(--border-subtle)] p-3 ${pillar.accentBg}`}>
+                  <div className={`rounded-[18px] border border-[rgba(255,255,255,0.08)] p-3 ${pillar.accentBg}`}>
                     <Icon className={`h-6 w-6 ${pillar.accent}`} strokeWidth={1.5} />
                   </div>
                   <span className="font-mono text-xl uppercase tracking-[0.16em] text-[var(--text-muted)]/65">
