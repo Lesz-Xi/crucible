@@ -90,7 +90,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     ? new URLSearchParams(window.location.search).get('sessionId')
     : null;
   const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
-  const isThemeLocked = feature === 'chat' && (pathname === '/chat' || pathname?.startsWith('/chat/'));
 
   useEffect(() => {
     setMounted(true);
@@ -456,21 +455,14 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       </div>
 
       <div className="sidebar-footer">
-        {isThemeLocked ? (
-          <div className="footer-item footer-theme-locked" aria-label="Dark mode is locked for the chat workbench">
-            <Moon className="h-3.5 w-3.5" />
-            <span>Dark mode</span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="footer-item"
-            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-          >
-            {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-            <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
-          </button>
-        )}
+        <button
+          type="button"
+          className="footer-item"
+          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+        >
+          {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+          <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+        </button>
         <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item">
           <BookOpen className="h-3.5 w-3.5" />
           Documentation

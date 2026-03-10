@@ -7116,6 +7116,49 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   color: var(--text-1);
 }
 
+/* ── Warm-lock: override any .dark .feature-* ambient token overrides ─────
+   Specificity (0,2,0) — same as .dark .feature-chat but defined later in the
+   cascade, so this rule wins regardless of class="dark" on <html>.
+   The workbench always renders in the warm MASA palette.                    */
+.app-feature-shell.canonical-workbench-shell {
+  color-scheme: light;
+  --bg:               #FAFAF8;
+  --bg-2:             #F4F2EE;
+  --bg-3:             #EDEAE4;
+  --bg-4:             #E5E2DB;
+  --bg-5:             #DAD6CE;
+  --sidebar-bg:       #F2F0EB;
+  --rail-bg:          #F6F4F0;
+  --card-bg:          #FFFFFF;
+  --input-bg:         #FFFFFF;
+  --border:           rgba(0,0,0,0.08);
+  --border-2:         rgba(0,0,0,0.13);
+  --border-3:         rgba(0,0,0,0.20);
+  --text-1:           #1A1917;
+  --text-2:           rgba(26,25,23,0.55);
+  --text-3:           rgba(26,25,23,0.35);
+  --text-4:           rgba(26,25,23,0.18);
+  --accent:           #A0693A;
+  --accent-2:         #8A5520;
+  --accent-dim:       rgba(160,105,58,0.09);
+  --accent-border:    rgba(160,105,58,0.22);
+  --shadow:           0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.07);
+  --lab-bg:           #FAFAF8;
+  --lab-bg-elevated:  #FFFFFF;
+  --lab-panel:        #FFFFFF;
+  --lab-panel-soft:   #F4F2EE;
+  --lab-border:       rgba(0,0,0,0.08);
+  --lab-border-strong:rgba(0,0,0,0.20);
+  --lab-text-primary: #1A1917;
+  --lab-text-secondary:rgba(26,25,23,0.55);
+  --lab-text-tertiary: rgba(26,25,23,0.35);
+  --lab-accent-earth: #A0693A;
+  --lab-accent-clay:  #8A5520;
+  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+}
+
 .canonical-workbench-shell.sidebar-collapsed {
   --sidebar-w-desktop: 72px;
   --sidebar-w-lg: 72px;
@@ -8733,623 +8776,390 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 .stagger > *:nth-child(5) { animation-delay: 0.33s; }
 
 /* ========================================
-   Chat Dark Theme System
-   Forced dark scope for /chat
+   Marketing Dark Theme System
+   Unified public-facing scope for / and /how-it-works
    ======================================== */
 
-html[data-theme-scope="chat-dark"],
-body[data-theme-scope="chat-dark"] {
+html[data-theme-scope="marketing-dark"],
+body[data-theme-scope="marketing-dark"],
+html:has(.marketing-shell),
+body:has(.marketing-shell) {
   color-scheme: dark;
 }
 
-body[data-theme-scope="chat-dark"] {
+body[data-theme-scope="marketing-dark"],
+body:has(.marketing-shell) {
   background:
-    radial-gradient(circle at 14% 16%, rgba(255, 224, 194, 0.08), transparent 0 22%),
-    radial-gradient(circle at 84% 12%, rgba(142, 162, 199, 0.08), transparent 0 20%),
-    linear-gradient(180deg, #090b0f 0%, #0a0c10 48%, #090a0d 100%);
-  color: #f4f1eb;
+    radial-gradient(circle at top, rgba(255, 224, 194, 0.08), transparent 24%),
+    #111111;
+  color: #eeeeee;
 }
 
-html[data-theme-scope="chat-dark"] .chat-dark-shell,
-body[data-theme-scope="chat-dark"] .chat-dark-shell {
-  background: transparent;
+.theme-landing,
+html[data-theme-scope="marketing-dark"] .theme-landing,
+body[data-theme-scope="marketing-dark"] .theme-landing {
+  color-scheme: dark;
 }
 
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell {
-  --bg: #0a0c10;
-  --bg-2: #11151c;
-  --bg-3: #171d27;
-  --bg-4: #1e2531;
-  --bg-5: #252f3f;
-  --surface-0: #090b0f;
-  --surface-1: #0d1015;
-  --surface-2: #10141b;
-  --surface-3: #141924;
-  --sidebar-bg: rgba(12, 15, 21, 0.9);
-  --rail-bg: rgba(13, 16, 23, 0.92);
-  --card-bg: rgba(17, 21, 29, 0.88);
-  --card-bg-strong: rgba(20, 25, 35, 0.96);
-  --border: rgba(255, 255, 255, 0.075);
-  --border-2: rgba(255, 224, 194, 0.14);
-  --border-3: rgba(255, 224, 194, 0.32);
-  --rule: rgba(255, 255, 255, 0.07);
-  --rule-strong: rgba(255, 224, 194, 0.2);
-  --text-1: #f4f1eb;
-  --text-2: #c9c6c0;
-  --text-3: #8f96a3;
-  --text-4: #666f7d;
-  --accent: #ffe0c2;
-  --accent-dim: rgba(255, 224, 194, 0.12);
-  --accent-border: rgba(241, 201, 155, 0.9);
-  --accent-border-2: rgba(255, 224, 194, 0.22);
-  --green: #8cae8d;
-  --shadow-sm: 0 18px 30px rgba(0, 0, 0, 0.24);
-  --shadow: 0 28px 56px rgba(0, 0, 0, 0.36);
-  --shell-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+.theme-landing {
+  --background: #111111;
+  --foreground: #eeeeee;
+  --bg-primary: #111111;
+  --bg-secondary: #161616;
+  --bg-tertiary: #1d1d1d;
+  --bg-card: rgba(25, 25, 25, 0.92);
+  --bg-card-solid: #191919;
+  --bg-elevated: rgba(32, 32, 32, 0.94);
+  --bg-emphasis: #ffe0c2;
+  --text-primary: #eeeeee;
+  --text-secondary: #c8c8cb;
+  --text-muted: #8f8f95;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 224, 194, 0.22);
+  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.34);
+  --shadow-deep: 0 28px 80px rgba(0, 0, 0, 0.54);
+  --accent-rust: #ffe0c2;
+  --accent-rust-soft: rgba(255, 224, 194, 0.12);
+  --accent-blue: #8ea2c7;
+  --accent-blue-soft: rgba(142, 162, 199, 0.14);
+  --accent-dark: #0c0c0d;
+  --accent-moss: #88a68a;
+  --accent-moss-soft: rgba(136, 166, 138, 0.14);
+  --metric-line: rgba(255, 224, 194, 0.9);
+  --wabi-washi: #141414;
+  --wabi-patina: #9f9fa4;
+  --wabi-clay: #ffe0c2;
+  --wabi-sumi: #eeeeee;
+  --wabi-ink: #eeeeee;
+  --wabi-ink-light: #c8c8cb;
+  --wabi-moss: #88a68a;
+  --wabi-rust: #ffe0c2;
+  --wabi-stone: #a7a6ab;
+  --wabi-sand: #2b2b2b;
+  --wabi-charcoal: #090909;
+  --wabi-gold: #f1c99b;
+}
+
+.marketing-shell {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at top, rgba(255, 224, 194, 0.06), transparent 0 26%),
-    linear-gradient(180deg, rgba(13, 15, 20, 0.98) 0%, rgba(9, 11, 15, 0.98) 100%);
-  color: var(--text-1);
+    radial-gradient(circle at 18% 16%, rgba(255, 224, 194, 0.12), transparent 0 24%),
+    radial-gradient(circle at 84% 10%, rgba(142, 162, 199, 0.1), transparent 0 22%),
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.04), transparent 0 42%),
+    linear-gradient(180deg, #0f0f10 0%, #111111 35%, #101010 100%);
 }
 
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::before,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::before,
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::after,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::after {
+.marketing-shell::before,
+.marketing-shell::after {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
+  z-index: 0;
 }
 
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::before,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::before {
+.marketing-shell::before {
+  opacity: 0.42;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 76px 76px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.18) 68%, transparent);
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.15) 65%, transparent);
+}
+
+.marketing-shell::after {
   opacity: 0.22;
-}
-
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::after,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell::after {
   background:
-    radial-gradient(circle at 12% 18%, rgba(255, 224, 194, 0.16), transparent 0 16%),
-    radial-gradient(circle at 92% 10%, rgba(142, 162, 199, 0.14), transparent 0 16%),
-    radial-gradient(circle at 66% 100%, rgba(136, 166, 138, 0.1), transparent 0 22%);
-  filter: blur(56px);
-  opacity: 0.46;
+    radial-gradient(circle at 20% 20%, rgba(255, 224, 194, 0.28), transparent 0 18%),
+    radial-gradient(circle at 80% 24%, rgba(136, 166, 138, 0.18), transparent 0 16%),
+    radial-gradient(circle at 50% 100%, rgba(142, 162, 199, 0.16), transparent 0 22%);
+  filter: blur(64px);
 }
 
-html[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell > *,
-body[data-theme-scope="chat-dark"] .app-feature-shell.feature-chat.canonical-workbench-shell > * {
+.theme-landing .hd-page,
+.theme-landing .hd-section {
   position: relative;
   z-index: 1;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .desktop-sidebar,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .app-shell-main,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .desktop-sidebar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .app-shell-main,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail {
-  background: transparent;
+.theme-landing .hd-section {
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar {
+.theme-landing .hd-page::before {
+  display: none;
+}
+
+.theme-landing section.bg-white {
+  background-color: transparent;
+}
+
+.theme-landing .bg-white {
+  background-color: rgba(23, 23, 24, 0.88);
+}
+
+.theme-landing .wabi-glass-panel,
+.theme-landing .bg-glass-card,
+.theme-landing .hd-panel,
+.theme-landing .hd-panel-soft,
+.theme-landing .hd-panel-note,
+.theme-landing .hd-stat-card,
+.theme-landing .bg-\[var\(--bg-card\)\] {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.theme-landing .hd-panel,
+.theme-landing .marketing-panel {
+  border: 1px solid var(--border-subtle);
   background:
-    linear-gradient(180deg, rgba(15, 18, 24, 0.92), rgba(10, 13, 18, 0.9));
-  border-right: 1px solid var(--border);
-  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02);
+    linear-gradient(180deg, rgba(31, 31, 31, 0.94), rgba(20, 20, 20, 0.96));
+  box-shadow: var(--shadow-soft);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar-header,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .main-topbar,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-header,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .sidebar-header,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .main-topbar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-header {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.015);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .wordmark-icon,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .wordmark-icon {
-  border-color: rgba(255, 224, 194, 0.18);
+.theme-landing .hd-panel-soft,
+.theme-landing .marketing-panel-soft {
+  border: 1px solid rgba(255, 255, 255, 0.06);
   background:
-    linear-gradient(180deg, rgba(255, 224, 194, 0.18), rgba(255, 224, 194, 0.08));
-  color: #ffe0c2;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 12px 28px rgba(0, 0, 0, 0.24);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .wordmark-text,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .wordmark-text {
-  color: #f1eee7;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .icon-btn,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-action,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-settings-btn,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-shell-trigger,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .icon-btn,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-action,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-settings-btn,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-shell-trigger {
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-3);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .icon-btn:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-action:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-settings-btn:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-shell-trigger:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .icon-btn:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-action:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-settings-btn:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-shell-trigger:hover {
-  border-color: var(--border-2);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-item,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-settings .lab-nav-pill,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-item,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-settings .lab-nav-pill {
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--text-2);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-item:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-settings .lab-nav-pill:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-item:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-settings .lab-nav-pill:hover {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.045);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item.active,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-item.active {
-  border-color: rgba(255, 224, 194, 0.22);
-  background:
-    linear-gradient(90deg, rgba(255, 224, 194, 0.12), rgba(136, 166, 138, 0.06) 58%, rgba(255, 255, 255, 0.02));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-badge,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .nav-badge {
-  border-color: rgba(255, 224, 194, 0.22);
-  background: rgba(255, 224, 194, 0.08);
-  color: #ffe0c2;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-btn {
-  min-height: 92px;
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(22, 27, 36, 0.86), rgba(15, 18, 24, 0.94));
-  border-color: var(--border);
+    linear-gradient(180deg, rgba(27, 27, 28, 0.88), rgba(18, 18, 19, 0.9));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-label,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .action-label {
-  font-family: var(--font-instrument-serif), "Instrument Serif", serif;
-  font-size: 20px;
-  line-height: 1;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-item,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-label,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-item,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-label {
-  border: 1px solid transparent;
-  color: var(--text-3);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-item:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-label:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-row.active .history-item,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-row.active .folder-label,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-item:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-label:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .history-row.active .history-item,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .folder-row.active .folder-label {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-theme-locked,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .footer-theme-locked {
-  border-color: rgba(255, 224, 194, 0.18);
-  background: rgba(255, 224, 194, 0.08);
-  color: #ffe0c2;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .user-row,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-popover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .user-row,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-popover {
-  border-color: var(--border);
+.theme-landing .hd-panel-note,
+.theme-landing .marketing-note {
+  border: 1px solid rgba(255, 224, 194, 0.16);
   background:
-    linear-gradient(180deg, rgba(20, 24, 32, 0.84), rgba(13, 16, 22, 0.94));
-  box-shadow: var(--shadow-sm);
+    linear-gradient(135deg, rgba(255, 224, 194, 0.12), rgba(136, 166, 138, 0.08) 56%, rgba(20, 20, 20, 0.92));
+  box-shadow: var(--shadow-soft);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-action,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-action {
-  color: var(--text-2);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-action:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .account-action:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .main-topbar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .main-topbar {
+.theme-landing .hd-stat-card,
+.theme-landing .marketing-stat {
+  border: 1px solid rgba(255, 255, 255, 0.07);
   background:
-    linear-gradient(180deg, rgba(17, 21, 29, 0.88), rgba(10, 13, 18, 0.6));
+    linear-gradient(180deg, rgba(24, 24, 24, 0.92), rgba(17, 17, 17, 0.95));
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .topbar-tag,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .topbar-tag {
-  color: var(--accent);
+.theme-landing .hd-grid-frame::before {
+  inset: 1rem;
+  border-color: rgba(255, 255, 255, 0.06);
+  border-radius: 28px;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-shell,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-shell {
-  width: min(1180px, 100%);
-  padding: 88px 48px 44px;
-  gap: 42px;
+.theme-landing .hd-kicker,
+.theme-landing .hd-metric-label,
+.theme-landing .hd-mono-label {
+  color: var(--accent-rust);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline {
-  gap: 16px;
-  margin-bottom: 12px;
+.theme-landing .hd-kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .workbench-eyebrow,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .workbench-eyebrow {
-  color: #f1c99b;
+.theme-landing .hd-metric-label {
+  color: var(--text-muted);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1 {
-  text-shadow: 0 12px 44px rgba(0, 0, 0, 0.34);
+.theme-landing .hd-serif-display,
+.theme-landing .font-serif {
+  text-wrap: balance;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1 em,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1 em {
-  color: #8ea2c7;
+.theme-landing .landing-metric-bar {
+  background: linear-gradient(90deg, var(--accent-rust), rgba(136, 166, 138, 0.5), transparent);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline p,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline p {
-  max-width: 620px;
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--text-2);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-grid,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-grid {
-  gap: 18px;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell {
-  min-height: 292px;
-  border-radius: 22px;
-  border: 1px solid var(--border);
-  background:
-    linear-gradient(180deg, rgba(20, 25, 35, 0.92), rgba(11, 14, 20, 0.98));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 20px 40px rgba(0, 0, 0, 0.24);
+.theme-landing .marketing-card {
+  position: relative;
   overflow: hidden;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell::before,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell::before {
-  display: block;
-  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 38%),
-    radial-gradient(circle at top right, rgba(255, 224, 194, 0.12), transparent 0 34%);
-  opacity: 1;
+    linear-gradient(180deg, rgba(28, 28, 29, 0.92), rgba(18, 18, 19, 0.96));
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell::after,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell::after {
-  display: block;
-  inset: 0 auto auto 22px;
-  width: calc(100% - 44px);
+.theme-landing .marketing-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, rgba(255, 224, 194, 0), rgba(255, 224, 194, 0.66), rgba(142, 162, 199, 0));
-  opacity: 0.8;
+  background: linear-gradient(90deg, rgba(255, 224, 194, 0.74), rgba(142, 162, 199, 0.28), transparent);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell:hover {
-  border-color: var(--border-3);
-  background:
-    linear-gradient(180deg, rgba(24, 30, 42, 0.94), rgba(13, 16, 24, 0.99));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 26px 56px rgba(0, 0, 0, 0.32);
+.theme-landing .marketing-card:hover,
+.theme-landing .marketing-card:focus-within {
   transform: translateY(-4px);
+  border-color: rgba(255, 224, 194, 0.24);
+  box-shadow: var(--shadow-deep);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-icon,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  border-color: rgba(255, 224, 194, 0.18);
-  background:
-    linear-gradient(180deg, rgba(255, 224, 194, 0.16), rgba(142, 162, 199, 0.08));
-  color: #f8ddbf;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+.theme-landing .marketing-button-primary,
+.theme-landing .marketing-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border-radius: 999px;
+  padding: 0.95rem 1.35rem;
+  font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-tag,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-tag {
-  color: #8ea2c7;
+.theme-landing .marketing-button-primary {
+  border: 1px solid rgba(255, 224, 194, 0.26);
+  background: linear-gradient(180deg, rgba(255, 224, 194, 0.98), rgba(227, 195, 163, 0.96));
+  color: #151313;
+  box-shadow: 0 20px 40px rgba(255, 224, 194, 0.14);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell p,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell p {
-  max-width: 34ch;
-  color: var(--text-2);
+.theme-landing .marketing-button-primary:hover,
+.theme-landing .marketing-button-primary:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 26px 52px rgba(255, 224, 194, 0.18);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-arrow,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-arrow {
-  color: #f1c99b;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-list,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-list {
-  padding-top: 28px;
-  gap: 18px;
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message {
-  border-color: var(--border);
-  background:
-    linear-gradient(180deg, rgba(18, 22, 29, 0.9), rgba(12, 15, 21, 0.94));
-  box-shadow: var(--shadow-sm);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message.user,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message.user {
-  border-color: rgba(255, 224, 194, 0.16);
-  background:
-    linear-gradient(180deg, rgba(30, 26, 24, 0.92), rgba(18, 17, 18, 0.96));
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-head,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-head {
-  color: var(--text-3);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-role,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-message-role {
-  color: var(--accent);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-citation,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-citation {
-  border-color: var(--border);
-  background: rgba(255, 255, 255, 0.035);
-  color: var(--text-2);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-citation:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-citation:hover {
-  border-color: var(--border-2);
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-area,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-area {
-  background:
-    linear-gradient(180deg, rgba(10, 12, 16, 0) 0%, rgba(13, 16, 22, 0.82) 100%);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-composer-shell,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-composer-shell {
-  border-color: var(--border);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(20, 25, 35, 0.9), rgba(14, 17, 24, 0.96));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 18px 36px rgba(0, 0, 0, 0.28);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-composer-shell:focus-within,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-composer-shell:focus-within {
-  border-color: var(--border-3);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 0 0 1px rgba(255, 224, 194, 0.14),
-    0 24px 44px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-textarea,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-textarea {
-  color: var(--text-1);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-textarea::placeholder,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .input-textarea::placeholder {
-  color: var(--text-3);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar-chip,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .composer-attachment,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar-chip,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .composer-attachment {
-  border-color: var(--border);
+.theme-landing .marketing-button-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.03);
-  color: var(--text-2);
+  color: var(--text-primary);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar-chip:hover,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .composer-attachment:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-toolbar-chip:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .composer-attachment:hover {
-  border-color: var(--border-2);
-  background: rgba(255, 255, 255, 0.055);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .send-btn,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .send-btn {
+.theme-landing .marketing-button-secondary:hover,
+.theme-landing .marketing-button-secondary:focus-visible {
+  transform: translateY(-1px);
   border-color: rgba(255, 224, 194, 0.22);
-  background:
-    linear-gradient(135deg, rgba(255, 224, 194, 0.18), rgba(142, 162, 199, 0.12));
-  color: #fff5e8;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: rgba(255, 224, 194, 0.07);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .send-btn:hover,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .send-btn:hover {
-  border-color: rgba(255, 224, 194, 0.34);
-  background:
-    linear-gradient(135deg, rgba(255, 224, 194, 0.24), rgba(142, 162, 199, 0.16));
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail {
-  border-left: 1px solid var(--border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  background:
-    linear-gradient(180deg, rgba(14, 17, 23, 0.96), rgba(10, 13, 18, 0.92));
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-section,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-section {
-  border-bottom-color: var(--border);
-}
-
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module-compact,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module-evidence,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-info-card,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-domain-card,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-empty,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-status-line,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module-compact,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-module-evidence,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-info-card,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-domain-card,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rail-empty,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-status-line {
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(20, 25, 34, 0.9), rgba(13, 16, 22, 0.96));
+.theme-landing .marketing-pill,
+.theme-landing .marketing-chip,
+.theme-landing .marketing-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-track,
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .meter-track,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-track,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .meter-track {
-  background: rgba(255, 255, 255, 0.06);
+.theme-landing .marketing-pill,
+.theme-landing .marketing-chip {
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-fill,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .rung-fill {
-  background: linear-gradient(90deg, rgba(255, 224, 194, 0.85), rgba(142, 162, 199, 0.72));
+.theme-landing .marketing-icon-chip {
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1.25rem;
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .meter-fill,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .meter-fill {
-  background: linear-gradient(90deg, #8cae8d, #ffe0c2);
+.theme-landing .marketing-input,
+.theme-landing .lg-input {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .file-icon,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .file-icon {
-  border-color: var(--border);
+.theme-landing .marketing-input::placeholder,
+.theme-landing .lg-input::placeholder {
+  color: rgba(200, 200, 203, 0.5);
+}
+
+.theme-landing .marketing-input:focus-visible,
+.theme-landing .lg-input:focus-visible {
+  outline: none;
+  border-color: rgba(255, 224, 194, 0.28);
+  box-shadow:
+    0 0 0 4px rgba(255, 224, 194, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.theme-landing .lg-control {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: var(--text-primary) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.theme-landing .lg-control:hover {
+  border-color: rgba(255, 224, 194, 0.2) !important;
+  background: rgba(255, 224, 194, 0.08) !important;
+}
+
+.theme-landing .marketing-section-surface {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 36px;
   background:
-    linear-gradient(180deg, rgba(255, 224, 194, 0.12), rgba(255, 255, 255, 0.03));
+    linear-gradient(180deg, rgba(19, 19, 20, 0.9), rgba(16, 16, 16, 0.94));
+  box-shadow: var(--shadow-soft);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-sidebar-overlay,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-sidebar-overlay {
-  background: rgba(4, 6, 8, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.theme-landing .marketing-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-sidebar-panel,
-body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .mobile-sidebar-panel {
-  background:
-    linear-gradient(180deg, rgba(15, 18, 24, 0.96), rgba(10, 13, 18, 0.96));
-  border-right: 1px solid var(--border);
+.theme-landing .marketing-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-rust);
+  box-shadow: 0 0 18px rgba(255, 224, 194, 0.4);
+}
+
+.theme-landing .marketing-highlight {
+  color: var(--accent-rust);
+}
+
+.theme-landing .marketing-muted {
+  color: var(--text-muted);
+}
+
+.theme-landing .obsidian-loader-scan {
+  opacity: 0.3;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell,
-  body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell {
+  .theme-landing .marketing-card,
+  .theme-landing .marketing-button-primary,
+  .theme-landing .marketing-button-secondary,
+  .theme-landing .stagger > *,
+  .theme-landing .fade-in {
+    animation: none !important;
     transition: none !important;
     transform: none !important;
   }
 }
 
-@media (max-width: 1023px) {
-  html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-shell,
-  body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-shell {
-    padding: 56px 20px 28px;
+@media (max-width: 767px) {
+  .marketing-shell::before {
+    background-size: 42px 42px;
+    opacity: 0.3;
   }
 
-  html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1,
-  body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .chat-empty-headline h1 {
-    font-size: clamp(42px, 12vw, 58px);
-  }
-
-  html[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell,
-  body[data-theme-scope="chat-dark"] .canonical-workbench-shell.feature-chat .protocol-card-shell {
-    min-height: 0;
+  .theme-landing .hd-section {
+    padding-top: 3.5rem;
+    padding-bottom: 3.5rem;
   }
 }

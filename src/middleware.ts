@@ -1,17 +1,14 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-function resolveThemeScope(pathname: string) {
-  if (pathname === '/') return 'marketing-light';
-  if (pathname === '/chat' || pathname.startsWith('/chat/')) return 'chat-dark';
-  return null;
-}
-
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const pathname = request.nextUrl.pathname;
 
-  const themeScope = resolveThemeScope(pathname);
+  const themeScope =
+    pathname === '/' || pathname.startsWith('/how-it-works')
+      ? 'marketing-dark'
+      : null;
 
   if (themeScope) requestHeaders.set('x-theme-scope', themeScope);
   else requestHeaders.delete('x-theme-scope');
@@ -55,7 +52,8 @@ export async function middleware(request: NextRequest) {
 
     await supabase.auth.getUser();
   } catch {
-    return NextResponse.next({ request });
+    // Fail open while preserving request header mutations (e.g. x-theme-scope).
+    return response;
   }
 
   return response;
