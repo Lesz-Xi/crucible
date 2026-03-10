@@ -2,19 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import {
-  Focus,
-  FlaskConical,
-  Moon,
-  Microscope,
-  Network,
-  Scale,
-  Sun,
-  ShieldCheck,
-} from 'lucide-react';
-import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
-import { CausalGauges } from '@/components/workbench/CausalGauges';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -22,13 +9,13 @@ import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
 import { ThinkingAnimation } from '@/components/causal-chat/ThinkingAnimation';
-import { EvidenceRail } from '@/components/workbench/EvidenceRail';
-import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
+import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
-import { ScientificEvidenceList } from '@/components/causal-chat/ScientificEvidenceList';
+import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
+import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface WorkbenchMessage {
   id: string;
@@ -247,26 +234,6 @@ const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
   return null;
 };
 
-const QUICK_PROMPTS = [
-  {
-    id: 'growth-drop',
-    label: 'Growth dropped after campaign',
-    snippet: 'Scenario: Growth dropped after a new campaign. Build a causal map of likely drivers, top confounders, and the first 3 diagnostics to run this week.',
-  },
-  {
-    id: 'conversion-intervention',
-    label: 'Improve conversion rate',
-    snippet: 'Scenario: Conversion fell from 3.2% to 2.4%. Propose one controlled intervention, expected delta on conversion, risk checks, and success criteria.',
-  },
-  {
-    id: 'policy-change-audit',
-    label: 'Audit policy change impact',
-    snippet: 'Scenario: A policy change was rolled out. Audit whether claimed impact is causal, list required evidence, and give one falsifier test.',
-  },
-] as const;
-
-type QuickPromptId = (typeof QUICK_PROMPTS)[number]['id'];
-
 export function ChatWorkbenchV2() {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const searchParams = useSearchParams();
@@ -283,21 +250,16 @@ export function ChatWorkbenchV2() {
   const currentModelKeyRef = useRef<string>('default');
   const lastDensityRef = useRef<{ score: number; label: string; confidence: number } | null>(null);
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
-  const [groundingStatus, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
-  const [groundingError, setGroundingError] = useState<string | null>(null);
-  const [usedGroundingFallback, setUsedGroundingFallback] = useState(false);
+  const [, setGroundingStatus] = useState<'idle' | 'searching' | 'ready' | 'failed'>('idle');
+  const [, setGroundingError] = useState<string | null>(null);
+  const [, setUsedGroundingFallback] = useState(false);
   const [factualConfidence, setFactualConfidence] = useState<FactualConfidenceResult | null>(null);
   const [alignmentPosture, setAlignmentPosture] = useState<string>('No unaudited intervention claims without identifiability gates.');
   const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
   const [claimCopied, setClaimCopied] = useState(false);
-  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
-  const [evidenceRailOpen, setEvidenceRailOpen] = useState(true);
-  const [focusMode, setFocusMode] = useState(false);
-  const [selectedQuickPrompt, setSelectedQuickPrompt] = useState<QuickPromptId>('growth-drop');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
-  const { resolvedTheme, setTheme } = useTheme();
   const assistantContentRef = useRef<string>('');
   const scientificAnalysisRef = useRef<ScientificAnalysisResponse | undefined>(undefined);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -336,48 +298,6 @@ export function ChatWorkbenchV2() {
     setAlignmentPosture('No unaudited intervention claims without identifiability gates.');
     setLatestClaimId(null);
     setClaimCopied(false);
-  }, []);
-
-
-  useEffect(() => {
-    const savedEvidenceRail = window.localStorage.getItem('chat-v3-evidence-rail');
-    if (savedEvidenceRail === 'closed') setEvidenceRailOpen(false);
-
-    const savedFocusMode = window.localStorage.getItem('chat-v3-focus-mode');
-    if (savedFocusMode === 'on') {
-      setFocusMode(true);
-      setEvidenceRailOpen(false);
-    }
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      const isMetaToggle = (event.metaKey || event.ctrlKey) && !event.altKey;
-      if (!isMetaToggle) return;
-
-      if (event.key === ']') {
-        event.preventDefault();
-        setEvidenceRailOpen((current) => {
-          const next = !current;
-          window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
-          return next;
-        });
-      }
-
-      if (event.key.toLowerCase() === 'f') {
-        event.preventDefault();
-        setFocusMode((current) => {
-          const next = !current;
-          window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
-          if (next) {
-            setEvidenceRailOpen(false);
-            window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
-          }
-          return next;
-        });
-      }
-    };
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
   useEffect(() => {
@@ -1053,46 +973,6 @@ export function ChatWorkbenchV2() {
     }
   }, []);
 
-  const handleCopyMessage = useCallback(async (messageId: string, content: string) => {
-    try {
-      await navigator.clipboard.writeText(content || '');
-      setCopiedMessageId(messageId);
-      window.setTimeout(() => setCopiedMessageId((current) => (current === messageId ? null : current)), 1200);
-    } catch {
-      setCopiedMessageId(null);
-    }
-  }, []);
-
-  const handleQuickPrompt = useCallback((id: string, snippet: string) => {
-    const matched = QUICK_PROMPTS.find((item) => item.id === id);
-    if (matched) setSelectedQuickPrompt(matched.id);
-    setPrompt(snippet);
-  }, []);
-
-  const toggleEvidenceRail = useCallback(() => {
-    setEvidenceRailOpen((current) => {
-      const next = !current;
-      window.localStorage.setItem('chat-v3-evidence-rail', next ? 'open' : 'closed');
-      if (next) {
-        setFocusMode(false);
-        window.localStorage.setItem('chat-v3-focus-mode', 'off');
-      }
-      return next;
-    });
-  }, []);
-
-  const toggleFocusMode = useCallback(() => {
-    setFocusMode((current) => {
-      const next = !current;
-      window.localStorage.setItem('chat-v3-focus-mode', next ? 'on' : 'off');
-      if (next) {
-        setEvidenceRailOpen(false);
-        window.localStorage.setItem('chat-v3-evidence-rail', 'closed');
-      }
-      return next;
-    });
-  }, []);
-
   const handleAddAttachments = useCallback((files: File[]) => {
     setAttachments((previous) => {
       const next = [...previous];
@@ -1116,90 +996,157 @@ export function ChatWorkbenchV2() {
   }, []);
 
   const domainDisplay = isRealDomain(currentDomain) ? currentDomain : 'unavailable';
-  const modelDisplay = isRealModelKey(currentModelKey) ? currentModelKey : 'unavailable';
+  const inlineGroundingSources = groundingSources.slice(0, 3);
+  const modelProvenanceState = buildModelProvenanceDisplayState({
+    modelKey: currentModelKey,
+    latestClaimId,
+  });
+  const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
+    subtitle: 'Live causal posture',
+    live: groundingSources.length > 0 || latestClaimId !== null || messages.length > 0,
+    causalDensity: {
+      activeLevel:
+        lastDensity?.score && lastDensity.score >= 0.8
+          ? 'L3'
+          : lastDensity?.score && lastDensity.score >= 0.6
+            ? 'L2'
+            : lastDensity
+              ? 'L1'
+              : null,
+      status: lastDensity?.label
+        ? `Active rung: ${lastDensity.label}`
+        : 'Awaiting scored output',
+    },
+    alignmentPosture: {
+      tone: factualConfidence?.level === 'high'
+        ? 'green'
+        : factualConfidence?.level === 'medium'
+          ? 'amber'
+          : factualConfidence?.level === 'low'
+            ? 'red'
+            : 'neutral',
+      text: factualConfidence?.rationale || alignmentPosture,
+    },
+    modelProvenance: {
+      title: modelProvenanceState.title,
+      text: modelProvenanceState.text,
+      actions: latestClaimId ? [
+        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
+        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
+        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
+      ] : undefined,
+    },
+    activeDomain: {
+      label: domainDisplay,
+    },
+    scientificEvidence: groundingSources.slice(0, 6).map((source) => ({
+      id: `${source.rank}-${source.link}`,
+      title: `[${source.rank}] ${source.title}`,
+      meta: source.snippet || source.domain,
+      href: source.link,
+      badge: source.domain,
+    })),
+  }), [
+    alignmentPosture,
+    claimCopied,
+    domainDisplay,
+    factualConfidence?.level,
+    factualConfidence?.rationale,
+    groundingSources,
+    handleCopyClaimId,
+    lastDensity,
+    latestClaimId,
+    messages.length,
+    modelProvenanceState,
+  ]);
 
   return (
     <WorkbenchShell
-      className="feature-chat"
-      evidenceRailOpen={evidenceRailOpen}
-      readingMode={focusMode}
-      contextRail={<div />}
-      primary={
-        <PrimaryCanvas>
-          <div className="chat-viewport">
-            <div className="chat-container">
-              {messages.length === 0 ? (
-                <div className="workbench animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="workbench-headline">
-                    <h1>Scientific Workbench</h1>
-                    <p>Select a research protocol to begin your inquiry.</p>
-                  </div>
-
-                  <div className="protocol-grid stagger">
-                    <ProtocolCard
-                      title="Causal Discovery"
-                      description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
-                      icon={Microscope}
-                      onClick={() => {
-                        setOperatorMode('explore');
-                        setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
-                      }}
-                    />
-                    <ProtocolCard
-                      title="Intervention Planning"
-                      description="Simulate do-calculus interventions (do(X)=y) to predict system behavior."
-                      icon={FlaskConical}
-                      onClick={() => {
-                        setOperatorMode('intervene');
-                        setPrompt('I need to simulate an intervention. Here is the scenario:');
-                      }}
-                    />
-                    <ProtocolCard
-                      title="Counterfactual Audit"
-                      description="Verify specific claims against the causal graph logic and evidence."
-                      icon={Scale}
-                      onClick={() => {
-                        setOperatorMode('audit');
-                        setPrompt('Verify this claim against the known causal graph:');
-                      }}
-                    />
-                  </div>
+      feature="chat"
+      evidenceRail={railConfig}
+      mainMode="chat"
+      mainContent={
+        <div className="chat-workbench">
+          <div className="chat-message-scroll">
+            {messages.length === 0 ? (
+              <div className="chat-empty-shell fade-in">
+                <div className="chat-empty-headline">
+                  <div className="workbench-eyebrow">Sovereign Synthesis Engine</div>
+                  <h1>Scientific<br /><em>Workbench</em></h1>
+                  <p>Select a research protocol to begin your inquiry into the causal structure of the world.</p>
                 </div>
-              ) : (
-                messages.map((message) => (
+
+                <div className="protocol-grid stagger">
+                  <ProtocolCard
+                    tag="Protocol 01"
+                    iconKind="discovery"
+                    title="Causal Discovery"
+                    description="Ingest observational data or papers to extract Structural Causal Models (SCM) from raw evidence."
+                    onClick={() => {
+                      setOperatorMode('explore');
+                      setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
+                    }}
+                  />
+
+                  <ProtocolCard
+                    tag="Protocol 02"
+                    iconKind="intervention"
+                    title="Intervention Planning"
+                    description="Simulate do-calculus interventions (do(X)=y) to predict how the system responds to external actions."
+                    onClick={() => {
+                      setOperatorMode('intervene');
+                      setPrompt('I need to simulate an intervention. Here is the scenario:');
+                    }}
+                  />
+
+                  <ProtocolCard
+                    tag="Protocol 03"
+                    iconKind="audit"
+                    title="Counterfactual Audit"
+                    description="Verify specific claims against the causal graph logic, evidence corpus, and falsification criteria."
+                    onClick={() => {
+                      setOperatorMode('audit');
+                      setPrompt('Verify this claim against the known causal graph:');
+                    }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="chat-message-list">
+                {messages.map((message, index) => (
                   <article
                     key={message.id}
-                    className={message.role === 'user' ? 'lab-card-interactive ml-auto max-w-[88%]' : 'lab-card mr-auto max-w-[92%]'}
+                    className={`chat-message ${message.role === 'user' ? 'user' : 'assistant'}`}
                   >
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="lab-chip-mono">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => void handleCopyMessage(message.id, message.content)}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-[var(--lab-border)] bg-[var(--lab-input-bg)] text-xs text-[var(--lab-text-secondary)] transition hover:bg-[var(--lab-hover-bg)]"
-                          title={copiedMessageId === message.id ? `Copied ${message.role === 'user' ? 'prompt' : 'response'}` : `Copy ${message.role === 'user' ? 'prompt' : 'response'}`}
-                          aria-label={copiedMessageId === message.id ? 'Copied' : 'Copy message'}
-                        >
-                          {copiedMessageId === message.id ? '✓' : '⧉'}
-                        </button>
-                        <span className="text-xs text-[var(--lab-text-tertiary)]">{message.createdAt.toLocaleTimeString()}</span>
-                      </div>
+                    <div className="chat-message-head">
+                      <span className="chat-message-role">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
+                      <span className="chat-message-time">{message.createdAt.toLocaleTimeString()}</span>
                     </div>
                     {message.role === 'assistant' && message.scientificAnalysis && (
                       <div className="mb-4 max-w-2xl">
                         <ScientificTableCard analysis={message.scientificAnalysis} />
                       </div>
                     )}
-                    {message.role === 'assistant' ? (
-                      <div className="lab-chat-prose">
+                    <div className="chat-message-body">
+                      {message.role === 'assistant' ? (
+                        <div className="lab-chat-prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {message.content || '...'}
                         </ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap">{message.content || '...'}</p>
+                      )}
+                    </div>
+                    {message.role === 'assistant' && index === messages.length - 1 && inlineGroundingSources.length > 0 ? (
+                      <div className="chat-citations">
+                        {inlineGroundingSources.map((source) => (
+                          <a key={`${source.rank}-${source.link}`} href={source.link} target="_blank" rel="noreferrer" className="chat-citation">
+                            <span>[{source.rank}] {source.title}</span>
+                          </a>
+                        ))}
                       </div>
-                    ) : (
-                      <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-[var(--lab-text-primary)]">{message.content || '...'}</p>
-                    )}
+                    ) : null}
                     {message.isStreaming ? (
                       <ThinkingAnimation
                         stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}
@@ -1207,180 +1154,37 @@ export function ChatWorkbenchV2() {
                       />
                     ) : null}
                   </article>
-                ))
-              )}
-            </div>
-            <div className="input-area mt-auto">
-            {!focusMode ? (
-              <ChatComposerV2
-                value={prompt}
-                onChange={setPrompt}
-                onSend={handleSend}
-                onStop={handleStop}
-                isLoading={isLoading}
-                operatorMode={operatorMode}
-                onOperatorModeChange={setOperatorMode}
-                quickPrompts={QUICK_PROMPTS}
-                selectedQuickPromptId={selectedQuickPrompt}
-                onQuickPromptSelect={handleQuickPrompt}
-                evidenceRailOpen={evidenceRailOpen}
-                onToggleEvidenceRail={toggleEvidenceRail}
-                focusMode={focusMode}
-                onToggleFocusMode={toggleFocusMode}
-                attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
-                onAddAttachments={handleAddAttachments}
-                onRemoveAttachment={handleRemoveAttachment}
-                placeholder={
-                  operatorMode === 'intervene'
-                    ? 'Describe the action you want to take, expected impact, and guardrails...'
-                    : operatorMode === 'audit'
-                      ? 'Paste the claim to validate, evidence available, and what could disprove it...'
-                      : 'Describe the real-world situation, what changed, and what outcome you need...'
-                }
-              />
-            ) : (
-              <div className="px-6 pb-3 pt-2">
-                <div className="inline-flex items-center gap-2 rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] px-2 py-1.5">
-                  <button
-                    type="button"
-                    className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
-                    onClick={toggleFocusMode}
-                    title="Exit reading mode"
-                    aria-label="Exit reading mode"
-                  >
-                    <Focus className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    className="lab-button-secondary !px-2.5 !py-1.5 text-xs"
-                    onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                    title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                    aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                  >
-                    {resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-                  </button>
-                </div>
+                ))}
               </div>
             )}
-            
-            {modelFallbackNotice ? (
-              <div className="px-6 pb-2 text-xs text-[var(--lab-accent-rust)]">
-                ⚠️ Model fallback: {modelFallbackNotice}
-              </div>
-            ) : null}
-            {error ? <div className="px-6 pb-2 text-sm text-red-700">{error}</div> : null}
-            
-            </div>
           </div>
-        </PrimaryCanvas>
+        </div>
       }
-      evidenceRail={
-        <EvidenceRail title="Evidence Rail" subtitle="Live causal posture and provenance">
-          <CausalGauges
-            density={lastDensity}
-            posture={alignmentPosture}
-            modelKey={modelDisplay}
-            provenanceAvailable={modelDisplay !== "unavailable"}
+      inputArea={
+        <div>
+          <ChatComposerV2
+            value={prompt}
+            onChange={setPrompt}
+            onSend={handleSend}
+            onStop={handleStop}
+            isLoading={isLoading}
+            operatorMode={operatorMode}
+            onOperatorModeChange={setOperatorMode}
+            attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
+            onAddAttachments={handleAddAttachments}
+            onRemoveAttachment={handleRemoveAttachment}
+            placeholder={
+              operatorMode === 'intervene'
+                ? 'Describe the action you want to take, expected impact, and guardrails...'
+                : operatorMode === 'audit'
+                  ? 'Paste the claim to validate, evidence available, and what could disprove it...'
+                  : 'Describe the real-world situation, what changed, and what outcome you need...'
+            }
           />
-          
-          <div>
-            <section className="rail-section">
-              <div className="rail-section-head">
-                <Network className="h-3 w-3" />
-                <span>Active Domain</span>
-              </div>
-              <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
-            </section>
-
-            <ScientificEvidenceList />
-
-            {latestClaimId ? (
-              <section className="rail-section">
-                <div className="mb-2 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                  <p className="lab-section-title !mb-0">Claim Lineage</p>
-                </div>
-                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <a
-                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
-                    href={`/claims/${latestClaimId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open pretty view
-                  </a>
-                  <a
-                    className="inline-block text-xs text-[var(--lab-accent-earth)] underline"
-                    href={`/api/claims/${latestClaimId}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Open JSON
-                  </a>
-                  <button
-                    type="button"
-                    className="text-xs text-[var(--lab-text-secondary)] underline"
-                    onClick={() => void handleCopyClaimId(latestClaimId)}
-                  >
-                    Copy Claim ID
-                  </button>
-                </div>
-                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
-              </section>
-            ) : null}
-
-            {(groundingStatus !== 'idle' || groundingSources.length > 0 || factualConfidence) ? (
-              <section className="rail-section">
-                <div className="mb-2 flex items-center gap-2">
-                  <Network className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                  <p className="lab-section-title !mb-0">Grounding Sources</p>
-                </div>
-                <p className="text-xs text-[var(--lab-text-secondary)]">
-                  {groundingStatus === 'searching' && 'Searching web sources...'}
-                  {groundingStatus === 'ready' && `${groundingSources.length} sources linked.`}
-                  {groundingStatus === 'failed' && (groundingError || 'Verification incomplete.')}
-                  {groundingStatus === 'idle' && 'No factual web-grounding triggered.'}
-                </p>
-                {factualConfidence ? (
-                  <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
-                    Confidence: <span className="font-semibold text-[var(--lab-text-primary)]">{factualConfidence.level}</span>
-                  </p>
-                ) : null}
-                {usedGroundingFallback ? (
-                  <p className="mt-2 inline-flex rounded-full border border-[var(--lab-border)] px-2 py-1 text-[10px] font-mono uppercase tracking-wide text-[var(--lab-text-tertiary)]">
-                    Grounding source sync fallback used
-                  </p>
-                ) : null}
-                {groundingSources.length > 0 ? (
-                  <div className="mt-3 space-y-2">
-                    {groundingSources.slice(0, 5).map((source) => (
-                      <a
-                        key={`${source.rank}-${source.link}`}
-                        href={source.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="block rounded-md border border-[var(--lab-border)] p-2 transition hover:bg-[var(--lab-bg-elevated)]"
-                      >
-                        <p className="text-xs font-semibold text-[var(--lab-text-primary)]">[{source.rank}] {source.title}</p>
-                        <p className="mt-1 line-clamp-2 text-[11px] text-[var(--lab-text-secondary)]">{source.snippet || source.domain}</p>
-                      </a>
-                    ))}
-                  </div>
-                ) : null}
-              </section>
-            ) : null}
-
-            <div className="p-4">
-              <button type="button" className="lab-button-secondary w-full !justify-center" onClick={resetThread}>
-                <FlaskConical className="h-4 w-4" />
-                Start controlled intervention
-              </button>
-            </div>
-          </div>
-        </EvidenceRail>
+          {modelFallbackNotice ? <div className="mt-3 text-xs text-[var(--accent)]">Model fallback: {modelFallbackNotice}</div> : null}
+          {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
+        </div>
       }
-      contextRailOpen={false}
     />
   );
 }
