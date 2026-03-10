@@ -7116,6 +7116,52 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   color: var(--text-1);
 }
 
+/* ── Warm-lock: override any .dark .feature-* ambient token overrides ─────
+   Specificity (0,2,0) — same as .dark .feature-chat but defined later in the
+   cascade, so this rule wins regardless of class="dark" on <html>.
+   The workbench always renders in the warm MASA palette.                    */
+.app-feature-shell.canonical-workbench-shell {
+  color-scheme: light;
+  /* surface & bg */
+  --bg:               #FAFAF8;
+  --bg-2:             #F4F2EE;
+  --bg-3:             #EDEAE4;
+  --bg-4:             #E5E2DB;
+  --bg-5:             #DAD6CE;
+  --sidebar-bg:       #F2F0EB;
+  --rail-bg:          #F6F4F0;
+  --card-bg:          #FFFFFF;
+  --input-bg:         #FFFFFF;
+  /* borders */
+  --border:           rgba(0,0,0,0.08);
+  --border-2:         rgba(0,0,0,0.13);
+  --border-3:         rgba(0,0,0,0.20);
+  /* text */
+  --text-1:           #1A1917;
+  --text-2:           rgba(26,25,23,0.55);
+  --text-3:           rgba(26,25,23,0.35);
+  --text-4:           rgba(26,25,23,0.18);
+  /* accent */
+  --accent:           #A0693A;
+  --accent-2:         #8A5520;
+  --accent-dim:       rgba(160,105,58,0.09);
+  --accent-border:    rgba(160,105,58,0.22);
+  /* lab tokens (overrides .dark .feature-chat) */
+  --lab-bg:           #FAFAF8;
+  --lab-bg-elevated:  #FFFFFF;
+  --lab-panel:        #FFFFFF;
+  --lab-panel-soft:   #F4F2EE;
+  --lab-border:       rgba(0,0,0,0.08);
+  --lab-border-strong:rgba(0,0,0,0.20);
+  --lab-text-primary: #1A1917;
+  --lab-text-secondary:rgba(26,25,23,0.55);
+  --lab-text-tertiary: rgba(26,25,23,0.35);
+  --lab-accent-earth: #A0693A;
+  --lab-accent-clay:  #8A5520;
+  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+}
+
 .canonical-workbench-shell.sidebar-collapsed {
   --sidebar-w-desktop: 72px;
   --sidebar-w-lg: 72px;
