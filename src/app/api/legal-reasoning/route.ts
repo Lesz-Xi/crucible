@@ -26,9 +26,11 @@ import {
 import {
   LegalCase,
   LegalCausalChain,
+  LegalAction,
   LegalReasoningResponse,
   LegalVerdict,
   LegalStreamEvent,
+  Harm,
   HarmSeverity,
   LegalDiagnostics,
   ButForAnalysis,
@@ -512,7 +514,11 @@ async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
 
     // Step 2: Build causal chains (Intent → Action → Harm)
     console.log('[LegalReasoning] Building causal chains');
-    const butForResults = await butForAnalyzer.analyzeMultiple(extraction.timeline, extraction.harms);
+    const butForResults = await analyzeLegalPairsWithFallback(
+      butForAnalyzer,
+      extraction.timeline,
+      extraction.harms,
+    );
     const rawChains: LegalCausalChain[] = [];
 
     for (const action of extraction.timeline) {
@@ -741,9 +747,10 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
         });
         
         // OPTIMIZED: Use batched analysis (single LLM call for all pairs)
-        const butForResults = await butForAnalyzer.analyzeMultiple(
-          extraction.timeline, 
-          extraction.harms
+        const butForResults = await analyzeLegalPairsWithFallback(
+          butForAnalyzer,
+          extraction.timeline,
+          extraction.harms,
         );
         
         const causalChains: LegalCausalChain[] = [];
@@ -964,58 +971,6 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
 }
 
 /**
- * Build causal chains from actions and harms
- */
-async function buildCausalChains(
-  actions: LegalCase['timeline'],
-  harms: LegalCase['harms'],
-  butForAnalyzer: ButForAnalyzer,
-  legalSCM: LegalSCMTemplate
-): Promise<LegalCausalChain[]> {
-  const chains: LegalCausalChain[] = [];
-
-  for (const action of actions) {
-    for (const harm of harms) {
-      // Perform but-for test
-      const butForAnalysis = await butForAnalyzer.analyze(action, harm);
-
-      // Only create chain if but-for test passes (necessary or both)
-      if (butForAnalysis.result === 'necessary' || butForAnalysis.result === 'both') {
-        // Validate with Legal SCM
-        const validation = await legalSCM.validateLegalCausation(
-          action.intent?.description || 'unknown intent',
-          action.description,
-          harm.description
-        );
-
-        // Accept if no fatal violations (warnings are okay)
-        const fatalViolations = validation.violations.filter(v => v.severity === 'fatal');
-        
-        if (fatalViolations.length === 0) {
-          chains.push({
-            intent: action.intent || {
-              type: 'negligent',
-              description: 'Unknown',
-              evidenceSnippets: [],
-              confidence: 0.3,
-            },
-            action,
-            harm,
-            causalStrength: butForAnalysis.confidence,
-            butForAnalysis,
-            interveningCauses: [],
-            proximateCauseEstablished: validation.proximateCausePassed,
-            foreseeability: validation.proximateCausePassed ? 0.8 : 0.4,
-          });
-        }
-      }
-    }
-  }
-
-  return chains;
-}
-
-/**
  * Generate verdict from causal chains
  */
 function generateVerdict(
@@ -1077,6 +1032,26 @@ function generateVerdict(
     confidence: avgConfidence,
     caveats: caveats.length > 0 ? caveats : undefined,
   };
+}
+
+async function analyzeLegalPairsWithFallback(
+  butForAnalyzer: ButForAnalyzer,
+  actions: LegalAction[],
+  harms: Harm[],
+): Promise<Map<string, ButForAnalysis>> {
+  const batched = await butForAnalyzer.analyzeMultiple(actions, harms);
+  if (batched.size > 0 || actions.length === 0 || harms.length === 0) {
+    return batched;
+  }
+
+  const fallback = new Map<string, ButForAnalysis>();
+  for (const action of actions) {
+    for (const harm of harms) {
+      fallback.set(`${action.id}->${harm.id}`, await butForAnalyzer.analyze(action, harm));
+    }
+  }
+
+  return fallback;
 }
 
 /**

@@ -17,8 +17,6 @@ import {
   LogOut,
   Menu,
   MessageSquare,
-  PanelLeftClose,
-  PanelLeftOpen,
   Moon,
   Plus,
   Search,
@@ -67,7 +65,7 @@ const RELICS_ITEMS = [
 export function AppDashboardShell({ children, readingMode = false }: AppDashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = false;
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -151,9 +149,6 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
 
   useEffect(() => {
     setMounted(true);
-    const saved = window.localStorage.getItem('wuweism-dashboard-sidebar');
-    if (saved === 'collapsed') setCollapsed(true);
-
     try {
       const savedFolders = window.localStorage.getItem('chat-folders-v1');
       const savedFolderFiles = window.localStorage.getItem('chat-folder-files-v1');
@@ -246,14 +241,6 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
     return local.slice(0, 2).toUpperCase() || 'WW';
   }, [userEmail]);
 
-  const toggleSidebar = () => {
-    setCollapsed((prev) => {
-      const next = !prev;
-      window.localStorage.setItem('wuweism-dashboard-sidebar', next ? 'collapsed' : 'expanded');
-      return next;
-    });
-  };
-
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -315,15 +302,21 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
           collapsed ? 'collapsed' : '',
         )}>
           <div className="sidebar-header">
-            {collapsed ? null : (
-              <>
-                <div className="wordmark-icon"></div>
-                <span style={{ fontFamily: 'var(--font-instrument-serif)', fontSize: '15px', fontWeight: 400, letterSpacing: '0.01em' }}>Synthetic Mind</span>
-              </>
-            )}
-            <button type="button" className="action-button !bg-transparent !border-none !p-1.5 opacity-60 hover:opacity-100 ml-auto" onClick={toggleSidebar} aria-label="Toggle sidebar">
-              {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            </button>
+            <div className="wordmark-icon">
+              <FlaskConical className="h-3.5 w-3.5" />
+            </div>
+            <span className="wordmark-text">Bio-Lab Notebook</span>
+            <div className="sidebar-header-actions">
+              <button type="button" className="icon-btn" aria-label="Search">
+                <Search className="h-3.5 w-3.5" />
+              </button>
+              <button type="button" className="icon-btn" aria-label="Create new chat" onClick={() => {
+                router.push('/chat?new=1');
+                window.dispatchEvent(new Event('newChat'));
+              }}>
+                <Plus className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
 
           <div className="sidebar-content">
@@ -401,12 +394,12 @@ export function AppDashboardShell({ children, readingMode = false }: AppDashboar
                     <span className="font-serif tracking-wide">New chat</span>
                   </button>
                   <button
-                    className="btn btn-outline"
-                    style={{ width: '40px', padding: 0, justifyContent: 'center' }}
+                    className="btn btn-outline flex-1"
                     onClick={() => createFolder()}
-                    title="New Folder"
+                    title="New folder"
                   >
-                    <FolderPlus className="h-4 w-4" />
+                    <FolderPlus className="h-4 w-4 mr-2" />
+                    <span className="font-serif tracking-wide">New folder</span>
                   </button>
                 </div>
 

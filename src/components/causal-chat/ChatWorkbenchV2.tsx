@@ -4,32 +4,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
-  ArrowDown,
-  ArrowRight,
-  ChevronDown,
-  FileText,
   Focus,
   FlaskConical,
   Moon,
-  MessageSquare,
   Microscope,
   Network,
-  Plus,
   Scale,
-  Send,
   Sun,
   ShieldCheck,
-  Sparkles,
-  StopCircle,
-  Upload,
-  X,
 } from 'lucide-react';
 import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import { CausalGauges } from '@/components/workbench/CausalGauges';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
-import { cn } from '@/lib/utils';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
@@ -1141,16 +1129,13 @@ export function ChatWorkbenchV2() {
           <div className="chat-viewport">
             <div className="chat-container">
               {messages.length === 0 ? (
-                <div className="mx-auto w-full max-w-[900px] flex flex-col my-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <div className="workbench-headline text-center mb-12">
-                    <div className="workbench-eyebrow">Synthesis Engine</div>
-                    <h1>Scientific <em>Workbench</em></h1>
-                    <p className="mt-4">
-                      Select a research protocol to begin your inquiry.
-                    </p>
+                <div className="workbench animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="workbench-headline">
+                    <h1>Scientific Workbench</h1>
+                    <p>Select a research protocol to begin your inquiry.</p>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[20px]">
+
+                  <div className="protocol-grid stagger">
                     <ProtocolCard
                       title="Causal Discovery"
                       description="Ingest observational data or papers to extract Structural Causal Models (SCM)."
@@ -1224,7 +1209,8 @@ export function ChatWorkbenchV2() {
                   </article>
                 ))
               )}
-            </div>            <div className="input-area mt-auto">
+            </div>
+            <div className="input-area mt-auto">
             {!focusMode ? (
               <ChatComposerV2
                 value={prompt}
@@ -1297,19 +1283,19 @@ export function ChatWorkbenchV2() {
             provenanceAvailable={modelDisplay !== "unavailable"}
           />
           
-          <div className="mt-6 space-y-4 border-t border-[var(--lab-border)] pt-6">
-            <div className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <Network className="h-4 w-4 text-[var(--lab-accent-moss)]" />
-                <p className="lab-section-title !mb-0">Active Domain</p>
+          <div>
+            <section className="rail-section">
+              <div className="rail-section-head">
+                <Network className="h-3 w-3" />
+                <span>Active Domain</span>
               </div>
               <p className="text-sm font-medium text-[var(--lab-text-primary)]">{domainDisplay}</p>
-            </div>
+            </section>
 
             <ScientificEvidenceList />
 
             {latestClaimId ? (
-              <div className="lab-metric-tile">
+              <section className="rail-section">
                 <div className="mb-2 flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
                   <p className="lab-section-title !mb-0">Claim Lineage</p>
@@ -1341,11 +1327,11 @@ export function ChatWorkbenchV2() {
                   </button>
                 </div>
                 {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
-              </div>
+              </section>
             ) : null}
 
             {(groundingStatus !== 'idle' || groundingSources.length > 0 || factualConfidence) ? (
-              <div className="lab-metric-tile">
+              <section className="rail-section">
                 <div className="mb-2 flex items-center gap-2">
                   <Network className="h-4 w-4 text-[var(--lab-accent-earth)]" />
                   <p className="lab-section-title !mb-0">Grounding Sources</p>
@@ -1382,13 +1368,15 @@ export function ChatWorkbenchV2() {
                     ))}
                   </div>
                 ) : null}
-              </div>
+              </section>
             ) : null}
 
-            <button type="button" className="lab-button-secondary w-full" onClick={resetThread}>
-              <FlaskConical className="h-4 w-4" />
-              Start controlled intervention
-            </button>
+            <div className="p-4">
+              <button type="button" className="lab-button-secondary w-full !justify-center" onClick={resetThread}>
+                <FlaskConical className="h-4 w-4" />
+                Start controlled intervention
+              </button>
+            </div>
           </div>
         </EvidenceRail>
       }

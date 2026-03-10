@@ -508,4 +508,6 @@ export class SessionService {
 /**
  * Singleton instance for convenience.
  */
-export const sessionService = new SessionService();
+// Do not instantiate at module scope. Route modules that import this service
+// are analyzed during build, and missing runtime credentials must not crash
+// page-data collection or prerender analysis.

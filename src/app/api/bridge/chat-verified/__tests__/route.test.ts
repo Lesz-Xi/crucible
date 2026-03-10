@@ -2,7 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const singleMock = vi.fn();
 const selectMock = vi.fn(() => ({ single: singleMock }));
-const insertMock = vi.fn(() => ({ select: selectMock }));
+const insertMock = vi.fn((row: Record<string, unknown>) => {
+  void row;
+  return { select: selectMock };
+});
 const fromMock = vi.fn(() => ({ insert: insertMock }));
 
 vi.mock("@/lib/supabase/public-server", () => ({
@@ -12,6 +15,8 @@ vi.mock("@/lib/supabase/public-server", () => ({
 }));
 
 import { POST } from "../route";
+
+type PostRequest = Parameters<typeof POST>[0];
 
 describe("POST /api/bridge/chat-verified", () => {
   const originalToken = process.env.BRIDGE_VERIFICATION_TOKEN;
@@ -46,7 +51,7 @@ describe("POST /api/bridge/chat-verified", () => {
       }),
     });
 
-    const res = await POST(req as any);
+    const res = await POST(req as unknown as PostRequest);
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -54,11 +59,14 @@ describe("POST /api/bridge/chat-verified", () => {
     expect(fromMock).toHaveBeenCalledWith("bridge_verification_log");
     expect(insertMock).toHaveBeenCalledTimes(1);
 
-    const insertedRow = insertMock.mock.calls[0][0] as Record<string, unknown>;
-    expect(insertedRow.source).toBe("scm-report");
-    expect(insertedRow.verdict).toBe("verified");
-    expect(insertedRow.request_id).toBe("req-1");
-    expect(insertedRow.metadata).toEqual({ reportId: "rpt-1" });
+    const firstInsertCall = insertMock.mock.calls[0];
+    expect(firstInsertCall).toBeDefined();
+    if (!firstInsertCall) throw new Error("Expected insert call");
+    const typedInsertedRow = firstInsertCall[0];
+    expect(typedInsertedRow.source).toBe("scm-report");
+    expect(typedInsertedRow.verdict).toBe("verified");
+    expect(typedInsertedRow.request_id).toBe("req-1");
+    expect(typedInsertedRow.metadata).toEqual({ reportId: "rpt-1" });
   });
 
   it("rejects unauthorized requests when bridge token is configured", async () => {
@@ -70,7 +78,7 @@ describe("POST /api/bridge/chat-verified", () => {
       body: JSON.stringify({ source: "scm-report" }),
     });
 
-    const res = await POST(req as any);
+    const res = await POST(req as unknown as PostRequest);
     const json = await res.json();
 
     expect(res.status).toBe(401);
@@ -89,7 +97,7 @@ describe("POST /api/bridge/chat-verified", () => {
       }),
     });
 
-    const res = await POST(req as any);
+    const res = await POST(req as unknown as PostRequest);
     const json = await res.json();
 
     expect(res.status).toBe(200);
@@ -98,9 +106,12 @@ describe("POST /api/bridge/chat-verified", () => {
     expect(json).not.toHaveProperty("verificationDecision");
     expect(json).not.toHaveProperty("verificationFailures");
 
-    const insertedRow = insertMock.mock.calls[0][0] as Record<string, unknown>;
-    expect(insertedRow).not.toHaveProperty("causalDepth");
-    expect(insertedRow).not.toHaveProperty("verificationDecision");
-    expect(insertedRow).not.toHaveProperty("verificationFailures");
+    const firstInsertCall = insertMock.mock.calls[0];
+    expect(firstInsertCall).toBeDefined();
+    if (!firstInsertCall) throw new Error("Expected insert call");
+    const typedInsertedRow = firstInsertCall[0];
+    expect(typedInsertedRow).not.toHaveProperty("causalDepth");
+    expect(typedInsertedRow).not.toHaveProperty("verificationDecision");
+    expect(typedInsertedRow).not.toHaveProperty("verificationFailures");
   });
 });
