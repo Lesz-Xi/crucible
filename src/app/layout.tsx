@@ -1,24 +1,8 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
-
-const instrumentSerif = Instrument_Serif({
-  weight: ["400"],
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-instrument-serif",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-jetbrains-mono",
-});
 
 export const metadata: Metadata = {
   title: "Crucible - Automated Scientist",
@@ -37,7 +21,6 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${instrumentSerif.variable} ${jetbrainsMono.variable}`}
       data-theme-scope={isMarketingLight ? "marketing-light" : undefined}
       style={isMarketingLight ? { colorScheme: "light" } : undefined}
     >
