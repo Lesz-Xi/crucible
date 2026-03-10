@@ -7984,10 +7984,18 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 
 .canonical-workbench-shell.sidebar-collapsed .sidebar-header {
   justify-content: center;
+  padding: 18px 0;
 }
 
 .canonical-workbench-shell.sidebar-collapsed .sidebar-header-controls {
   width: auto;
+  margin-left: 0;
+  justify-content: center;
+}
+
+/* In collapsed state, show ONLY the toggle button — hide back/forward */
+.canonical-workbench-shell.sidebar-collapsed .sidebar-header-controls .icon-btn:not(:first-child) {
+  display: none;
 }
 
 .canonical-workbench-shell.sidebar-collapsed .sidebar-nav {
@@ -8409,16 +8417,16 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-height: 336px;
-  padding: 36px 30px 22px;
-  border-radius: 18px;
+  min-height: 220px;
+  padding: 28px 24px 22px;
+  border-radius: 12px;
   background: var(--card-bg);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .canonical-workbench-shell .protocol-card-shell:hover {
-  transform: translateY(0);
+  transform: translateY(-1px);
   background: var(--card-bg);
   border-color: var(--border-2);
   box-shadow: var(--shadow);
@@ -8430,17 +8438,17 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 }
 
 .canonical-workbench-shell .protocol-icon {
-  width: 46px;
-  height: 46px;
-  margin-bottom: 28px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 20px;
+  border-radius: 8px;
   background: var(--bg-2);
   border: 1px solid var(--border);
 }
 
 .canonical-workbench-shell .protocol-icon svg {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
 }
 
 .canonical-workbench-shell .protocol-card-copy {
@@ -8450,9 +8458,9 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 .canonical-workbench-shell .protocol-tag {
   margin-bottom: 12px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 500;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -8512,12 +8520,12 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 }
 
 .canonical-workbench-shell .chat-toolbar-chip {
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 5px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
 }
 
 .canonical-workbench-shell .chat-toolbar-chip.is-mode,
@@ -8551,7 +8559,8 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 
 .canonical-workbench-shell .rail-title,
 .canonical-workbench-shell .rail-section-head {
-  letter-spacing: 0.26em;
+  font-size: 9.5px;
+  letter-spacing: 0.10em;
 }
 
 .canonical-workbench-shell .rail-sub {
@@ -8702,3 +8711,23 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
     font-size: 44px;
   }
 }
+
+/* === Entrance animations for canonical workbench shell === */
+@keyframes lab-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: lab-fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stagger > * {
+  opacity: 0;
+  animation: lab-fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.stagger > *:nth-child(4) { animation-delay: 0.26s; }
+.stagger > *:nth-child(5) { animation-delay: 0.33s; }
