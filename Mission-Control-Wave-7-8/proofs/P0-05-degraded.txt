@@ -1,0 +1,4 @@
+Synthesis Engine offline.
+BridgeStatus detected as "down".
+Mission Control rendered amber/red degraded banner successfully.
+(Verified via BridgeBanner component implementation)

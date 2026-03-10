@@ -1,0 +1,177 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: Causal chat
+      - heading "Operate causal dialogue in a product-grade shell." [level=1] [ref=e7]
+      - paragraph [ref=e8]: The chat workspace now inherits the same dark enterprise framing as the landing page while preserving the full research workbench underneath.
+      - generic [ref=e9]:
+        - link "Start a new thread" [ref=e10] [cursor=pointer]:
+          - /url: /chat?new=1
+          - generic [ref=e11]: Start a new thread
+          - img [ref=e12]
+        - link "Back to landing" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e15]: Back to landing
+          - img [ref=e16]
+    - generic [ref=e20]:
+      - complementary [ref=e21]:
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - img [ref=e25]
+              - paragraph [ref=e27]: Wu-Weism Operator
+            - generic [ref=e28]:
+              - button "Search" [ref=e29] [cursor=pointer]:
+                - img [ref=e30]
+              - button "Toggle sidebar" [ref=e33] [cursor=pointer]:
+                - img [ref=e34]
+          - navigation [ref=e37]:
+            - link "Chat" [ref=e38] [cursor=pointer]:
+              - /url: /chat
+              - img [ref=e39]
+              - generic [ref=e41]: Chat
+            - link "Hybrid" [ref=e42] [cursor=pointer]:
+              - /url: /hybrid
+              - img [ref=e43]
+              - generic [ref=e46]: Hybrid
+            - link "Audit" [ref=e47] [cursor=pointer]:
+              - /url: /epistemic
+              - img [ref=e48]
+              - generic [ref=e51]: Audit
+            - button "Relics" [ref=e53] [cursor=pointer]:
+              - img [ref=e54]
+              - generic [ref=e55]: Relics
+              - img [ref=e56]
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - button "New chat" [ref=e61] [cursor=pointer]:
+                  - img [ref=e62]
+                  - generic [ref=e63]: New chat
+                - button "New folder" [ref=e64] [cursor=pointer]:
+                  - img [ref=e65]
+                  - generic [ref=e67]: New folder
+              - paragraph [ref=e69]: Folders
+            - generic [ref=e70]:
+              - paragraph [ref=e72]: History
+              - generic [ref=e73]: No threads yet.
+          - generic [ref=e74]:
+            - button "Light mode" [ref=e76] [cursor=pointer]:
+              - img [ref=e77]
+              - generic [ref=e83]: Light mode
+            - link "Documentation" [ref=e84] [cursor=pointer]:
+              - /url: https://docs.openclaw.ai
+              - img [ref=e85]
+              - generic [ref=e87]: Documentation
+            - button "Model Settings" [ref=e89] [cursor=pointer]:
+              - img [ref=e90]
+              - generic [ref=e93]: Model Settings
+            - button "WW Account" [ref=e95] [cursor=pointer]:
+              - generic [ref=e96]: WW
+              - generic [ref=e97]: Account
+              - img [ref=e98]
+      - generic [ref=e103]:
+        - main [ref=e104]:
+          - generic [ref=e106]:
+            - generic [ref=e108]:
+              - generic [ref=e109]:
+                - heading "Scientific Workbench" [level=1] [ref=e110]
+                - paragraph [ref=e111]: Select a research protocol to begin your inquiry.
+              - generic [ref=e112]:
+                - button "Causal Discovery Ingest observational data or papers to extract Structural Causal Models (SCM)." [ref=e113] [cursor=pointer]:
+                  - img [ref=e115]
+                  - generic [ref=e119]:
+                    - heading "Causal Discovery" [level=3] [ref=e120]
+                    - paragraph [ref=e121]: Ingest observational data or papers to extract Structural Causal Models (SCM).
+                  - img [ref=e123]
+                - button "Intervention Planning Simulate do-calculus interventions (do(X)=y) to predict system behavior." [ref=e125] [cursor=pointer]:
+                  - img [ref=e127]
+                  - generic [ref=e129]:
+                    - heading "Intervention Planning" [level=3] [ref=e130]
+                    - paragraph [ref=e131]: Simulate do-calculus interventions (do(X)=y) to predict system behavior.
+                  - img [ref=e133]
+                - button "Counterfactual Audit Verify specific claims against the causal graph logic and evidence." [ref=e135] [cursor=pointer]:
+                  - img [ref=e137]
+                  - generic [ref=e141]:
+                    - heading "Counterfactual Audit" [level=3] [ref=e142]
+                    - paragraph [ref=e143]: Verify specific claims against the causal graph logic and evidence.
+                  - img [ref=e145]
+            - generic [ref=e148]:
+              - textbox "Describe the real-world situation, what changed, and what outcome you need..." [ref=e149]
+              - generic [ref=e150]:
+                - generic [ref=e151]:
+                  - button "Attach" [ref=e152] [cursor=pointer]:
+                    - img [ref=e153]
+                    - text: Attach
+                  - tablist "Response mode" [ref=e156]:
+                    - tab "Diagnose" [selected] [ref=e158] [cursor=pointer]
+                    - tab "Act" [ref=e159] [cursor=pointer]
+                    - tab "Validate" [ref=e160] [cursor=pointer]
+                  - button "Scenarios" [ref=e162] [cursor=pointer]:
+                    - img [ref=e163]
+                    - text: Scenarios
+                    - img [ref=e165]
+                  - button "Hide evidence rail" [ref=e167] [cursor=pointer]:
+                    - img [ref=e168]
+                  - button "Enter focus mode" [ref=e173] [cursor=pointer]:
+                    - img [ref=e174]
+                - generic [ref=e180]:
+                  - generic [ref=e181]: Enter to send
+                  - button "Send" [disabled] [ref=e182]: Send
+        - complementary [ref=e185]:
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - paragraph [ref=e188]: Evidence Rail
+              - paragraph [ref=e189]: Live causal posture and provenance
+            - generic [ref=e190]:
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e194]:
+                    - img [ref=e195]
+                    - text: Causal Density
+                  - generic [ref=e197]:
+                    - generic [ref=e198]:
+                      - generic [ref=e199]:
+                        - paragraph [ref=e200]: L1
+                        - paragraph [ref=e201]: Association
+                      - generic [ref=e202]:
+                        - paragraph [ref=e203]: L2
+                        - paragraph [ref=e204]: Intervention
+                      - generic [ref=e205]:
+                        - paragraph [ref=e206]: L3
+                        - paragraph [ref=e207]: Counterfactual
+                    - paragraph [ref=e208]: "Active rung: unavailable"
+                  - paragraph [ref=e209]: Awaiting scored output
+                - generic [ref=e210]:
+                  - generic [ref=e211]:
+                    - img [ref=e212]
+                    - text: Alignment Posture
+                  - paragraph [ref=e215]: No unaudited intervention claims without identifiability gates.
+                - generic [ref=e216]:
+                  - generic [ref=e217]:
+                    - img [ref=e218]
+                    - text: Model Provenance
+                  - generic [ref=e222]:
+                    - paragraph [ref=e223]: unavailable
+                    - paragraph [ref=e224]: No verified model provenance was emitted for this run.
+              - generic [ref=e225]:
+                - generic [ref=e226]:
+                  - generic [ref=e227]:
+                    - img [ref=e228]
+                    - paragraph [ref=e233]: Active Domain
+                  - paragraph [ref=e234]: unavailable
+                - button "Start controlled intervention" [ref=e238] [cursor=pointer]:
+                  - img [ref=e239]
+                  - text: Start controlled intervention
+  - generic [ref=e245] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e246]:
+      - img [ref=e247]
+    - generic [ref=e250]:
+      - button "Open issues overlay" [ref=e251]:
+        - generic [ref=e252]:
+          - generic [ref=e253]: "0"
+          - generic [ref=e254]: "1"
+        - generic [ref=e255]: Issue
+      - button "Collapse issues badge" [ref=e256]:
+        - img [ref=e257]
+  - alert [ref=e259]

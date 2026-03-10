@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MASA — T3-Inspired Design Spec</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      /* ── T3 / MASA Token System ── */
+      --bg:           #FFFFFF;
+      --bg-subtle:    #F9FAFB;
+      --bg-hover:     #F3F4F6;
+      --bg-active:    #EFF6FF;
+      --border:       #E5E7EB;
+      --border-focus: #93C5FD;
+      --text-primary: #111827;
+      --text-secondary:#6B7280;
+      --text-muted:   #9CA3AF;
+      --accent:       #2563EB;
+      --accent-light: #DBEAFE;
+      --accent-subtle:#EFF6FF;
+      --badge-novel:  #059669;
+      --badge-conflict:#DC2626;
+      --badge-running:#D97706;
+      --badge-done:   #6B7280;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', -apple-system, sans-serif;
+      --sidebar-w: 228px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--sans); background: var(--bg-subtle); color: var(--text-primary); line-height: 1.6; }
+
+    /* ── DOC LAYOUT ── */
+    .doc { max-width: 960px; margin: 0 auto; background: var(--bg); border-left: 1px solid var(--border); border-right: 1px solid var(--border); min-height: 100vh; }
+
+    /* ── DOC HEADER ── */
+    .doc-header {
+      padding: 40px 48px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .doc-header .badge {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      font-family: var(--mono); color: var(--accent);
+      background: var(--accent-subtle); border: 1px solid var(--border-focus);
+      border-radius: 4px; padding: 2px 8px; margin-bottom: 16px;
+    }
+    .doc-header h1 { font-size: 28px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+    .doc-header p  { font-size: 14px; color: var(--text-secondary); }
+
+    /* ── SECTION ── */
+    section { padding: 40px 48px; border-bottom: 1px solid var(--border); }
+    .section-label { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    h3 { font-size: 14px; font-weight: 600; margin-top: 28px; margin-bottom: 10px; color: var(--text-primary); }
+    p  { font-size: 14px; color: var(--text-secondary); margin-bottom: 12px; }
+    strong { color: var(--text-primary); font-weight: 600; }
+
+    /* ── TOKEN TABLE ── */
+    .token-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+    .token-table th { text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); padding: 6px 12px; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
+    .token-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); font-family: var(--mono); font-size: 12px; vertical-align: middle; }
+    .token-table td:first-child { color: var(--text-primary); font-weight: 500; }
+    .token-table tr:last-child td { border-bottom: none; }
+    .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); vertical-align: middle; margin-right: 8px; }
+
+    /* ── MOCKUP BOX ── */
+    .mockup-wrap { margin: 20px 0; }
+    .mockup-label { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+    .mockup {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.9;
+      color: var(--text-primary);
+      white-space: pre;
+      overflow-x: auto;
+    }
+    .mockup .dim  { color: var(--text-muted); }
+    .mockup .acc  { color: var(--accent); font-weight: 500; }
+    .mockup .sec  { color: var(--text-secondary); }
+    .mockup .act  { background: var(--accent-light); border-radius: 3px; padding: 0 3px; color: var(--accent); font-weight: 500; }
+    .mockup .novel  { color: var(--badge-novel); }
+    .mockup .warn   { color: var(--badge-conflict); }
+    .mockup .run    { color: var(--badge-running); }
+    .mockup .done   { color: var(--badge-done); }
+    .mockup .border-b { border-bottom: 1px solid #E5E7EB; display: block; }
+
+    /* ── SPEC GRID ── */
+    .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    .spec-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      background: var(--bg);
+    }
+    .spec-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); }
+    .spec-card p  { font-size: 13px; color: var(--text-secondary); margin: 0; }
+
+    /* ── CSS SNIPPET ── */
+    .code-block {
+      background: #1E1E2E;
+      color: #CDD6F4;
+      border-radius: 8px;
+      padding: 20px 24px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.8;
+      margin: 16px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .prop  { color: #89B4FA; }
+    .code-block .val   { color: #A6E3A1; }
+    .code-block .cmt   { color: #585B70; }
+    .code-block .sel   { color: #CBA6F7; }
+
+    /* ── INLINE BADGE ── */
+    .badge { display: inline-block; font-size: 11px; font-weight: 500; font-family: var(--mono); padding: 1px 7px; border-radius: 4px; margin: 2px; }
+    .b-blue   { background: var(--accent-subtle); color: var(--accent); border: 1px solid var(--border-focus); }
+    .b-green  { background: #F0FDF4; color: #059669; border: 1px solid #BBF7D0; }
+    .b-yellow { background: #FFFBEB; color: #D97706; border: 1px solid #FDE68A; }
+    .b-red    { background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; }
+    .b-gray   { background: var(--bg-subtle); color: var(--text-muted); border: 1px solid var(--border); }
+
+    /* ── COMPONENT PREVIEW ── */
+    .preview-shell {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      background: var(--bg);
+    }
+
+    /* live top bar preview */
+    .preview-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; height: 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .preview-topbar .left { display: flex; align-items: center; gap: 12px; }
+    .preview-topbar .logo { font-size: 12px; font-weight: 700; letter-spacing: 0.3px; color: var(--text-primary); font-family: var(--mono); }
+    .preview-topbar .alpha { font-size: 10px; font-weight: 500; color: var(--accent); background: var(--accent-subtle); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); }
+    .preview-topbar .breadcrumb { font-size: 12px; color: var(--text-muted); }
+    .preview-topbar .breadcrumb span { color: var(--text-primary); font-weight: 500; }
+    .preview-topbar .actions { display: flex; align-items: center; gap: 8px; }
+    .preview-topbar .btn-ghost { font-size: 12px; font-weight: 500; color: var(--text-secondary); padding: 4px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg); cursor: pointer; }
+    .preview-topbar .btn-primary { font-size: 12px; font-weight: 500; color: white; padding: 4px 10px; border: none; border-radius: 5px; background: var(--accent); cursor: pointer; }
+    .preview-topbar .btn-icon { font-size: 12px; color: var(--text-muted); padding: 4px 6px; cursor: pointer; border: 1px solid var(--border); border-radius: 5px; }
+
+    /* live sidebar preview */
+    .preview-body { display: flex; height: 340px; }
+    .preview-sidebar {
+      width: var(--sidebar-w);
+      border-right: 1px solid var(--border);
+      background: var(--bg-subtle);
+      overflow-y: auto;
+      flex-shrink: 0;
+      padding: 8px 0;
+    }
+    .preview-sidebar .group-label {
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 10px 12px 4px; font-family: var(--mono);
+    }
+    .preview-sidebar .project-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px; font-size: 12px; font-weight: 500;
+      color: var(--text-primary); cursor: pointer;
+    }
+    .preview-sidebar .project-row .chevron { color: var(--text-muted); font-size: 10px; }
+    .preview-sidebar .session-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 5px 12px 5px 24px; font-size: 12px;
+      color: var(--text-secondary); cursor: pointer; border-radius: 0;
+    }
+    .preview-sidebar .session-row:hover { background: var(--bg-hover); }
+    .preview-sidebar .session-row.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+    .preview-sidebar .session-row .s-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .preview-sidebar .session-row .s-meta { font-size: 10px; color: var(--text-muted); font-family: var(--mono); flex-shrink: 0; }
+    .preview-sidebar .session-row.active .s-meta { color: #93C5FD; }
+    .preview-sidebar .badge-pill {
+      font-size: 9px; font-weight: 600; font-family: var(--mono);
+      padding: 1px 5px; border-radius: 3px; flex-shrink: 0; margin-left: 4px;
+    }
+    .preview-sidebar .divider { height: 1px; background: var(--border); margin: 6px 12px; }
+    .preview-sidebar .new-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px; font-size: 12px; color: var(--text-muted);
+      cursor: pointer; margin-top: 4px;
+    }
+    .preview-sidebar .new-btn:hover { color: var(--accent); }
+
+    /* live main view preview */
+    .preview-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .preview-main .mode-bar {
+      padding: 6px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+      font-size: 11px; font-family: var(--mono); color: var(--text-muted);
+      background: var(--bg);
+    }
+    .preview-main .mode-bar .mode-pill {
+      background: var(--accent-subtle); color: var(--accent);
+      font-weight: 600; padding: 1px 8px; border-radius: 4px; font-size: 10px;
+    }
+    .preview-main .messages { flex: 1; padding: 20px 40px; overflow-y: auto; background: var(--bg); }
+    .preview-main .msg-user {
+      display: flex; justify-content: flex-end; margin-bottom: 16px;
+    }
+    .preview-main .msg-user .bubble {
+      background: var(--accent); color: white;
+      border-radius: 12px 12px 2px 12px;
+      padding: 8px 14px; font-size: 13px; max-width: 70%;
+    }
+    .preview-main .msg-ai { display: flex; gap: 10px; margin-bottom: 16px; }
+    .preview-main .msg-ai .avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent-light); border: 1px solid var(--border-focus);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    }
+    .preview-main .msg-ai .content { flex: 1; }
+    .preview-main .msg-ai .content .name { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; font-family: var(--mono); }
+    .preview-main .msg-ai .content .text { font-size: 13px; color: var(--text-primary); line-height: 1.6; }
+    .preview-main .evidence-rail {
+      margin-top: 8px; padding: 8px 12px;
+      border-left: 2px solid var(--border-focus);
+      background: var(--accent-subtle); border-radius: 0 4px 4px 0;
+    }
+    .preview-main .evidence-rail .rail-label { font-size: 10px; font-weight: 600; color: var(--text-muted); font-family: var(--mono); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .preview-main .evidence-rail .source { font-size: 12px; color: var(--accent); cursor: pointer; display: block; }
+    .preview-main .confidence-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 6px; font-size: 11px; color: var(--text-muted); font-family: var(--mono);
+    }
+    .preview-main .confidence-bar .bar-track {
+      height: 3px; width: 60px; background: var(--border); border-radius: 99px; overflow: hidden;
+    }
+    .preview-main .confidence-bar .bar-fill { height: 100%; background: var(--badge-novel); border-radius: 99px; }
+
+    .preview-main .input-area {
+      padding: 12px 20px; border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .preview-main .input-box {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; display: flex; align-items: center;
+      gap: 10px; background: var(--bg);
+    }
+    .preview-main .input-box:focus-within { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-light); }
+    .preview-main .input-box input {
+      flex: 1; border: none; outline: none; font-size: 13px; font-family: var(--sans);
+      color: var(--text-primary); background: transparent;
+    }
+    .preview-main .input-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .preview-main .input-meta .meta-chip {
+      font-size: 11px; color: var(--text-muted); font-family: var(--mono);
+      padding: 2px 8px; border: 1px solid var(--border); border-radius: 5px;
+      background: var(--bg-subtle); cursor: pointer;
+    }
+    .preview-main .input-meta .send-btn {
+      margin-left: auto; background: var(--accent); color: white;
+      border: none; border-radius: 6px; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; cursor: pointer;
+    }
+
+    /* ── PRIORITY LIST ── */
+    .priority-list { list-style: none; margin: 16px 0; }
+    .priority-list li {
+      display: flex; gap: 14px; padding: 14px 0;
+      border-bottom: 1px solid var(--border); font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .priority-list li:last-child { border-bottom: none; }
+    .priority-num {
+      flex-shrink: 0; width: 22px; height: 22px;
+      background: var(--accent); color: white;
+      border-radius: 50%; font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .priority-list strong { display: block; color: var(--text-primary); margin-bottom: 3px; font-size: 14px; }
+
+    /* ── NAV TOC ── */
+    .toc {
+      display: flex; gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 48px; background: var(--bg-subtle);
+      overflow-x: auto;
+    }
+    .toc a {
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+      text-decoration: none; padding: 10px 16px;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color .15s;
+    }
+    .toc a:hover { color: var(--text-primary); }
+
+    footer {
+      padding: 28px 48px;
+      font-size: 12px; font-family: var(--mono);
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- DOC HEADER -->
+  <div class="doc-header">
+    <div class="badge">design-spec · v1.0 · march 2026</div>
+    <h1>MASA App — T3-Inspired Redesign</h1>
+    <p>Full app shell design spec: top bar, sidebar, and main view. Based on T3 Code's clean-minimal design language, adapted for MASA's causal research context.</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <a href="#tokens">Tokens</a>
+    <a href="#topbar">Top Bar</a>
+    <a href="#sidebar">Sidebar</a>
+    <a href="#mainview">Main View</a>
+    <a href="#components">Components</a>
+    <a href="#implementation">Implementation</a>
+  </div>
+
+  <!-- ══════════════════════ TOKENS -->
+  <section id="tokens">
+    <div class="section-label">01</div>
+    <h2>Design Tokens</h2>
+    <p>Clean light-mode foundation. One accent color. Neutral grays for everything else. T3 Code's restraint is the template.</p>
+
+    <h3>Color</h3>
+    <table class="token-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--bg</td><td><span class="swatch" style="background:#FFFFFF;"></span>#FFFFFF</td><td>Page background, message area</td></tr>
+        <tr><td>--bg-subtle</td><td><span class="swatch" style="background:#F9FAFB;"></span>#F9FAFB</td><td>Sidebar, input area, table rows</td></tr>
+        <tr><td>--bg-hover</td><td><span class="swatch" style="background:#F3F4F6;"></span>#F3F4F6</td><td>Session row hover state</td></tr>
+        <tr><td>--bg-active</td><td><span class="swatch" style="background:#EFF6FF;"></span>#EFF6FF</td><td>Active session row</td></tr>
+        <tr><td>--border</td><td><span class="swatch" style="background:#E5E7EB;"></span>#E5E7EB</td><td>All dividers, card borders</td></tr>
+        <tr><td>--border-focus</td><td><span class="swatch" style="background:#93C5FD;"></span>#93C5FD</td><td>Input focus ring, evidence rail</td></tr>
+        <tr><td>--text-primary</td><td><span class="swatch" style="background:#111827;"></span>#111827</td><td>Headings, active labels</td></tr>
+        <tr><td>--text-secondary</td><td><span class="swatch" style="background:#6B7280;"></span>#6B7280</td><td>Body text, descriptions</td></tr>
+        <tr><td>--text-muted</td><td><span class="swatch" style="background:#9CA3AF;"></span>#9CA3AF</td><td>Timestamps, labels, meta</td></tr>
+        <tr><td>--accent</td><td><span class="swatch" style="background:#2563EB;"></span>#2563EB</td><td>Primary action, active, links</td></tr>
+        <tr><td>--accent-light</td><td><span class="swatch" style="background:#DBEAFE;"></span>#DBEAFE</td><td>Active row, evidence rail bg</td></tr>
+        <tr><td>--badge-novel</td><td><span class="swatch" style="background:#059669;"></span>#059669</td><td>Novelty badge, confidence high</td></tr>
+        <tr><td>--badge-conflict</td><td><span class="swatch" style="background:#DC2626;"></span>#DC2626</td><td>Contradiction flag</td></tr>
+        <tr><td>--badge-running</td><td><span class="swatch" style="background:#D97706;"></span>#D97706</td><td>In-progress synthesis</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Typography</h3>
+    <table class="token-table">
+      <thead><tr><th>Role</th><th>Font</th><th>Size</th><th>Weight</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>UI Body</td><td>Inter</td><td>13–14px</td><td>400</td><td>Session names, messages, descriptions</td></tr>
+        <tr><td>UI Label</td><td>Inter</td><td>12px</td><td>500–600</td><td>Section headers, button labels</td></tr>
+        <tr><td>Meta / Mono</td><td>JetBrains Mono</td><td>10–12px</td><td>400</td><td>Timestamps, model names, status codes, confidence values</td></tr>
+        <tr><td>Heading</td><td>Inter</td><td>16–20px</td><td>600</td><td>Page titles, session header</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Spacing Scale</h3>
+    <table class="token-table">
+      <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td>--space-1</td><td>4px</td><td>Icon padding, tight gaps</td></tr>
+        <tr><td>--space-2</td><td>8px</td><td>Badge padding, button height</td></tr>
+        <tr><td>--space-3</td><td>12px</td><td>Sidebar row padding</td></tr>
+        <tr><td>--space-4</td><td>16px</td><td>Card padding, section gaps</td></tr>
+        <tr><td>--space-6</td><td>24px</td><td>Input area padding</td></tr>
+        <tr><td>--space-8</td><td>32px</td><td>Message horizontal padding</td></tr>
+        <tr><td>--space-10</td><td>40px</td><td>Main content padding</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══════════════════════ TOP BAR -->
+  <section id="topbar">
+    <div class="section-label">02</div>
+    <h2>Top Bar</h2>
+    <p>40px tall. Full-width. Mirrors T3 Code's header exactly but adds a <strong>mode pill</strong> so users always know which MASA interface they're in.</p>
+
+    <!-- LIVE PREVIEW -->
+    <h3>Live Preview</h3>
+    <div class="preview-shell">
+      <div class="preview-topbar">
+        <div class="left">
+          <span class="logo">MASA</span>
+          <span class="alpha">ALPHA</span>
+          <span class="breadcrumb">Synthetic-Mind / <span>MASA Architecture</span></span>
+        </div>
+        <div class="actions">
+          <button class="btn-ghost">+ Add action</button>
+          <button class="btn-ghost">📁 Open</button>
+          <button class="btn-primary">↑ Commit & push</button>
+          <button class="btn-icon">＋</button>
+        </div>
+      </div>
+    </div>
+
+    <h3>Anatomy</h3>
+    <div class="mockup-wrap">
+      <div class="mockup-label">top-bar.tsx — 40px height, border-bottom: 1px solid --border</div>
+<div class="mockup"><span class="dim">┌──────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">MASA</span>  <span class="dim">[ALPHA]</span>  <span class="dim">Synthetic-Mind /</span> <span class="acc">MASA Architecture</span>                     <span class="dim">│</span>
+<span class="dim">│</span>                                          <span class="sec">[+ Add action]</span> <span class="sec">[Open ▾]</span> <span class="acc">[Commit & push ▾]</span> <span class="sec">[+]</span> <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────┘</span>
+
+<span class="dim">Left zone:  wordmark (700) · version badge · breadcrumb (project / session)</span>
+<span class="dim">Right zone: ghost actions · primary CTA · icon button</span></div>
+    </div>
+
+    <div class="spec-grid">
+      <div class="spec-card">
+        <h4>Wordmark</h4>
+        <p>MASA in JetBrains Mono 700, 13px. ALPHA badge: <span class="badge b-blue">ALPHA</span> — accent color, monospace, 10px. No icon, no logo image. Text only, matching T3 Code.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Breadcrumb</h4>
+        <p>Project name in --text-muted, separator <code>/</code>, session name in --text-primary 500 weight. Clicking project name navigates to project root. Max width: truncate with ellipsis at 240px.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Ghost buttons</h4>
+        <p>Border: 1px solid --border. Background: --bg. Text: --text-secondary 500. Hover: --bg-hover. Radius: 5px. Height: 28px. Padding: 0 10px. Font: Inter 12px 500.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Primary CTA</h4>
+        <p>Background: --accent. Text: white 500 12px. Radius: 5px. Height: 28px. Has a split <code>▾</code> dropdown arrow for branch/remote selection. Identical to T3 "Commit, push & create PR."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ SIDEBAR -->
+  <section id="sidebar">
+    <div class="section-label">03</div>
+    <h2>Sidebar</h2>
+    <p><strong>228px wide</strong>. Background: --bg-subtle. Right border: 1px solid --border. Divided into: project groups → mode groups → session rows. Session status is always visible without hover.</p>
+
+    <h3>Live Preview</h3>
+    <div class="preview-shell">
+      <div class="preview-body">
+        <div class="preview-sidebar">
+          <div class="group-label">Projects</div>
+          <div class="project-row"><span class="chevron">▾</span> Synthetic-Mind</div>
+
+          <div class="group-label" style="margin-top:6px;">Hybrid</div>
+          <div class="session-row">
+            <span class="s-name">Wabi-Sabi Synthesis</span>
+            <span class="badge-pill" style="background:#F0FDF4;color:#059669;border:1px solid #BBF7D0;">novel</span>
+          </div>
+          <div class="session-row">
+            <span class="s-name">Alignment Problem</span>
+            <span class="badge-pill" style="background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;">conflict</span>
+          </div>
+
+          <div class="group-label" style="margin-top:6px;">Causal Chat</div>
+          <div class="session-row active">
+            <span class="s-name">MASA Architecture</span>
+            <span class="s-meta">22m</span>
+          </div>
+          <div class="session-row">
+            <span class="s-name">OpenClaw Memory</span>
+            <span class="s-meta">3h</span>
+          </div>
+          <div class="session-row">
+            <span class="s-name">Hey</span>
+            <span class="s-meta">22m</span>
+          </div>
+
+          <div class="group-label" style="margin-top:6px;">Legal</div>
+          <div class="session-row">
+            <span class="s-name">SCM Drug Discovery</span>
+            <span class="s-meta">5d</span>
+          </div>
+
+          <div class="divider"></div>
+          <div class="project-row" style="color:#6B7280;"><span class="chevron">▾</span> standalone-tools</div>
+          <div class="new-btn">+ New session</div>
+        </div>
+
+        <!-- placeholder main -->
+        <div class="preview-main" style="align-items:center;justify-content:center;">
+          <p style="color:var(--text-muted);font-size:13px;font-family:var(--mono);">→ see Main View section below</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Session Row Anatomy</h3>
+    <div class="mockup-wrap">
+      <div class="mockup-label">session-row — height: auto, min-height: 30px</div>
+<div class="mockup"><span class="dim">┌──────────────────────────────────┐</span>
+<span class="dim">│</span>  [icon]  <span class="acc">Session Name</span>    [badge] <span class="dim">22m</span> <span class="dim">│</span>  ← Active state (bg-active)
+<span class="dim">│</span>  [icon]  <span class="sec">Session Name</span>    [badge] <span class="sec">3h</span>  <span class="dim">│</span>  ← Default
+<span class="dim">│</span>  [icon]  <span class="sec">Session Name</span>            <span class="warn">●run</span> <span class="dim">│</span>  ← Running synthesis
+<span class="dim">└──────────────────────────────────┘</span>
+
+<span class="dim">Padding:   8px left (for sub-level), 24px left (for sessions under project)</span>
+<span class="dim">Icon:      2px circle or mode glyph, 10px, --text-muted</span>
+<span class="dim">Name:      Inter 12px 400, truncate at 140px</span>
+<span class="dim">Badge:     optional, right-aligned, monospace 9px</span>
+<span class="dim">Timestamp: JetBrains Mono 10px --text-muted, right-flush</span></div>
+    </div>
+
+    <h3>Status Badges</h3>
+    <p>Inline at the right of a session row, before the timestamp. Never tooltip-only — always visible.</p>
+    <div style="margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap;">
+      <span class="badge b-green">novel</span>
+      <span class="badge b-yellow">running</span>
+      <span class="badge b-red">conflict</span>
+      <span class="badge b-gray">done</span>
+      <span class="badge b-blue">L2</span>
+    </div>
+
+    <div class="spec-grid">
+      <div class="spec-card">
+        <h4>Mode Group Labels</h4>
+        <p>10px, JetBrains Mono, 600, --text-muted, uppercase, letter-spacing: 1px. Padding: 10px 12px 4px. Not clickable — structural only. Groups: Hybrid · Causal Chat · Legal.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Active state</h4>
+        <p>Background: --bg-active (#EFF6FF). Text color: --accent. Font weight: 500. No left border stripe (too heavy). Matching T3 Code's subtle highlight approach.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Project row</h4>
+        <p>Chevron ▾/▶ for collapse/expand. Font: 12px Inter 500 --text-primary. Clicking the chevron only — not the whole row — toggles collapse. Project label always visible.</p>
+      </div>
+      <div class="spec-card">
+        <h4>New session button</h4>
+        <p>Pinned to bottom of each mode group or sidebar footer. "+ New session" in --text-muted, 12px. On hover: --accent. No border, no background — ghost text link style.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ MAIN VIEW -->
+  <section id="mainview">
+    <div class="section-label">04</div>
+    <h2>Main View</h2>
+    <p>The main view is not just a chat thread — it is a <strong>research workbench</strong>. The difference: it shows epistemic metadata (Pearl level, confidence, grounding sources, synthesis stage) as ambient signals, not buried in tooltips.</p>
+
+    <h3>Live Preview — Causal Chat Mode</h3>
+    <div class="preview-shell">
+      <div class="preview-main" style="height:420px;">
+        <div class="mode-bar">
+          <span class="mode-pill">CAUSAL CHAT</span>
+          <span>MASA Architecture</span>
+          <span style="margin-left:auto;">L2 · confidence 0.91 · grounded</span>
+        </div>
+        <div class="messages">
+          <div class="msg-user">
+            <div class="bubble">Why is OpenClaw called an Operational Control Plane?</div>
+          </div>
+          <div class="msg-ai">
+            <div class="avatar">M</div>
+            <div class="content">
+              <div class="name">MASA · causal-chat</div>
+              <div class="text">The label is borrowed from infrastructure terminology. In distributed systems, a control plane manages <em>how</em> the system behaves — routing rules, health checks — distinct from the data plane where processing happens...</div>
+              <div class="evidence-rail">
+                <div class="rail-label">Grounding sources</div>
+                <span class="source">↗ MASA_Architecture_Documentation.docx</span>
+                <span class="source">↗ ADR-001-MASA-Architecture.md</span>
+              </div>
+              <div class="confidence-bar">
+                <span>confidence</span>
+                <div class="bar-track"><div class="bar-fill" style="width:91%;"></div></div>
+                <span>0.91</span>
+                <span style="margin-left:8px;">L2 · grounded</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="input-area">
+          <div class="input-box">
+            <input type="text" placeholder="Ask the causal field…" />
+          </div>
+          <div class="input-meta">
+            <span class="meta-chip">GPT-5.3 ▾</span>
+            <span class="meta-chip">L2 ▾</span>
+            <span class="meta-chip">Chat</span>
+            <span class="meta-chip">Full access</span>
+            <button class="send-btn">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Mode Bar — top of main view</h3>
+    <div class="mockup-wrap">
+      <div class="mockup-label">mode-bar — height: 32px, border-bottom: 1px solid --border</div>
+<div class="mockup"><span class="dim">┌──────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[HYBRID]</span>  Drug Discovery — SCM v3  <span class="dim">·  L2  ·  Observe ✓  Orient ✓  Decide →  Act ○  Release ○</span>  <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">                                                              ↑</span>
+<span class="dim">                                            OODA progress only in Hybrid mode</span>
+
+<span class="dim">┌──────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span> <span class="acc">[CAUSAL CHAT]</span>  MASA Architecture  <span class="dim">·  L2  ·  confidence 0.91  ·  grounded</span>     <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">Mode pill:  Inter 10px 600, accent bg, accent text</span>
+<span class="dim">Rest:       JetBrains Mono 11px, --text-muted, right-aligned ambient metrics</span></div>
+    </div>
+
+    <h3>Message Anatomy</h3>
+    <div class="mockup-wrap">
+      <div class="mockup-label">message-thread — padding: 20px 40px</div>
+<div class="mockup"><span class="dim">  ← User message (right-aligned)</span>
+<span class="dim">  ┌──────────────────────────────────┐</span>
+<span class="dim">  │</span>    <span class="acc">Why is OpenClaw a Control Plane?</span>   <span class="dim">│  bg: --accent, text: white</span>
+<span class="dim">  └──────────────────────────────────┘</span>  <span class="dim">radius: 12px 12px 2px 12px</span>
+
+<span class="dim">  ← AI response (left-aligned, with avatar)</span>
+<span class="dim">  [M]  MASA · causal-chat                  ← 11px mono, --text-muted</span>
+<span class="dim">       The label is borrowed from...</span>
+<span class="dim">       [continued text, 13px Inter, --text-primary]</span>
+
+<span class="dim">       ┊  GROUNDING SOURCES               ← left-border 2px --border-focus</span>
+<span class="dim">       ┊  ↗ MASA_Architecture_Docs.docx   ←  bg: --accent-light</span>
+<span class="dim">       ┊  ↗ ADR-001-MASA-Architecture.md</span>
+
+<span class="dim">       confidence ▓▓▓▓▓▓▓▓▓░ 0.91 · L2 · grounded   ← 11px mono, ambient</span></div>
+    </div>
+
+    <h3>Input Area</h3>
+    <div class="mockup-wrap">
+      <div class="mockup-label">input-area — padding: 12px 20px, border-top: 1px solid --border</div>
+<div class="mockup"><span class="dim">┌──────────────────────────────────────────────────────────────────────┐</span>
+<span class="dim">│</span>  <span class="sec">Ask the causal field…</span>                                            <span class="dim">│</span>
+<span class="dim">└──────────────────────────────────────────────────────────────────────┘</span>
+<span class="dim">  [GPT-5.3 ▾]  [L2 ▾]  [Chat]  [Full access]               [↑ Send]</span>
+
+<span class="dim">Input:   border: 1px solid --border, radius: 8px, focus: border-focus + ring</span>
+<span class="dim">Chips:   JetBrains Mono 11px, --text-muted, border: 1px solid --border</span>
+<span class="dim">Send:    28×28px, bg: --accent, white arrow icon, radius: 6px</span>
+<span class="dim">Placeholder: "Ask the causal field…" (not "Send a message")</span></div>
+    </div>
+
+    <div class="spec-grid">
+      <div class="spec-card">
+        <h4>Evidence Rail</h4>
+        <p>Left border: 2px solid --border-focus. Background: --accent-subtle. Shown below AI responses whenever grounding is active. Each source is a clickable link opening the source document/URL. Label: GROUNDING SOURCES in 10px mono uppercase.</p>
+      </div>
+      <div class="spec-card">
+        <h4>Confidence Bar</h4>
+        <p>3px tall track (--border bg, --badge-novel fill). Width: 60px. Shown inline below the evidence rail. Followed by the numeric value in mono. Always visible — not collapsed behind a tooltip. Colors: green ≥0.8, yellow 0.5–0.79, red &lt;0.5.</p>
+      </div>
+      <div class="spec-card">
+        <h4>OODA Stage Bar (Hybrid only)</h4>
+        <p>Horizontal inline progress in the mode bar. Stages: Observe · Orient · Decide · Act · Release. Completed stages show ✓ in --badge-novel. Active stage in --accent. Pending in --text-muted. Monospace 11px.</p>
+      </div>
+      <div class="spec-card">
+        <h4>AI Avatar</h4>
+        <p>22px circle. Background: --accent-light. Border: 1px solid --border-focus. Text: M (for MASA), 10px, --accent, 700 weight. Sits flush-top with the first line of the response. No shadow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════ COMPONENTS -->
+  <section id="components">
+    <div class="section-label">05</div>
+    <h2>Component Reference</h2>
+
+    <h3>Buttons</h3>
+    <table class="token-table">
+      <thead><tr><th>Variant</th><th>Background</th><th>Border</th><th>Text</th><th>Radius</th><th>Height</th></tr></thead>
+      <tbody>
+        <tr><td>Primary</td><td>--accent</td><td>none</td><td>white 500</td><td>5px</td><td>28px</td></tr>
+        <tr><td>Ghost</td><td>--bg</td><td>1px --border</td><td>--text-secondary 500</td><td>5px</td><td>28px</td></tr>
+        <tr><td>Icon</td><td>--bg</td><td>1px --border</td><td>--text-muted</td><td>5px</td><td>28px</td></tr>
+        <tr><td>Link</td><td>transparent</td><td>none</td><td>--accent 500</td><td>0</td><td>auto</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Badges / Status Pills</h3>
+    <table class="token-table">
+      <thead><tr><th>State</th><th>Label</th><th>Color</th><th>When used</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge b-green">novel</span></td><td>novel</td><td>#059669</td><td>Hybrid: novelty gate passed</td></tr>
+        <tr><td><span class="badge b-red">conflict</span></td><td>conflict</td><td>#DC2626</td><td>Hybrid: contradiction matrix flagged</td></tr>
+        <tr><td><span class="badge b-yellow">running</span></td><td>running</td><td>#D97706</td><td>Active synthesis in progress</td></tr>
+        <tr><td><span class="badge b-gray">done</span></td><td>done</td><td>#6B7280</td><td>Completed, no outstanding issues</td></tr>
+        <tr><td><span class="badge b-blue">L2</span></td><td>L1 / L2 / L3</td><td>#2563EB</td><td>Pearl ladder level of active session</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Borders & Elevation</h3>
+    <p>No drop shadows on interactive components. Borders only. Elevation is expressed through background color difference, not shadow. Matching T3 Code's flat, zero-shadow aesthetic. The only permitted shadow is a <strong>focus ring</strong>: <code>0 0 0 3px --accent-light</code> on inputs.</p>
+  </section>
+
+  <!-- ══════════════════════ IMPLEMENTATION -->
+  <section id="implementation">
+    <div class="section-label">06</div>
+    <h2>Implementation Notes</h2>
+
+    <h3>CSS Variables — globals.css</h3>
+    <div class="code-block"><span class="sel">:root</span> {
+  <span class="cmt">/* Backgrounds */</span>
+  <span class="prop">--bg</span>:              <span class="val">#FFFFFF</span>;
+  <span class="prop">--bg-subtle</span>:       <span class="val">#F9FAFB</span>;
+  <span class="prop">--bg-hover</span>:        <span class="val">#F3F4F6</span>;
+  <span class="prop">--bg-active</span>:       <span class="val">#EFF6FF</span>;
+
+  <span class="cmt">/* Borders */</span>
+  <span class="prop">--border</span>:          <span class="val">#E5E7EB</span>;
+  <span class="prop">--border-focus</span>:    <span class="val">#93C5FD</span>;
+
+  <span class="cmt">/* Text */</span>
+  <span class="prop">--text-primary</span>:    <span class="val">#111827</span>;
+  <span class="prop">--text-secondary</span>:  <span class="val">#6B7280</span>;
+  <span class="prop">--text-muted</span>:      <span class="val">#9CA3AF</span>;
+
+  <span class="cmt">/* Accent */</span>
+  <span class="prop">--accent</span>:          <span class="val">#2563EB</span>;
+  <span class="prop">--accent-light</span>:    <span class="val">#DBEAFE</span>;
+  <span class="prop">--accent-subtle</span>:   <span class="val">#EFF6FF</span>;
+
+  <span class="cmt">/* Status */</span>
+  <span class="prop">--status-novel</span>:    <span class="val">#059669</span>;
+  <span class="prop">--status-conflict</span>: <span class="val">#DC2626</span>;
+  <span class="prop">--status-running</span>:  <span class="val">#D97706</span>;
+
+  <span class="cmt">/* Layout */</span>
+  <span class="prop">--sidebar-width</span>:   <span class="val">228px</span>;
+  <span class="prop">--topbar-height</span>:   <span class="val">40px</span>;
+  <span class="prop">--modebar-height</span>:  <span class="val">32px</span>;
+}</div>
+
+    <h3>Layout Shell</h3>
+    <div class="code-block"><span class="cmt">/* App shell — three zones stacked vertically, sidebar + main side by side */</span>
+<span class="sel">.app-shell</span> {
+  <span class="prop">display</span>: <span class="val">grid</span>;
+  <span class="prop">grid-template-rows</span>: <span class="val">var(--topbar-height) 1fr</span>;
+  <span class="prop">grid-template-columns</span>: <span class="val">var(--sidebar-width) 1fr</span>;
+  <span class="prop">height</span>: <span class="val">100vh</span>;
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;
+}
+
+<span class="sel">.topbar</span> {
+  <span class="prop">grid-column</span>: <span class="val">1 / -1</span>;       <span class="cmt">/* full width */</span>
+  <span class="prop">border-bottom</span>: <span class="val">1px solid var(--border)</span>;
+}
+
+<span class="sel">.sidebar</span> {
+  <span class="prop">background</span>: <span class="val">var(--bg-subtle)</span>;
+  <span class="prop">border-right</span>: <span class="val">1px solid var(--border)</span>;
+  <span class="prop">overflow-y</span>: <span class="val">auto</span>;
+}
+
+<span class="sel">.main-view</span> {
+  <span class="prop">display</span>: <span class="val">flex</span>;
+  <span class="prop">flex-direction</span>: <span class="val">column</span>;
+  <span class="prop">overflow</span>: <span class="val">hidden</span>;
+}</div>
+
+    <h3>Tailwind Classes — Migration Cheatsheet</h3>
+    <table class="token-table">
+      <thead><tr><th>Element</th><th>Tailwind Classes</th></tr></thead>
+      <tbody>
+        <tr><td>Sidebar bg</td><td><code>bg-gray-50 border-r border-gray-200</code></td></tr>
+        <tr><td>Session active</td><td><code>bg-blue-50 text-blue-600 font-medium</code></td></tr>
+        <tr><td>Session default</td><td><code>hover:bg-gray-100 text-gray-500 text-sm</code></td></tr>
+        <tr><td>Mode group label</td><td><code>text-gray-400 text-[10px] font-semibold uppercase tracking-wide font-mono</code></td></tr>
+        <tr><td>Primary button</td><td><code>bg-blue-600 text-white text-xs font-medium rounded-md px-3 h-7</code></td></tr>
+        <tr><td>Ghost button</td><td><code>border border-gray-200 text-gray-500 text-xs font-medium rounded-md px-3 h-7 hover:bg-gray-50</code></td></tr>
+        <tr><td>Input box</td><td><code>border border-gray-200 rounded-lg px-3 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100</code></td></tr>
+        <tr><td>Evidence rail</td><td><code>border-l-2 border-blue-300 bg-blue-50 rounded-r px-3 py-2</code></td></tr>
+        <tr><td>Timestamp</td><td><code>font-mono text-[10px] text-gray-400</code></td></tr>
+        <tr><td>Badge novel</td><td><code>bg-green-50 text-green-700 border border-green-200 text-[9px] font-mono font-semibold rounded px-1</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Priority Implementation Order</h3>
+    <ul class="priority-list">
+      <li>
+        <div class="priority-num">1</div>
+        <div><strong>Swap the design token layer in globals.css</strong> Replace Wabi-Sabi dark tokens with the T3-inspired light tokens above. This single change propagates the new palette across the entire app.</div>
+      </li>
+      <li>
+        <div class="priority-num">2</div>
+        <div><strong>Rebuild the sidebar session rows</strong> Add mode group labels (Hybrid / Causal Chat / Legal). Add status badge component. Replace timestamp-only metadata with badge + timestamp. Estimated: ~2–3 hours.</div>
+      </li>
+      <li>
+        <div class="priority-num">3</div>
+        <div><strong>Add the mode bar to the main view header</strong> Mode pill + session name + ambient metrics (Pearl level, confidence, grounding state). One component, positioned between the topbar and the message thread.</div>
+      </li>
+      <li>
+        <div class="priority-num">4</div>
+        <div><strong>Add evidence rail and confidence bar to AI responses</strong> Left-border component below each grounded response. Confidence bar as an ambient 3px track. This is what makes MASA's main view look different from a generic chat tool.</div>
+      </li>
+      <li>
+        <div class="priority-num">5</div>
+        <div><strong>Update the input area chips and placeholder</strong> Replace generic placeholder with "Ask the causal field…". Replace model-selector UI to match T3 chip style. Consistent with the token system.</div>
+      </li>
+      <li>
+        <div class="priority-num">6</div>
+        <div><strong>Add OODA stage bar for Hybrid sessions</strong> Inline in the mode bar. Observe → Orient → Decide → Act → Release. Monospace, color-coded by stage status. Hybrid-mode-only — conditionally rendered.</div>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    MASA Design Spec · T3-Inspired Redesign · March 2026 · Synthetic-Mind
+  </footer>
+
+</div>
+</body>
+</html>

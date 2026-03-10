@@ -1,0 +1,518 @@
+[    1606ms] [ERROR] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <ClientPageRoot Component={function ChatPage} searchParams={{}} params={{}}>
+      <ChatPage params={Promise} searchParams={Promise}>
+        <div className="theme-land...">
+          <ProductRouteHeader>
+          <div className="relative z...">
+            <Suspense fallback={<div>}>
+              <ChatWorkbenchV2>
+                <WorkbenchShell className="feature-chat" evidenceRailOpen={true} readingMode={false} contextRail={<div>} ...>
+                  <AppDashboardShell readingMode={false}>
+                    <div className="workspace-...">
+                      <div className="flex h-screen">
+                        <aside className="glass-side..." style={{...}}>
+                          <div className="flex h-ful...">
+                            <div className="mb-3 flex ...">
+                              <div>
+                              <div className="flex items...">
+                                <button
+                                  type="button"
++                                 className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opaci..."
+-                                 className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opaci..."
+                                  aria-label="Search"
+                                >
+                                <button
+                                  type="button"
++                                 className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opaci..."
+-                                 className="lab-button-secondary lg-control !border-none !bg-transparent !p-1.5 opaci..."
+                                  onClick={function toggleSidebar}
+                                  aria-label="Toggle sidebar"
+                                >
+                            <nav className="flex flex-...">
+                              <LinkComponent href="/chat" className="lab-nav-pi..." data-active="true" title={undefined}>
+                                <a
++                                 className="lab-nav-pill lg-control w-full justify-start !rounded px-3 py-2 !bg-[#111..."
+-                                 className="lab-nav-pill lg-control w-full justify-start !rounded px-3 py-2 !bg-[#111..."
+                                  data-active="true"
+                                  title={undefined}
+                                  ref={function}
+                                  onClick={function onClick}
+                                  onMouseEnter={function onMouseEnter}
+                                  onTouchStart={function onTouchStart}
+                                  href="/chat"
+                                >
+                              <LinkComponent href="/hybrid" className="lab-nav-pi..." data-active="false" ...>
+                                <a
++                                 className="lab-nav-pill lg-control w-full justify-start !rounded !border-transparent..."
+-                                 className="lab-nav-pill lg-control w-full justify-start !rounded !border-transparent..."
+                                  data-active="false"
+                                  title={undefined}
+                                  ref={function}
+                                  onClick={function onClick}
+                                  onMouseEnter={function onMouseEnter}
+                                  onTouchStart={function onTouchStart}
+                                  href="/hybrid"
+                                >
+                              <LinkComponent href="/epistemic" className="lab-nav-pi..." data-active="false" ...>
+                                <a
++                                 className="lab-nav-pill lg-control w-full justify-start !rounded !border-transparent..."
+-                                 className="lab-nav-pill lg-control w-full justify-start !rounded !border-transparent..."
+                                  data-active="false"
+                                  title={undefined}
+                                  ref={function}
+                                  onClick={function onClick}
+                                  onMouseEnter={function onMouseEnter}
+                                  onTouchStart={function onTouchStart}
+                                  href="/epistemic"
+                                >
+                              <div className="relative">
+                                <button
+                                  type="button"
++                                 className="lab-nav-pill w-full justify-start !rounded !border-transparent !bg-transp..."
+-                                 className="lab-nav-pill w-full justify-start !rounded !border-transparent !bg-transp..."
+                                  onClick={function onClick}
+                                  title={undefined}
+                                >
+                            <div className="mt-6 flex-...">
+                              <div className="px-1 space...">
+                                <div className="grid grid-...">
+                                  <button
+                                    type="button"
++                                   className="lab-nav-pill lg-control w-full justify-center !rounded !border-[rgba(0,..."
+-                                   className="lab-nav-pill lg-control w-full justify-center !rounded !border-[rgba(0,..."
+                                    onClick={function onClick}
+                                  >
+                                  <button
+                                    type="button"
++                                   className="lab-nav-pill lg-control w-full justify-center !rounded !border-[rgba(0,..."
+-                                   className="lab-nav-pill lg-control w-full justify-center !rounded !border-[rgba(0,..."
+                                    onClick={function onClick}
+                                    title="New Folder"
+                                  >
+                                ...
+                              ...
+                            <div className="mt-auto sp...">
+                              <div>
+                              <button
+                                type="button"
++                               className="lab-nav-pill lg-control w-full"
+-                               className="lab-nav-pill lg-control w-full lg-bubble-hover"
+                                onClick={function onClick}
+                                title={undefined}
+                              >
+                              <LinkComponent href="https://do..." target="_blank" rel="noreferrer" ...>
+                                <a
+                                  target="_blank"
+                                  rel="noreferrer"
++                                 className="lab-nav-pill lg-control"
+-                                 className="lab-nav-pill lg-control lg-bubble-hover"
+                                  title={undefined}
+                                  ref={function}
+                                  onClick={function onClick}
+                                  onMouseEnter={function onMouseEnter}
+                                  onTouchStart={function onTouchStart}
+                                  href="https://docs.openclaw.ai"
+                                >
+                              <SidebarModelSettings collapsed={false}>
+                                <div className="relative" ref={{current:null}}>
+                                  <button
+                                    type="button"
++                                   className="lab-nav-pill lg-control w-full"
+-                                   className="lab-nav-pill lg-control w-full lg-bubble-hover"
+                                    onClick={function onClick}
+                                    title={undefined}
+                                  >
+                                  ...
+                              <div className="relative">
+                                <button
+                                  type="button"
++                                 className="lab-nav-pill lg-control w-full"
+-                                 className="lab-nav-pill lg-control w-full lg-bubble-hover"
+                                  onClick={function onClick}
+                                  title={undefined}
+                                >
+                        <div className="min-w-0 fl...">
+                          <div className="lab-shell ...">
+                            <div className="mx-auto px...">
+                              <div className="hidden lg:..." style={{...}}>
+                                ...
+                                  <div className="flex h-ful...">
+                                    <div className="lab-scroll...">
+                                      <div className="scientific...">
+                                        <div>
+                                        <div className="grid grid-...">
+                                          <ProtocolCard title="Causal Dis..." description="Ingest obs..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                          <ProtocolCard title="Interventi..." description="Simulate d..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                          <ProtocolCard title="Counterfac..." description="Verify spe..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                    <div className="mt-auto">
+                                      <ChatComposerV2 value="" onChange={function bound dispatchSetState} ...>
+                                        <div className="lab-card !...">
+                                          <textarea
++                                           className="lab-textarea min-h-[92px]"
+-                                           className="lab-textarea min-h-[92px] lg-bubble-hover"
+                                            placeholder="Describe the real-world situation, what changed, and what out..."
+                                            value=""
+                                            onChange={function onChange}
+                                            disabled={false}
+                                            onKeyDown={function onKeyDown}
+                                          >
+                                          <div className="mt-2 flex ...">
+                                            <div className="flex items...">
+                                              <input>
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function onClick}
+                                                disabled={false}
+                                              >
+                                              <div className="w-[220px]">
+                                                <LiquidSegmentedControl ariaLabel="Response mode" value="explore" ...>
+                                                  <div className="lg-segmented" role="tablist" aria-label="Response mode" ...>
+                                                    <div>
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={true}
+                                                      tabIndex={0}
++                                                     className="lg-segmented-item active"
+-                                                     className="lg-segmented-item active lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Diagnose
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={false}
+                                                      tabIndex={-1}
++                                                     className="lg-segmented-item"
+-                                                     className="lg-segmented-item lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Act
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={false}
+                                                      tabIndex={-1}
++                                                     className="lg-segmented-item"
+-                                                     className="lg-segmented-item lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Validate
+                                              <div className="relative">
+                                                <button
+                                                  type="button"
++                                                 className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                                 className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-..."
+                                                  onClick={function onClick}
+                                                >
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[toggleEvidenceRail]}
+                                                title="Hide evidence rail"
+                                              >
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[toggleFocusMode]}
+                                                title="Enter focus mode"
+                                                aria-pressed={false}
+                                              >
+                                            <div className="flex items...">
+                                              <span>
+                                              <button
+                                                type="button"
++                                               className="lab-button-primary"
+-                                               className="lab-button-primary lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[handleSend]}
+                                                disabled={true}
+                                              >
+                                ...
+                                  <div className="flex h-ful...">
+                                    <header>
+                                    <div className="lab-scroll...">
+                                      <CausalGauges>
+                                      <div className="mt-6 space...">
+                                        <div>
+                                        <ScientificEvidenceList>
+                                        <button
+                                          type="button"
++                                         className="lab-button-secondary w-full"
+-                                         className="lab-button-secondary w-full lg-bubble-hover"
+                                          onClick={function ChatWorkbenchV2.useCallback[resetThread]}
+                                        >
+                              ...
+                                <div className="flex h-ful...">
+                                  <div className="lab-scroll...">
+                                    <div className="scientific...">
+                                      <div>
+                                      <div className="grid grid-...">
+                                        <ProtocolCard title="Causal Dis..." description="Ingest obs..." icon={{...}} ...>
+                                          <button
+                                            onClick={function onClick}
++                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+-                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+                                          >
+                                        <ProtocolCard title="Interventi..." description="Simulate d..." icon={{...}} ...>
+                                          <button
+                                            onClick={function onClick}
++                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+-                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+                                          >
+                                        <ProtocolCard title="Counterfac..." description="Verify spe..." icon={{...}} ...>
+                                          <button
+                                            onClick={function onClick}
++                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+-                                           className="scientific-protocol-card group relative flex flex-col items-sta..."
+                                          >
+                                  <div className="mt-auto">
+                                    <ChatComposerV2 value="" onChange={function bound dispatchSetState} ...>
+                                      <div className="lab-card !...">
+                                        <textarea
++                                         className="lab-textarea min-h-[92px]"
+-                                         className="lab-textarea min-h-[92px] lg-bubble-hover"
+                                          placeholder="Describe the real-world situation, what changed, and what outco..."
+                                          value=""
+                                          onChange={function onChange}
+                                          disabled={false}
+                                          onKeyDown={function onKeyDown}
+                                        >
+                                        <div className="mt-2 flex ...">
+                                          <div className="flex items...">
+                                            <input>
+                                            <button
+                                              type="button"
++                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                              onClick={function onClick}
+                                              disabled={false}
+                                            >
+                                            <div className="w-[220px]">
+                                              <LiquidSegmentedControl ariaLabel="Response mode" value="explore" ...>
+                                                <div className="lg-segmented" role="tablist" aria-label="Response mode" ...>
+                                                  <div>
+                                                  <button
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-selected={true}
+                                                    tabIndex={0}
++                                                   className="lg-segmented-item active"
+-                                                   className="lg-segmented-item active lg-bubble-hover"
+                                                    onClick={function onClick}
+                                                  >
++                                                   Diagnose
+                                                  <button
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-selected={false}
+                                                    tabIndex={-1}
++                                                   className="lg-segmented-item"
+-                                                   className="lg-segmented-item lg-bubble-hover"
+                                                    onClick={function onClick}
+                                                  >
++                                                   Act
+                                                  <button
+                                                    type="button"
+                                                    role="tab"
+                                                    aria-selected={false}
+                                                    tabIndex={-1}
++                                                   className="lg-segmented-item"
+-                                                   className="lg-segmented-item lg-bubble-hover"
+                                                    onClick={function onClick}
+                                                  >
++                                                   Validate
+                                            <div className="relative">
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function onClick}
+                                              >
+                                            <button
+                                              type="button"
++                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                              onClick={function ChatWorkbenchV2.useCallback[toggleEvidenceRail]}
+                                              title="Hide evidence rail"
+                                            >
+                                            <button
+                                              type="button"
++                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                             className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                              onClick={function ChatWorkbenchV2.useCallback[toggleFocusMode]}
+                                              title="Enter focus mode"
+                                              aria-pressed={false}
+                                            >
+                                          <div className="flex items...">
+                                            <span>
+                                            <button
+                                              type="button"
++                                             className="lab-button-primary"
+-                                             className="lab-button-primary lg-bubble-hover"
+                                              onClick={function ChatWorkbenchV2.useCallback[handleSend]}
+                                              disabled={true}
+                                            >
+                              <div className="md:hidden">
+                                <div className="mb-3 grid ...">
+                                  <button
+                                    type="button"
++                                   className="lab-nav-pill lg-control justify-center"
+-                                   className="lab-nav-pill lg-control justify-center lg-bubble-hover"
+                                    data-active={true}
+                                    onClick={function onClick}
+                                  >
++                                   Canvas
+                                  <button
+                                    type="button"
++                                   className="lab-nav-pill lg-control justify-center"
+-                                   className="lab-nav-pill lg-control justify-center lg-bubble-hover"
+                                    data-active={false}
+                                    onClick={function onClick}
+                                  >
++                                   Evidence
+                                ...
+                                  <div className="flex h-ful...">
+                                    <div className="lab-scroll...">
+                                      <div className="scientific...">
+                                        <div>
+                                        <div className="grid grid-...">
+                                          <ProtocolCard title="Causal Dis..." description="Ingest obs..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                          <ProtocolCard title="Interventi..." description="Simulate d..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                          <ProtocolCard title="Counterfac..." description="Verify spe..." icon={{...}} ...>
+                                            <button
+                                              onClick={function onClick}
++                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+-                                             className="scientific-protocol-card group relative flex flex-col items-s..."
+                                            >
+                                    <div className="mt-auto">
+                                      <ChatComposerV2 value="" onChange={function bound dispatchSetState} ...>
+                                        <div className="lab-card !...">
+                                          <textarea
++                                           className="lab-textarea min-h-[92px]"
+-                                           className="lab-textarea min-h-[92px] lg-bubble-hover"
+                                            placeholder="Describe the real-world situation, what changed, and what out..."
+                                            value=""
+                                            onChange={function onChange}
+                                            disabled={false}
+                                            onKeyDown={function onKeyDown}
+                                          >
+                                          <div className="mt-2 flex ...">
+                                            <div className="flex items...">
+                                              <input>
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function onClick}
+                                                disabled={false}
+                                              >
+                                              <div className="w-[220px]">
+                                                <LiquidSegmentedControl ariaLabel="Response mode" value="explore" ...>
+                                                  <div className="lg-segmented" role="tablist" aria-label="Response mode" ...>
+                                                    <div>
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={true}
+                                                      tabIndex={0}
++                                                     className="lg-segmented-item active"
+-                                                     className="lg-segmented-item active lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Diagnose
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={false}
+                                                      tabIndex={-1}
++                                                     className="lg-segmented-item"
+-                                                     className="lg-segmented-item lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Act
+                                                    <button
+                                                      type="button"
+                                                      role="tab"
+                                                      aria-selected={false}
+                                                      tabIndex={-1}
++                                                     className="lg-segmented-item"
+-                                                     className="lg-segmented-item lg-bubble-hover"
+                                                      onClick={function onClick}
+                                                    >
++                                                     Validate
+                                              <div className="relative">
+                                                <button
+                                                  type="button"
++                                                 className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                                 className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-..."
+                                                  onClick={function onClick}
+                                                >
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[toggleEvidenceRail]}
+                                                title="Hide evidence rail"
+                                              >
+                                              <button
+                                                type="button"
++                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px]"
+-                                               className="lab-button-secondary !px-2.5 !py-1 text-[11px] lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[toggleFocusMode]}
+                                                title="Enter focus mode"
+                                                aria-pressed={false}
+                                              >
+                                            <div className="flex items...">
+                                              <span>
+                                              <button
+                                                type="button"
++                                               className="lab-button-primary"
+-                                               className="lab-button-primary lg-bubble-hover"
+                                                onClick={function ChatWorkbenchV2.useCallback[handleSend]}
+                                                disabled={true}
+                                              >
+    ...
+ @ http://localhost:3001/_next/static/chunks/node_modules_next_dist_445d8acf._.js:2248
+[    2282ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/api/causal-chat/history:0
+[   58361ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/api/causal-chat/history:0

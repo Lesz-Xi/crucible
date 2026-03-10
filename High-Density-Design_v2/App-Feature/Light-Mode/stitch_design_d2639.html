@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E6E9EE",
+                        "background-light": "#F9FAFB",
+                        "background-dark": "#17191b",
+                        "clay": "#D4A373",
+                        "moss": "#6B705C",
+                        "fog": "#F1F3F5",
+                        "ink": "#2D3436"
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --fog-blur: 16px;
+        }
+        .fog-glass {
+            backdrop-filter: blur(var(--fog-blur));
+            background-color: rgba(249, 250, 251, 0.85);
+        }
+        .evidence-scale {
+            height: 1px;
+            background: linear-gradient(to right, #6B705C 60%, #E6E9EE 60%);
+        }
+        .wabi-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 10px -2px rgba(0, 0, 0, 0.02);
+        }
+        body {
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-ink antialiased">
+<div class="relative flex min-h-screen flex-col">
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-primary px-8 py-4 fog-glass">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-moss">grain</span>
+<h1 class="text-lg font-medium tracking-tight">Thinking Instrument <span class="text-clay/60 mx-1">—</span> V3</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium border-b border-ink" href="#">Negotiation</a>
+<a class="text-sm text-ink/40 hover:text-ink transition-colors" href="#">Epistemics</a>
+<a class="text-sm text-ink/40 hover:text-ink transition-colors" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 bg-primary/30 rounded-full">
+<div class="size-1.5 rounded-full bg-moss"></div>
+<span class="text-[10px] font-mono uppercase tracking-widest text-ink/60">Verified State</span>
+</div>
+<button class="size-9 flex items-center justify-center rounded-full hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1">
+<section class="flex-1 flex flex-col max-w-4xl mx-auto px-6 py-12 gap-12">
+<div class="p-10 rounded-xl bg-white border border-primary wabi-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="material-symbols-outlined text-ink/30 hover:text-ink">content_copy</button>
+<button class="material-symbols-outlined text-ink/30 hover:text-ink">share</button>
+</div>
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-3">
+<span class="text-[10px] font-mono text-clay tracking-widest uppercase font-bold">State: Insufficient Evidence</span>
+</div>
+<h2 class="text-4xl italic font-light leading-snug">
+                            The causal link between manifold expansion and quantum drift remains <span class="underline decoration-clay/30 underline-offset-8">speculative</span>.
+                        </h2>
+<p class="text-lg text-ink/60 max-w-2xl">
+                            Current sensors report a 14% variance. While heuristic models suggest a correlation, verified truth markers are absent from the primary dataset.
+                        </p>
+</div>
+</div>
+<div class="flex flex-col gap-16">
+<div class="group relative flex gap-8">
+<div class="flex flex-col items-center gap-3 shrink-0">
+<div class="size-10 rounded-full border border-primary flex items-center justify-center bg-white">
+<span class="material-symbols-outlined text-clay">person</span>
+</div>
+<div class="w-px flex-1 bg-primary"></div>
+</div>
+<div class="flex-1 pt-1">
+<header class="flex items-center gap-4 mb-3">
+<span class="text-[10px] font-mono uppercase tracking-tighter text-ink/40">Scientist / Inquiry — 09:42</span>
+<div class="flex gap-1">
+<div class="size-1.5 rounded-full bg-moss" title="Verified Fact"></div>
+</div>
+</header>
+<div class="font-mono text-[15px] leading-relaxed text-ink/80">
+                                Can we isolate the atmospheric noise from the manifold's actual signal? If the noise is deterministic, the drift should be predictable.
+                            </div>
+</div>
+</div>
+<div class="group relative flex gap-8">
+<div class="flex flex-col items-center gap-3 shrink-0">
+<div class="size-10 rounded-full border border-primary flex items-center justify-center bg-fog">
+<span class="material-symbols-outlined text-moss">temp_preferences_custom</span>
+</div>
+</div>
+<div class="flex-1 pt-1">
+<header class="flex items-center gap-4 mb-3">
+<span class="text-[10px] font-mono uppercase tracking-tighter text-ink/40">AI / Synthesis — 09:43</span>
+<div class="flex gap-1">
+<div class="size-1.5 rounded-full bg-clay" title="Heuristic Inference"></div>
+<div class="size-1.5 rounded-full bg-clay/30" title="Low Confidence"></div>
+</div>
+</header>
+<div class="font-mono text-[15px] leading-relaxed text-ink/90 bg-white border border-primary p-8 rounded-xl wabi-shadow">
+<p class="mb-4">Isolation is currently <span class="italic text-clay">non-trivial</span>. Atmospheric noise in the tertiary sector follows a non-Gaussian distribution.</p>
+<p>To proceed, I require:</p>
+<ul class="list-none mt-4 space-y-2 border-l border-primary pl-6">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-xs text-moss">check_circle</span> Longitudinal sensor recalibration</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-xs text-clay">pending</span> External validation of drift coefficients</li>
+</ul>
+</div>
+<div class="mt-6 flex gap-3">
+<button class="px-4 py-2 bg-ink text-white rounded-lg text-xs font-mono hover:opacity-90 transition-opacity">Execute Calibration</button>
+<button class="px-4 py-2 border border-primary text-ink/60 rounded-lg text-xs font-mono hover:bg-primary/20">Defer Analysis</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<aside class="w-80 border-l border-primary bg-fog/30 hidden lg:flex flex-col p-8 gap-10">
+<div class="flex flex-col gap-6">
+<h3 class="text-[10px] font-mono uppercase tracking-[0.2em] text-ink/40 font-bold">Evidence Context</h3>
+<div class="flex flex-col gap-8">
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium">Causal Weights</span>
+<span class="text-[10px] font-mono text-moss">0.62 / VERIFIED</span>
+</div>
+<div class="evidence-scale relative">
+<div class="absolute -top-1 left-[60%] size-2 rounded-full bg-moss border-2 border-white"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium">Heuristic Flux</span>
+<span class="text-[10px] font-mono text-clay">0.88 / HIGH</span>
+</div>
+<div class="h-px bg-primary relative">
+<div class="absolute inset-0 bg-clay w-[88%]"></div>
+<div class="absolute -top-1 left-[88%] size-2 rounded-full bg-clay border-2 border-white"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs font-medium">Epistemic Gap</span>
+<span class="text-[10px] font-mono text-ink/40">CALCULATING...</span>
+</div>
+<div class="h-px bg-primary/40 dashed"></div>
+</div>
+</div>
+</div>
+<div class="mt-auto p-6 bg-white border border-primary rounded-lg italic text-sm text-ink/50 leading-relaxed">
+                    "Truth is a layered cloth; we only see the texture of the uppermost thread."
+                    <div class="mt-2 block not-italic font-mono text-[9px] uppercase tracking-widest text-clay">— Wabi-Sabi Protocols</div>
+</div>
+</aside>
+</main>
+<footer class="h-14 border-t border-primary flex items-center px-8 justify-between bg-white text-[10px] font-mono text-ink/40 uppercase tracking-widest">
+<div class="flex gap-6">
+<span>Latent Space: Stable</span>
+<span>Connection: High-Fidelity</span>
+</div>
+<div>
+                © 2024 Automated Scientist / Thinking Instrument
+            </div>
+</footer>
+</div>
+
+</body></html>

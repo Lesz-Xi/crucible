@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E6E9EE",
+                        "background-light": "#f7f7f7",
+                        "background-dark": "#17191b",
+                        "charcoal": "#1e2124",
+                        "obsidian": "#0f1113",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .paper-grain {
+                background-image: url("https://www.transparenttextures.com/patterns/stardust.png");
+                background-repeat: repeat;
+            }
+            .glass-blur {
+                backdrop-filter: blur(16px);
+                background-color: rgba(15, 17, 19, 0.75);
+            }
+            .evidence-gradient {
+                background: linear-gradient(180deg, rgba(230, 233, 238, 0.03) 0%, rgba(230, 233, 238, 0) 100%);
+            }
+            .cinematic-shadow {
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-primary min-h-screen paper-grain selection:bg-primary/30">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<header class="flex items-center justify-between border-b border-primary/5 px-8 py-4 bg-obsidian/80 glass-blur z-20">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl">lens_blur</span>
+<h1 class="text-lg font-medium tracking-tight uppercase">Causal Engine <span class="opacity-40 font-light">v3.0</span></h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-primary/90 text-xs tracking-widest uppercase hover:text-white transition-colors" href="#">Epistemic Honesty</a>
+<a class="text-primary/40 text-xs tracking-widest uppercase hover:text-white transition-colors" href="#">Active Negotiation</a>
+<a class="text-primary/40 text-xs tracking-widest uppercase hover:text-white transition-colors" href="#">Source Trace</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded bg-primary/5 border border-primary/10">
+<div class="size-2 rounded-full bg-amber-500/60 animate-pulse"></div>
+<span class="text-[10px] uppercase tracking-tighter text-primary/60 font-mono">Fog-Neutral State</span>
+</div>
+<button class="flex size-9 items-center justify-center rounded hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<aside class="w-20 lg:w-64 hidden md:flex flex-col border-r border-primary/5 bg-obsidian/40 p-6 gap-8">
+<div class="flex flex-col gap-6">
+<div class="space-y-1">
+<h3 class="text-[10px] uppercase tracking-[0.2em] text-primary/40 font-bold">Research Path</h3>
+<p class="text-sm italic text-primary/80">Quantum Divergence</p>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-primary/5 text-primary/50 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<span class="text-xs uppercase tracking-wider font-mono">Input Logs</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border border-primary/10 shadow-sm">
+<span class="material-symbols-outlined text-lg">forum</span>
+<span class="text-xs uppercase tracking-wider font-mono">Negotiation</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-primary/5 text-primary/50 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+<span class="text-xs uppercase tracking-wider font-mono">Causal Map</span>
+</div>
+</div>
+</div>
+<div class="mt-auto space-y-4">
+<div class="p-4 rounded bg-primary/5 border border-primary/5">
+<p class="text-[9px] text-primary/30 uppercase tracking-[0.2em] mb-3">Epistemic Limit</p>
+<div class="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-2/3"></div>
+</div>
+<p class="mt-2 text-[10px] text-primary/50 font-mono">0.68 Confidence</p>
+</div>
+</div>
+</aside>
+<section class="flex-1 flex flex-col relative overflow-hidden">
+<div class="flex-1 overflow-y-auto p-6 lg:p-12 space-y-12 max-w-4xl mx-auto w-full pb-32">
+<div class="relative p-8 rounded-xl bg-charcoal/30 border border-primary/10 glass-blur cinematic-shadow overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 flex gap-2">
+<span class="text-[10px] font-mono text-primary/30 uppercase">Notice: Epistemic Gap</span>
+</div>
+<div class="flex flex-col gap-6 text-center py-8">
+<div class="flex justify-center">
+<div class="size-16 rounded-full border border-primary/20 flex items-center justify-center bg-primary/5">
+<span class="material-symbols-outlined text-3xl text-primary/30">visibility_off</span>
+</div>
+</div>
+<div class="space-y-3">
+<h2 class="text-3xl font-light tracking-tight italic">Insufficient Evidence</h2>
+<p class="text-primary/60 max-w-md mx-auto leading-relaxed">
+                                The logic framework identifies a resolution paradox. Current data density is <span class="text-primary">34% below</span> the threshold for definitive inference.
+                            </p>
+</div>
+<div class="flex justify-center gap-4">
+<button class="px-6 py-2 bg-primary text-background-dark rounded text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all">
+                                Supplement Data
+                            </button>
+<button class="px-6 py-2 border border-primary/20 text-primary/60 rounded text-xs font-bold uppercase tracking-widest hover:bg-primary/5 transition-all">
+                                Proceed with Bias
+                            </button>
+</div>
+</div>
+</div>
+<div class="group relative flex gap-6 items-start">
+<div class="size-10 rounded bg-primary/10 border border-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary/60">person</span>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[10px] uppercase tracking-widest text-primary/40 font-bold">Scientist (Principal)</span>
+<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+<button class="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><span class="material-symbols-outlined text-sm">share</span></button>
+</div>
+</div>
+<div class="font-mono text-sm leading-relaxed text-primary/80 bg-charcoal/40 p-5 rounded-lg border border-primary/5">
+                            Re-examine the divergence in particle velocity. If the manifold is stable, why does the entropy signature spike at the 0.0034s threshold?
+                        </div>
+</div>
+</div>
+<div class="group relative flex gap-6 items-start">
+<div class="size-10 rounded bg-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(230,233,238,0.3)]">
+<span class="material-symbols-outlined text-background-dark">smart_toy</span>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-[10px] uppercase tracking-widest text-primary font-bold">Causal Engine <span class="italic font-normal opacity-60">/ Epistemic Tier 3</span></span>
+<div class="flex gap-1">
+<button class="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><span class="material-symbols-outlined text-sm">bookmark</span></button>
+<button class="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><span class="material-symbols-outlined text-sm">ios_share</span></button>
+</div>
+</div>
+<div class="font-mono text-sm leading-relaxed text-primary bg-primary/5 p-6 rounded-lg border border-primary/15 shadow-xl">
+                            The spike is <span class="text-white bg-primary/20 px-1">indeterminate</span>. 
+                            <br/><br/>
+                            Current sensors cannot distinguish between atmospheric noise and true quantum drift. I have flagged this as a <span class="italic text-primary/60 underline decoration-primary/30 underline-offset-4">Primary Paradox</span>. My logic dictates that claiming a cause would be an act of epistemic dishonesty.
+                            <div class="mt-6 flex flex-wrap gap-3">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/10 bg-black/20 text-[10px] uppercase tracking-tighter text-primary/50">
+<span class="material-symbols-outlined text-xs">analytics</span> Raw Logs
+                                </div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/10 bg-black/20 text-[10px] uppercase tracking-tighter text-primary/50">
+<span class="material-symbols-outlined text-xs">schema</span> Probabilistic Tree
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent">
+<div class="max-w-4xl mx-auto relative group">
+<input class="w-full bg-charcoal/60 border border-primary/10 rounded-xl px-6 py-4 font-mono text-sm focus:ring-1 focus:ring-primary/20 focus:border-primary/30 transition-all placeholder:text-primary/20" placeholder="Negotiate causal parameters..." type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+<button class="p-2 text-primary/40 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">attachment</span>
+</button>
+<button class="size-10 bg-primary text-background-dark rounded-lg flex items-center justify-center hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<aside class="w-80 hidden xl:flex flex-col border-l border-primary/5 bg-obsidian/60 p-8 gap-10">
+<div class="flex items-center justify-between">
+<h3 class="text-[10px] uppercase tracking-[0.2em] text-primary/40 font-bold">Evidence Rail</h3>
+<span class="material-symbols-outlined text-primary/20 text-xl">info</span>
+</div>
+<div class="space-y-10">
+<div class="space-y-6">
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs text-primary/60 font-medium">Empirical Weight</span>
+<span class="text-[10px] font-mono text-primary/40 italic">Incomplete</span>
+</div>
+<div class="relative h-1 w-full bg-primary/5 overflow-hidden">
+<div class="absolute h-full bg-primary/40 w-[35%] transition-all duration-1000"></div>
+<div class="absolute h-full bg-primary/10 w-[45%]"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs text-primary/60 font-medium">Logical Coherence</span>
+<span class="text-[10px] font-mono text-primary/80 italic">Verified</span>
+</div>
+<div class="relative h-1 w-full bg-primary/5 overflow-hidden">
+<div class="absolute h-full bg-primary w-[88%] transition-all duration-1000 shadow-[0_0_10px_rgba(230,233,238,0.4)]"></div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<span class="text-xs text-primary/60 font-medium">Predictive Power</span>
+<span class="text-[10px] font-mono text-primary/40 italic">Speculative</span>
+</div>
+<div class="relative h-1 w-full bg-primary/5 overflow-hidden">
+<div class="absolute h-full bg-primary/20 w-[15%] transition-all duration-1000"></div>
+</div>
+</div>
+</div>
+<div class="p-6 rounded bg-primary/5 border border-primary/5 space-y-4 evidence-gradient">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary/40 text-sm">history_edu</span>
+<span class="text-[9px] uppercase tracking-widest text-primary/60">Source Truth</span>
+</div>
+<p class="text-xs italic leading-relaxed text-primary/50">
+                        "Honesty requires acknowledging the limits of our sensors. A forced conclusion is a structural failure."
+                    </p>
+</div>
+<div class="space-y-4">
+<h4 class="text-[9px] uppercase tracking-[0.2em] text-primary/30 font-bold">Active Threads</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-[10px] font-mono p-2 hover:bg-white/5 cursor-pointer rounded border border-transparent hover:border-primary/5 transition-all">
+<span class="text-primary/60">#manifold-01</span>
+<span class="text-amber-500/40">Divergent</span>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono p-2 hover:bg-white/5 cursor-pointer rounded border border-transparent hover:border-primary/5 transition-all">
+<span class="text-primary/60">#entropy-leak</span>
+<span class="text-primary/40">Stable</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-8 border-t border-primary/5">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary/20 animate-pulse"></div>
+<span class="text-[10px] font-mono text-primary/30">Thinking Instrument — Variant 3</span>
+</div>
+</div>
+</aside>
+</main>
+</div>
+
+</body></html>

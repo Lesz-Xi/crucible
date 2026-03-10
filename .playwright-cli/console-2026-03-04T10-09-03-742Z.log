@@ -1,0 +1,21 @@
+[  346088ms] [ERROR] ./src/components/landing/FeatureRail.tsx
+Error:   × Expected '</', got 'jsx text (
+  │       )'
+     ╭─[/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/components/landing/FeatureRail.tsx:127:1]
+ 124 │                   ))}
+ 125 │                 </div>
+ 126 │               </div>
+ 127 │ ╭─▶         </div>
+ 128 │ ╰─▶       </div>
+ 129 │         </section>
+ 130 │       );
+ 131 │     }
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/landing/FeatureRail.tsx
+./src/app/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/errors/intercept-console-error.js:56
+[ 1200191ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3007/?_rsc=fsnpp:0

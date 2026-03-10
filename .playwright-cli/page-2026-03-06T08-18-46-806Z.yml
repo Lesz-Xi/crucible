@@ -1,0 +1,150 @@
+- generic [ref=e1]:
+  - generic [ref=e5]:
+    - complementary [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - img [ref=e10]
+            - paragraph [ref=e12]: Bio-Lab Notebook
+          - generic [ref=e13]:
+            - button "Search" [ref=e14] [cursor=pointer]:
+              - img [ref=e15]
+            - button "Toggle sidebar" [ref=e18] [cursor=pointer]:
+              - img [ref=e19]
+        - navigation [ref=e22]:
+          - link "Chat" [ref=e23] [cursor=pointer]:
+            - /url: /chat
+            - img [ref=e24]
+            - generic [ref=e26]: Chat
+          - link "Hybrid" [ref=e27] [cursor=pointer]:
+            - /url: /hybrid
+            - img [ref=e28]
+            - generic [ref=e31]: Hybrid
+          - button "Relics" [ref=e33] [cursor=pointer]:
+            - img [ref=e34]
+            - generic [ref=e35]: Relics
+            - img [ref=e36]
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]:
+              - button "New chat" [ref=e41] [cursor=pointer]:
+                - img [ref=e42]
+                - generic [ref=e43]: New chat
+              - button "New folder" [ref=e44] [cursor=pointer]:
+                - img [ref=e45]
+                - generic [ref=e47]: New folder
+            - paragraph [ref=e49]: Folders
+          - generic [ref=e50]:
+            - paragraph [ref=e52]: History
+            - generic [ref=e53]: No threads yet.
+        - generic [ref=e54]:
+          - button "Light mode" [active] [ref=e219] [cursor=pointer]:
+            - img [ref=e226]
+            - generic [ref=e59]: Light mode
+          - link "Documentation" [ref=e60] [cursor=pointer]:
+            - /url: https://docs.openclaw.ai
+            - img [ref=e61]
+            - generic [ref=e63]: Documentation
+          - button "Model Settings" [ref=e65] [cursor=pointer]:
+            - img [ref=e66]
+            - generic [ref=e69]: Model Settings
+          - button "WW Account" [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]: WW
+            - generic [ref=e73]: Account
+            - img [ref=e74]
+    - generic [ref=e79]:
+      - main [ref=e80]:
+        - generic [ref=e82]:
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - heading "Scientific Workbench" [level=1] [ref=e86]
+              - paragraph [ref=e87]: Select a research protocol to begin your inquiry.
+            - generic [ref=e88]:
+              - button "Causal Discovery Ingest observational data or papers to extract Structural Causal Models (SCM)." [ref=e89] [cursor=pointer]:
+                - img [ref=e91]
+                - generic [ref=e95]:
+                  - heading "Causal Discovery" [level=3] [ref=e96]
+                  - paragraph [ref=e97]: Ingest observational data or papers to extract Structural Causal Models (SCM).
+                - img [ref=e99]
+              - button "Intervention Planning Simulate do-calculus interventions (do(X)=y) to predict system behavior." [ref=e101] [cursor=pointer]:
+                - img [ref=e103]
+                - generic [ref=e105]:
+                  - heading "Intervention Planning" [level=3] [ref=e106]
+                  - paragraph [ref=e107]: Simulate do-calculus interventions (do(X)=y) to predict system behavior.
+                - img [ref=e109]
+              - button "Counterfactual Audit Verify specific claims against the causal graph logic and evidence." [ref=e111] [cursor=pointer]:
+                - img [ref=e113]
+                - generic [ref=e117]:
+                  - heading "Counterfactual Audit" [level=3] [ref=e118]
+                  - paragraph [ref=e119]: Verify specific claims against the causal graph logic and evidence.
+                - img [ref=e121]
+          - generic [ref=e124]:
+            - textbox "Describe the real-world situation, what changed, and what outcome you need..." [ref=e125]
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - button "Attach" [ref=e128] [cursor=pointer]:
+                  - img [ref=e129]
+                  - text: Attach
+                - tablist "Response mode" [ref=e132]:
+                  - tab "Diagnose" [selected] [ref=e134] [cursor=pointer]
+                  - tab "Act" [ref=e135] [cursor=pointer]
+                  - tab "Validate" [ref=e136] [cursor=pointer]
+                - button "Scenarios" [ref=e138] [cursor=pointer]:
+                  - img [ref=e139]
+                  - text: Scenarios
+                  - img [ref=e141]
+                - button "Hide evidence rail" [ref=e143] [cursor=pointer]:
+                  - img [ref=e144]
+                - button "Enter focus mode" [ref=e149] [cursor=pointer]:
+                  - img [ref=e150]
+              - generic [ref=e156]:
+                - generic [ref=e157]: Enter to send
+                - button "Send" [disabled] [ref=e158]:
+                  - img [ref=e159]
+                  - text: Send
+      - complementary [ref=e162]:
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - paragraph [ref=e165]: Evidence Rail
+            - paragraph [ref=e166]: Live causal posture and provenance
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic [ref=e171]:
+                  - img [ref=e172]
+                  - text: Causal Density
+                - generic [ref=e174]:
+                  - generic [ref=e175]:
+                    - generic [ref=e176]:
+                      - paragraph [ref=e177]: L1
+                      - paragraph [ref=e178]: Association
+                    - generic [ref=e179]:
+                      - paragraph [ref=e180]: L2
+                      - paragraph [ref=e181]: Intervention
+                    - generic [ref=e182]:
+                      - paragraph [ref=e183]: L3
+                      - paragraph [ref=e184]: Counterfactual
+                  - paragraph [ref=e185]: "Active rung: unavailable"
+                - paragraph [ref=e186]: Awaiting scored output
+              - generic [ref=e187]:
+                - generic [ref=e188]:
+                  - img [ref=e189]
+                  - text: Alignment Posture
+                - paragraph [ref=e192]: No unaudited intervention claims without identifiability gates.
+              - generic [ref=e193]:
+                - generic [ref=e194]:
+                  - img [ref=e195]
+                  - text: Model Provenance
+                - generic [ref=e199]:
+                  - paragraph [ref=e200]: unavailable
+                  - paragraph [ref=e201]: No verified model provenance was emitted for this run.
+            - generic [ref=e202]:
+              - generic [ref=e203]:
+                - generic [ref=e204]:
+                  - img [ref=e205]
+                  - paragraph [ref=e210]: Active Domain
+                - paragraph [ref=e211]: unavailable
+              - button "Start controlled intervention" [ref=e215] [cursor=pointer]:
+                - img [ref=e216]
+                - text: Start controlled intervention
+  - alert [ref=e218]

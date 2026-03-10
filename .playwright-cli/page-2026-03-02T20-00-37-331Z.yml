@@ -1,0 +1,267 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Wu-Weism mark Wu-Weism" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - img "Wu-Weism mark" [ref=e7]
+        - generic [ref=e8]: Wu-Weism
+      - navigation [ref=e9]:
+        - link "Platform" [ref=e10] [cursor=pointer]:
+          - /url: "#platform"
+        - link "Solutions" [ref=e11] [cursor=pointer]:
+          - /url: "#solutions"
+        - link "Evidence" [ref=e12] [cursor=pointer]:
+          - /url: "#evidence"
+        - link "Deployments" [ref=e13] [cursor=pointer]:
+          - /url: "#deployments"
+        - link "Contact" [ref=e14] [cursor=pointer]:
+          - /url: "#contact"
+      - generic [ref=e15]:
+        - link "Contact sales" [ref=e16] [cursor=pointer]:
+          - /url: "#contact"
+        - button "Loading..." [disabled] [ref=e17]:
+          - img [ref=e18]
+          - generic [ref=e20]: Loading...
+  - generic [ref=e30]:
+    - generic [ref=e33]: "New: Deterministic interventions for MASA causal workflows."
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - heading "Frontier truth systems. In your control." [level=1] [ref=e36]:
+          - text: Frontier truth systems.
+          - generic [ref=e37]: In your control.
+        - paragraph [ref=e38]: Build MASA-powered research, legal, and policy systems that move from observation to intervention with auditable causal structure, deterministic rules, and private deployment paths.
+        - generic [ref=e39]:
+          - link "Start building" [ref=e40] [cursor=pointer]:
+            - /url: /chat
+            - generic [ref=e41]: Start building
+            - img [ref=e42]
+          - link "Talk to an expert" [ref=e44] [cursor=pointer]:
+            - /url: "#contact"
+            - generic [ref=e45]: Talk to an expert
+            - img [ref=e46]
+      - complementary [ref=e48]:
+        - paragraph [ref=e49]: MASA stack
+        - heading "Pearlian AI deployment, not probabilistic theater." [level=2] [ref=e50]
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - img [ref=e54]
+            - generic [ref=e56]: Operationalize causal graphs instead of prompts alone
+          - generic [ref=e57]:
+            - img [ref=e59]
+            - generic [ref=e61]: Run private deterministic audits across teams and evidence
+          - generic [ref=e62]:
+            - img [ref=e64]
+            - generic [ref=e66]: Deploy research, legal, and policy agents on your own terms
+        - generic [ref=e67]:
+          - generic [ref=e68]:
+            - paragraph [ref=e69]: Runtime
+            - paragraph [ref=e70]: Truth store + SCM layer
+          - generic [ref=e71]:
+            - paragraph [ref=e72]: Surface
+            - paragraph [ref=e73]: Enterprise research interface
+  - generic [ref=e75]:
+    - paragraph [ref=e76]: Built for teams deploying high-density reasoning
+    - generic [ref=e78]:
+      - generic [ref=e79]: Autonomous research
+      - generic [ref=e80]: Applied science labs
+      - generic [ref=e81]: Legal causation
+      - generic [ref=e82]: Education systems
+      - generic [ref=e83]: Policy analysis
+      - generic [ref=e84]: Private deployments
+      - generic [ref=e85]: Model governance
+      - generic [ref=e86]: Evidence engines
+      - generic [ref=e87]: Autonomous research
+      - generic [ref=e88]: Applied science labs
+      - generic [ref=e89]: Legal causation
+      - generic [ref=e90]: Education systems
+      - generic [ref=e91]: Policy analysis
+      - generic [ref=e92]: Private deployments
+      - generic [ref=e93]: Model governance
+      - generic [ref=e94]: Evidence engines
+  - generic [ref=e96]:
+    - generic [ref=e97]:
+      - paragraph [ref=e98]: Platform
+      - heading "An AI platform shaped for causal production." [level=2] [ref=e99]
+      - paragraph [ref=e100]: "The landing experience now mirrors the product direction: compact enterprise framing, sharper messaging, and deliberate section pacing modeled on Mistral’s homepage."
+      - link "Explore solution surfaces" [ref=e101] [cursor=pointer]:
+        - /url: "#solutions"
+        - text: Explore solution surfaces
+        - img [ref=e102]
+    - generic [ref=e106]:
+      - generic [ref=e107]:
+        - generic [ref=e108]:
+          - paragraph [ref=e109]: Obsidian layer
+          - generic [ref=e110]:
+            - generic [ref=e111]: Deterministic interventions
+            - generic [ref=e112]: Structural causal models
+            - generic [ref=e113]: Constraint-first evaluation
+        - generic [ref=e114]:
+          - paragraph [ref=e115]: Signal
+          - paragraph [ref=e116]: L4
+          - paragraph [ref=e117]: Impact, risk, calibration, and critical gaps aligned before implementation.
+      - generic [ref=e119]:
+        - article [ref=e120]:
+          - img [ref=e122]
+          - heading "Causal spine" [level=3] [ref=e127]
+          - paragraph [ref=e128]: Encode interventions, dependencies, and invariants in an explicit structural model instead of hiding them in prompt text.
+        - article [ref=e129]:
+          - img [ref=e131]
+          - heading "Axiom validator" [level=3] [ref=e134]
+          - paragraph [ref=e135]: Enforce hard constraints for safety, consistency, and physics before an answer reaches the user or another agent.
+        - article [ref=e136]:
+          - img [ref=e138]
+          - heading "Truth store" [level=3] [ref=e142]
+          - paragraph [ref=e143]: Persist graphs, claims, and audit evidence so MASA becomes a durable system of record, not a disposable chat session.
+  - generic [ref=e145]:
+    - generic [ref=e146]:
+      - paragraph [ref=e147]: Solutions
+      - heading "Purpose-built surfaces for the hardest knowledge work." [level=2] [ref=e148]
+      - paragraph [ref=e149]: Instead of many disconnected showpieces, the homepage now groups Wu-Weism into three product-grade offers with Mistral-style density and hierarchy.
+    - generic [ref=e150]:
+      - article [ref=e151]:
+        - img [ref=e153]
+        - paragraph [ref=e155]: Autonomous research
+        - heading "Build causal research workspaces with intervention-grade evidence." [level=3] [ref=e156]
+        - paragraph [ref=e157]: Move from raw documents to verified DAGs, counterfactual branches, and reproducible reports in one controlled workflow.
+        - generic [ref=e158]:
+          - generic [ref=e159]: Evidence ingestion
+          - generic [ref=e160]: Counterfactual simulation
+          - generic [ref=e161]: Paper-grade export
+        - link "Discover Research" [ref=e162] [cursor=pointer]:
+          - /url: /chat
+          - text: Discover Research
+          - img [ref=e163]
+      - article [ref=e165]:
+        - img [ref=e167]
+        - paragraph [ref=e170]: Epistemic verification
+        - heading "Coordinate review across teams without losing causal traceability." [level=3] [ref=e171]
+        - paragraph [ref=e172]: Give operators, reviewers, and domain experts one shared audit surface with deterministic checkpoints and peer-readable state.
+        - generic [ref=e173]:
+          - generic [ref=e174]: Shared audits
+          - generic [ref=e175]: Claim ledger
+          - generic [ref=e176]: Critical-gap handoff
+        - link "Discover Verification" [ref=e177] [cursor=pointer]:
+          - /url: /epistemic
+          - text: Discover Verification
+          - img [ref=e178]
+      - article [ref=e180]:
+        - img [ref=e182]
+        - paragraph [ref=e185]: Private deployments
+        - heading "Run MASA in constrained environments that demand control." [level=3] [ref=e186]
+        - paragraph [ref=e187]: Deploy your truth store, axioms, and workflow governance wherever your organization requires privacy and operational ownership.
+        - generic [ref=e188]:
+          - generic [ref=e189]: On-prem and private cloud
+          - generic [ref=e190]: Governed agent execution
+          - generic [ref=e191]: Configurable policy rails
+        - link "Discover Deployments" [ref=e192] [cursor=pointer]:
+          - /url: /hybrid
+          - text: Discover Deployments
+          - img [ref=e193]
+  - generic [ref=e196]:
+    - generic [ref=e197]:
+      - generic [ref=e198]:
+        - paragraph [ref=e199]: Evidence
+        - heading "Deployed around evidence, not decorative features." [level=2] [ref=e200]
+        - paragraph [ref=e201]: Mistral’s homepage works because every block reads like a product promise backed by concrete capability. This section does the same for MASA’s real-world use cases.
+      - link "Request a walkthrough" [ref=e202] [cursor=pointer]:
+        - /url: "#contact"
+        - text: Request a walkthrough
+        - img [ref=e203]
+    - generic [ref=e205]:
+      - article [ref=e206]:
+        - generic [ref=e207]:
+          - paragraph [ref=e208]: Production research
+          - heading "Alignment teams" [level=3] [ref=e209]
+          - paragraph [ref=e210]: Capture competing hypotheses, intervention plans, and review evidence in one durable research graph.
+        - generic [ref=e211]:
+          - generic [ref=e212]: Read the deployment pattern
+          - img [ref=e213]
+      - article [ref=e215]:
+        - generic [ref=e216]:
+          - paragraph [ref=e217]: Deterministic legal analysis
+          - heading "Legal operators" [level=3] [ref=e218]
+          - paragraph [ref=e219]: Trace duty, breach, harm, and causation across filings with explicit assumptions and audit checkpoints.
+        - generic [ref=e220]:
+          - generic [ref=e221]: Read the deployment pattern
+          - img [ref=e222]
+      - article [ref=e224]:
+        - generic [ref=e225]:
+          - paragraph [ref=e226]: Controlled personalization
+          - heading "Education labs" [level=3] [ref=e227]
+          - paragraph [ref=e228]: Run teaching agents that justify every recommendation through visible structure instead of opaque probabilities.
+        - generic [ref=e229]:
+          - generic [ref=e230]: Read the deployment pattern
+          - img [ref=e231]
+  - generic [ref=e234]:
+    - generic [ref=e235]:
+      - paragraph [ref=e236]: Deployments
+      - heading "Designed for privacy, control, and operator confidence." [level=2] [ref=e237]
+      - paragraph [ref=e238]: "The new landing page keeps Mistral’s enterprise tone while translating it into MASA’s core promise: deterministic systems with explicit operational handoff."
+      - generic [ref=e239]:
+        - paragraph [ref=e240]: Operator note
+        - paragraph [ref=e241]: No migrations or environment changes were required for this redesign. The work is isolated to the landing page composition and styling system.
+    - generic [ref=e242]:
+      - article [ref=e243]:
+        - paragraph [ref=e244]: Deployment principle
+        - heading "Private by design" [level=3] [ref=e245]
+        - paragraph [ref=e246]: "Run the landing promise all the way through the stack: private environments, explicit governance, and clear ownership over your data."
+      - article [ref=e247]:
+        - paragraph [ref=e248]: Deployment principle
+        - heading "Configurable interfaces" [level=3] [ref=e249]
+        - paragraph [ref=e250]: Swap product surfaces across chat, legal, hybrid, and learning while preserving one coherent enterprise design language.
+      - article [ref=e251]:
+        - paragraph [ref=e252]: Deployment principle
+        - heading "User-action clarity" [level=3] [ref=e253]
+        - paragraph [ref=e254]: Critical gaps, migrations, and environment steps are surfaced immediately so operators know what cannot be skipped.
+      - article [ref=e255]:
+        - paragraph [ref=e256]: Deployment principle
+        - heading "Production pacing" [level=3] [ref=e257]
+        - paragraph [ref=e258]: "Every section now behaves like a product page: strong heading, supporting proof, and one unambiguous next action."
+  - generic [ref=e260]:
+    - generic [ref=e261]:
+      - paragraph [ref=e262]: FAQ
+      - heading "Questions operators will ask." [level=2] [ref=e263]
+    - generic [ref=e264]:
+      - button "What changed in the landing page redesign?" [ref=e266] [cursor=pointer]:
+        - generic [ref=e267]: What changed in the landing page redesign?
+        - img [ref=e268]
+      - button "Did this introduce any migrations or setup work?" [ref=e270] [cursor=pointer]:
+        - generic [ref=e271]: Did this introduce any migrations or setup work?
+        - img [ref=e272]
+      - button "How close is the page to mistral.ai?" [ref=e274] [cursor=pointer]:
+        - generic [ref=e275]: How close is the page to mistral.ai?
+        - img [ref=e276]
+      - button "Is the existing MASA content still represented?" [ref=e278] [cursor=pointer]:
+        - generic [ref=e279]: Is the existing MASA content still represented?
+        - img [ref=e280]
+  - generic [ref=e283]:
+    - generic [ref=e284]:
+      - generic [ref=e285]:
+        - paragraph [ref=e286]: Contact
+        - heading "The next chapter of MASA is yours." [level=2] [ref=e287]
+        - paragraph [ref=e288]: Request a walkthrough, align the landing system to the rest of the product, or start building directly inside Wu-Weism.
+        - generic [ref=e289]:
+          - link "Start building" [ref=e290] [cursor=pointer]:
+            - /url: /chat
+          - link "Read the white paper" [ref=e291] [cursor=pointer]:
+            - /url: /masa-white-paper.html
+      - generic [ref=e292]:
+        - generic [ref=e293]:
+          - text: Name
+          - textbox "Your name" [ref=e294]
+        - generic [ref=e295]:
+          - text: Email
+          - textbox "team@company.com" [ref=e296]
+        - generic [ref=e297]:
+          - text: What are you building?
+          - textbox "Describe your research, deployment, or audit workflow." [ref=e298]
+        - button "Send request" [ref=e299] [cursor=pointer]
+    - generic [ref=e300]:
+      - paragraph [ref=e301]: Wu-Weism © 2026. Pearlian systems for causal interfaces.
+      - generic [ref=e302]:
+        - link "Platform" [ref=e303] [cursor=pointer]:
+          - /url: "#platform"
+        - link "Solutions" [ref=e304] [cursor=pointer]:
+          - /url: "#solutions"
+        - link "Evidence" [ref=e305] [cursor=pointer]:
+          - /url: "#evidence"

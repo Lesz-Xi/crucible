@@ -1,0 +1,452 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Home" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "Mistral AI Logo" [ref=e7]
+          - generic:
+            - img "Mistral AI Logo White"
+        - navigation "Main navigation" [ref=e8]:
+          - menuitem "Products" [ref=e9]:
+            - text: Products
+            - generic [ref=e11]:
+              - img [ref=e12]
+              - img [ref=e18]
+          - menuitem "Solutions" [ref=e24] [cursor=pointer]:
+            - text: Solutions
+            - generic [ref=e26]:
+              - img [ref=e27]
+              - img [ref=e33]
+          - menuitem "Research" [ref=e39] [cursor=pointer]:
+            - text: Research
+            - generic [ref=e41]:
+              - img [ref=e42]
+              - img [ref=e48]
+          - menuitem "Blog" [ref=e54] [cursor=pointer]:
+            - text: Blog
+            - generic [ref=e56]:
+              - img [ref=e57]
+              - img [ref=e63]
+          - menuitem "Customers" [ref=e69] [cursor=pointer]:
+            - text: Customers
+            - generic [ref=e71]:
+              - img [ref=e72]
+              - img [ref=e78]
+          - menuitem "Company" [ref=e84]:
+            - text: Company
+            - generic [ref=e86]:
+              - img [ref=e87]
+              - img [ref=e93]
+      - generic [ref=e99]:
+        - link "Contact Sales" [ref=e100] [cursor=pointer]:
+          - /url: /contact
+          - text: Contact Sales
+          - img [ref=e101]
+        - generic [ref=e108]:
+          - link "Try Studio" [ref=e109] [cursor=pointer]:
+            - /url: https://console.mistral.ai?utm_source=website&utm_medium=header_cta
+          - button [ref=e110]:
+            - generic [ref=e112]:
+              - img [ref=e113]
+              - img [ref=e119]
+    - generic [ref=e125]:
+      - img "Hero background" [ref=e127]
+      - generic [ref=e129]:
+        - 'link "New: Ship code with Mistral Vibe." [ref=e130] [cursor=pointer]':
+          - /url: /products/vibe
+          - generic [ref=e131]:
+            - img [ref=e132]
+            - text: "New: Ship code with Mistral Vibe."
+            - img
+        - heading "Frontier AI. In your hands." [level=1] [ref=e148]:
+          - generic [ref=e150]: Frontier AI.
+          - generic [ref=e152]: In your hands.
+        - paragraph [ref=e154]:
+          - text: We help organizations build tailored AI systems
+          - text: to solve the world’s hardest problems.
+        - generic [ref=e155]:
+          - link "Get in touch" [ref=e156] [cursor=pointer]:
+            - /url: /contact
+            - text: Get in touch
+            - img [ref=e157]
+          - link "Start building" [ref=e163] [cursor=pointer]:
+            - /url: http://console.mistral.ai
+            - text: Start building
+            - img [ref=e164]
+    - link "Partner logos Meet our customers" [ref=e171] [cursor=pointer]:
+      - /url: /customers
+      - region "Partner logos" [ref=e173]:
+        - marquee [ref=e174]:
+          - list [ref=e175]:
+            - listitem [ref=e176]
+            - listitem [ref=e177]
+            - listitem [ref=e178]
+            - listitem [ref=e179]
+            - listitem [ref=e180]
+            - listitem [ref=e181]
+            - listitem [ref=e182]
+            - listitem [ref=e183]
+            - listitem [ref=e184]
+            - listitem [ref=e185]
+            - listitem [ref=e186]
+            - listitem [ref=e187]
+            - listitem [ref=e188]
+            - listitem [ref=e189]
+            - listitem [ref=e190]
+          - list [ref=e191]:
+            - listitem [ref=e192]
+            - listitem [ref=e193]
+            - listitem [ref=e194]
+            - listitem [ref=e195]
+            - listitem [ref=e196]
+            - listitem [ref=e197]
+            - listitem [ref=e198]
+            - listitem [ref=e199]
+            - listitem [ref=e200]
+            - listitem [ref=e201]
+            - listitem [ref=e202]
+            - listitem [ref=e203]
+            - listitem [ref=e204]
+            - listitem [ref=e205]
+            - listitem [ref=e206]
+          - list [ref=e207]:
+            - listitem [ref=e208]
+            - listitem [ref=e209]
+            - listitem [ref=e210]
+            - listitem [ref=e211]
+            - listitem [ref=e212]
+            - listitem [ref=e213]
+            - listitem [ref=e214]
+            - listitem [ref=e215]
+            - listitem [ref=e216]
+            - listitem [ref=e217]
+            - listitem [ref=e218]
+            - listitem [ref=e219]
+            - listitem [ref=e220]
+            - listitem [ref=e221]
+            - listitem [ref=e222]
+      - generic:
+        - text: Meet our customers
+        - img
+    - generic [ref=e223]:
+      - img "c7627522-667c-4bb5-a16c-4580f3767b64" [ref=e226]
+      - generic [ref=e227]:
+        - heading "Your AI future belongs in your hands. Flag" [level=3] [ref=e229]:
+          - paragraph [ref=e230]:
+            - text: Your AI future belongs in your hands.
+            - img "Flag" [ref=e231]
+        - generic [ref=e232]:
+          - generic [ref=e233]:
+            - heading "Frontier intelligence, customized to you." [level=4] [ref=e234]:
+              - paragraph [ref=e235]: Frontier intelligence, customized to you.
+            - generic [ref=e236]:
+              - img [ref=e239]
+              - paragraph [ref=e247]: Make your AI your own. Train, distill, fine-tune, and build with state-of-the-art open source models.
+          - generic [ref=e248]:
+            - heading "Enterprise agents with deep context." [level=4] [ref=e249]:
+              - paragraph [ref=e250]: Enterprise agents with deep context.
+            - generic [ref=e251]:
+              - img [ref=e254]
+              - paragraph [ref=e262]: Deploy agents that execute, adapt, and deliver real results—with powerful orchestration, tooling, and safety.
+          - generic [ref=e263]:
+            - heading "Self-contained private deployments." [level=4] [ref=e264]:
+              - paragraph [ref=e265]: Self-contained private deployments.
+            - generic [ref=e266]:
+              - img [ref=e269]
+              - paragraph [ref=e277]: Build privately anywhere—on-premises, cloud, edge, devices, and more—while retaining full control of your data.
+          - generic [ref=e278]:
+            - heading "Deeply engaged solutioning and value delivery." [level=4] [ref=e279]:
+              - paragraph [ref=e280]: Deeply engaged solutioning and value delivery.
+            - generic [ref=e281]:
+              - img [ref=e284]
+              - paragraph [ref=e292]: Hands-on assistance from the world’s foremost applied AI scientists across deployment, solutioning, safety, and beyond.
+    - generic [ref=e295]:
+      - generic [ref=e296]:
+        - heading "Deployed in production." [level=2] [ref=e297]:
+          - paragraph [ref=e298]: Deployed in production.
+        - link "Read all" [ref=e299] [cursor=pointer]:
+          - /url: /customers
+          - text: Read all
+          - img [ref=e300]
+      - region [ref=e306]:
+        - generic [ref=e308]:
+          - group [ref=e309]:
+            - link "View Stellantis customer story" [ref=e310] [cursor=pointer]:
+              - /url: /customers/stellantis
+            - img "Stellantis" [ref=e312]
+            - paragraph [ref=e315]: Stellantis is accelerating automotive innovation with Mistral AI
+            - generic [ref=e316]:
+              - generic [ref=e317]:
+                - img "Stellantis logo" [ref=e318]
+                - img [ref=e320]
+              - generic [ref=e325]: Manufacturing
+            - img [ref=e326]
+          - group [ref=e332]:
+            - link "View ASML customer story" [ref=e333] [cursor=pointer]:
+              - /url: /customers#asml
+            - img "ASML" [ref=e335]
+            - paragraph [ref=e338]: ASML advances silicon lithography with Mistral AI.
+            - generic [ref=e339]:
+              - generic [ref=e340]:
+                - img "ASML logo" [ref=e341]
+                - img [ref=e343]
+              - generic [ref=e348]: Technology and Software
+            - img [ref=e349]
+          - group [ref=e355]:
+            - link "View CMA CGM customer story" [ref=e356] [cursor=pointer]:
+              - /url: /customers#cma-cgm
+            - img "CMA CGM" [ref=e358]
+            - paragraph [ref=e361]: CMA CGM streamlines global maritime operations with Mistral AI.
+            - generic [ref=e362]:
+              - generic [ref=e363]:
+                - img "CMA CGM logo" [ref=e364]
+                - img [ref=e366]
+              - generic [ref=e371]: Transportation and Logistics
+            - img [ref=e372]
+        - generic [ref=e378]:
+          - button "Previous slide" [disabled] [ref=e379]:
+            - img [ref=e380]
+            - generic [ref=e387]: Go to previous slide
+          - button "Next slide" [ref=e388]:
+            - img [ref=e389]
+            - generic [ref=e396]: Go to next slide
+    - generic [ref=e400]:
+      - generic [ref=e402]:
+        - generic [ref=e403]:
+          - heading "Autonomous work." [level=2] [ref=e404]:
+            - paragraph [ref=e405]: Autonomous work.
+          - paragraph [ref=e407]: Chat, search, analyze, create—do more in one connected hub.
+          - generic [ref=e408]:
+            - generic [ref=e409]:
+              - paragraph [ref=e411]: Workflow automation
+              - img "check-orange" [ref=e412]
+            - generic [ref=e413]:
+              - paragraph [ref=e415]: Enterprise search
+              - img "check-orange" [ref=e416]
+            - generic [ref=e417]:
+              - paragraph [ref=e419]: Content creation
+              - img "check-orange" [ref=e420]
+            - link "Button" [ref=e422] [cursor=pointer]:
+              - /url: /products/le-chat
+              - button "Button" [ref=e423]:
+                - text: Discover Le Chat
+                - generic [ref=e425]:
+                  - img
+        - img "4c9eafe3-745f-4ba4-95f7-5c2576671676" [ref=e428]
+      - generic [ref=e430]:
+        - generic [ref=e431]:
+          - heading "Autonomous coding." [level=2] [ref=e432]:
+            - paragraph [ref=e433]: Autonomous coding.
+          - paragraph [ref=e435]: Ship faster with purpose-built models and a stack that meets devs where they work.
+          - generic [ref=e436]:
+            - generic [ref=e437]:
+              - paragraph [ref=e439]: Ideas to production apps
+              - img "check-orange" [ref=e440]
+            - generic [ref=e441]:
+              - paragraph [ref=e443]: Secure codebase-awareness
+              - img "check-orange" [ref=e444]
+            - generic [ref=e445]:
+              - paragraph [ref=e447]: Production-ready
+              - img "check-orange" [ref=e448]
+            - link "Button" [ref=e450] [cursor=pointer]:
+              - /url: /products/vibe
+              - button "Button" [ref=e451]:
+                - text: Discover Vibe
+                - generic [ref=e453]:
+                  - img
+        - img "c0b7de4b-934f-4627-adba-356799bbfe5d" [ref=e456]
+      - generic [ref=e458]:
+        - generic [ref=e459]:
+          - heading "AI application development." [level=2] [ref=e460]:
+            - paragraph [ref=e461]: AI application development.
+          - paragraph [ref=e463]: "Build and deploy AI apps with complete control: post-train models, build custom agents, and run production AI anywhere—from edge to cloud—with enterprise-grade tooling."
+          - generic [ref=e464]:
+            - generic [ref=e465]:
+              - paragraph [ref=e467]: Agentic workflows
+              - img "check-orange" [ref=e468]
+            - generic [ref=e469]:
+              - paragraph [ref=e471]: End-to-end observability
+              - img "check-orange" [ref=e472]
+            - generic [ref=e473]:
+              - paragraph [ref=e475]: Data privacy and operational controls
+              - img "check-orange" [ref=e476]
+            - link "Button" [ref=e478] [cursor=pointer]:
+              - /url: https://console.mistral.ai/
+              - button "Button" [ref=e479]:
+                - text: Discover Studio
+                - generic [ref=e481]:
+                  - img
+        - img "7df5b340-9873-4858-b120-bb7df99716d9" [ref=e484]
+      - generic [ref=e486]:
+        - generic [ref=e487]:
+          - heading "Advanced R&D." [level=2] [ref=e488]:
+            - paragraph [ref=e489]: Advanced R&D.
+          - paragraph [ref=e491]: "Tailored, domain-specialized AI: from custom pre-training with your data to scaled deployment—with expert guidance throughout."
+          - generic [ref=e492]:
+            - generic [ref=e493]:
+              - paragraph [ref=e495]: Custom model training
+              - img "check-orange" [ref=e496]
+            - generic [ref=e497]:
+              - paragraph [ref=e499]: Deep use case exploration and applied AI
+              - img "check-orange" [ref=e500]
+            - generic [ref=e501]:
+              - paragraph [ref=e503]: Solution scaling and value realization
+              - img "check-orange" [ref=e504]
+            - link "Button" [ref=e506] [cursor=pointer]:
+              - /url: /services
+              - button "Button" [ref=e507]:
+                - text: Discover Applied AI
+                - generic [ref=e509]:
+                  - img
+        - img "692477d1-59d4-4483-a5e2-c935cd21ef25" [ref=e512]
+    - generic [ref=e513]:
+      - heading "Powered by a deeply configurable AI platform." [level=2] [ref=e514]
+      - img "Marketecture Image" [ref=e516]
+    - generic [ref=e528]:
+      - heading "AI deployments designed for Key Black privacy." [level=3] [ref=e529]:
+        - paragraph [ref=e530]:
+          - text: AI deployments designed for
+          - img "Key Black" [ref=e531]
+          - text: privacy.
+      - paragraph [ref=e533]: Deploy our models in your environment, or consume as a service or from one of cloud partners.
+      - link "Button" [ref=e534] [cursor=pointer]:
+        - /url: /partners
+        - button "Button" [ref=e535]:
+          - text: Discover more
+          - generic [ref=e537]:
+            - img
+    - generic [ref=e540]:
+      - img "b4d6c9c2-98d4-4510-8b78-7ea7b2ac9fec" [ref=e541]
+      - generic [ref=e542]:
+        - generic [ref=e543]:
+          - heading "Build the future of enterprise AI" [level=3] [ref=e544]:
+            - paragraph [ref=e545]: Build the future of enterprise AI
+          - paragraph [ref=e547]: "Now seeking: Insatiably curious AI enthusiasts."
+        - link "Button" [ref=e548] [cursor=pointer]:
+          - /url: /careers
+          - button "Button" [ref=e549]:
+            - text: View open roles
+            - generic [ref=e551]:
+              - img
+    - generic [ref=e554]:
+      - heading "The next chapter of AI is yours." [level=2] [ref=e555]:
+        - paragraph [ref=e556]: The next chapter of AI is yours.
+      - generic [ref=e557]:
+        - link "Button" [ref=e558] [cursor=pointer]:
+          - /url: https://console.mistral.ai
+          - button "Button" [ref=e559]:
+            - text: Start building with Mistral AI
+            - generic [ref=e561]:
+              - img
+        - link "Button" [ref=e562] [cursor=pointer]:
+          - /url: /contact
+          - button "Button" [ref=e563]:
+            - text: Talk to an expert
+            - generic [ref=e565]:
+              - img
+    - generic [ref=e566]:
+      - generic [ref=e567]:
+        - button "Pet the cat":
+          - img "LeChat - Mistral"
+      - generic [ref=e574]:
+        - generic [ref=e575]:
+          - generic [ref=e576]:
+            - link "Mistral AI" [ref=e577] [cursor=pointer]:
+              - /url: /
+              - img [ref=e579]
+            - generic [ref=e601]:
+              - link "App Store Mistral AI" [ref=e602] [cursor=pointer]:
+                - /url: https://apps.apple.com/us/app/le-chat-by-mistral-ai/id6740410176
+                - img "App Store Mistral AI" [ref=e603]
+              - link "Google Play Mistral AI" [ref=e604] [cursor=pointer]:
+                - /url: https://play.google.com/store/apps/details?id=ai.mistral.chat
+                - img "Google Play Mistral AI" [ref=e605]
+          - paragraph [ref=e607]: Mistral AI © 2026
+        - generic [ref=e608]:
+          - navigation [ref=e609]:
+            - generic [ref=e610]:
+              - heading "Why Mistral" [level=3]
+              - link "About us" [ref=e611] [cursor=pointer]:
+                - /url: /about
+              - link "Our customers" [ref=e612] [cursor=pointer]:
+                - /url: /customers
+              - link "Careers" [ref=e613] [cursor=pointer]:
+                - /url: /careers
+              - link "Contact us" [ref=e614] [cursor=pointer]:
+                - /url: /contact
+            - generic [ref=e615]:
+              - heading "Explore" [level=3]
+              - link "AI solutions" [ref=e616] [cursor=pointer]:
+                - /url: /solutions
+              - link "Partners" [ref=e617] [cursor=pointer]:
+                - /url: /partners
+              - link "Research" [ref=e618] [cursor=pointer]:
+                - /url: /news?category=research
+              - link "Documentation" [ref=e619] [cursor=pointer]:
+                - /url: https://docs.mistral.ai/
+            - generic [ref=e620]:
+              - heading "Build" [level=3]
+              - link "Studio" [ref=e621] [cursor=pointer]:
+                - /url: /products/studio
+              - link "Le Chat" [ref=e622] [cursor=pointer]:
+                - /url: /products/le-chat
+              - link "Vibe" [ref=e623] [cursor=pointer]:
+                - /url: /products/vibe
+              - link "Mistral Compute" [ref=e624] [cursor=pointer]:
+                - /url: /products/compute
+            - generic [ref=e625]:
+              - heading "Legal" [level=3]
+              - link "Terms of service" [ref=e626] [cursor=pointer]:
+                - /url: https://legal.mistral.ai/terms
+              - link "Privacy policy" [ref=e627] [cursor=pointer]:
+                - /url: https://legal.mistral.ai/terms/privacy-policy?language=en-US
+              - button "Privacy choices" [ref=e628]
+              - link "Data processing agreement" [ref=e629] [cursor=pointer]:
+                - /url: https://legal.mistral.ai/terms/data-processing-addendum
+              - link "Legal notice" [ref=e630] [cursor=pointer]:
+                - /url: /legal
+              - link "Brand" [ref=e631] [cursor=pointer]:
+                - /url: /brand
+          - generic [ref=e632]:
+            - button "en" [ref=e633]:
+              - text: en
+              - img [ref=e634]
+            - generic [ref=e640]:
+              - link "X" [ref=e641] [cursor=pointer]:
+                - /url: https://x.com/mistralai
+              - link "Linkedin" [ref=e642] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/mistralai/
+              - link "Discord" [ref=e643] [cursor=pointer]:
+                - /url: https://discord.gg/mistralai
+  - alert [ref=e644]
+  - generic:
+    - generic:
+      - generic:
+        - 'dialog "Consent Management Platform: Personalize Your Options" [ref=e645]':
+          - generic [ref=e646]:
+            - generic [ref=e647]:
+              - generic [ref=e649]:
+                - heading "Cookie consent" [level=1] [ref=e652]:
+                  - generic [ref=e653]: Cookie consent
+                - paragraph [ref=e655]: We use cookies to analyze website usage to improve your experience. Cookies may also be used to show relevant ads to you on other web sites. You can manage your cookie preferences below.
+                - generic [ref=e656]:
+                  - link "Read our privacy policy" [ref=e658] [cursor=pointer]:
+                    - /url: https://mistral.ai/terms#privacy-policy
+                  - link "Cookie statement" [ref=e660] [cursor=pointer]:
+                    - /url: https://mistral.ai/terms#cookie-policy
+              - button "Consents certified by Axeptio" [ref=e663]:
+                - generic [ref=e664]: Consents certified by
+                - img "Axeptio" [ref=e668]
+            - generic [ref=e672]:
+              - button "Decline non-functional" [ref=e673] [cursor=pointer]: No, thanks
+              - button "Manage cookie preferences" [ref=e674] [cursor=pointer]: Manage preferences
+              - button "Accept" [ref=e675] [cursor=pointer]
+          - generic [ref=e676]:
+            - text: Axeptio consent
+            - checkbox [ref=e677]
+          - generic [ref=e678]:
+            - paragraph [ref=e679]: "Consent Management Platform: Personalize Your Options"
+            - paragraph [ref=e680]: Our platform empowers you to tailor and manage your privacy settings, ensuring compliance with regulations. Customize your preferences to control how your information is handled.
+        - button "Close the widget without accepting cookie settings" [ref=e681] [cursor=pointer]:
+          - generic [ref=e682]: Cookies

@@ -1,0 +1,5 @@
+[     756ms] [ERROR] Error: <path> attribute d: Expected number, "M 20% 30% L 75% 20%". @ http://localhost:3005/:45
+[     757ms] [ERROR] Error: <path> attribute d: Expected number, "M 20% 30% L 30% 70%". @ http://localhost:3005/:45
+[     757ms] [ERROR] Error: <path> attribute d: Expected number, "M 30% 70% L 80% 65%". @ http://localhost:3005/:45
+[     757ms] [ERROR] Error: <path> attribute d: Expected number, "M 75% 20% L 80% 65%". @ http://localhost:3005/:45
+[    1066ms] [WARNING] Please ensure that the container has a non-static position, like 'relative', 'fixed', or 'absolute' to ensure scroll offset is calculated correctly. @ http://localhost:3005/_next/static/chunks/node_modules_8fd48560._.js:1084

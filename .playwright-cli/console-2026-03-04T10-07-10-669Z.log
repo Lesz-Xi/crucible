@@ -1,0 +1,163 @@
+[     257ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3006/:0
+[     400ms] Error: ./src/components/landing/ScientistModel.tsx:3:1
+Export PointMaterial doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export PointMaterial was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-client] (ecmascript) <exports>.
+Did you mean to import invalidate?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx
+
+
+    at <unknown> (Error: ./src/components/landing/ScientistModel.tsx:3:1)
+    at Object.getCompilationErrors (file:///Users/lesz/Documents/Synthetic-Mind/synthesis-engine/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:760:59)
+    at DevBundlerService.getCompilationError (file:///Users/lesz/Documents/Synthetic-Mind/synthesis-engine/node_modules/next/dist/server/lib/dev-bundler-service.js:39:55)
+    at DevServer.getCompilationError (file:///Users/lesz/Documents/Synthetic-Mind/synthesis-engine/node_modules/next/dist/server/dev/next-dev-server.js:686:42)
+    at DevServer.findPageComponents (file:///Users/lesz/Documents/Synthetic-Mind/synthesis-engine/node_modules/next/dist/server/dev/next-dev-server.js:656:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/lesz/Documents/Synthetic-Mind/synthesis-engine/node_modules/next/dist/server/base-server.js:2614:26)
+[     401ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export PointMaterial doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export PointMaterial was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-client] (ecmascript) <exports>.
+Did you mean to import invalidate?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     401ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export PointMaterial doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export PointMaterial was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-ssr] (ecmascript) <exports>.
+Did you mean to import invalidate?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     402ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export Points doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export Points was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-client] (ecmascript) <exports>.
+Did you mean to import events?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     402ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export Points doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export Points was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-ssr] (ecmascript) <exports>.
+Did you mean to import events?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     515ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3006/favicon.ico:0
+[     529ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export PointMaterial doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export PointMaterial was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-client] (ecmascript) <exports>.
+Did you mean to import invalidate?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     529ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export PointMaterial doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export PointMaterial was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-ssr] (ecmascript) <exports>.
+Did you mean to import invalidate?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     529ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export Points doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export Points was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-client] (ecmascript) <exports>.
+Did you mean to import events?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680
+[     529ms] [ERROR] ./src/components/landing/ScientistModel.tsx:3:1
+Export Points doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Canvas, Points, PointMaterial, useFrame } from "@react-three/fiber";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { useRef, useMemo } from "react";
+  5 | import { useInView } from "framer-motion";
+  6 | import * as THREE from "three";
+
+The export Points was not found in module [project]/node_modules/@react-three/fiber/dist/react-three-fiber.esm.js [app-ssr] (ecmascript) <exports>.
+Did you mean to import events?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  ./src/components/landing/ScientistModel.tsx
+  ./src/app/page.tsx @ http://localhost:3006/_next/static/chunks/node_modules_next_dist_ad6392d3._.js:1680

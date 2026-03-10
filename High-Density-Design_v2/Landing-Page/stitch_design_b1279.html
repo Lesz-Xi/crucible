@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E6E9EE", // Fog-neutral base
+                        "moss": "#7A8471",
+                        "clay": "#B8A799",
+                        "background-light": "#F9F9F8", // Soft paper/fog
+                        "background-dark": "#17191b",
+                        "border-neutral": "#D1D5DB",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-background-light text-slate-800 font-display selection:bg-moss/20;
+            }
+        }
+        .fog-shimmer {
+            background: radial-gradient(circle at 50% 50%, rgba(230, 233, 238, 0.4) 0%, rgba(249, 249, 248, 0) 70%);
+        }
+        .engine-grid {
+            background-image: radial-gradient(circle, #D1D5DB 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+        .glass-panel {
+            backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(209, 213, 219, 0.5);
+        }
+        .writing-mode-vertical {
+            writing-mode: vertical-rl;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased overflow-x-hidden">
+<nav class="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-end border-b border-primary/40 bg-background-light/80 backdrop-blur-md">
+<div class="flex items-baseline gap-6">
+<h1 class="text-2xl font-display italic tracking-tight text-slate-900">Thinking Instrument</h1>
+<span class="font-mono text-[10px] uppercase tracking-[0.2em] text-clay/80">Ref. v.1.0.4—Engine</span>
+</div>
+<div class="flex gap-12 font-mono text-[11px] uppercase tracking-widest text-slate-500">
+<a class="hover:text-moss transition-colors" href="#">Principles</a>
+<a class="hover:text-moss transition-colors" href="#">Laboratory</a>
+<a class="hover:text-moss transition-colors" href="#">Archive</a>
+<button class="text-slate-900 font-bold border-b border-slate-900 pb-1">Begin Inquiry</button>
+</div>
+</nav>
+<main class="pt-32 pb-20 px-8 max-w-7xl mx-auto">
+<div class="grid grid-cols-12 gap-8 items-start">
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-12">
+<div class="space-y-6">
+<h2 class="text-6xl md:text-7xl font-display leading-[0.9] text-slate-900 tracking-tighter">
+                        Wabi-Sabi<br/>
+<span class="italic text-clay">Scientific</span><br/>
+                        Futurism.
+                    </h2>
+<p class="max-w-md text-lg leading-relaxed text-slate-600 font-display italic">
+                        The pursuit of knowledge through the lens of impermanence. A computational engine designed for epistemic humility and precise observation.
+                    </p>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-4">
+<div class="h-[1px] w-12 bg-moss"></div>
+<span class="font-mono text-xs uppercase tracking-[0.3em] text-moss font-bold">Current State: Fog Neutral</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-6 border border-primary bg-white/50">
+<span class="font-mono text-[10px] text-clay uppercase block mb-2">Confidence Level</span>
+<span class="text-2xl font-display tracking-tighter">0.882</span>
+<div class="mt-4 h-1 w-full bg-primary overflow-hidden">
+<div class="h-full bg-moss w-[88%]"></div>
+</div>
+</div>
+<div class="p-6 border border-primary bg-white/50">
+<span class="font-mono text-[10px] text-clay uppercase block mb-2">Entropy Value</span>
+<span class="text-2xl font-display tracking-tighter">12.4<span class="text-sm font-mono text-slate-400">δ</span></span>
+<div class="mt-4 h-1 w-full bg-primary overflow-hidden">
+<div class="h-full bg-clay w-[42%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-7 relative min-h-[600px] flex items-center justify-center">
+<div class="absolute inset-0 engine-grid opacity-30"></div>
+<div class="absolute inset-0 fog-shimmer"></div>
+<div class="relative w-full aspect-square max-w-xl border border-primary shadow-2xl bg-white/30 p-8 flex items-center justify-center">
+<div class="absolute top-0 left-0 p-4 font-mono text-[9px] text-slate-400 uppercase leading-none">
+                        Coord_System: 34.009<br/>
+                        Manifold: Secondary
+                    </div>
+<div class="relative w-72 h-72 rounded-full border border-primary/60 flex items-center justify-center">
+<div class="absolute inset-0 border border-clay/20 animate-[spin_20s_linear_infinite] rounded-full"></div>
+<div class="w-64 h-64 border-[0.5px] border-slate-300 rounded-full flex items-center justify-center">
+<div class="w-48 h-48 border-[0.5px] border-slate-400/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-clay text-6xl font-extralight">flare</span>
+</div>
+</div>
+<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 px-3 py-1 bg-white border border-primary font-mono text-[10px]">
+                            DATA_STREAM.INIT
+                        </div>
+<div class="absolute bottom-1/4 -right-8 px-3 py-1 bg-white border border-primary font-mono text-[10px] rotate-90 origin-left">
+                            LATENCY: 4ms
+                        </div>
+</div>
+<div class="absolute bottom-8 left-8 right-8 flex justify-between font-mono text-[10px] text-clay">
+<span>[ 0.00 ]</span>
+<div class="flex-1 mx-4 flex items-center">
+<div class="h-[1px] flex-1 bg-primary/60"></div>
+<div class="size-1 rounded-full bg-moss mx-2"></div>
+<div class="h-[1px] flex-1 bg-primary/60"></div>
+</div>
+<span>[ 1.00 ]</span>
+</div>
+</div>
+<div class="absolute -bottom-10 -left-10 w-48 p-4 glass-panel">
+<p class="font-display italic text-sm text-slate-700 leading-snug">
+                        "The machine does not correct the human; it observes the human correcting themselves."
+                    </p>
+</div>
+</div>
+</div>
+<div class="mt-32 pt-12 border-t border-primary/60 grid grid-cols-2 md:grid-cols-4 gap-12">
+<div class="space-y-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-clay block">Observation Density</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display font-light">14.2</span>
+<span class="font-mono text-xs text-moss">PB/s</span>
+</div>
+<p class="text-xs text-slate-500 font-display">Sustained across all laboratory nodes.</p>
+</div>
+<div class="space-y-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-clay block">Inference Nodes</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display font-light">8,192</span>
+<span class="font-mono text-xs text-moss">ACTIVE</span>
+</div>
+<p class="text-xs text-slate-500 font-display">Syncing via low-latency fog protocol.</p>
+</div>
+<div class="space-y-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-clay block">Epistemic Bias</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display font-light">0.002</span>
+<span class="font-mono text-xs text-moss">%</span>
+</div>
+<p class="text-xs text-slate-500 font-display">Minimized through recursive validation.</p>
+</div>
+<div class="space-y-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-clay block">System Uptime</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-display font-light">∞</span>
+<span class="font-mono text-xs text-moss">CYCLES</span>
+</div>
+<p class="text-xs text-slate-500 font-display">Perpetual inquiry state achieved.</p>
+</div>
+</div>
+</main>
+<div class="fixed right-0 top-1/2 -translate-y-1/2 px-4 py-12 border-l border-primary/40 hidden xl:flex flex-col items-center gap-12">
+<span class="writing-mode-vertical font-mono text-[10px] uppercase tracking-[0.4em] text-clay/60">Scientific Rigor</span>
+<div class="w-[1px] h-32 bg-primary"></div>
+<span class="writing-mode-vertical font-mono text-[10px] uppercase tracking-[0.4em] text-moss/60">Human Warmth</span>
+</div>
+<footer class="mt-20 px-8 py-12 border-t border-primary/40 bg-white/40 flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-moss">science</span>
+<p class="font-mono text-[10px] text-slate-400 uppercase tracking-widest">
+                © 2024 Thinking Instrument. All rights reserved. Precision &amp; Imperfection.
+            </p>
+</div>
+<div class="flex gap-8 items-center">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-moss"></div>
+<span class="font-mono text-[10px] text-slate-600">SYSTEM_STABLE</span>
+</div>
+<span class="font-mono text-[10px] text-clay underline cursor-pointer">Protocol Logs</span>
+<span class="font-mono text-[10px] text-clay underline cursor-pointer">Privacy Framework</span>
+</div>
+</footer>
+
+</body></html>

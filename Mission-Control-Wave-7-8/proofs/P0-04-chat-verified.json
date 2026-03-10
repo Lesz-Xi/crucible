@@ -1,0 +1,16 @@
+{
+  "traceId": "a1b2c3d4-e5f6-7890-1234-56789abcdef0",
+  "causalDepth": "verified",
+  "evidence": [
+    {
+      "sourceId": "src-001",
+      "title": "Causal Inference in Statistics",
+      "uri": "academic://pearl-2016-causal-inference",
+      "snippet": "A causal model is a mathematical object that assigns truth values to counterfactual sentences.",
+      "methodology": "Text extraction and semantic matching",
+      "confidenceContribution": 0.85
+    }
+  ],
+  "provenanceHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "answer": "Verified response for query: \"What is a causal model?\". Causal depth achieved: verified."
+}

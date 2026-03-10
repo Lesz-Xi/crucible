@@ -1,0 +1,453 @@
+{
+  "schema_version": "1.1.0",
+  "version": "1.1.0",
+  "run_id": "20260307T065712Z-463c814-3fde7cda",
+  "generated_at": "2026-03-07T06:57:12Z",
+  "workspace_root": "/Users/lesz/Documents/Synthetic-Mind",
+  "cwd_detected": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine",
+  "npm_script_available_here": true,
+  "git": {
+    "root": "/Users/lesz/Documents/Synthetic-Mind",
+    "branch": "master",
+    "dirty_summary": {
+      "modified": 4,
+      "untracked": 12,
+      "staged": 0
+    },
+    "recent_commits": [
+      {
+        "hash": "463c814e1111d0bfa63379bf92190eb144e3db8d",
+        "date": "2026-02-24T12:18:46+08:00",
+        "message": "docs: add perplexity research and update synthesis-engine submodule"
+      },
+      {
+        "hash": "cd62260d8bb81ff13e6df0f7fbe563fc265a8137",
+        "date": "2026-02-20T23:40:37+08:00",
+        "message": "fix(ai): map MASA fictional model IDs to actual API identifiers"
+      },
+      {
+        "hash": "3303fe416aa8d25a02ced10fdf3e4b936a0dd4e3",
+        "date": "2026-02-17T22:26:59+08:00",
+        "message": "chore: update synthesis-engine submodule and agent state"
+      },
+      {
+        "hash": "fec2c972a09845ccb61fd146d5b16e17d6a5f082",
+        "date": "2026-02-17T16:44:49+08:00",
+        "message": "chore: synchronize submodules and update implementation plans"
+      },
+      {
+        "hash": "56d1a51f14cc830f8a4f9cabed8c210c05e14f51",
+        "date": "2026-02-17T06:37:05+08:00",
+        "message": "docs: add bio-lab production audit and implementation plan"
+      },
+      {
+        "hash": "66074d83b49b5f4cab8598640d947f0cd399f02c",
+        "date": "2026-02-15T17:15:54+08:00",
+        "message": "style(landing): align feature card description hover colors"
+      },
+      {
+        "hash": "57b4a8fa922bc57d18e5f5bc405d2906fc630f4f",
+        "date": "2026-02-13T23:55:06+08:00",
+        "message": "Plan MASA OpenClaw memory"
+      },
+      {
+        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
+        "date": "2026-02-13T10:28:27+08:00",
+        "message": "Create MASA session bootstrap plan"
+      }
+    ]
+  },
+  "scan_confidence": {
+    "user_action_required": "high",
+    "pending_migrations": "low",
+    "required_env_keys": "high"
+  },
+  "architecture_state": {
+    "workflows_present": [
+      {
+        "name": "claim_drift_sentinel",
+        "present": true,
+        "path": "synthesis-engine/.github/workflows/claim-drift-sentinel.yml"
+      },
+      {
+        "name": "m6_health_check",
+        "present": true,
+        "path": "synthesis-engine/.github/workflows/m6-health-check.yml"
+      },
+      {
+        "name": "m6_closeout_tracker",
+        "present": true,
+        "path": "synthesis-engine/.github/workflows/m6-closeout-tracker.yml"
+      },
+      {
+        "name": "hybrid_novelty_proof_sentinel",
+        "present": true,
+        "path": "synthesis-engine/.github/workflows/hybrid-novelty-proof-sentinel.yml"
+      }
+    ],
+    "feature_surfaces": [
+      {
+        "path": "synthesis-engine/src/app/api/benchmark-cost/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/benchmark-runs/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/causal-chat/adopt-legacy/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/causal-chat/history/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/causal-chat/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/causal-chat/sessions/[id]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/claims/[claimId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/claims/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/__tests__/optimize-intervention.route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/analyze-student/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/active/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/sessions/[id]/complete/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/apprenticeship/start/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/optimize-intervention/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/plans/activate/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/plans/reflection/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/plans/reminder/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/education/plans/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/chat/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/scientific-evidence/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/session/[id]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/epistemic/session/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/history/import/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/hybrid-synthesize/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/lab/copilot/chat/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/lab/copilot/run-tool/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/lab/docking/jobs/[jobId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/lab/docking/jobs/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/lab/structure/fetch/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/legal-reasoning/__tests__/route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/legal-reasoning/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/openclaw/search/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/openclaw/status/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/openclaw/test/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/alignment-audit/latest/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/autopsy/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/__tests__/route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/counterfactual-traces/[traceId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/disagreement/compare/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/integrity/dashboard/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/integrity/signoff/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/intervention/validate/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/literacy/explain/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/current/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/promote/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/[modelKey]/versions/[version]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/models/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/synthesis-history/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/synthesize/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/validate-protocol/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/verify-db/route.ts"
+      }
+    ],
+    "latest_area_commits": [
+      {
+        "area": ".agent/workflows/",
+        "hash": "66074d83b49b5f4cab8598640d947f0cd399f02c",
+        "date": "2026-02-15T17:15:54+08:00",
+        "message": "style(landing): align feature card description hover colors"
+      },
+      {
+        "area": "MASA-Theoretical-Foundation/",
+        "hash": "cd62260d8bb81ff13e6df0f7fbe563fc265a8137",
+        "date": "2026-02-20T23:40:37+08:00",
+        "message": "fix(ai): map MASA fictional model IDs to actual API identifiers"
+      },
+      {
+        "area": "Codex-Audit/",
+        "hash": "57b4a8fa922bc57d18e5f5bc405d2906fc630f4f",
+        "date": "2026-02-13T23:55:06+08:00",
+        "message": "Plan MASA OpenClaw memory"
+      },
+      {
+        "area": "synthesis-engine/src/app/api/",
+        "hash": "none",
+        "date": "none",
+        "message": "no commits found"
+      },
+      {
+        "area": "synthesis-engine/.github/workflows/",
+        "hash": "none",
+        "date": "none",
+        "message": "no commits found"
+      }
+    ],
+    "latest_docs": [
+      {
+        "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1771569723,
+        "path": "MASA-Theoretical-Foundation/DOMAIN_PROFILE_SCHEMA_WITH_CLASSIFIER_MAPPING.md"
+      },
+      {
+        "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1770985553,
+        "path": "MASA-Theoretical-Foundation/MASA_ARCHITECTURE_CURRENT_STATE_SUMMARY_2026-02-12.md"
+      },
+      {
+        "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1770808885,
+        "path": "MASA-Theoretical-Foundation/S1-Execution-Plan.md"
+      },
+      {
+        "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1770804913,
+        "path": "MASA-Theoretical-Foundation/GOVERNANCE_SPEC_INDEX.md"
+      },
+      {
+        "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1770804911,
+        "path": "MASA-Theoretical-Foundation/LAW_DISCOVERY_FALSIFICATION_PROTOCOL.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770953416,
+        "path": "Codex-Audit/Automated-Scientist-Audit-2026-02-05.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770953399,
+        "path": "Codex-Audit/Novel_Plan_Audit_v1.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770441984,
+        "path": "Codex-Audit/Automated-Scientist_Implementation_Summary_2026-02-07.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770393044,
+        "path": "Codex-Audit/Codex_M6.2_Implementation_v1.md"
+      },
+      {
+        "group": "Codex-Audit",
+        "mtime_epoch": 1770392364,
+        "path": "Codex-Audit/Codex_M6.2_Spec_v2.md"
+      }
+    ]
+  },
+  "critical_gaps": {
+    "pending_migrations": [
+      "synthesis-engine/supabase/migrations/20250128_fix_select_rls_for_anonymous.sql",
+      "synthesis-engine/supabase/migrations/20260120_vector_memory.sql",
+      "synthesis-engine/supabase/migrations/20260124_add_contradictions.sql",
+      "synthesis-engine/supabase/migrations/20260124_add_phase3_outputs.sql",
+      "synthesis-engine/supabase/migrations/20260124_benchmark_schema.sql",
+      "synthesis-engine/supabase/migrations/20260124_history_schema_update.sql",
+      "synthesis-engine/supabase/migrations/20260124_masa_consciousness_state.sql",
+      "synthesis-engine/supabase/migrations/20260124_masa_engrams.sql",
+      "synthesis-engine/supabase/migrations/20260124_phase28_causal_blueprint.sql",
+      "synthesis-engine/supabase/migrations/20260124_spectral_subspaces.sql",
+      "synthesis-engine/supabase/migrations/20260127_causal_chat_schema.sql",
+      "synthesis-engine/supabase/migrations/20260128_causal_models.sql",
+      "synthesis-engine/supabase/migrations/20260129_add_axiom_compression_trigger.sql",
+      "synthesis-engine/supabase/migrations/20260129_create_causal_axioms.sql",
+      "synthesis-engine/supabase/migrations/20260202_fix_causal_chat_rls.sql",
+      "synthesis-engine/supabase/migrations/20260205_add_source_metadata.sql",
+      "synthesis-engine/supabase/migrations/20260205_education_apprenticeship_sessions.sql",
+      "synthesis-engine/supabase/migrations/20260205_epistemic_qualia_composite_constraint.sql",
+      "synthesis-engine/supabase/migrations/20260207_expand_benchmark_suites.sql",
+      "synthesis-engine/supabase/migrations/20260210_openclaw_search_results.sql",
+      "synthesis-engine/supabase/migrations/20260211_enhanced_synthesis_validation.sql",
+      "synthesis-engine/supabase/migrations/20260211_google_auth_history_ownership.sql",
+      "synthesis-engine/supabase/migrations/20260212_legacy_chat_adoption.sql",
+      "synthesis-engine/supabase/migrations/20260212_legacy_chat_adoption_rpc.sql",
+      "synthesis-engine/supabase/migrations/20260213_claim_reconstruction_ledger_v1.sql",
+      "synthesis-engine/supabase/migrations/20260213_counterfactual_traces.sql",
+      "synthesis-engine/supabase/migrations/20260213_persistent_memory_v1.sql",
+      "synthesis-engine/supabase/migrations/20260214_add_model_provenance_to_causal_chat_messages.sql",
+      "synthesis-engine/supabase/migrations/20260214_claim_evidence_scientific_provenance.sql",
+      "synthesis-engine/supabase/migrations/20260214_hypothesis_lifecycle_governance.sql",
+      "synthesis-engine/supabase/migrations/20260215_expand_benchmark_suites_m4.sql",
+      "synthesis-engine/supabase/migrations/20260216_scm_promotion_governance.sql",
+      "synthesis-engine/supabase/migrations/20260217120000_lab_experiments.sql",
+      "synthesis-engine/supabase/migrations/20260217_scientific_integrity_signoffs.sql",
+      "synthesis-engine/supabase/migrations/20260218_fix_hot_rosenthal_candidate_confounder.sql",
+      "synthesis-engine/supabase/migrations/20260219_scientific_data_pipeline.sql",
+      "synthesis-engine/supabase/migrations/20260220_add_session_domain.sql",
+      "synthesis-engine/supabase/migrations/20260221_add_chat_folders.sql",
+      "synthesis-engine/supabase/migrations/20260221_add_scientific_analysis_to_chat.sql",
+      "synthesis-engine/supabase/migrations/20260305_scm_reports.sql",
+      "synthesis-engine/supabase/migrations/seed_causal_models.sql"
+    ],
+    "required_env_keys": [],
+    "user_action_required": [],
+    "classified_user_actions": []
+  },
+  "reference_evidence": [],
+  "provenance": {
+    "commands": [
+      {
+        "label": "git_branch",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --abbrev-ref HEAD"
+      },
+      {
+        "label": "git_head_short",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind rev-parse --short HEAD"
+      },
+      {
+        "label": "git_status",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind status --short"
+      },
+      {
+        "label": "recent_commits",
+        "status": "ok",
+        "command": "git -C /Users/lesz/Documents/Synthetic-Mind log -n 10 --date=iso-strict --pretty=format:%H|%ad|%s"
+      },
+      {
+        "label": "latest_area_commits",
+        "status": "ok",
+        "command": "git log latest area scans"
+      },
+      {
+        "label": "workflow_presence",
+        "status": "ok",
+        "command": "filesystem workflow checks"
+      },
+      {
+        "label": "feature_surfaces",
+        "status": "ok",
+        "command": "find synthesis-engine/src/app/api"
+      },
+      {
+        "label": "pending_migrations",
+        "status": "ok",
+        "command": "find synthesis-engine/supabase/migrations/*.sql"
+      },
+      {
+        "label": "required_env_keys",
+        "status": "error",
+        "command": "rg missing"
+      },
+      {
+        "label": "critical_markers",
+        "status": "error",
+        "command": "rg missing"
+      },
+      {
+        "label": "latest_docs",
+        "status": "ok",
+        "command": "latest docs scan"
+      }
+    ]
+  },
+  "next_tasks": [
+    {
+      "id": "N2",
+      "task": "Confirm migration application status in Supabase for latest SQL files.",
+      "reason": "41 migration file(s) found; runtime apply status is manual.",
+      "priority": "high"
+    }
+  ],
+  "assumptions": [
+    "Migration runtime apply status is not auto-detectable from repo scan alone.",
+    "Environment key presence is inferred from code references, not secret value inspection.",
+    "Marker references are stabilized with excerpt hash and line for operator convenience."
+  ],
+  "errors": [
+    "required_env_keys: rg is unavailable",
+    "critical_markers: rg is unavailable"
+  ]
+}

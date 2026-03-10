@@ -1,0 +1,142 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: Hybrid synthesis
+      - heading "Cross-source synthesis with the same enterprise shell." [level=1] [ref=e7]
+      - paragraph [ref=e8]: Hybrid now sits inside the same Mistral-inspired product framing as the homepage, with the research timeline and contradiction rails unchanged underneath.
+      - generic [ref=e9]:
+        - link "Run synthesis" [ref=e10] [cursor=pointer]:
+          - /url: /hybrid
+          - generic [ref=e11]: Run synthesis
+          - img [ref=e12]
+        - link "Back to landing" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e15]: Back to landing
+          - img [ref=e16]
+    - generic [ref=e19]:
+      - complementary [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - generic [ref=e23]:
+              - img [ref=e24]
+              - paragraph [ref=e26]: Wu-Weism Operator
+            - generic [ref=e27]:
+              - button "Search" [ref=e28] [cursor=pointer]:
+                - img [ref=e29]
+              - button "Toggle sidebar" [ref=e32] [cursor=pointer]:
+                - img [ref=e33]
+          - navigation [ref=e36]:
+            - link "Chat" [ref=e37] [cursor=pointer]:
+              - /url: /chat
+              - img [ref=e38]
+              - generic [ref=e40]: Chat
+            - link "Hybrid" [ref=e41] [cursor=pointer]:
+              - /url: /hybrid
+              - img [ref=e42]
+              - generic [ref=e45]: Hybrid
+            - link "Audit" [ref=e46] [cursor=pointer]:
+              - /url: /epistemic
+              - img [ref=e47]
+              - generic [ref=e50]: Audit
+            - button "Relics" [ref=e52] [cursor=pointer]:
+              - img [ref=e53]
+              - generic [ref=e54]: Relics
+              - img [ref=e55]
+          - generic [ref=e57]:
+            - button "Light mode" [ref=e58] [cursor=pointer]:
+              - img [ref=e59]
+              - generic [ref=e65]: Light mode
+            - link "Documentation" [ref=e66] [cursor=pointer]:
+              - /url: https://docs.openclaw.ai
+              - img [ref=e67]
+              - generic [ref=e69]: Documentation
+            - button "Model Settings" [ref=e71] [cursor=pointer]:
+              - img [ref=e72]
+              - generic [ref=e75]: Model Settings
+            - button "WW Account" [ref=e77] [cursor=pointer]:
+              - generic [ref=e78]: WW
+              - generic [ref=e79]: Account
+              - img [ref=e80]
+      - generic [ref=e83]:
+        - generic [ref=e85]:
+          - generic [ref=e87]:
+            - generic [ref=e88]: Hybrid Discovery Engine
+            - paragraph [ref=e89]: Ingest → contradict → synthesize → prove novelty
+          - generic [ref=e91]: "Phase: deterministic synthesis routing"
+        - generic [ref=e93]:
+          - complementary [ref=e94]:
+            - generic [ref=e95]:
+              - generic [ref=e96]:
+                - paragraph [ref=e97]: Input Rail
+                - paragraph [ref=e98]: Source inventory, focus constraints, and execution
+              - generic [ref=e100]:
+                - generic [ref=e101]:
+                  - generic [ref=e102]:
+                    - img [ref=e103]
+                    - paragraph [ref=e106]: Research Sources
+                  - button "Add PDF Files" [ref=e107] [cursor=pointer]:
+                    - img [ref=e108]
+                    - text: Add PDF Files
+                  - generic [ref=e112]: No PDFs selected
+                - generic [ref=e113]:
+                  - generic [ref=e114]:
+                    - img [ref=e115]
+                    - paragraph [ref=e119]: Companies
+                  - generic [ref=e120]:
+                    - textbox "Add company name" [ref=e121]
+                    - button [ref=e122] [cursor=pointer]:
+                      - img [ref=e123]
+                  - paragraph [ref=e125]: No companies added.
+                - generic [ref=e126]:
+                  - paragraph [ref=e127]: Research Focus
+                  - 'textbox "Optional: target a specific mechanism, sector, or causal tension" [ref=e128]'
+                  - button "Start synthesis run" [disabled] [ref=e129]
+          - main [ref=e130]:
+            - generic [ref=e132]:
+              - generic [ref=e133]:
+                - generic [ref=e134]:
+                  - paragraph [ref=e135]: Sources
+                  - paragraph [ref=e136]: "0"
+                - generic [ref=e137]:
+                  - paragraph [ref=e138]: Validated Contradictions
+                  - paragraph [ref=e139]: "0"
+                - generic [ref=e140]:
+                  - paragraph [ref=e141]: Novelty Pass
+                  - paragraph [ref=e142]: "0"
+                - generic [ref=e143]:
+                  - paragraph [ref=e144]: Blocked Candidates
+                  - paragraph [ref=e145]: "0"
+              - generic [ref=e147]:
+                - paragraph [ref=e148]: Dialectical Synthesis Canvas
+                - paragraph [ref=e149]: Upload sources and run synthesis to render contradiction matrix, novelty proof, and falsification protocol.
+          - complementary [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - paragraph [ref=e153]: Evidence Rail
+                - paragraph [ref=e154]: Telemetry, prior-art confidence, and run history
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - generic [ref=e158]:
+                    - img [ref=e159]
+                    - paragraph [ref=e161]: Runtime Signal
+                  - paragraph [ref=e162]: Idle
+                  - paragraph [ref=e163]: "Proof cards: 0"
+                - generic [ref=e164]:
+                  - generic [ref=e165]:
+                    - img [ref=e166]
+                    - paragraph [ref=e169]: Gate State
+                  - generic [ref=e170]:
+                    - img [ref=e171]
+                    - generic [ref=e173]: pending
+                  - paragraph [ref=e174]: pass=0 · blocked=0
+                - generic [ref=e175]:
+                  - generic [ref=e176]:
+                    - img [ref=e177]
+                    - paragraph [ref=e179]: Top Prior-Art Overlaps
+                  - paragraph [ref=e180]: No overlap data yet.
+                - generic [ref=e181]:
+                  - generic [ref=e182]:
+                    - img [ref=e183]
+                    - paragraph [ref=e186]: Historical Runs
+                  - paragraph [ref=e187]: Loading...
+  - alert [ref=e188]

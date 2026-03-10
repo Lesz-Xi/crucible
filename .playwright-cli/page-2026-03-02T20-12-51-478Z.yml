@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - paragraph [ref=e6]: Epistemic audit
+      - heading "Run shared audit sessions inside the same product shell." [level=1] [ref=e7]
+      - paragraph [ref=e8]: The epistemic workspace now aligns with the landing page language while keeping the three-pane audit loop, live execution stream, and session directory.
+      - generic [ref=e9]:
+        - link "Open audit session" [ref=e10] [cursor=pointer]:
+          - /url: /epistemic
+          - generic [ref=e11]: Open audit session
+          - img [ref=e12]
+        - link "Back to landing" [ref=e14] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e15]: Back to landing
+          - img [ref=e16]
+    - generic [ref=e19]:
+      - banner [ref=e20]:
+        - generic [ref=e21]:
+          - link [ref=e22] [cursor=pointer]:
+            - /url: /
+            - img [ref=e23]
+          - heading "Wu-Weism logo Epistemic Audit" [level=1] [ref=e26]:
+            - img "Wu-Weism logo" [ref=e28]
+            - text: Epistemic Audit
+      - generic [ref=e29]:
+        - generic [ref=e34]:
+          - generic [ref=e35]:
+            - img [ref=e36]
+            - generic [ref=e39]: Methodologist
+          - text: I am ready to perform a rigorous audit. To construct a hard-to-vary explanation, I first need to understand the problem-situation. What specific aspect of the methodology would you like me to scrutinize?
+        - generic [ref=e42]:
+          - img [ref=e44]
+          - paragraph [ref=e46]: Waiting for conjecture generation...
+        - generic [ref=e47]:
+          - generic [ref=e48]: Session Directory
+          - generic [ref=e50]: Select a file to preview...
+  - button "Open Next.js Dev Tools" [ref=e56] [cursor=pointer]:
+    - img [ref=e57]
+  - alert [ref=e60]
