@@ -1,10 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
+  ArrowLeft,
+  ArrowRight,
   BookOpen,
   FileText,
   FlaskConical,
@@ -17,9 +18,10 @@ import {
   LogOut,
   MessageSquare,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   PanelRightOpen,
   Plus,
-  Search,
   Sun,
   Trash2,
   UserCircle2,
@@ -81,9 +83,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const activeSessionId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('sessionId')
@@ -103,6 +104,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         const parsedFolderFiles = JSON.parse(savedFolderFiles) as Record<string, SidebarFolderFile[]>;
         if (parsedFolderFiles && typeof parsedFolderFiles === 'object') setFolderFiles(parsedFolderFiles);
       }
+      const savedSidebarCollapsed = window.localStorage.getItem('sidebar-collapsed-v1');
+      if (savedSidebarCollapsed === 'true') setSidebarCollapsed(true);
     } catch {
       setFolders([]);
       setFolderFiles({});
@@ -113,10 +116,11 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     try {
       window.localStorage.setItem('chat-folders-v1', JSON.stringify(folders));
       window.localStorage.setItem('chat-folder-files-v1', JSON.stringify(folderFiles));
+      window.localStorage.setItem('sidebar-collapsed-v1', JSON.stringify(sidebarCollapsed));
     } catch {
       // Ignore storage failures.
     }
-  }, [folderFiles, folders]);
+  }, [folderFiles, folders, sidebarCollapsed]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -181,12 +185,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     const local = userEmail.split('@')[0] || '';
     return local.slice(0, 2).toUpperCase() || 'CO';
   }, [userEmail]);
-
-  const filteredThreads = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return recentThreads;
-    return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(query));
-  }, [recentThreads, searchQuery]);
 
   useEffect(() => {
     if (isRelicActive) setRelicsOpen(true);
@@ -303,26 +301,33 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="wordmark-icon">
-          <Image src="/wu-wei-mark-no-bg.png" alt="" width={18} height={18} className="wordmark-mark" />
-        </div>
-        <span className="wordmark-text">Bio-Lab Notebook</span>
-        <div className="sidebar-header-actions">
-          <button type="button" className="icon-btn" title="Search" aria-label="Search" onClick={() => setSearchOpen((current) => !current)}>
-            <Search className="h-3.5 w-3.5" />
+        <div className="sidebar-header-actions sidebar-header-controls">
+          <button
+            type="button"
+            className="icon-btn"
+            title={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            aria-label={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            onClick={() => setSidebarCollapsed((current) => !current)}
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
           </button>
           <button
             type="button"
             className="icon-btn"
-            title="New chat"
-            aria-label="New chat"
-            onClick={() => {
-              router.push('/chat?new=1');
-              window.dispatchEvent(new Event('newChat'));
-              setMobileSidebarOpen(false);
-            }}
+            title="Back"
+            aria-label="Back"
+            onClick={() => window.history.back()}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <ArrowLeft className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            className="icon-btn"
+            title="Forward"
+            aria-label="Forward"
+            onClick={() => window.history.forward()}
+          >
+            <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
@@ -361,16 +366,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           </div>
         ) : null}
 
-        {searchOpen ? (
-          <div className="px-2 pt-2">
-            <input
-              className="sidebar-search"
-              placeholder="Search history"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </div>
-        ) : null}
       </nav>
 
       <div className="sidebar-actions">
@@ -384,11 +379,11 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           }}
         >
           <Plus className="h-3 w-3" />
-          New chat
+          <span className="action-label"><span>New</span><span>chat</span></span>
         </button>
         <button type="button" className="action-btn" onClick={createFolder}>
           <FolderPlus className="h-3 w-3" />
-          Folder
+          <span className="action-label"><span>New</span><span>folder</span></span>
         </button>
       </div>
 
@@ -430,10 +425,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
 
       <div className="sidebar-section-label history-label">History</div>
       <div className="history-list">
-        {filteredThreads.length === 0 ? (
+        {recentThreads.length === 0 ? (
           <div className="history-item muted">No threads yet.</div>
         ) : (
-          filteredThreads.slice(0, 36).map((session) => {
+          recentThreads.slice(0, 36).map((session) => {
             const isActive = pathname === '/chat' && activeSessionId === session.id;
             return (
               <div key={session.id} className={cn('history-row', isActive && 'active')}>
@@ -495,7 +490,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
 
   return (
     <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`)}>
+      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed')}>
       <button type="button" className="mobile-shell-trigger" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
         <PanelRightOpen className="h-4 w-4" />
       </button>
