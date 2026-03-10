@@ -32,8 +32,13 @@ export default async function RootLayout({
 }>) {
   const requestHeaders = await headers();
   const themeScope = requestHeaders.get("x-theme-scope");
-  const isForcedDarkTheme =
-    themeScope === "marketing-dark" || themeScope === "chat-dark";
+  const forcedTheme =
+    themeScope === "marketing-light"
+      ? "light"
+      : themeScope === "chat-dark"
+        ? "dark"
+        : undefined;
+  const forcedColorScheme = forcedTheme ? { colorScheme: forcedTheme } : undefined;
 
   return (
     <html
@@ -41,18 +46,18 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${instrumentSerif.variable} ${jetbrainsMono.variable}`}
       data-theme-scope={themeScope ?? undefined}
-      style={isForcedDarkTheme ? { colorScheme: "dark" } : undefined}
+      style={forcedColorScheme}
     >
       <body
         className="antialiased"
         data-theme-scope={themeScope ?? undefined}
-        style={isForcedDarkTheme ? { colorScheme: "dark" } : undefined}
+        style={forcedColorScheme}
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem={true}
-          forcedTheme={isForcedDarkTheme ? "dark" : undefined}
+          forcedTheme={forcedTheme}
           storageKey="wu-weism-theme"
           disableTransitionOnChange
         >

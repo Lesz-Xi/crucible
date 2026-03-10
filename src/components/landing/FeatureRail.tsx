@@ -74,9 +74,9 @@ export function FeatureRail() {
       className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-16 md:pb-40 md:pt-24 lg:pb-44 lg:pt-28"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="marketing-section-surface overflow-hidden rounded-[32px]">
+        <div className="overflow-hidden rounded-[32px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.84)] shadow-[var(--shadow-soft)]">
           <div className="p-5 md:p-6 lg:p-7">
-              <div className="rounded-[26px] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(23,23,23,0.9),rgba(15,15,15,0.96))] p-5 md:p-6">
+              <div className="rounded-[26px] border border-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(247,244,239,0.86))] p-5 md:p-6">
                 <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] pb-5 md:flex-row md:items-end md:justify-between">
                   <div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
@@ -121,7 +121,7 @@ export function FeatureRail() {
                       <Link
                         key={app.label}
                         href={app.route}
-                        className="marketing-card group relative overflow-hidden rounded-[24px] p-5"
+                        className="group relative overflow-hidden rounded-[24px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.9)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[rgba(166,133,100,0.34)] hover:shadow-[0_24px_60px_rgba(45,38,28,0.08)]"
                       >
                         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-[var(--accent-rust)]/75 via-[var(--border-strong)]/40 to-transparent" />
 
@@ -168,7 +168,7 @@ export function FeatureRail() {
                   })}
                 </div>
 
-                <div className="mt-5 rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.02)] p-5 md:p-6">
+                <div className="mt-5 rounded-[24px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.82)] p-5 md:p-6">
                   <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-4 md:flex-row md:items-end md:justify-between">
                     <div>
                       <div className="inline-flex items-center gap-3">
@@ -191,7 +191,7 @@ export function FeatureRail() {
                       return (
                         <div
                           key={app.label}
-                          className="marketing-card group rounded-[22px] p-5"
+                          className="group rounded-[22px] border border-[var(--border-subtle)] bg-white/78 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[rgba(166,133,100,0.34)]"
                         >
                           <div className="flex items-center justify-between gap-4">
                             <div className="inline-flex items-center gap-3">

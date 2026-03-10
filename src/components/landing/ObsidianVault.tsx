@@ -6,12 +6,12 @@ export function ObsidianVault() {
   const containerRef = useRef(null);
 
   return (
-    <section ref={containerRef} className="hd-section py-16 md:py-20">
+    <section ref={containerRef} className="hd-section bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="relative overflow-hidden px-0 py-0">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center">
-            <div className="rounded-[30px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.03)] p-3">
-              <div className="rounded-[24px] border border-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(21,21,21,0.92),rgba(13,13,14,0.96))] px-6 py-7 md:px-7 md:py-8">
+            <div className="rounded-[30px] border border-[var(--border-subtle)] bg-white p-3">
+              <div className="rounded-[24px] border border-[var(--border-subtle)] bg-[#fffdfa] px-6 py-7 md:px-7 md:py-8">
                 <div className="flex items-center justify-between border-b border-[rgba(102,93,82,0.12)] pb-4">
                   <p className="hd-kicker">Storage Layer</p>
                   <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -47,8 +47,8 @@ export function ObsidianVault() {
               </div>
             </div>
 
-            <div className="rounded-[30px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.03)] p-3">
-              <div className="relative h-[420px] overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.08)] bg-[linear-gradient(180deg,rgba(18,18,18,0.92),rgba(10,10,10,0.98))] md:h-[500px]">
+            <div className="rounded-[30px] border border-[var(--border-subtle)] bg-white p-3">
+              <div className="relative h-[420px] overflow-hidden rounded-[24px] border border-[rgba(102,93,82,0.12)] bg-[#fffdfa] md:h-[500px]">
                 <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-[rgba(102,93,82,0.12)] px-5 py-4">
                   <div>
                     <p className="hd-kicker">Immutable core</p>

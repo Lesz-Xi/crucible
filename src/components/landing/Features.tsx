@@ -32,11 +32,11 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="hd-section py-16 md:py-20">
+    <section id="features" className="hd-section bg-white py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mx-auto mb-16 max-w-3xl space-y-4 text-center">
-          <div className="marketing-pill mx-auto mb-4 w-fit px-4 py-2">
-            <div className="marketing-dot" />
+          <div className="mb-4 inline-flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust)]" />
             <span className="hd-kicker text-[var(--accent-rust)]">Core Capabilities</span>
           </div>
           <h2 className="font-serif text-4xl text-[var(--text-primary)] md:text-5xl">
@@ -54,10 +54,10 @@ export function Features() {
             return (
               <div
                 key={feature.title}
-                className="marketing-card group rounded-[24px] p-8"
+                className="group relative rounded-[22px] border border-[var(--border-subtle)] bg-white p-8 transition-all duration-[220ms] ease-out hover:-translate-y-0.5"
               >
                 <div className={`pointer-events-none absolute inset-x-0 top-0 h-px ${feature.accent} opacity-70`} />
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[18px] border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)]">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[16px] border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
                   <Icon className={`h-6 w-6 ${feature.iconColor}`} strokeWidth={1.8} />
                 </div>
 

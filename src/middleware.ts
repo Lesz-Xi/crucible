@@ -1,16 +1,17 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+function resolveThemeScope(pathname: string) {
+  if (pathname === '/') return 'marketing-light';
+  if (pathname === '/chat' || pathname.startsWith('/chat/')) return 'chat-dark';
+  return null;
+}
+
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   const pathname = request.nextUrl.pathname;
 
-  const themeScope =
-    pathname === '/' || pathname.startsWith('/how-it-works')
-      ? 'marketing-dark'
-      : pathname === '/chat' || pathname.startsWith('/chat/')
-        ? 'chat-dark'
-        : null;
+  const themeScope = resolveThemeScope(pathname);
 
   if (themeScope) requestHeaders.set('x-theme-scope', themeScope);
   else requestHeaders.delete('x-theme-scope');
