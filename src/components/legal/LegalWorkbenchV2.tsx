@@ -1,16 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { BookOpen, Clock3 } from 'lucide-react';
 import type { LegalCase, LegalDiagnostics } from '@/types/legal';
 import { getAnalysisHistory, loadAnalysisFromHistory, saveAnalysisToHistory, type LegalHistoryEntry } from '@/lib/services/legal-history';
-import { ContextRail } from '@/components/workbench/ContextRail';
-import { EvidenceRail } from '@/components/workbench/EvidenceRail';
-import { PrimaryCanvas } from '@/components/workbench/PrimaryCanvas';
-import { StatusStrip } from '@/components/workbench/StatusStrip';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { LegalAnalysisPanelV2, type LegalGateSummary } from '@/components/legal/LegalAnalysisPanelV2';
 import { LegalIntakePanelV2 } from '@/components/legal/LegalIntakePanelV2';
+import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface AnalysisStatus {
   stage: 'idle' | 'uploading' | 'extracting' | 'analyzing' | 'matching' | 'complete' | 'error';
@@ -267,145 +263,136 @@ export function LegalWorkbenchV2() {
     }
   };
 
+  const railConfig: WorkbenchEvidenceRailConfig = {
+    subtitle: 'Legal posture and evidence',
+    live: analysisStatus.stage !== 'idle' || latestClaimId !== null || documentNames.length > 0,
+    causalDensity: {
+      activeLevel: gateState?.allowedOutputClass === 'intervention_supported' ? 'L2' : gateState?.allowedOutputClass === 'intervention_inferred' ? 'L1' : null,
+      status: analysisStatus.message,
+    },
+    alignmentPosture: {
+      tone: gateState?.allowed ? 'green' : gateState ? 'red' : 'neutral',
+      text: gateState?.rationale || 'No unaudited intervention claims without identifiability gates.',
+    },
+    modelProvenance: {
+      title: latestClaimId || 'unavailable',
+      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : 'No verified model provenance was emitted for this run.',
+      actions: latestClaimId ? [
+        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
+        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
+        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
+      ] : undefined,
+    },
+    activeDomain: {
+      label: `${caseType}${jurisdiction ? ` · ${jurisdiction}` : ''}` || 'unavailable',
+    },
+    scientificEvidence: documentNames.slice(0, 6).map((name, index) => ({
+      id: `${name}-${index}`,
+      title: name,
+      meta: `${caseType} source document`,
+      badge: index === 0 ? `${documentNames.length} docs` : undefined,
+    })),
+  };
+
   return (
     <WorkbenchShell
-      className="feature-legal"
-      statusStrip={
-        <StatusStrip
-          left={
-            <div className="flex items-center gap-3">
-              <span className="lab-chip-mono">Legal Causation Console</span>
-              <p className="text-sm text-[var(--lab-text-secondary)]">Intent → Action → Harm with intervention gates</p>
+      feature="legal"
+      evidenceRail={railConfig}
+      mainMode="split"
+      mainTopbar={
+        <>
+          <span className="topbar-tag">Legal Analysis Engine</span>
+          <div className="topbar-pipeline">
+            <span className={analysisStatus.stage !== 'idle' ? 'step done' : 'step'}>intake</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>extract</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>analyze</span>
+            <span className="arrow">→</span>
+            <span className={analysisStatus.stage === 'matching' || analysisStatus.stage === 'complete' ? 'step done' : 'step'}>match</span>
+          </div>
+          <span className="topbar-phase">Phase: {analysisStatus.stage}</span>
+        </>
+      }
+      mainContent={
+        <div className="split-workspace">
+          <div className="split-sidebar">
+            <div className="hybrid-section-head">Case Intake</div>
+            <p className="hybrid-sub">Documents, jurisdiction, and legal context setup</p>
+
+            <div className="feature-panel-stack mt-5">
+              <div className="feature-panel-shell">
+                <LegalIntakePanelV2
+                  documentNames={documentNames}
+                  caseTitle={caseTitle}
+                  jurisdiction={jurisdiction}
+                  caseType={caseType}
+                  disabled={analysisStatus.stage === 'uploading' || analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching'}
+                  onFilesRead={(docs, names) => {
+                    setDocuments((previous) => [...previous, ...docs]);
+                    setDocumentNames((previous) => [...previous, ...names]);
+                  }}
+                  onCaseTitleChange={setCaseTitle}
+                  onJurisdictionChange={setJurisdiction}
+                  onCaseTypeChange={setCaseType}
+                  onAnalyze={runAnalysis}
+                  onClear={clearAll}
+                />
+              </div>
+
+              <div className="feature-panel-shell">
+                <div className="panel-section-head">Historical Analyses</div>
+                {historyLoading ? (
+                  <p className="text-sm text-[var(--text-2)]">Loading history...</p>
+                ) : history.length === 0 ? (
+                  <p className="text-sm text-[var(--text-3)]">No saved analyses.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {history.map((entry) => (
+                      <button key={entry.id} type="button" className="history-item" onClick={() => void loadHistoryEntry(entry.id)}>
+                        {entry.caseTitle}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          }
-          right={<span className="lab-chip-mono">Output class: gate-aware liability analysis</span>}
-        />
-      }
-      contextRail={
-        <ContextRail title="Case Intake" subtitle="Document parsing and legal context setup">
-          <LegalIntakePanelV2
-            documentNames={documentNames}
-            caseTitle={caseTitle}
-            jurisdiction={jurisdiction}
-            caseType={caseType}
-            disabled={analysisStatus.stage === 'uploading' || analysisStatus.stage === 'extracting' || analysisStatus.stage === 'analyzing' || analysisStatus.stage === 'matching'}
-            onFilesRead={(docs, names) => {
-              setDocuments((previous) => [...previous, ...docs]);
-              setDocumentNames((previous) => [...previous, ...names]);
-            }}
-            onCaseTitleChange={setCaseTitle}
-            onJurisdictionChange={setJurisdiction}
-            onCaseTypeChange={setCaseType}
-            onAnalyze={runAnalysis}
-            onClear={clearAll}
-          />
-        </ContextRail>
-      }
-      primary={
-        <PrimaryCanvas>
-          <div className="lab-scroll-region h-full p-4">
-            <LegalAnalysisPanelV2
-              statusMessage={analysisStatus.message}
-              progress={analysisStatus.progress}
-              stage={analysisStatus.stage}
-              result={result}
-              gateState={gateState}
-              error={error}
-            />
           </div>
-        </PrimaryCanvas>
-      }
-      evidenceRail={
-        <EvidenceRail title="Evidence Rail" subtitle="Precedents, confidence, and history quick load">
-          <div className="space-y-3">
-            <section className="lab-metric-tile">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="lab-section-title !mb-0">Intervention Gate</p>
-                <span className="lab-chip-mono text-[10px]">
-                  Transport: {transportMode === 'idle' ? 'pending' : transportMode === 'sse' ? 'SSE stream' : 'JSON fallback'}
-                </span>
+
+          <div className="split-canvas">
+            <div className="canvas-stats">
+              <div className="stat-card">
+                <div className="stat-label">Case Title</div>
+                <div className="stat-value">{caseTitle ? '1' : '0'}</div>
               </div>
-              <p className="text-sm text-[var(--lab-text-secondary)]">{gateState?.rationale || 'Pending gate evaluation.'}</p>
-            </section>
-
-            {latestClaimId ? (
-              <section className="lab-metric-tile">
-                <p className="lab-section-title !mb-1">Claim Lineage</p>
-                <p className="text-xs text-[var(--lab-text-secondary)]">Claim ID: <span className="font-mono text-[var(--lab-text-primary)]">{latestClaimId}</span></p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
-                    Open pretty view
-                  </a>
-                  <a className="inline-block text-xs text-[var(--lab-accent-earth)] underline" href={`/api/claims/${latestClaimId}`} target="_blank" rel="noreferrer">
-                    Open JSON
-                  </a>
-                  <button
-                    type="button"
-                    className="text-xs text-[var(--lab-text-secondary)] underline"
-                    onClick={() => void handleCopyClaimId(latestClaimId)}
-                  >
-                    Copy Claim ID
-                  </button>
-                </div>
-                {claimCopied ? <p className="mt-1 text-[11px] text-[var(--lab-accent-moss)]">Copied!</p> : null}
-              </section>
-            ) : null}
-
-            <section className="lab-metric-tile">
-              <p className="lab-section-title !mb-1">Diagnostics</p>
-              {diagnostics ? (
-                <div className="space-y-1.5 text-xs text-[var(--lab-text-secondary)]">
-                  <p>Docs: {diagnostics.documentCount} · Entities: {diagnostics.extractedEntities}</p>
-                  <p>Actions: {diagnostics.extractedActions} · Harms: {diagnostics.extractedHarms}</p>
-                  <p>Pairs: {diagnostics.actionHarmPairsAnalyzed}</p>
-                  <p>But-for pass (necessary/both): {diagnostics.butForNecessaryOrBoth}</p>
-                  <p>But-for sufficient-only: {diagnostics.butForSufficientOnly} · neither: {diagnostics.butForNeither}</p>
-                  <p>Low-confidence: {diagnostics.butForLowConfidence} · LLM-failure signals: {diagnostics.llmFailureSignals}</p>
-                  <p>Chains raw→dedup: {diagnostics.causalChainsBeforeDedup} → {diagnostics.causalChainsAfterDedup}</p>
-                  <p>Gate allowed/blocked: {diagnostics.gateAllowedChains}/{diagnostics.gateBlockedChains}</p>
-                  {diagnostics.extractionWarnings.length > 0 ? (
-                    <p className="text-[var(--lab-accent-earth)]">Warnings: {diagnostics.extractionWarnings.slice(0, 1).join(' | ').slice(0, 220)}{diagnostics.extractionWarnings[0] && diagnostics.extractionWarnings[0].length > 220 ? '…' : ''}</p>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="text-sm text-[var(--lab-text-tertiary)]">No diagnostics yet.</p>
-              )}
-            </section>
-
-            <section className="lab-metric-tile">
-              <p className="lab-section-title !mb-1">Historical Analyses</p>
-              {historyLoading ? (
-                <p className="text-sm text-[var(--lab-text-secondary)]">Loading history...</p>
-              ) : history.length === 0 ? (
-                <p className="text-sm text-[var(--lab-text-tertiary)]">No saved analyses.</p>
-              ) : (
-                <div className="space-y-2">
-                  {history.map((entry) => (
-                    <button key={entry.id} type="button" className="lab-card-interactive w-full text-left !p-2.5" onClick={() => void loadHistoryEntry(entry.id)}>
-                      <p className="truncate text-sm font-medium text-[var(--lab-text-primary)]">{entry.caseTitle}</p>
-                      <p className="mt-1 flex items-center gap-1 text-xs text-[var(--lab-text-tertiary)]">
-                        <Clock3 className="h-3.5 w-3.5" />
-                        {entry.createdAt.toLocaleString()}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section className="lab-metric-tile">
-              <div className="mb-2 flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-[var(--lab-accent-earth)]" />
-                <p className="lab-section-title !mb-0">Chain Metrics</p>
+              <div className="stat-card">
+                <div className="stat-label">Documents</div>
+                <div className="stat-value">{documentNames.length}</div>
               </div>
-              <p className="text-sm text-[var(--lab-text-secondary)]">
-                {result
-                  ? `${result.causalChains.length} chains · ${result.precedents.length} precedents · ${Math.round((result.verdict?.confidence || 0) * 100)}% confidence`
-                  : 'No active verdict metrics.'}
-              </p>
-            </section>
+              <div className="stat-card">
+                <div className="stat-label">Transport</div>
+                <div className="stat-value">{transportMode === 'sse' ? 'S' : transportMode === 'json-fallback' ? 'J' : 'P'}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-label">Diagnostics</div>
+                <div className="stat-value">{diagnostics ? diagnostics.documentCount : 0}</div>
+              </div>
+            </div>
+
+            <div className="canvas-body">
+              <div className="w-full">
+                <LegalAnalysisPanelV2
+                  statusMessage={analysisStatus.message}
+                  progress={analysisStatus.progress}
+                  stage={analysisStatus.stage}
+                  result={result}
+                  gateState={gateState}
+                  error={error}
+                />
+              </div>
+            </div>
           </div>
-        </EvidenceRail>
+        </div>
       }
     />
   );
