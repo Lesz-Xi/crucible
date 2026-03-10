@@ -1,0 +1,236 @@
+const fs = require('fs/promises');
+const path = require('path');
+
+const ROOT_DIR = __dirname;
+const OUTPUT_PATH = path.resolve(ROOT_DIR, 'src/app/generated-tokens.css');
+const TOKEN_SETS = ['core', 'dark', 'light'];
+const PX_TYPES = new Set(['fontSizes', 'borderRadius', 'spacing', 'sizing']);
+const TOKEN_SOURCE_CANDIDATES = [
+  process.env.TOKENS_JSON_PATH,
+  path.resolve(ROOT_DIR, '../design-system/tokens.json'),
+  path.resolve(ROOT_DIR, 'design-system/tokens.json'),
+].filter(Boolean);
+
+function isTokenLeaf(value) {
+  return !!value && typeof value === 'object' && 'value' in value && 'type' in value;
+}
+
+function toKebabCase(value) {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[^A-Za-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+}
+
+function canonicalName(pathParts) {
+  return `--${pathParts.map(toKebabCase).join('-')}`;
+}
+
+function parseAliases(description) {
+  if (typeof description !== 'string' || description.length === 0) {
+    return [];
+  }
+
+  const matches = description.match(/--[A-Za-z0-9-_]+/g);
+  return matches ? Array.from(new Set(matches)) : [];
+}
+
+function normalizeValue(value, type) {
+  if (typeof value === 'number') {
+    return PX_TYPES.has(type) ? `${value}px` : String(value);
+  }
+
+  if (typeof value !== 'string') {
+    return String(value);
+  }
+
+  if (PX_TYPES.has(type) && /^-?\d+(\.\d+)?$/.test(value)) {
+    return `${value}px`;
+  }
+
+  return value;
+}
+
+function cloneTokenTree(node) {
+  if (isTokenLeaf(node)) {
+    return { ...node };
+  }
+
+  return Object.fromEntries(
+    Object.entries(node || {}).map(([key, value]) => [key, cloneTokenTree(value)])
+  );
+}
+
+function collectSetTokens(setName, node, pathParts = [], collected = new Map()) {
+  for (const [key, value] of Object.entries(node || {})) {
+    const nextPath = [...pathParts, key];
+
+    if (isTokenLeaf(value)) {
+      const tokenPath = nextPath.join('.');
+      collected.set(tokenPath, {
+        setName,
+        path: nextPath,
+        canonical: canonicalName(nextPath),
+        value: normalizeValue(value.value, value.type),
+        type: value.type,
+        description: value.description || '',
+        aliases: parseAliases(value.description),
+      });
+      continue;
+    }
+
+    collectSetTokens(setName, value, nextPath, collected);
+  }
+
+  return collected;
+}
+
+function buildSections(rawTokens) {
+  const sections = {
+    root: [],
+    dark: [],
+    light: [],
+  };
+
+  const coreTokens = collectSetTokens('core', rawTokens.core);
+  const darkTokens = collectSetTokens('dark', rawTokens.dark);
+  const lightTokens = collectSetTokens('light', rawTokens.light);
+
+  const buildEntry = (token, inheritedAliases = []) => {
+    const aliases = Array.from(new Set([...token.aliases, ...inheritedAliases]))
+      .filter((alias) => alias !== token.canonical);
+
+    return {
+      canonical: token.canonical,
+      aliases,
+      value: token.value,
+      sortKey: token.path.join('.'),
+    };
+  };
+
+  sections.root = Array.from(coreTokens.values())
+    .map((token) => buildEntry(token))
+    .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+  sections.dark = Array.from(darkTokens.values())
+    .map((token) => buildEntry(token))
+    .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+  sections.light = Array.from(lightTokens.values())
+    .map((token) => {
+      const pathKey = token.path.join('.');
+      const darkAliases = darkTokens.get(pathKey)?.aliases || [];
+      const inheritedAliases = token.aliases.length < darkAliases.length ? darkAliases : [];
+      return buildEntry(token, inheritedAliases);
+    })
+    .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+  return sections;
+}
+
+function renderBlock(selector, entries) {
+  const lines = [`${selector} {`];
+
+  for (const entry of entries) {
+    lines.push(`  ${entry.canonical}: ${entry.value};`);
+    for (const alias of entry.aliases) {
+      lines.push(`  ${alias}: ${entry.value};`);
+    }
+  }
+
+  lines.push('}');
+  return lines.join('\n');
+}
+
+async function pathExists(targetPath) {
+  try {
+    await fs.access(targetPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveTokensPath() {
+  for (const candidate of TOKEN_SOURCE_CANDIDATES) {
+    if (await pathExists(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+async function main() {
+  const tokensPath = await resolveTokensPath();
+
+  if (!tokensPath) {
+    if (await pathExists(OUTPUT_PATH)) {
+      console.warn(
+        `Token source not found in any expected location. Keeping existing generated tokens at ${OUTPUT_PATH}.`
+      );
+      return;
+    }
+
+    throw new Error(
+      `Unable to locate tokens.json. Checked: ${TOKEN_SOURCE_CANDIDATES.join(', ')}`
+    );
+  }
+
+  const tokenSource = JSON.parse(await fs.readFile(tokensPath, 'utf8'));
+  const rawTokens = Object.fromEntries(
+    TOKEN_SETS.map((setName) => [setName, cloneTokenTree(tokenSource[setName] || {})])
+  );
+  const sections = buildSections(rawTokens);
+  const { default: StyleDictionary } = await import('style-dictionary');
+
+  const sd = new StyleDictionary({
+    tokens: rawTokens,
+    platforms: {
+      css: {
+        buildPath: 'src/app/',
+        transforms: ['name/full-token-path'],
+        files: [
+          {
+            destination: 'generated-tokens.css',
+            format: 'css/theme-custom-properties-with-aliases',
+          },
+        ],
+      },
+    },
+  });
+
+  sd.registerTransform({
+    name: 'name/full-token-path',
+    type: 'name',
+    transform: (token) => token.path.map(toKebabCase).join('-'),
+  });
+
+  sd.registerFormat({
+    name: 'css/theme-custom-properties-with-aliases',
+    format: () => {
+      return [
+        '/*',
+        ` * This file is generated from ${path.relative(ROOT_DIR, tokensPath)}.`,
+        ' * Do not edit this file directly.',
+        ' */',
+        '',
+        renderBlock(':root', sections.root),
+        '',
+        renderBlock(':root, .light', sections.light),
+        '',
+        renderBlock('.dark', sections.dark),
+        '',
+      ].join('\n');
+    },
+  });
+
+  await sd.buildAllPlatforms();
+  await fs.access(OUTPUT_PATH);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

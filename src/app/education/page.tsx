@@ -56,7 +56,8 @@ import { IntakeFormProgress, DEFAULT_INTAKE_STEPS } from '@/components/education
 import { ProfilePresets, applyPresetProfile, StudentProfile } from '@/components/education/ProfilePresets';
 import { ApprenticeshipPanel } from '@/components/education/apprenticeship/ApprenticeshipPanel';
 import { LabSessionModal } from '@/components/education/apprenticeship/LabSessionModal';
-import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
+import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
+import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface AnalysisState {
   stage: 'intake' | 'analyzing' | 'results' | 'error';
@@ -185,6 +186,59 @@ export default function EducationPage() {
       `Write a 2-line reflection after each session to anchor progress.`
     ];
   }, [interventions, analysisResult]);
+
+  const educationRailConfig = useMemo<WorkbenchEvidenceRailConfig>(() => {
+    const allowedOutputClass = interventions?.allowedOutputClass as AllowedOutputClass | undefined;
+    const activeLevel =
+      allowedOutputClass === 'intervention_supported'
+        ? 'L2'
+        : allowedOutputClass === 'intervention_inferred'
+          ? 'L1'
+          : null;
+    const tone =
+      error
+        ? 'red'
+        : analysisState.stage === 'analyzing'
+          ? 'amber'
+          : allowedOutputClass === 'intervention_supported'
+            ? 'green'
+            : allowedOutputClass === 'intervention_inferred'
+              ? 'amber'
+              : 'neutral';
+
+    return {
+      subtitle: 'Learning posture and provenance',
+      live: analysisState.stage !== 'intake' || Boolean(interventions),
+      causalDensity: {
+        activeLevel,
+        status:
+          analysisState.stage === 'results'
+            ? formatAllowedOutputClass(allowedOutputClass)
+            : analysisState.message,
+      },
+      alignmentPosture: {
+        tone,
+        text:
+          error ||
+          interventions?.interventionGateSummary?.rationale ||
+          analysisState.message,
+      },
+      modelProvenance: {
+        title: planId || 'unavailable',
+        text: planId ? `Learning plan recorded for ${planId}.` : 'No verified model provenance was emitted for this run.',
+      },
+      activeDomain: {
+        label: analysisResult ? `education · ${learningStyle}` : 'education',
+      },
+      scientificEvidence:
+        interventions?.rankedInterventions.slice(0, 4).map((result, index) => ({
+          id: result.intervention.id || `${result.intervention.name}-${index}`,
+          title: result.intervention.name,
+          meta: `Target ${formatNodeName(result.intervention.target)} • Gain +${result.expectedGain}`,
+          badge: formatAllowedOutputClass(result.interventionGate?.allowedOutputClass as AllowedOutputClass | undefined),
+        })) || [],
+    };
+  }, [analysisResult, analysisState.message, analysisState.stage, error, interventions, learningStyle, planId]);
 
   const normalizeNodeValue = (value: unknown, fallback: number) => {
     if (typeof value !== 'number') return fallback;
@@ -644,8 +698,25 @@ export default function EducationPage() {
   };
   
   return (
-    <AppDashboardShell feature="education">
-      <main className="edu-page feature-education min-h-screen transition-colors duration-500">
+    <WorkbenchShell
+      feature="education"
+      evidenceRail={educationRailConfig}
+      mainMode="report"
+      mainTopbar={
+        <>
+          <span className="topbar-tag">Educational Systems</span>
+          <div className="topbar-pipeline">
+            <span className={analysisState.stage !== 'intake' ? 'step done' : 'step'}>profile</span>
+            <span className="arrow">→</span>
+            <span className={analysisState.stage === 'analyzing' || analysisState.stage === 'results' ? 'step done' : 'step'}>analyze</span>
+            <span className="arrow">→</span>
+            <span className={analysisState.stage === 'results' ? 'step done' : 'step'}>intervene</span>
+          </div>
+          <span className="topbar-phase">Phase: {analysisState.stage}</span>
+        </>
+      }
+      mainContent={
+        <div className="edu-page feature-education min-h-full transition-colors duration-500">
       {/* Header */}
       <header className="edu-header px-8 py-6">
         <div className="max-w-6xl mx-auto">
@@ -1528,8 +1599,9 @@ export default function EducationPage() {
           </div>
         )}
       </div>
-      </main>
-    </AppDashboardShell>
+      </div>
+      }
+    />
   );
 }
 

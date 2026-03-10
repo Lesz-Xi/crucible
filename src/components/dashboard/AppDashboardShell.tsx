@@ -4,22 +4,24 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
+  ArrowLeft,
+  ArrowRight,
   BookOpen,
-  Bot,
+  FileText,
   FlaskConical,
   Folder,
   FolderMinus,
   FolderPlus,
+  Gauge,
   Gavel,
   GraduationCap,
   LogOut,
-  Menu,
   MessageSquare,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   PanelRightOpen,
   Plus,
-  Search,
-  ScrollText,
   Sun,
   Trash2,
   UserCircle2,
@@ -28,7 +30,6 @@ import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
 import { SidebarModelSettings } from './SidebarModelSettings';
-import { WorkbenchEvidenceRail } from '@/components/workbench/WorkbenchEvidenceRail';
 import { AppShellChromeProvider } from './AppShellChromeContext';
 import type { WorkbenchEvidenceRailConfig, WorkbenchFeature } from '@/types/workbench';
 
@@ -56,7 +57,7 @@ interface SidebarFolderFile {
 
 const PRIMARY_NAV = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/hybrid', label: 'Hybrid', icon: Bot },
+  { href: '/hybrid', label: 'Hybrid', icon: Gauge, badge: 'New' },
 ] as const;
 
 const RELICS_NAV = [
@@ -71,7 +72,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [relicsOpen, setRelicsOpen] = useState(true);
+  const [relicsOpen, setRelicsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -82,13 +83,13 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const activeSessionId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('sessionId')
     : null;
+  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
 
   useEffect(() => {
     setMounted(true);
@@ -103,6 +104,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         const parsedFolderFiles = JSON.parse(savedFolderFiles) as Record<string, SidebarFolderFile[]>;
         if (parsedFolderFiles && typeof parsedFolderFiles === 'object') setFolderFiles(parsedFolderFiles);
       }
+      const savedSidebarCollapsed = window.localStorage.getItem('sidebar-collapsed-v1');
+      if (savedSidebarCollapsed === 'true') setSidebarCollapsed(true);
     } catch {
       setFolders([]);
       setFolderFiles({});
@@ -113,10 +116,11 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     try {
       window.localStorage.setItem('chat-folders-v1', JSON.stringify(folders));
       window.localStorage.setItem('chat-folder-files-v1', JSON.stringify(folderFiles));
+      window.localStorage.setItem('sidebar-collapsed-v1', JSON.stringify(sidebarCollapsed));
     } catch {
       // Ignore storage failures.
     }
-  }, [folderFiles, folders]);
+  }, [folderFiles, folders, sidebarCollapsed]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -182,11 +186,9 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     return local.slice(0, 2).toUpperCase() || 'CO';
   }, [userEmail]);
 
-  const filteredThreads = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return recentThreads;
-    return recentThreads.filter((session) => (session.title || 'Untitled thread').toLowerCase().includes(query));
-  }, [recentThreads, searchQuery]);
+  useEffect(() => {
+    if (isRelicActive) setRelicsOpen(true);
+  }, [isRelicActive]);
 
   const createFolder = () => {
     const name = prompt('Enter folder name:');
@@ -296,45 +298,41 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     router.refresh();
   };
 
-  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
-  const defaultSurfaceRail: WorkbenchEvidenceRailConfig = {
-    subtitle: feature === 'education' ? 'Learning posture and provenance' : 'Live posture and provenance',
-    live: false,
-    causalDensity: {
-      activeLevel: null,
-      status: 'Awaiting scored output',
-    },
-    alignmentPosture: {
-      tone: 'neutral',
-      text: 'No auditable posture has been emitted for this surface yet.',
-    },
-    modelProvenance: {
-      title: 'unavailable',
-      text: 'No verified model provenance was emitted for this run.',
-    },
-    activeDomain: {
-      label: feature === 'education' ? 'education' : feature,
-    },
-    scientificEvidence: [],
-  };
-
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="wordmark-icon">
-          <Menu className="h-4 w-4" />
-        </div>
-        <div className="wordmark-text">
-          <span>BIO-LAB</span>
-          <span>NOTEBOOK</span>
-        </div>
-        <div className="sidebar-header-actions">
-          <button type="button" className="icon-btn" title="Search" aria-label="Search" onClick={() => setSearchOpen((current) => !current)}>
-            <Search className="h-3.5 w-3.5" />
+        <div className="sidebar-header-actions sidebar-header-controls">
+          <button
+            type="button"
+            className="icon-btn"
+            title={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            aria-label={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            onClick={() => setSidebarCollapsed((current) => !current)}
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
           </button>
-          <button type="button" className="icon-btn" title="Toggle layout" aria-label="Toggle layout" onClick={() => setRelicsOpen((current) => !current)}>
-            <PanelRightOpen className="h-3.5 w-3.5" />
-          </button>
+          {!sidebarCollapsed && (
+            <>
+              <button
+                type="button"
+                className="icon-btn"
+                title="Back"
+                aria-label="Back"
+                onClick={() => window.history.back()}
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                className="icon-btn"
+                title="Forward"
+                aria-label="Forward"
+                onClick={() => window.history.forward()}
+              >
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -346,12 +344,13 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
             <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
               <Icon className="h-3.5 w-3.5" />
               <span>{item.label}</span>
+              {'badge' in item && item.badge ? <span className="nav-badge">{item.badge}</span> : null}
             </Link>
           );
         })}
 
         <button type="button" className={cn('nav-item', isRelicActive && 'active')} onClick={() => setRelicsOpen((current) => !current)}>
-          <ScrollText className="h-3.5 w-3.5" />
+          <FileText className="h-3.5 w-3.5" />
           <span>Relics</span>
           <span className="chevron">{relicsOpen ? '▾' : '▸'}</span>
         </button>
@@ -371,16 +370,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           </div>
         ) : null}
 
-        {searchOpen ? (
-          <div className="px-2 pt-2">
-            <input
-              className="sidebar-search"
-              placeholder="Search history"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </div>
-        ) : null}
       </nav>
 
       <div className="sidebar-actions">
@@ -394,56 +383,56 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           }}
         >
           <Plus className="h-3 w-3" />
-          New chat
+          <span className="action-label"><span>New</span><span>chat</span></span>
         </button>
         <button type="button" className="action-btn" onClick={createFolder}>
           <FolderPlus className="h-3 w-3" />
-          New folder
+          <span className="action-label"><span>New</span><span>folder</span></span>
         </button>
       </div>
 
-      <div className="sidebar-section-label">Folders</div>
-      <div className="history-list is-folders">
-        {folders.length === 0 ? (
-          <div className="history-item muted">No folders yet.</div>
-        ) : (
-          folders.map((folder) => (
-            <div key={folder.id} className="folder-block">
-              <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
-                <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
-                  {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                  <span>{folder.name}</span>
-                </button>
-                <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-              {folderOpenState[folder.id] ? (
-                <div className="folder-files">
-                  <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
-                    + New file
+      {folders.length > 0 ? (
+        <>
+          <div className="sidebar-section-label">Folders</div>
+          <div className="history-list is-folders">
+            {folders.map((folder) => (
+              <div key={folder.id} className="folder-block">
+                <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                  <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                    {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                    <span>{folder.name}</span>
                   </button>
-                  {(folderFiles[folder.id] ?? []).map((file) => (
-                    <div key={file.id} className="folder-file-row">
-                      <span className="history-item">{file.name}</span>
-                      <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                  <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
-              ) : null}
-            </div>
-          ))
-        )}
-      </div>
+                {folderOpenState[folder.id] ? (
+                  <div className="folder-files">
+                    <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                      + New file
+                    </button>
+                    {(folderFiles[folder.id] ?? []).map((file) => (
+                      <div key={file.id} className="folder-file-row">
+                        <span className="history-item">{file.name}</span>
+                        <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
 
       <div className="sidebar-section-label history-label">History</div>
       <div className="history-list">
-        {filteredThreads.length === 0 ? (
+        {recentThreads.length === 0 ? (
           <div className="history-item muted">No threads yet.</div>
         ) : (
-          filteredThreads.slice(0, 36).map((session) => {
+          recentThreads.slice(0, 36).map((session) => {
             const isActive = pathname === '/chat' && activeSessionId === session.id;
             return (
               <div key={session.id} className={cn('history-row', isActive && 'active')}>
@@ -505,7 +494,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
 
   return (
     <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={cn('app-feature-shell', `feature-${feature}`)}>
+      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed')}>
       <button type="button" className="mobile-shell-trigger" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
         <PanelRightOpen className="h-4 w-4" />
       </button>
@@ -521,16 +510,7 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       ) : null}
 
       <div className="app-shell-main">
-        {feature === 'education' || feature === 'lab' ? (
-          <div className="shell app-shell">
-            <main className="main">
-              <div className="main-content-shell">{children}</div>
-            </main>
-            <WorkbenchEvidenceRail config={evidenceRailOverride || defaultSurfaceRail} />
-          </div>
-        ) : (
-          children
-        )}
+        {children}
       </div>
       </div>
     </AppShellChromeProvider>
