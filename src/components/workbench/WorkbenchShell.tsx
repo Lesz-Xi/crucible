@@ -1,83 +1,46 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
+import { PanelRightOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
-
-export interface WorkbenchShellProps {
-  contextRail: ReactNode;
-  primary: ReactNode;
-  evidenceRail: ReactNode;
-  statusStrip?: ReactNode;
-  className?: string;
-  contextRailOpen?: boolean;
-  evidenceRailOpen?: boolean;
-  readingMode?: boolean;
-}
+import { useAppShellChrome } from '@/components/dashboard/AppShellChromeContext';
+import { WorkbenchEvidenceRail } from '@/components/workbench/WorkbenchEvidenceRail';
+import type { WorkbenchShellProps } from '@/types/workbench';
 
 export function WorkbenchShell({
-  contextRail,
-  primary,
+  feature,
+  mainTopbar,
+  mainContent,
+  inputArea,
   evidenceRail,
-  statusStrip,
-  className,
-  contextRailOpen = true,
-  evidenceRailOpen = true,
-  readingMode = false,
+  mainMode = 'canvas',
 }: WorkbenchShellProps) {
-  const [mobileTab, setMobileTab] = useState<'context' | 'primary' | 'evidence'>('primary');
-  const isChatFeature = className?.includes('feature-chat') ?? false;
-
-  const desktopGridCols = contextRailOpen && evidenceRailOpen
-    ? `300px minmax(0,1fr) var(--rail-w)`
-    : contextRailOpen
-      ? '300px minmax(0,1fr)'
-      : evidenceRailOpen
-        ? `minmax(0,1fr) var(--rail-w)`
-        : 'minmax(0,1fr)';
-
-  const tabletGridCols = contextRailOpen ? '280px minmax(0,1fr)' : 'minmax(0,1fr)';
-
-  const panelHeight = isChatFeature ? '100svh' : 'calc(100svh - 116px)';
+  const [mobileRailOpen, setMobileRailOpen] = useState(false);
+  const shellChrome = useAppShellChrome();
+  const resolvedEvidenceRail = shellChrome?.evidenceRailOverride || evidenceRail;
 
   return (
-    <AppDashboardShell readingMode={readingMode}>
-      <div className={cn('lab-shell lg-shell min-h-screen w-full', className)}>
-        {statusStrip}
+    <AppDashboardShell feature={feature}>
+      <div className={cn('shell app-shell', `main-mode-${mainMode}`)}>
+        <button type="button" className="mobile-rail-trigger" onClick={() => setMobileRailOpen(true)} aria-label="Open evidence rail">
+          <PanelRightOpen className="h-4 w-4" />
+        </button>
 
-        <div
-          className={cn(
-            'mx-auto max-w-[1760px] px-4 md:px-6 lg:px-8',
-            isChatFeature ? 'max-w-none pb-0 pt-0 pl-0 pr-0 md:pl-0 md:pr-0 lg:pl-0 lg:pr-0' : 'pb-5 pt-2',
-          )}
-        >
-          <div className={cn('hidden lg:grid', isChatFeature ? 'lg:gap-0' : 'lg:gap-4')} style={{ gridTemplateColumns: desktopGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-context-rail lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'main lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-            {evidenceRailOpen ? <aside className={cn('rail lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{evidenceRail}</aside> : null}
-          </div>
+        <main className="main">
+          {mainTopbar ? <div className="main-topbar visible">{mainTopbar}</div> : null}
+          <div className="main-content-shell">{mainContent}</div>
+          {inputArea ? <div className="input-area">{inputArea}</div> : null}
+        </main>
+        <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
 
-          <div className={cn('hidden md:grid lg:hidden', isChatFeature ? 'md:gap-0' : 'md:gap-4')} style={{ gridTemplateColumns: tabletGridCols }}>
-            {contextRailOpen ? <aside className={cn('lab-context-rail lab-panel lg-panel overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{contextRail}</aside> : null}
-            <main className={cn(isChatFeature ? 'main lab-panel lg-panel' : 'lab-panel-elevated lg-panel', 'overflow-hidden', isChatFeature && '!rounded-none')} style={{ height: panelHeight }}>{primary}</main>
-          </div>
-
-          <div className="md:hidden">
-            <div className={cn('mb-3 grid gap-2', contextRailOpen && evidenceRailOpen ? 'grid-cols-3' : contextRailOpen || evidenceRailOpen ? 'grid-cols-2' : 'grid-cols-1')}>
-              {contextRailOpen ? (
-                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'context'} onClick={() => setMobileTab('context')}>Context</button>
-              ) : null}
-              <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'primary'} onClick={() => setMobileTab('primary')}>Canvas</button>
-              {evidenceRailOpen ? (
-                <button type="button" className="lab-nav-pill lg-control justify-center" data-active={mobileTab === 'evidence'} onClick={() => setMobileTab('evidence')}>Evidence</button>
-              ) : null}
+        {mobileRailOpen ? (
+          <div className="mobile-rail-overlay" onClick={() => setMobileRailOpen(false)}>
+            <div className="mobile-rail-panel" onClick={(event) => event.stopPropagation()}>
+              <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
             </div>
-
-            {contextRailOpen && mobileTab === 'context' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{contextRail}</section> : null}
-            {mobileTab === 'primary' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{primary}</section> : null}
-            {evidenceRailOpen && mobileTab === 'evidence' ? <section className={isChatFeature ? 'lab-panel lg-panel' : 'lab-panel-elevated lg-panel'}>{evidenceRail}</section> : null}
           </div>
-        </div>
+        ) : null}
       </div>
     </AppDashboardShell>
   );

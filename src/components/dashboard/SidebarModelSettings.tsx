@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cpu, X, Save, Key, Thermometer, ShieldCheck } from 'lucide-react';
+import { Cpu, X, Save, Thermometer, ShieldCheck, Settings2 } from 'lucide-react';
 import { useLab } from '../../lib/contexts/LabContext';
 import { AI_CONFIG, AIProviderId } from '../../config/ai-models';
 import { LLMConfig } from '../../types/lab';
@@ -79,18 +79,18 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
   const activeProvider = AI_CONFIG.providers[localConfig.provider as AIProviderId];
 
   return (
-    <div className="relative w-full" ref={ref}>
+    <div className="relative" ref={ref}>
       <button
         type="button"
         className={cn(
-            "nav-item w-full",
-            isOpen && 'active'
+            "lab-nav-pill lg-control w-full",
+            isOpen && 'bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)] font-medium'
         )}
         onClick={() => setIsOpen((v) => !v)}
         title={collapsed ? 'Model Settings' : undefined}
       >
-        <Cpu className="h-4 w-4" />
-        {collapsed ? null : <span className="font-serif tracking-wide text-left flex-1" style={{ fontSize: '13.5px' }}>Model Settings</span>}
+        <Settings2 className="h-4 w-4" />
+        {collapsed ? null : <span className="font-serif tracking-wide">Model Settings</span>}
       </button>
 
       <AnimatePresence>
