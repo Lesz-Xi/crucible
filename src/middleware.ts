@@ -8,9 +8,7 @@ export async function middleware(request: NextRequest) {
   const themeScope =
     pathname === '/' || pathname.startsWith('/how-it-works')
       ? 'marketing-dark'
-      : pathname === '/chat' || pathname.startsWith('/chat/')
-        ? 'chat-dark'
-        : null;
+      : null;
 
   if (themeScope) requestHeaders.set('x-theme-scope', themeScope);
   else requestHeaders.delete('x-theme-scope');

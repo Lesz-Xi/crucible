@@ -32,8 +32,7 @@ export default async function RootLayout({
 }>) {
   const requestHeaders = await headers();
   const themeScope = requestHeaders.get("x-theme-scope");
-  const isForcedDarkTheme =
-    themeScope === "marketing-dark" || themeScope === "chat-dark";
+  const isForcedDarkTheme = themeScope === "marketing-dark";
 
   return (
     <html
