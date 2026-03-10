@@ -8731,3 +8731,327 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 .stagger > *:nth-child(3) { animation-delay: 0.19s; }
 .stagger > *:nth-child(4) { animation-delay: 0.26s; }
 .stagger > *:nth-child(5) { animation-delay: 0.33s; }
+
+/* Final authority block for /chat single-card workbench */
+.feature-chat.canonical-workbench-shell {
+  --chat-graph-node-a: color-mix(in srgb, var(--accent) 22%, transparent);
+  --chat-graph-node-b: color-mix(in srgb, var(--green, #6c8f73) 16%, transparent);
+  --chat-graph-line: color-mix(in srgb, var(--border-2, var(--border)) 58%, transparent);
+  --chat-card-shadow: 0 20px 48px rgba(18, 14, 10, 0.08);
+}
+
+.dark .feature-chat.canonical-workbench-shell {
+  --chat-graph-node-a: rgba(196, 133, 73, 0.12);
+  --chat-graph-node-b: rgba(124, 160, 136, 0.1);
+  --chat-graph-line: rgba(214, 201, 182, 0.08);
+  --chat-card-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+}
+
+.feature-chat.canonical-workbench-shell .main-content-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-chat.canonical-workbench-shell .chat-workbench {
+  position: relative;
+  isolation: isolate;
+}
+
+.feature-chat.canonical-workbench-shell .chat-workbench::before,
+.feature-chat.canonical-workbench-shell .chat-workbench::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.feature-chat.canonical-workbench-shell .chat-workbench::before {
+  background:
+    radial-gradient(circle at 24% 20%, var(--chat-graph-node-a) 0, transparent 18%),
+    radial-gradient(circle at 76% 28%, var(--chat-graph-node-b) 0, transparent 16%),
+    radial-gradient(circle at 58% 72%, color-mix(in srgb, var(--accent) 10%, transparent) 0, transparent 22%);
+  filter: blur(12px);
+  opacity: 0.9;
+}
+
+.feature-chat.canonical-workbench-shell .chat-workbench::after {
+  background:
+    radial-gradient(1200px 420px at 50% 98%, color-mix(in srgb, var(--accent) 7%, transparent) 0, transparent 72%),
+    radial-gradient(1100px 340px at 50% 40%, color-mix(in srgb, var(--text-3) 5%, transparent) 0, transparent 80%),
+    linear-gradient(140deg, transparent 0 28%, var(--chat-graph-line) 29%, transparent 30% 58%, var(--chat-graph-line) 59%, transparent 60% 100%),
+    linear-gradient(32deg, transparent 0 18%, var(--chat-graph-line) 19%, transparent 20% 70%, var(--chat-graph-line) 71%, transparent 72% 100%);
+  opacity: 0.28;
+  mask: linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.25));
+}
+
+.feature-chat.canonical-workbench-shell .chat-message-scroll,
+.feature-chat.canonical-workbench-shell .chat-empty-shell,
+.feature-chat.canonical-workbench-shell .input-area {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-chat.canonical-workbench-shell .chat-empty-shell {
+  width: min(760px, 100%);
+  min-height: calc(100vh - 320px);
+  margin-inline: auto;
+  padding: 112px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-empty-headline {
+  width: min(620px, 100%);
+  gap: 16px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-empty-headline h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(48px, 5.4vw, 68px);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-align: center;
+}
+
+.feature-chat.canonical-workbench-shell .chat-empty-headline p {
+  margin: 0 auto;
+  max-width: 620px;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-2);
+  text-align: center;
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card {
+  position: relative;
+  width: min(560px, 100%);
+  min-height: 220px;
+  padding: 28px 28px 26px;
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--border-2, var(--border)) 88%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 94%, white), color-mix(in srgb, var(--card-bg) 98%, transparent)),
+    radial-gradient(circle at 84% 12%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 34%);
+  box-shadow: var(--chat-card-shadow);
+  text-align: left;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dark .feature-chat.canonical-workbench-shell .chat-primary-card {
+  background:
+    linear-gradient(180deg, rgba(16, 13, 11, 0.92), rgba(12, 10, 9, 0.96)),
+    radial-gradient(circle at 84% 12%, rgba(196, 133, 73, 0.08), transparent 32%);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card:hover,
+.feature-chat.canonical-workbench-shell .chat-primary-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border-2, var(--border)));
+  box-shadow: 0 28px 56px rgba(18, 14, 10, 0.12);
+  outline: none;
+}
+
+.dark .feature-chat.canonical-workbench-shell .chat-primary-card:hover,
+.dark .feature-chat.canonical-workbench-shell .chat-primary-card:focus-visible {
+  box-shadow: 0 30px 72px rgba(0, 0, 0, 0.36);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card:focus-visible {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 28px 56px rgba(18, 14, 10, 0.12);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card-meta {
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card-title {
+  margin-bottom: 12px;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card-copy {
+  margin: 0;
+  max-width: 460px;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-2);
+}
+
+.feature-chat.canonical-workbench-shell .chat-primary-card-arrow {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--accent);
+}
+
+.feature-chat.canonical-workbench-shell .input-area {
+  padding: 14px 34px 24px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-composer-shell {
+  border-radius: 26px;
+  padding: 22px 22px 16px;
+  background: color-mix(in srgb, var(--card-bg) 96%, white);
+  border: 1px solid color-mix(in srgb, var(--border-2, var(--border)) 88%, transparent);
+  box-shadow: var(--chat-card-shadow);
+}
+
+.dark .feature-chat.canonical-workbench-shell .chat-composer-shell {
+  background: linear-gradient(180deg, rgba(14, 12, 11, 0.95), rgba(10, 9, 8, 0.98));
+}
+
+.feature-chat.canonical-workbench-shell .input-textarea {
+  min-height: 118px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-toolbar {
+  gap: 10px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-toolbar-chip {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+}
+
+.feature-chat.canonical-workbench-shell .chat-scenarios-menu {
+  position: relative;
+}
+
+.feature-chat.canonical-workbench-shell .scenario-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  min-width: 224px;
+  padding: 8px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--card-bg) 96%, white);
+  border: 1px solid color-mix(in srgb, var(--border-2, var(--border)) 88%, transparent);
+  box-shadow: 0 18px 42px rgba(18, 14, 10, 0.12);
+  z-index: 4;
+}
+
+.dark .feature-chat.canonical-workbench-shell .scenario-popover {
+  background: rgba(15, 12, 11, 0.98);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34);
+}
+
+.feature-chat.canonical-workbench-shell .scenario-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.feature-chat.canonical-workbench-shell .scenario-option:hover,
+.feature-chat.canonical-workbench-shell .scenario-option:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+
+.feature-chat.canonical-workbench-shell .sidebar {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--lab-shell-sidebar) 94%, white) 0%, color-mix(in srgb, var(--lab-shell-sidebar) 98%, white) 100%);
+}
+
+.dark .feature-chat.canonical-workbench-shell .sidebar {
+  background:
+    linear-gradient(180deg, rgba(9, 8, 8, 0.98) 0%, rgba(7, 7, 7, 0.98) 100%);
+}
+
+.feature-chat.canonical-workbench-shell .nav-item:last-of-type {
+  opacity: 0.82;
+}
+
+.feature-chat.canonical-workbench-shell .sidebar-actions {
+  gap: 10px;
+}
+
+.feature-chat.canonical-workbench-shell .action-btn {
+  min-height: 42px;
+  border-radius: 14px;
+  padding: 0 14px;
+}
+
+.feature-chat.canonical-workbench-shell .action-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.feature-chat.canonical-workbench-shell .rail {
+  opacity: 0.94;
+}
+
+.feature-chat.canonical-workbench-shell .rail-header,
+.feature-chat.canonical-workbench-shell .rail-section {
+  border-color: color-mix(in srgb, var(--border) 86%, transparent);
+}
+
+.feature-chat.canonical-workbench-shell .rail-module,
+.feature-chat.canonical-workbench-shell .rail-module-compact,
+.feature-chat.canonical-workbench-shell .rail-module-evidence {
+  background: transparent;
+}
+
+@media (max-width: 1279px) {
+  .feature-chat.canonical-workbench-shell .chat-empty-shell {
+    width: min(680px, 100%);
+    padding: 96px 24px 40px;
+  }
+
+  .feature-chat.canonical-workbench-shell .chat-primary-card {
+    width: min(520px, 100%);
+  }
+}
+
+@media (max-width: 1023px) {
+  .feature-chat.canonical-workbench-shell .chat-workbench::after {
+    opacity: 0.16;
+  }
+
+  .feature-chat.canonical-workbench-shell .chat-empty-shell {
+    min-height: auto;
+    padding: 72px 18px 24px;
+    gap: 24px;
+  }
+
+  .feature-chat.canonical-workbench-shell .chat-empty-headline h1 {
+    font-size: clamp(38px, 10vw, 52px);
+  }
+
+  .feature-chat.canonical-workbench-shell .chat-empty-headline p {
+    font-size: 15px;
+  }
+
+  .feature-chat.canonical-workbench-shell .chat-primary-card {
+    width: 100%;
+    min-height: 196px;
+  }
+
+  .feature-chat.canonical-workbench-shell .input-area {
+    padding: 12px 16px 20px;
+  }
+}
