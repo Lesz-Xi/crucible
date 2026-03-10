@@ -9,7 +9,9 @@ This registry tracks all application routes in `synthesis-engine` to prevent arc
 
 ---
 
-## Active App Routes
+## Active Routes
+
+### App Routes
 
 | Route | Status | Owner | First Commit | Last Verified | Purpose |
 |-------|--------|-------|--------------|---------------|---------|
@@ -26,7 +28,7 @@ This registry tracks all application routes in `synthesis-engine` to prevent arc
 
 ---
 
-## Active API Routes
+### API Routes
 
 | Route | Status | Owner | First Commit | Last Verified | Purpose |
 |-------|--------|-------|--------------|---------------|---------|
