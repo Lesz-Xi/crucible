@@ -14,7 +14,6 @@ import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grou
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
-import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface WorkbenchMessage {
@@ -263,6 +262,7 @@ export function ChatWorkbenchV2() {
   const assistantContentRef = useRef<string>('');
   const scientificAnalysisRef = useRef<ScientificAnalysisResponse | undefined>(undefined);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const composerTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sessionCacheRef = useRef<Map<string, SessionHistoryMessage[]>>(new Map());
   const loadRequestIdRef = useRef(0);
   const loadAbortControllerRef = useRef<AbortController | null>(null);
@@ -1060,6 +1060,45 @@ export function ChatWorkbenchV2() {
     modelProvenanceState,
   ]);
 
+  const scenarioOptions = useMemo(
+    () => [
+      {
+        id: 'causal-discovery',
+        label: 'Causal Discovery',
+        mode: 'explore' as const,
+        prompt: 'Analyze the attached files to extract causal mechanisms and build an SCM.',
+      },
+      {
+        id: 'intervention-planning',
+        label: 'Intervention Planning',
+        mode: 'intervene' as const,
+        prompt: 'I need to simulate an intervention. Here is the scenario:',
+      },
+      {
+        id: 'counterfactual-audit',
+        label: 'Counterfactual Audit',
+        mode: 'audit' as const,
+        prompt: 'Verify this claim against the known causal graph:',
+      },
+    ],
+    []
+  );
+
+  const focusComposer = useCallback(() => {
+    const target = composerTextareaRef.current;
+    if (!target) return;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => target.focus(), 120);
+  }, []);
+
+  const handleScenarioSelect = useCallback((scenarioId: string) => {
+    const selected = scenarioOptions.find((option) => option.id === scenarioId);
+    if (!selected) return;
+    setOperatorMode(selected.mode);
+    if (selected.prompt) setPrompt(selected.prompt);
+    focusComposer();
+  }, [focusComposer, scenarioOptions]);
+
   return (
     <WorkbenchShell
       feature="chat"
@@ -1071,45 +1110,21 @@ export function ChatWorkbenchV2() {
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">
                 <div className="chat-empty-headline">
-                  <div className="workbench-eyebrow">Sovereign Synthesis Engine</div>
-                  <h1>Scientific<br /><em>Workbench</em></h1>
-                  <p>Select a research protocol to begin your inquiry into the causal structure of the world.</p>
+                  <h1>Scientific Workbench</h1>
+                  <p>Describe the system, the change, and the outcome you need to understand. Start a causal conversation grounded in evidence, intervention logic, and counterfactual reasoning.</p>
                 </div>
-
-                <div className="protocol-grid stagger">
-                  <ProtocolCard
-                    tag="Protocol 01"
-                    iconKind="discovery"
-                    title="Causal Discovery"
-                    description="Ingest observational data or papers to extract Structural Causal Models (SCM) from raw evidence."
-                    onClick={() => {
-                      setOperatorMode('explore');
-                      setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
-                    }}
-                  />
-
-                  <ProtocolCard
-                    tag="Protocol 02"
-                    iconKind="intervention"
-                    title="Intervention Planning"
-                    description="Simulate do-calculus interventions (do(X)=y) to predict how the system responds to external actions."
-                    onClick={() => {
-                      setOperatorMode('intervene');
-                      setPrompt('I need to simulate an intervention. Here is the scenario:');
-                    }}
-                  />
-
-                  <ProtocolCard
-                    tag="Protocol 03"
-                    iconKind="audit"
-                    title="Counterfactual Audit"
-                    description="Verify specific claims against the causal graph logic, evidence corpus, and falsification criteria."
-                    onClick={() => {
-                      setOperatorMode('audit');
-                      setPrompt('Verify this claim against the known causal graph:');
-                    }}
-                  />
-                </div>
+                <button
+                  type="button"
+                  className="chat-primary-card stagger"
+                  onClick={focusComposer}
+                >
+                  <div className="chat-primary-card-meta">Primary workspace</div>
+                  <div className="chat-primary-card-title">Chat</div>
+                  <p className="chat-primary-card-copy">
+                    Open a research conversation to map mechanisms, test interventions, and audit claims against evidence.
+                  </p>
+                  <span className="chat-primary-card-arrow" aria-hidden="true">→</span>
+                </button>
               </div>
             ) : (
               <div className="chat-message-list">
@@ -1170,6 +1185,9 @@ export function ChatWorkbenchV2() {
             isLoading={isLoading}
             operatorMode={operatorMode}
             onOperatorModeChange={setOperatorMode}
+            textareaRef={composerTextareaRef}
+            scenarioOptions={scenarioOptions}
+            onScenarioSelect={handleScenarioSelect}
             attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
             onAddAttachments={handleAddAttachments}
             onRemoveAttachment={handleRemoveAttachment}

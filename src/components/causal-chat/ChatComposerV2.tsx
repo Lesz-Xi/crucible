@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type RefObject } from 'react';
 import { ChevronDown, Loader2, Paperclip, Send, Square } from 'lucide-react';
 
 export interface ComposerAttachment {
@@ -28,6 +28,14 @@ export interface ChatComposerV2Props {
   attachments?: ComposerAttachment[];
   onAddAttachments?: (files: File[]) => void;
   onRemoveAttachment?: (name: string) => void;
+  textareaRef?: RefObject<HTMLTextAreaElement | null>;
+  scenarioOptions?: readonly {
+    id: string;
+    label: string;
+    mode: 'explore' | 'intervene' | 'audit';
+    prompt?: string;
+  }[];
+  onScenarioSelect?: (id: string) => void;
   slashCommands?: readonly SlashCommandOption[];
   onSlashCommand?: (id: string) => void;
 }
@@ -51,9 +59,35 @@ export function ChatComposerV2({
   attachments = [],
   onAddAttachments,
   onRemoveAttachment,
+  textareaRef,
+  scenarioOptions = [],
+  onScenarioSelect,
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const scenarioMenuRef = useRef<HTMLDivElement | null>(null);
+  const [scenarioMenuOpen, setScenarioMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!scenarioMenuOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (scenarioMenuRef.current && !scenarioMenuRef.current.contains(event.target as Node)) {
+        setScenarioMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setScenarioMenuOpen(false);
+    };
+
+    window.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('keydown', handleEscape);
+    return () => {
+      window.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [scenarioMenuOpen]);
 
   const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.currentTarget.files || []);
@@ -67,6 +101,7 @@ export function ChatComposerV2({
     <div className="chat-composer-shell">
       <div className="composer-textarea-shell">
         <textarea
+          ref={textareaRef}
           className="input-textarea"
           placeholder={placeholder || 'Describe the real-world situation, what changed, and what outcome you need to understand…'}
           value={value}
@@ -110,14 +145,36 @@ export function ChatComposerV2({
           {MODE_LABELS[operatorMode]}
         </button>
 
-        <button
-          type="button"
-          className="chat-toolbar-chip is-scenarios"
-          onClick={() => onOperatorModeChange(operatorMode === 'explore' ? 'intervene' : operatorMode === 'intervene' ? 'audit' : 'explore')}
-        >
-          Scenarios
-          <ChevronDown className="h-3 w-3" />
-        </button>
+        <div className="chat-scenarios-menu" ref={scenarioMenuRef}>
+          <button
+            type="button"
+            className="chat-toolbar-chip is-scenarios"
+            aria-haspopup="menu"
+            aria-expanded={scenarioMenuOpen}
+            onClick={() => setScenarioMenuOpen((current) => !current)}
+          >
+            Scenarios
+            <ChevronDown className="h-3 w-3" />
+          </button>
+          {scenarioMenuOpen && scenarioOptions.length > 0 ? (
+            <div className="scenario-popover" role="menu" aria-label="Scenario options">
+              {scenarioOptions.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className="scenario-option"
+                  role="menuitem"
+                  onClick={() => {
+                    setScenarioMenuOpen(false);
+                    onScenarioSelect?.(option.id);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
 
         <div className="input-spacer" />
         <span className="enter-hint">↵ to send</span>

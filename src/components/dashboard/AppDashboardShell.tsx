@@ -383,11 +383,11 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           }}
         >
           <Plus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>chat</span></span>
+          <span className="action-label">New chat</span>
         </button>
         <button type="button" className="action-btn" onClick={createFolder}>
           <FolderPlus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>folder</span></span>
+          <span className="action-label">New folder</span>
         </button>
       </div>
 
