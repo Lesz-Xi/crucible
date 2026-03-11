@@ -29,7 +29,7 @@ describe("ConstraintInjector with conversation context", () => {
 
     expect(systemPrompt).toContain("**CONVERSATION CONTEXT (Chronological):**");
     expect(systemPrompt).toContain("User (T1): Coding distractions are pulling me away from school.");
-    expect(systemPrompt).toContain("first sentence must explicitly anchor");
+    expect(systemPrompt).toContain("Anchor your first sentence");
     expect(systemPrompt).toContain("AMBIGUITY POLICY");
   });
 

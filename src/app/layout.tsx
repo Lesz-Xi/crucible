@@ -31,27 +31,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const requestHeaders = await headers();
-  const themeScope = requestHeaders.get("x-theme-scope");
-  const isForcedDarkTheme = themeScope === "marketing-dark";
+  const isMarketingLight = requestHeaders.get("x-theme-scope") === "marketing-light";
 
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={`${instrumentSerif.variable} ${jetbrainsMono.variable}`}
-      data-theme-scope={themeScope ?? undefined}
-      style={isForcedDarkTheme ? { colorScheme: "dark" } : undefined}
+      data-theme-scope={isMarketingLight ? "marketing-light" : undefined}
+      style={isMarketingLight ? { colorScheme: "light" } : undefined}
     >
       <body
         className="antialiased"
-        data-theme-scope={themeScope ?? undefined}
-        style={isForcedDarkTheme ? { colorScheme: "dark" } : undefined}
+        data-theme-scope={isMarketingLight ? "marketing-light" : undefined}
+        style={isMarketingLight ? { colorScheme: "light" } : undefined}
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem={true}
-          forcedTheme={isForcedDarkTheme ? "dark" : undefined}
+          forcedTheme={isMarketingLight ? "light" : undefined}
           storageKey="wu-weism-theme"
           disableTransitionOnChange
         >

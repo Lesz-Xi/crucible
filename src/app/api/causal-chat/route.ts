@@ -142,6 +142,15 @@ function sanitizeAutomatedScientistTone(text: string): string {
     /walked the path of extraction[^\n]*/gi,
     /[#\s]*Extraction Report[^\n]*/gi,
     /^(\s*[-*_]\s*){3,}$/gm,
+    // Strip residual JSON scaffold blocks that may leak from the scaffold prompt.
+    /```json\s*\{\s*"observation"[\s\S]*?```/gi,
+    /\{\s*"observation"\s*:[\s\S]*?"nextStep"\s*:.*?\}/gi,
+    // Strip phase labels from legacy scaffold format.
+    /^###?\s*Phase:\s*(Observation|Hypothesis|Prediction|Experiment|Analysis|Revision)\s*\(?(REQUIRED|OPTIONAL)?\)?\s*$/gim,
+    /^###?\s*Falsification Criteria\s*\(REQUIRED\)\s*$/gim,
+    /^###?\s*Next Step\s*\(REQUIRED\)\s*$/gim,
+    /^\*\*OUTPUT FORMAT:\*\*\s*$/gim,
+    /^RESPONSE STRUCTURE \(MANDATORY\)/gim,
   ];
 
   // Hard block low-signal recommendation boilerplate in attachment-first mode.

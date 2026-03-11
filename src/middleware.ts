@@ -1,17 +1,18 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+function isMarketingLightPath(pathname: string) {
+  return pathname === '/';
+}
+
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
-  const pathname = request.nextUrl.pathname;
 
-  const themeScope =
-    pathname === '/' || pathname.startsWith('/how-it-works')
-      ? 'marketing-dark'
-      : null;
-
-  if (themeScope) requestHeaders.set('x-theme-scope', themeScope);
-  else requestHeaders.delete('x-theme-scope');
+  if (isMarketingLightPath(request.nextUrl.pathname)) {
+    requestHeaders.set('x-theme-scope', 'marketing-light');
+  } else {
+    requestHeaders.delete('x-theme-scope');
+  }
 
   let response = NextResponse.next({
     request: {
@@ -52,8 +53,7 @@ export async function middleware(request: NextRequest) {
 
     await supabase.auth.getUser();
   } catch {
-    // Fail open while preserving request header mutations (e.g. x-theme-scope).
-    return response;
+    return NextResponse.next({ request });
   }
 
   return response;

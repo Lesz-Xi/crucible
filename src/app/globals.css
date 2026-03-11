@@ -926,6 +926,64 @@
   display: none;
 }
 
+/* === TABLE STYLING (Scientific data display) === */
+.lab-chat-prose table {
+  width: 100%;
+  margin: 0.8rem 0;
+  border-collapse: collapse;
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.92em;
+}
+
+.lab-chat-prose thead {
+  background: color-mix(in srgb, var(--lab-panel) 60%, transparent);
+}
+
+.lab-chat-prose th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.88em;
+  letter-spacing: 0.02em;
+  color: var(--lab-text-primary);
+  border-bottom: 1px solid var(--lab-border);
+}
+
+.lab-chat-prose td {
+  padding: 7px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--lab-border) 50%, transparent);
+  color: var(--lab-text-primary);
+}
+
+.lab-chat-prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-chat-prose tbody tr:nth-child(odd) {
+  background: color-mix(in srgb, var(--lab-panel) 25%, transparent);
+}
+
+/* === BLOCKQUOTE CALLOUTS (Falsification, Next Step, Key Claims) === */
+.lab-chat-prose blockquote {
+  margin: 0.9rem 0;
+  border-left: 3px solid var(--lab-accent-clay, rgba(139, 94, 60, 0.45));
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--lab-accent-clay) 6%, transparent);
+  padding: 10px 14px;
+  color: var(--lab-text-primary);
+  font-size: 0.97em;
+}
+
+.lab-chat-prose blockquote p {
+  margin: 0;
+}
+
+.lab-chat-prose blockquote p + p {
+  margin-top: 0.5rem;
+}
+
 /* === APPLE LIQUID GLASS THEME SYSTEM === */
 :root {
   /* Darker, deeper glass base for premium contrast */
@@ -996,7 +1054,21 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .lab-chat-prose blockquote {
-  border-left-color: rgba(255, 255, 255, 0.28);
+  border-left-color: var(--lab-accent-clay, rgba(200, 150, 90, 0.5));
+  background: color-mix(in srgb, var(--lab-accent-clay) 8%, transparent);
+  color: var(--lab-text-primary);
+}
+
+.dark .lab-chat-prose thead {
+  background: color-mix(in srgb, var(--lab-panel) 80%, transparent);
+}
+
+.dark .lab-chat-prose td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .lab-chat-prose tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .dark .lab-chat-prose code {
@@ -7104,18 +7176,6 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   }
 }
 
-/* Canonical High-Density Workbench */
-.canonical-workbench-shell {
-  --sidebar-w-desktop: 224px;
-  --rail-w-desktop: 296px;
-  --rail-w-lg: 296px;
-  --rail-header-h: 42px;
-  --sidebar-header-h: 58px;
-  --workbench-content-max: 1240px;
-  background: var(--bg);
-  color: var(--text-1);
-}
-
 /* ── Warm-lock: override any .dark .feature-* ambient token overrides ─────
    Specificity (0,2,0) — same as .dark .feature-chat but defined later in the
    cascade, so this rule wins regardless of class="dark" on <html>.
@@ -7157,6 +7217,18 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   --lab-accent-clay:  #8A5520;
   --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
   --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+}
+
+/* Canonical High-Density Workbench */
+.canonical-workbench-shell {
+  --sidebar-w-desktop: 224px;
+  --rail-w-desktop: 296px;
+  --rail-w-lg: 296px;
+  --rail-header-h: 42px;
+  --sidebar-header-h: 58px;
+  --workbench-content-max: 1240px;
+  background: var(--bg);
+  color: var(--text-1);
 }
 
 .canonical-workbench-shell.sidebar-collapsed {
@@ -8774,392 +8846,3 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
 .stagger > *:nth-child(3) { animation-delay: 0.19s; }
 .stagger > *:nth-child(4) { animation-delay: 0.26s; }
 .stagger > *:nth-child(5) { animation-delay: 0.33s; }
-
-/* ========================================
-   Marketing Dark Theme System
-   Unified public-facing scope for / and /how-it-works
-   ======================================== */
-
-html[data-theme-scope="marketing-dark"],
-body[data-theme-scope="marketing-dark"],
-html:has(.marketing-shell),
-body:has(.marketing-shell) {
-  color-scheme: dark;
-}
-
-body[data-theme-scope="marketing-dark"],
-body:has(.marketing-shell) {
-  background:
-    radial-gradient(circle at top, rgba(255, 224, 194, 0.08), transparent 24%),
-    #111111;
-  color: #eeeeee;
-}
-
-.theme-landing,
-html[data-theme-scope="marketing-dark"] .theme-landing,
-body[data-theme-scope="marketing-dark"] .theme-landing {
-  color-scheme: dark;
-}
-
-.theme-landing {
-  --background: #111111;
-  --foreground: #eeeeee;
-  --bg-primary: #111111;
-  --bg-secondary: #161616;
-  --bg-tertiary: #1d1d1d;
-  --bg-card: rgba(25, 25, 25, 0.92);
-  --bg-card-solid: #191919;
-  --bg-elevated: rgba(32, 32, 32, 0.94);
-  --bg-emphasis: #ffe0c2;
-  --text-primary: #eeeeee;
-  --text-secondary: #c8c8cb;
-  --text-muted: #8f8f95;
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 224, 194, 0.22);
-  --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.34);
-  --shadow-deep: 0 28px 80px rgba(0, 0, 0, 0.54);
-  --accent-rust: #ffe0c2;
-  --accent-rust-soft: rgba(255, 224, 194, 0.12);
-  --accent-blue: #8ea2c7;
-  --accent-blue-soft: rgba(142, 162, 199, 0.14);
-  --accent-dark: #0c0c0d;
-  --accent-moss: #88a68a;
-  --accent-moss-soft: rgba(136, 166, 138, 0.14);
-  --metric-line: rgba(255, 224, 194, 0.9);
-  --wabi-washi: #141414;
-  --wabi-patina: #9f9fa4;
-  --wabi-clay: #ffe0c2;
-  --wabi-sumi: #eeeeee;
-  --wabi-ink: #eeeeee;
-  --wabi-ink-light: #c8c8cb;
-  --wabi-moss: #88a68a;
-  --wabi-rust: #ffe0c2;
-  --wabi-stone: #a7a6ab;
-  --wabi-sand: #2b2b2b;
-  --wabi-charcoal: #090909;
-  --wabi-gold: #f1c99b;
-}
-
-.marketing-shell {
-  position: relative;
-  isolation: isolate;
-  background:
-    radial-gradient(circle at 18% 16%, rgba(255, 224, 194, 0.12), transparent 0 24%),
-    radial-gradient(circle at 84% 10%, rgba(142, 162, 199, 0.1), transparent 0 22%),
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.04), transparent 0 42%),
-    linear-gradient(180deg, #0f0f10 0%, #111111 35%, #101010 100%);
-}
-
-.marketing-shell::before,
-.marketing-shell::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.marketing-shell::before {
-  opacity: 0.42;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.15) 65%, transparent);
-}
-
-.marketing-shell::after {
-  opacity: 0.22;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255, 224, 194, 0.28), transparent 0 18%),
-    radial-gradient(circle at 80% 24%, rgba(136, 166, 138, 0.18), transparent 0 16%),
-    radial-gradient(circle at 50% 100%, rgba(142, 162, 199, 0.16), transparent 0 22%);
-  filter: blur(64px);
-}
-
-.theme-landing .hd-page,
-.theme-landing .hd-section {
-  position: relative;
-  z-index: 1;
-}
-
-.theme-landing .hd-section {
-  padding-top: 4.5rem;
-  padding-bottom: 4.5rem;
-}
-
-.theme-landing .hd-page::before {
-  display: none;
-}
-
-.theme-landing section.bg-white {
-  background-color: transparent;
-}
-
-.theme-landing .bg-white {
-  background-color: rgba(23, 23, 24, 0.88);
-}
-
-.theme-landing .wabi-glass-panel,
-.theme-landing .bg-glass-card,
-.theme-landing .hd-panel,
-.theme-landing .hd-panel-soft,
-.theme-landing .hd-panel-note,
-.theme-landing .hd-stat-card,
-.theme-landing .bg-\[var\(--bg-card\)\] {
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-
-.theme-landing .hd-panel,
-.theme-landing .marketing-panel {
-  border: 1px solid var(--border-subtle);
-  background:
-    linear-gradient(180deg, rgba(31, 31, 31, 0.94), rgba(20, 20, 20, 0.96));
-  box-shadow: var(--shadow-soft);
-}
-
-.theme-landing .hd-panel-soft,
-.theme-landing .marketing-panel-soft {
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background:
-    linear-gradient(180deg, rgba(27, 27, 28, 0.88), rgba(18, 18, 19, 0.9));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.theme-landing .hd-panel-note,
-.theme-landing .marketing-note {
-  border: 1px solid rgba(255, 224, 194, 0.16);
-  background:
-    linear-gradient(135deg, rgba(255, 224, 194, 0.12), rgba(136, 166, 138, 0.08) 56%, rgba(20, 20, 20, 0.92));
-  box-shadow: var(--shadow-soft);
-}
-
-.theme-landing .hd-stat-card,
-.theme-landing .marketing-stat {
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  background:
-    linear-gradient(180deg, rgba(24, 24, 24, 0.92), rgba(17, 17, 17, 0.95));
-  border-radius: 20px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.theme-landing .hd-grid-frame::before {
-  inset: 1rem;
-  border-color: rgba(255, 255, 255, 0.06);
-  border-radius: 28px;
-}
-
-.theme-landing .hd-kicker,
-.theme-landing .hd-metric-label,
-.theme-landing .hd-mono-label {
-  color: var(--accent-rust);
-}
-
-.theme-landing .hd-kicker {
-  font-size: 0.68rem;
-  letter-spacing: 0.24em;
-}
-
-.theme-landing .hd-metric-label {
-  color: var(--text-muted);
-}
-
-.theme-landing .hd-serif-display,
-.theme-landing .font-serif {
-  text-wrap: balance;
-}
-
-.theme-landing .landing-metric-bar {
-  background: linear-gradient(90deg, var(--accent-rust), rgba(136, 166, 138, 0.5), transparent);
-}
-
-.theme-landing .marketing-card {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(28, 28, 29, 0.92), rgba(18, 18, 19, 0.96));
-  box-shadow: var(--shadow-soft);
-  transition:
-    transform 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    background 220ms ease;
-}
-
-.theme-landing .marketing-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 224, 194, 0.74), rgba(142, 162, 199, 0.28), transparent);
-}
-
-.theme-landing .marketing-card:hover,
-.theme-landing .marketing-card:focus-within {
-  transform: translateY(-4px);
-  border-color: rgba(255, 224, 194, 0.24);
-  box-shadow: var(--shadow-deep);
-}
-
-.theme-landing .marketing-button-primary,
-.theme-landing .marketing-button-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  border-radius: 999px;
-  padding: 0.95rem 1.35rem;
-  font-family: var(--font-jetbrains-mono), var(--font-geist-mono), monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
-}
-
-.theme-landing .marketing-button-primary {
-  border: 1px solid rgba(255, 224, 194, 0.26);
-  background: linear-gradient(180deg, rgba(255, 224, 194, 0.98), rgba(227, 195, 163, 0.96));
-  color: #151313;
-  box-shadow: 0 20px 40px rgba(255, 224, 194, 0.14);
-}
-
-.theme-landing .marketing-button-primary:hover,
-.theme-landing .marketing-button-primary:focus-visible {
-  transform: translateY(-1px);
-  box-shadow: 0 26px 52px rgba(255, 224, 194, 0.18);
-}
-
-.theme-landing .marketing-button-secondary {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-primary);
-}
-
-.theme-landing .marketing-button-secondary:hover,
-.theme-landing .marketing-button-secondary:focus-visible {
-  transform: translateY(-1px);
-  border-color: rgba(255, 224, 194, 0.22);
-  background: rgba(255, 224, 194, 0.07);
-}
-
-.theme-landing .marketing-pill,
-.theme-landing .marketing-chip,
-.theme-landing .marketing-icon-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-secondary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.theme-landing .marketing-pill,
-.theme-landing .marketing-chip {
-  border-radius: 999px;
-  padding: 0.45rem 0.8rem;
-}
-
-.theme-landing .marketing-icon-chip {
-  justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 1.25rem;
-}
-
-.theme-landing .marketing-input,
-.theme-landing .lg-input {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.035);
-  color: var(--text-primary);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.theme-landing .marketing-input::placeholder,
-.theme-landing .lg-input::placeholder {
-  color: rgba(200, 200, 203, 0.5);
-}
-
-.theme-landing .marketing-input:focus-visible,
-.theme-landing .lg-input:focus-visible {
-  outline: none;
-  border-color: rgba(255, 224, 194, 0.28);
-  box-shadow:
-    0 0 0 4px rgba(255, 224, 194, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-.theme-landing .lg-control {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  color: var(--text-primary) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.theme-landing .lg-control:hover {
-  border-color: rgba(255, 224, 194, 0.2) !important;
-  background: rgba(255, 224, 194, 0.08) !important;
-}
-
-.theme-landing .marketing-section-surface {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 36px;
-  background:
-    linear-gradient(180deg, rgba(19, 19, 20, 0.9), rgba(16, 16, 16, 0.94));
-  box-shadow: var(--shadow-soft);
-}
-
-.theme-landing .marketing-divider {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.theme-landing .marketing-dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 999px;
-  background: var(--accent-rust);
-  box-shadow: 0 0 18px rgba(255, 224, 194, 0.4);
-}
-
-.theme-landing .marketing-highlight {
-  color: var(--accent-rust);
-}
-
-.theme-landing .marketing-muted {
-  color: var(--text-muted);
-}
-
-.theme-landing .obsidian-loader-scan {
-  opacity: 0.3;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-landing .marketing-card,
-  .theme-landing .marketing-button-primary,
-  .theme-landing .marketing-button-secondary,
-  .theme-landing .stagger > *,
-  .theme-landing .fade-in {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .marketing-shell::before {
-    background-size: 42px 42px;
-    opacity: 0.3;
-  }
-
-  .theme-landing .hd-section {
-    padding-top: 3.5rem;
-    padding-bottom: 3.5rem;
-  }
-}
