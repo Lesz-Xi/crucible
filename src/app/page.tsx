@@ -8,7 +8,6 @@ import { ThreePillars } from "@/components/landing/ThreePillars";
 import { ScientistModel } from "@/components/landing/ScientistModel";
 import { CausalLattice } from "@/components/landing/CausalLattice";
 // import { CausalInk } from "@/components/landing/CausalInk";
-import { ObsidianVault } from "@/components/landing/ObsidianVault";
 import { ArtifactShowcase } from "@/components/landing/ArtifactShowcase";
 import { FAQ } from "@/components/landing/FAQ";
 import { ContactForm } from "@/components/landing/ContactForm";
@@ -26,7 +25,6 @@ export default function Home() {
       <CausalLattice />
       <FeatureRail />
       {/* <CausalInk /> */}
-      <ObsidianVault />
       <ArtifactShowcase />
       <FAQ />
       <ContactForm />

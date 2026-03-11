@@ -1,6 +1,6 @@
 export function ContactForm() {
   return (
-    <section id="contact" className="hd-section py-16 md:py-20">
+    <section id="contact" className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
       <div className="mx-auto max-w-5xl px-6 md:px-8">
         <div className="mb-10 text-center">
           <p className="hd-kicker inline-flex items-center gap-3">
@@ -44,7 +44,7 @@ export function ContactForm() {
             />
           </div>
 
-          <button className="mt-8 w-full rounded-full bg-[var(--accent-dark)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-white transition-opacity hover:opacity-92">
+          <button className="mt-8 w-full rounded-full border border-[rgba(224,163,108,0.32)] bg-[linear-gradient(180deg,var(--accent-rust-strong)_0%,var(--accent-rust)_100%)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#171411] transition-transform hover:-translate-y-0.5">
             Send Request
           </button>
         </form>

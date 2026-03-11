@@ -104,7 +104,7 @@ export function Navbar() {
 
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto max-w-[1440px] px-5 pt-4 md:px-8 md:pt-5">
+      <div className="mx-auto max-w-[1440px] px-6 pt-5 md:px-10 md:pt-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 lg:gap-8">
             <Link href="/" className="flex shrink-0 items-center">
@@ -119,7 +119,7 @@ export function Navbar() {
               />
             </Link>
 
-          <nav className="hidden items-center gap-4 lg:flex">
+          <nav className="hidden items-center gap-6 lg:flex">
             {navItems.map((item) => (
               <div
                 key={item.href}
@@ -137,7 +137,7 @@ export function Navbar() {
 
                 {openMenu === item.label && (
                   <div className="absolute left-0 top-full pt-2 z-40">
-                    <div className="min-w-[220px] rounded-[20px] border border-[rgba(17,22,27,0.08)] bg-[#fffdfa] p-2.5 shadow-[0_20px_40px_rgba(17,22,27,0.08)]">
+                    <div className="min-w-[220px] rounded-[18px] border border-[var(--border-subtle)] bg-[rgba(27,23,20,0.96)] p-3 shadow-[var(--shadow-soft)] backdrop-blur-xl">
                       <div className="space-y-1">
                         {item.links.map((link) => (
                           <Link
@@ -159,10 +159,10 @@ export function Navbar() {
           </nav>
           </div>
 
-          <div className="flex items-center divide-x divide-[var(--border-subtle)] overflow-hidden rounded-full border border-[var(--border-subtle)] bg-white/55 shadow-sm backdrop-blur-md">
+          <div className="flex items-center divide-x divide-[var(--border-subtle)] overflow-hidden rounded-[14px] border border-[var(--border-subtle)] bg-[rgba(23,20,17,0.84)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
             <Link
               href="#contact"
-              className="group hidden items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-black/5 md:inline-flex"
+              className="group hidden items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-rust-soft)] md:inline-flex"
             >
               <span>Contact Sales</span>
               <PixelArrowIcon className="h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
@@ -172,7 +172,7 @@ export function Navbar() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState || isBusy}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-rust-soft)] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {(isLoadingAuthState || isBusy) && <Loader2 className="h-4 w-4 animate-spin" />}
               <span>

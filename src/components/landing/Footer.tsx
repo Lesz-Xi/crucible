@@ -52,8 +52,8 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-24 bg-[#efe1b5] text-[#1c1a17]">
-      <div className="h-6 bg-[#eb1700]" />
+    <footer className="relative mt-24 border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)] text-[var(--text-primary)]">
+      <div className="h-px bg-[linear-gradient(90deg,transparent,rgba(224,163,108,0.68),transparent)]" />
 
       <div className="mx-auto max-w-7xl px-6 py-16 md:px-8 md:py-20">
         <div className="grid gap-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1.85fr)]">
@@ -69,7 +69,7 @@ export function Footer() {
                 />
               </div>
 
-              <p className="max-w-sm text-lg leading-8 text-[#332c25]/78">
+              <p className="max-w-sm text-lg leading-8 text-[var(--text-secondary)]">
                 Causal instruments for disciplined inquiry, legal reasoning, and audited
                 synthesis.
               </p>
@@ -79,13 +79,13 @@ export function Footer() {
               <Link
                 href="/masa-white-paper.html"
                 target="_blank"
-                className="inline-flex items-center rounded-[10px] bg-black px-5 py-3 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center rounded-[10px] border border-[rgba(224,163,108,0.32)] bg-[linear-gradient(180deg,var(--accent-rust-strong)_0%,var(--accent-rust)_100%)] px-5 py-3 text-sm font-medium text-[#171411] transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Read White Paper
               </Link>
               <Link
                 href="/chat"
-                className="inline-flex items-center rounded-[10px] bg-black px-5 py-3 text-sm font-medium text-white transition-transform duration-200 hover:-translate-y-0.5"
+                className="inline-flex items-center rounded-[10px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-5 py-3 text-sm font-medium text-[var(--text-primary)] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[var(--border-glow)]"
               >
                 Open Chat
               </Link>
@@ -95,14 +95,14 @@ export function Footer() {
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {footerGroups.map((group) => (
               <div key={group.title}>
-                <p className="text-[0.95rem] text-[#ff5d1d]">{group.title}</p>
-                <ul className="mt-4 space-y-3 text-[1.05rem] leading-8 text-[#1c1a17]">
+                <p className="text-[0.95rem] text-[var(--accent-rust-strong)]">{group.title}</p>
+                <ul className="mt-4 space-y-3 text-[1.05rem] leading-8 text-[var(--text-primary)]">
                   {group.links.map((link) => (
                     <li key={link.label}>
                       <Link
                         href={link.href}
                         {...(link.external ? { target: "_blank", rel: "noreferrer" } : {})}
-                        className="transition-colors duration-200 hover:text-[#ff5d1d]"
+                        className="transition-colors duration-200 hover:text-[var(--accent-rust-strong)]"
                       >
                         {link.label}
                       </Link>
@@ -114,15 +114,15 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-20 grid gap-10 border-t border-black/10 pt-10 md:grid-cols-[1fr_auto_1fr] md:items-end">
-          <p className="text-xl text-[#1c1a17]">Wu-Weism AI © 2026</p>
+        <div className="mt-20 grid gap-10 border-t border-[var(--border-subtle)] pt-10 md:grid-cols-[1fr_auto_1fr] md:items-end">
+          <p className="text-xl text-[var(--text-primary)]">Wu-Weism AI © 2026</p>
 
           <button
             type="button"
-            className="inline-flex w-fit items-center gap-3 border-t border-black/65 pt-4 text-[2rem] leading-none text-[#1c1a17]"
+            className="inline-flex w-fit items-center gap-3 border-t border-[var(--border-strong)] pt-4 text-[2rem] leading-none text-[var(--text-primary)]"
           >
             <span>EN</span>
-            <PixelChevronDownIcon className="h-5 w-5 text-[#ff5d1d]" />
+            <PixelChevronDownIcon className="h-5 w-5 text-[var(--accent-rust-strong)]" />
           </button>
 
           <div className="flex items-center gap-5 md:justify-end">
@@ -133,7 +133,7 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
-                className="transition-transform duration-200 hover:-translate-y-0.5 hover:text-[#ff5d1d]"
+                className="transition-transform duration-200 hover:-translate-y-0.5 hover:text-[var(--accent-rust-strong)]"
               >
                 <Icon className="h-7 w-7" strokeWidth={1.8} />
               </Link>

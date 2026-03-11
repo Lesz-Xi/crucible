@@ -85,9 +85,9 @@ export function EpistemicCards({
             className={`
               relative group overflow-hidden
               ${compact ? "min-h-[150px] rounded-[20px] p-5" : "min-h-[168px] rounded-[24px] p-6"}
-              border border-[var(--border-subtle)] bg-white
+              border border-[var(--border-subtle)] bg-[var(--bg-card-soft)] shadow-[var(--shadow-soft)]
               flex flex-col justify-between
-              transition-all duration-500 hover:-translate-y-1
+              transition-all duration-500 hover:-translate-y-1 hover:border-[var(--border-glow)] hover:bg-[var(--bg-elevated)]
               ${index === 2 ? "md:col-span-2" : ""}
             `}
           >

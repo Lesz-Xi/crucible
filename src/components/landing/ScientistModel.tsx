@@ -36,32 +36,32 @@ function VortexModel() {
     <group ref={groupRef}>
       <mesh position={[0, -1.6, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[1.9, 0.02, 12, 80]} />
-        <meshBasicMaterial color="#8e877e" transparent opacity={0.35} />
+        <meshBasicMaterial color="#7f6b58" transparent opacity={0.28} />
       </mesh>
 
       <mesh position={[0, 0.45, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[3.2, 0.025, 12, 100]} />
-        <meshBasicMaterial color="#b97f54" transparent opacity={0.55} />
+        <meshBasicMaterial color="#c48854" transparent opacity={0.52} />
       </mesh>
 
       <mesh position={[0, 2.2, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[4.7, 0.015, 12, 100]} />
-        <meshBasicMaterial color="#d5cbbf" transparent opacity={0.55} />
+        <meshBasicMaterial color="#d6ab79" transparent opacity={0.38} />
       </mesh>
 
       <mesh>
         <cylinderGeometry args={[5.2, 1.2, 6.2, 32, 1, true]} />
-        <meshBasicMaterial color="#8e877e" wireframe transparent opacity={0.08} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#c48854" wireframe transparent opacity={0.06} side={THREE.DoubleSide} />
       </mesh>
 
       <Points positions={particles} stride={3} frustumCulled={false}>
         <PointMaterial
           transparent
-          color="#b97f54"
+          color="#e0a36c"
           size={0.04}
           sizeAttenuation
           depthWrite={false}
-          opacity={0.7}
+          opacity={0.55}
           blending={THREE.AdditiveBlending}
         />
       </Points>
@@ -74,7 +74,7 @@ export function ScientistModel() {
   const isInView = useInView(containerRef, { amount: 0.15 });
 
   return (
-    <section ref={containerRef} className="hd-section py-16 md:py-20">
+    <section ref={containerRef} className="hd-section bg-[var(--bg-secondary)] py-16 md:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 md:px-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-center">
         <div>
           <p className="hd-kicker inline-flex items-center gap-3">
@@ -104,8 +104,8 @@ export function ScientistModel() {
           </div>
         </div>
 
-        <div className="hd-panel hd-grid-frame relative min-h-[560px] overflow-hidden rounded-[36px] p-6 md:p-8">
-          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+        <div className="relative min-h-[560px]">
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-[var(--border-subtle)] pb-4 px-2">
             <div>
               <p className="hd-metric-label">Causal topology</p>
               <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -117,14 +117,14 @@ export function ScientistModel() {
             </p>
           </div>
 
-          <div className="absolute inset-x-6 bottom-6 top-24 rounded-[28px] border border-[var(--border-subtle)] bg-[#f8f5ef]">
+          <div className="absolute inset-x-0 bottom-0 top-24 overflow-hidden rounded-[28px] border border-[var(--border-subtle)] bg-[var(--bg-emphasis)] shadow-[inset_0_1px_0_rgba(255,244,230,0.03)]">
             <Canvas
               frameloop={isInView ? "always" : "never"}
               gl={{ alpha: true, antialias: true }}
               camera={{ position: [0, 0, 11], fov: 45 }}
             >
-              <ambientLight intensity={0.55} />
-              <spotLight position={[10, 10, 10]} intensity={1} color="#b97f54" />
+              <ambientLight intensity={0.4} />
+              <spotLight position={[10, 10, 10]} intensity={0.85} color="#c48854" />
               <group rotation={[Math.PI / 2, 0, 0]}>
                 <VortexModel />
               </group>

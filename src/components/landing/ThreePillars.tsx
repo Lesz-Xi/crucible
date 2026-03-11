@@ -21,8 +21,8 @@ const pillars = [
     description:
       "Multi-agent critique system with calibrated confidence scoring. Three specialized personas validate epistemic rigor, falsifiability, and causal mechanisms.",
     features: ["Epistemologist agent", "Skeptic agent", "Architect agent"],
-    accent: "text-[#7b8a78]",
-    accentBg: "bg-[rgba(123,138,120,0.12)]",
+    accent: "text-[var(--accent-moss)]",
+    accentBg: "bg-[rgba(125,156,128,0.14)]",
   },
   {
     icon: Database,
@@ -32,14 +32,14 @@ const pillars = [
     description:
       "Vector-based persistent memory with simulation validation. Learns from rejections, validates predictions against reality, and accumulates causal knowledge.",
     features: ["Rejection-aware RAG", "Pyodide sandbox", "Chemical entity validation"],
-    accent: "text-[var(--accent-blue)]",
-    accentBg: "bg-[var(--accent-blue-soft)]",
+    accent: "text-[var(--accent-slate)]",
+    accentBg: "bg-[rgba(142,162,199,0.12)]",
   },
 ];
 
 export function ThreePillars() {
   return (
-    <section className="hd-section bg-white py-16 md:py-20">
+    <section className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-12 max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2">
@@ -63,7 +63,7 @@ export function ThreePillars() {
             return (
               <article
                 key={pillar.title}
-                className="group relative flex flex-col rounded-[2rem] border border-[var(--border-subtle)] bg-white p-8 transition-all hover:border-[var(--border-strong)] lg:p-10"
+                className="group relative flex flex-col rounded-[2rem] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-8 shadow-[var(--shadow-soft)] transition-all hover:-translate-y-0.5 hover:border-[var(--border-glow)] hover:bg-[var(--bg-card-soft)] lg:p-10"
               >
                 <div className="mb-8 flex items-start justify-between">
                   <div className={`rounded-[16px] border border-[var(--border-subtle)] p-3 ${pillar.accentBg}`}>
@@ -105,7 +105,7 @@ export function ThreePillars() {
         <div className="mt-12 text-center">
           <Link
             href="/how-it-works"
-            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-[var(--accent-rust)] transition-opacity hover:opacity-70"
+            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-[0.2em] text-[var(--accent-rust-strong)] transition-colors hover:text-[var(--text-primary)]"
           >
             See the full architecture →
           </Link>
