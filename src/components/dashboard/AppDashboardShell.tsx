@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
@@ -15,6 +15,7 @@ import {
   Gauge,
   Gavel,
   GraduationCap,
+  type LucideIcon,
   LogOut,
   MessageSquare,
   Moon,
@@ -42,6 +43,7 @@ interface ChatSidebarSession {
   id: string;
   title: string;
   updated_at: string;
+  domain_classified?: string | null;
 }
 
 interface SidebarFolder {
@@ -55,24 +57,81 @@ interface SidebarFolderFile {
   createdAt: string;
 }
 
-const PRIMARY_NAV = [
-  { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/hybrid', label: 'Hybrid', icon: Gauge, badge: 'New' },
-] as const;
+interface SidebarNavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  code: string;
+  badge?: string;
+  detail: string;
+}
 
-const RELICS_NAV = [
-  { href: '/legal', label: 'Legal', icon: Gavel },
-  { href: '/education', label: 'Education', icon: GraduationCap },
-  { href: '/lab', label: 'Lab', icon: FlaskConical },
-] as const;
+const PRIMARY_NAV: SidebarNavItem[] = [
+  { href: '/chat', label: 'Chat', icon: MessageSquare, code: 'M01', badge: 'Core', detail: 'Grounded inquiry' },
+  { href: '/hybrid', label: 'Hybrid', icon: Gauge, code: 'M02', badge: 'Fusion', detail: 'Model synthesis' },
+];
+
+const INSTRUMENTS_NAV: SidebarNavItem[] = [
+  { href: '/legal', label: 'Legal', icon: Gavel, code: 'S01', detail: 'Case analysis' },
+  { href: '/education', label: 'Education', icon: GraduationCap, code: 'S02', detail: 'Intervention design' },
+  { href: '/lab', label: 'Lab', icon: FlaskConical, code: 'S03', detail: 'Experimental tools' },
+];
+
+const FEATURE_LABELS: Record<WorkbenchFeature, string> = {
+  chat: 'Chat',
+  hybrid: 'Hybrid',
+  legal: 'Legal',
+  report: 'Report',
+  education: 'Education',
+  lab: 'Lab',
+};
+
+function formatLedgerTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Unknown';
+
+  const now = new Date();
+  const isSameDay = now.toDateString() === date.toDateString();
+  if (isSameDay) {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  if (now.getFullYear() === date.getFullYear()) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+function formatDomainTag(domain?: string | null): string {
+  const normalized = domain?.trim().toLowerCase();
+  if (!normalized) return 'General';
+  if (normalized.includes('legal') || normalized.includes('policy')) return 'Legal';
+  if (normalized.includes('market') || normalized.includes('economic') || normalized.includes('finance')) return 'Markets';
+  if (normalized.includes('bio') || normalized.includes('health') || normalized.includes('medical')) return 'Bio';
+  if (normalized.includes('education') || normalized.includes('learning')) return 'Learning';
+  if (normalized.includes('physic') || normalized.includes('chem')) return 'Science';
+  return domain?.trim() || 'General';
+}
 
 export function AppDashboardShell({ children, feature }: AppDashboardShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [relicsOpen, setRelicsOpen] = useState(false);
+  const [instrumentsOpen, setInstrumentsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -86,10 +145,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const activeSessionId = typeof window !== 'undefined'
-    ? new URLSearchParams(window.location.search).get('sessionId')
-    : null;
-  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
+  const activeSessionId = searchParams.get('sessionId');
+  const isInstrumentActive = INSTRUMENTS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
 
   useEffect(() => {
     setMounted(true);
@@ -187,8 +244,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   }, [userEmail]);
 
   useEffect(() => {
-    if (isRelicActive) setRelicsOpen(true);
-  }, [isRelicActive]);
+    if (isInstrumentActive) setInstrumentsOpen(true);
+  }, [isInstrumentActive]);
 
   const createFolder = () => {
     const name = prompt('Enter folder name:');
@@ -298,9 +355,22 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     router.refresh();
   };
 
+  const operatorEmail = userEmail || 'Anonymous session';
+  const activeFeatureLabel = FEATURE_LABELS[feature];
+  const visibleThreads = recentThreads.slice(0, 36);
+
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-mark" aria-hidden="true">
+            AS
+          </div>
+          <div className="sidebar-brand-copy">
+            <span className="sidebar-brand-kicker">Automated Scientist</span>
+            <span className="sidebar-brand-mode">{activeFeatureLabel} workbench</span>
+          </div>
+        </div>
         <div className="sidebar-header-actions sidebar-header-controls">
           <button
             type="button"
@@ -336,145 +406,222 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         </div>
       </div>
 
-      <nav className="sidebar-nav">
-        {PRIMARY_NAV.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
-          return (
-            <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
-              <Icon className="h-3.5 w-3.5" />
-              <span>{item.label}</span>
-              {'badge' in item && item.badge ? <span className="nav-badge">{item.badge}</span> : null}
-            </Link>
-          );
-        })}
-
-        <button type="button" className={cn('nav-item', isRelicActive && 'active')} onClick={() => setRelicsOpen((current) => !current)}>
-          <FileText className="h-3.5 w-3.5" />
-          <span>Relics</span>
-          <span className="chevron">{relicsOpen ? '▾' : '▸'}</span>
-        </button>
-
-        {relicsOpen ? (
-          <div className="mt-1 space-y-1 pl-4">
-            {RELICS_NAV.map((item) => {
+      <div className="sidebar-scroll">
+        <nav className="sidebar-nav" aria-label="Workbench modes">
+          <div className="sidebar-section-label">
+            <span>Modes</span>
+            <span className="sidebar-section-count">{PRIMARY_NAV.length}</span>
+          </div>
+          <div className="sidebar-stack">
+            {PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               return (
                 <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
                   <Icon className="h-3.5 w-3.5" />
-                  <span>{item.label}</span>
+                  <span className="nav-copy">
+                    <span className="nav-kicker">{item.code}</span>
+                    <span className="nav-label">{item.label}</span>
+                  </span>
+                  <span className="nav-detail">{item.detail}</span>
+                  {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
                 </Link>
               );
             })}
           </div>
+
+          <div className="sidebar-actions" role="group" aria-label="Operator commands">
+            <button
+              type="button"
+              className="action-btn"
+              onClick={() => {
+                router.push('/chat?new=1');
+                window.dispatchEvent(new Event('newChat'));
+                setMobileSidebarOpen(false);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="action-copy">
+                <span className="action-kicker">Cmd</span>
+                <span className="action-label">New thread</span>
+              </span>
+            </button>
+            <button type="button" className="action-btn" onClick={createFolder}>
+              <FolderPlus className="h-3.5 w-3.5" />
+              <span className="action-copy">
+                <span className="action-kicker">Store</span>
+                <span className="action-label">New folder</span>
+              </span>
+            </button>
+          </div>
+
+          <div className="sidebar-section-label">
+            <span>Systems</span>
+            <span className="sidebar-section-count">{INSTRUMENTS_NAV.length}</span>
+          </div>
+          <button
+            type="button"
+            className={cn('nav-item nav-item-toggle', isInstrumentActive && 'active', instrumentsOpen && 'open')}
+            onClick={() => setInstrumentsOpen((current) => !current)}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span className="nav-copy">
+              <span className="nav-kicker">S00</span>
+              <span className="nav-label">Instruments</span>
+            </span>
+            <span className="nav-detail">Adjacency modes</span>
+            <span className="nav-badge">{instrumentsOpen ? 'Open' : `${INSTRUMENTS_NAV.length}`}</span>
+            <span className="chevron">{instrumentsOpen ? '▾' : '▸'}</span>
+          </button>
+
+          {instrumentsOpen ? (
+            <div className="sidebar-subnav">
+              {INSTRUMENTS_NAV.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+                return (
+                  <Link key={item.href} href={item.href} className={cn('nav-item nav-item-sub', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="nav-copy">
+                      <span className="nav-kicker">{item.code}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </span>
+                    <span className="nav-detail">{item.detail}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
+        </nav>
+
+        {folders.length > 0 ? (
+          <section className="sidebar-section">
+            <div className="sidebar-section-label">
+              <span>Notebooks</span>
+              <span className="sidebar-section-count">{folders.length}</span>
+            </div>
+            <div className="history-list is-folders">
+              {folders.map((folder) => {
+                const fileCount = folderFiles[folder.id]?.length ?? 0;
+                return (
+                  <div key={folder.id} className="folder-block">
+                    <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                      <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                        {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                        <span className="folder-copy">
+                          <span className="folder-title">{folder.name}</span>
+                          <span className="folder-meta">{fileCount} file{fileCount === 1 ? '' : 's'}</span>
+                        </span>
+                      </button>
+                      <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {folderOpenState[folder.id] ? (
+                      <div className="folder-files">
+                        <button type="button" className="history-item history-item-inline" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                          <span className="history-inline-label">+ New file</span>
+                          <span className="history-inline-meta">Open thread</span>
+                        </button>
+                        {(folderFiles[folder.id] ?? []).map((file) => (
+                          <div key={file.id} className="folder-file-row">
+                            <span className="history-item history-item-inline">
+                              <span className="history-inline-label">{file.name}</span>
+                              <span className="history-inline-meta">{formatLedgerTimestamp(file.createdAt)}</span>
+                            </span>
+                            <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         ) : null}
 
-      </nav>
-
-      <div className="sidebar-actions">
-        <button
-          type="button"
-          className="action-btn"
-          onClick={() => {
-            router.push('/chat?new=1');
-            window.dispatchEvent(new Event('newChat'));
-            setMobileSidebarOpen(false);
-          }}
-        >
-          <Plus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>chat</span></span>
-        </button>
-        <button type="button" className="action-btn" onClick={createFolder}>
-          <FolderPlus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>folder</span></span>
-        </button>
-      </div>
-
-      {folders.length > 0 ? (
-        <>
-          <div className="sidebar-section-label">Folders</div>
-          <div className="history-list is-folders">
-            {folders.map((folder) => (
-              <div key={folder.id} className="folder-block">
-                <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
-                  <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
-                    {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                    <span>{folder.name}</span>
-                  </button>
-                  <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                {folderOpenState[folder.id] ? (
-                  <div className="folder-files">
-                    <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
-                      + New file
-                    </button>
-                    {(folderFiles[folder.id] ?? []).map((file) => (
-                      <div key={file.id} className="folder-file-row">
-                        <span className="history-item">{file.name}</span>
-                        <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
+        <section className="sidebar-section history-section">
+          <div className="sidebar-section-label history-label">
+            <span>Session ledger</span>
+            <span className="sidebar-section-count">{visibleThreads.length}</span>
           </div>
-        </>
-      ) : null}
-
-      <div className="sidebar-section-label history-label">History</div>
-      <div className="history-list">
-        {recentThreads.length === 0 ? (
-          <div className="history-item muted">No threads yet.</div>
-        ) : (
-          recentThreads.slice(0, 36).map((session) => {
-            const isActive = pathname === '/chat' && activeSessionId === session.id;
-            return (
-              <div key={session.id} className={cn('history-row', isActive && 'active')}>
-                <button type="button" className="history-item flex-1 text-left" onClick={() => openThread(session.id)} title={session.title || 'Untitled thread'}>
-                  {session.title || 'Untitled thread'}
-                </button>
-                <button
-                  type="button"
-                  className="folder-action"
-                  onClick={() => void handleDeleteThread(session.id)}
-                  aria-label="Delete thread"
-                  disabled={deletingThreadId === session.id}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            );
-          })
-        )}
+          <div className="history-list history-ledger">
+            {visibleThreads.length === 0 ? (
+              <div className="history-item muted">No notebook sessions recorded.</div>
+            ) : (
+              visibleThreads.map((session) => {
+                const isActive = pathname === '/chat' && activeSessionId === session.id;
+                const isResearch = researchThreadIds.includes(session.id);
+                return (
+                  <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
+                    <button
+                      type="button"
+                      className="history-item thread-item flex-1 text-left"
+                      onClick={() => openThread(session.id)}
+                      title={session.title || 'Untitled thread'}
+                    >
+                      <span className="thread-copy">
+                        <span className="thread-title">{session.title || 'Untitled thread'}</span>
+                        <span className="thread-meta">
+                          <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
+                          {isResearch ? <span className="thread-chip accent">Research</span> : null}
+                          <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="folder-action thread-action"
+                      onClick={() => void handleDeleteThread(session.id)}
+                      aria-label="Delete thread"
+                      disabled={deletingThreadId === session.id}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
       </div>
 
       <div className="sidebar-footer">
+        <div className="sidebar-section-label sidebar-section-label-quiet">
+          <span>Utilities</span>
+        </div>
         <button
           type="button"
           className="footer-item"
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         >
           {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+          <span className="footer-copy">
+            <span className="footer-label">Appearance</span>
+            <span className="footer-meta">{mounted && resolvedTheme === 'dark' ? 'Switch to light' : 'Switch to dark'}</span>
+          </span>
         </button>
         <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item">
           <BookOpen className="h-3.5 w-3.5" />
-          Documentation
+          <span className="footer-copy">
+            <span className="footer-label">Documentation</span>
+            <span className="footer-meta">Open operator docs</span>
+          </span>
         </a>
         <div className="footer-item footer-settings">
-          <SidebarModelSettings collapsed={false} />
+          <SidebarModelSettings collapsed={sidebarCollapsed} />
         </div>
       </div>
 
       <div className="user-row" onClick={() => setAccountOpen((current) => !current)}>
         <div className="user-avatar">{initials}</div>
-        <span className="user-email">{userEmail || 'Anonymous session'}</span>
+        <span className="account-copy">
+          <span className="user-email">{operatorEmail}</span>
+          <span className="user-role">{userEmail ? 'authenticated operator' : 'guest workspace'}</span>
+        </span>
         <span className="chevron">▾</span>
         {accountOpen ? (
           <div className="account-popover">
