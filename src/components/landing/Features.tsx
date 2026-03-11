@@ -7,8 +7,8 @@ const features = [
     subtitle: "Asymmetry",
     description: "Detecting value in irregular data patterns that conventional models discard.",
     meta: "Signal irregularities // retained",
-    accent: "bg-[#7b8a78]",
-    iconColor: "text-[#7b8a78]",
+    accent: "bg-[var(--accent-moss)]",
+    iconColor: "text-[var(--accent-moss)]",
   },
   {
     icon: Droplets,
@@ -25,14 +25,14 @@ const features = [
     subtitle: "Transcendence",
     description: "Breaking free from habituated thinking to discover genuinely novel connections.",
     meta: "Novel linkages // admissible",
-    accent: "bg-[#8e877e]",
-    iconColor: "text-[#8e877e]",
+    accent: "bg-[var(--accent-rust-strong)]",
+    iconColor: "text-[var(--accent-rust-strong)]",
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="hd-section bg-white py-16 md:py-20">
+    <section id="features" className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mx-auto mb-16 max-w-3xl space-y-4 text-center">
           <div className="mb-4 inline-flex items-center gap-2">
@@ -54,10 +54,10 @@ export function Features() {
             return (
               <div
                 key={feature.title}
-                className="group relative rounded-[22px] border border-[var(--border-subtle)] bg-white p-8 transition-all duration-[220ms] ease-out hover:-translate-y-0.5"
+                className="group relative rounded-[22px] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-8 shadow-[var(--shadow-soft)] transition-all duration-[220ms] ease-out hover:-translate-y-0.5 hover:border-[var(--border-glow)] hover:bg-[var(--bg-card-soft)]"
               >
                 <div className={`pointer-events-none absolute inset-x-0 top-0 h-px ${feature.accent} opacity-70`} />
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[16px] border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[16px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                   <Icon className={`h-6 w-6 ${feature.iconColor}`} strokeWidth={1.8} />
                 </div>
 

@@ -30,7 +30,7 @@ export function Hero() {
             <a
               href="/masa-white-paper.html"
               target="_blank"
-              className="lg-control inline-flex items-center gap-2 border border-[var(--border-strong)] bg-white px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--accent-rust)] hover:text-[var(--accent-rust)]"
+              className="lg-control group inline-flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--border-glow)] hover:bg-[var(--accent-rust-soft)] hover:text-[var(--accent-rust-strong)]"
             >
               <span>Read MASA White Paper</span>
               <span className="opacity-50 transition-opacity group-hover:opacity-100">→</span>
@@ -40,7 +40,7 @@ export function Hero() {
         </div>
 
         <div className="relative lg:self-center">
-          <div className="rounded-[30px] border border-[var(--border-subtle)] bg-white p-5 md:p-6">
+          <div className="rounded-[30px] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-5 shadow-[var(--shadow-soft)] md:p-6">
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
               <div>
                 <p className="hd-kicker">Epistemic ladder</p>
@@ -56,7 +56,7 @@ export function Hero() {
             <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_152px]">
               <EpistemicCards compact className="min-w-0" />
 
-              <div className="rounded-[20px] border border-[var(--border-subtle)] bg-[#fffdfa] p-4">
+              <div className="rounded-[20px] border border-[var(--border-subtle)] bg-[var(--bg-emphasis)] p-4 shadow-[inset_0_1px_0_rgba(255,244,230,0.03)]">
                 <p className="hd-kicker">Output posture</p>
                 <div className="mt-5 space-y-5">
                   {[

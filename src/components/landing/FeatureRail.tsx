@@ -19,7 +19,7 @@ const primaryApps = [
       "Run constrained causal dialogue with bounded context, evidence-first prompting, and intervention-aware memory.",
     meta: ["thread memory", "bounded context", "evidence scope"],
     icon: MessageSquare,
-    accent: "text-[#6f8271]",
+    accent: "text-[var(--accent-moss)]",
   },
   {
     label: "Hybrid",
@@ -29,7 +29,7 @@ const primaryApps = [
       "Move from retrieval to decomposition to causal synthesis in one controlled, intervention-grade workbench.",
     meta: ["timeline receipt", "source braid", "causal synthesis"],
     icon: Network,
-    accent: "text-[#5d6e90]",
+    accent: "text-[var(--accent-slate)]",
     featured: true,
   },
 ];
@@ -43,7 +43,7 @@ const relicApps = [
       "Prototype report analysis, structure retrieval, docking, and scientific notebook workflows.",
     meta: ["report analysis", "structure fetch", "docking jobs"],
     icon: Microscope,
-    accent: "text-[#3f6785]",
+    accent: "text-[var(--accent-slate)]",
   },
   {
     label: "Legal",
@@ -63,7 +63,7 @@ const relicApps = [
       "Personalize learning paths through adaptive causal models, intervention loops, and reflection cycles.",
     meta: ["adaptive plans", "apprenticeship", "reflection cycles"],
     icon: GraduationCap,
-    accent: "text-[#7e8379]",
+    accent: "text-[var(--accent-moss)]",
   },
 ];
 
@@ -71,49 +71,24 @@ export function FeatureRail() {
   return (
     <section
       aria-label="Primary product features"
-      className="relative z-10 mx-auto max-w-7xl px-6 pb-32 pt-16 md:pb-40 md:pt-24 lg:pb-44 lg:pt-28"
+      className="relative z-10 bg-[var(--bg-secondary)] px-6 pb-32 pt-16 md:px-8 md:pb-40 md:pt-24 lg:px-10 lg:pb-44 lg:pt-28"
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="overflow-hidden rounded-[32px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.84)] shadow-[var(--shadow-soft)]">
-          <div className="p-5 md:p-6 lg:p-7">
-              <div className="rounded-[26px] border border-[var(--border-subtle)] bg-[linear-gradient(180deg,rgba(255,255,255,0.7),rgba(247,244,239,0.86))] p-5 md:p-6">
-                <div className="flex flex-col gap-4 border-b border-[var(--border-subtle)] pb-5 md:flex-row md:items-end md:justify-between">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                      Unified application page
-                    </p>
-                    <h3 className="mt-3 font-serif text-[2rem] leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[2.5rem]">
-                      Every causal surface,
-                      <span className="italic font-light text-[var(--accent-rust)]">
-                        {" "}inside one instrument.
-                      </span>
-                    </h3>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 md:min-w-[340px]">
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                        lanes
-                      </p>
-                      <p className="mt-2 font-serif text-2xl text-[var(--text-primary)]">05</p>
-                    </div>
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                        relic rooms
-                      </p>
-                      <p className="mt-2 font-serif text-2xl text-[var(--text-primary)]">03</p>
-                    </div>
-                    <div>
-                      <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                        state
-                      </p>
-                      <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--accent-rust)]">
-                        synchronized
-                      </p>
-                    </div>
-                  </div>
-                </div>
+      <div className="mx-auto max-w-[1280px] border-b border-[var(--border-subtle)] pb-5">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            Unified application page
+          </p>
+          <h3 className="mt-3 font-serif text-[2rem] leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[2.5rem]">
+            Every causal surface,
+            <span className="italic font-light text-[var(--accent-rust)]">
+              {" "}inside one instrument.
+            </span>
+          </h3>
+        </div>
+      </div>
 
-                <div className="mt-6 grid gap-4 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+      <div className="mt-6">
+        <div className="mx-auto grid max-w-[1280px] gap-4 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
                   {primaryApps.map((app, index) => {
                     const Icon = app.icon;
 
@@ -121,7 +96,7 @@ export function FeatureRail() {
                       <Link
                         key={app.label}
                         href={app.route}
-                        className="group relative overflow-hidden rounded-[24px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.9)] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[rgba(166,133,100,0.34)] hover:shadow-[0_24px_60px_rgba(45,38,28,0.08)]"
+                        className="group relative overflow-hidden rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-5 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--border-glow)] hover:bg-[var(--bg-tertiary)]"
                       >
                         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-[var(--accent-rust)]/75 via-[var(--border-strong)]/40 to-transparent" />
 
@@ -150,7 +125,7 @@ export function FeatureRail() {
                           {app.meta.map((item) => (
                             <div
                               key={item}
-                              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/72 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-secondary)]"
+                              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-tertiary)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-secondary)]"
                             >
                               <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust)]/75" />
                               {item}
@@ -166,9 +141,10 @@ export function FeatureRail() {
                       </Link>
                     );
                   })}
-                </div>
+        </div>
+      </div>
 
-                <div className="mt-5 rounded-[24px] border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.82)] p-5 md:p-6">
+      <div className="mx-auto mt-5 max-w-[1280px] rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-card-soft)] p-5 md:p-6">
                   <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-4 md:flex-row md:items-end md:justify-between">
                     <div>
                       <div className="inline-flex items-center gap-3">
@@ -191,7 +167,7 @@ export function FeatureRail() {
                       return (
                         <div
                           key={app.label}
-                          className="group rounded-[22px] border border-[var(--border-subtle)] bg-white/78 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[rgba(166,133,100,0.34)]"
+                          className="group rounded-[22px] border border-[var(--border-subtle)] bg-[var(--bg-tertiary)] p-5 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--border-glow)] hover:bg-[var(--bg-elevated)]"
                         >
                           <div className="flex items-center justify-between gap-4">
                             <div className="inline-flex items-center gap-3">
@@ -223,10 +199,6 @@ export function FeatureRail() {
                       );
                     })}
                   </div>
-                </div>
-              </div>
-          </div>
-        </div>
       </div>
     </section>
   );

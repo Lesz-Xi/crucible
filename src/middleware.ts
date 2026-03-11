@@ -1,15 +1,15 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-function isMarketingLightPath(pathname: string) {
+function isMarketingDarkPath(pathname: string) {
   return pathname === '/';
 }
 
 export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
 
-  if (isMarketingLightPath(request.nextUrl.pathname)) {
-    requestHeaders.set('x-theme-scope', 'marketing-light');
+  if (isMarketingDarkPath(request.nextUrl.pathname)) {
+    requestHeaders.set('x-theme-scope', 'marketing-dark');
   } else {
     requestHeaders.delete('x-theme-scope');
   }

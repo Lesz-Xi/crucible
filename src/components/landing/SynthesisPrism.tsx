@@ -9,7 +9,7 @@ export function SynthesisPrism() {
   const isInView = useInView(containerRef, { amount: 0.2 });
 
   return (
-    <section ref={containerRef} className="hd-section py-16 md:py-20">
+    <section ref={containerRef} className="hd-section bg-[var(--bg-secondary)] py-16 md:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 md:px-8 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center">
         {/* ── Left: Text + stat cards ── */}
         <div>
@@ -51,9 +51,9 @@ export function SynthesisPrism() {
         </div>
 
         {/* ── Right: Causal DAG panel ── */}
-        <div className="hd-panel hd-grid-frame relative min-h-[520px] overflow-hidden rounded-[36px] p-6 md:p-8">
+        <div className="relative min-h-[520px]">
           {/* Header row */}
-          <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between border-b border-[var(--border-subtle)] pb-4 px-2">
             <div>
               <p className="hd-metric-label">Causal Graph</p>
               <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -66,17 +66,10 @@ export function SynthesisPrism() {
           </div>
 
           {/* DAG canvas area */}
-          <div className="absolute inset-x-6 bottom-6 top-[72px] overflow-hidden rounded-[24px] border border-[rgba(166,133,100,0.14)] bg-[#f4ede2]">
+          <div className="absolute inset-x-0 bottom-0 top-[72px] overflow-hidden rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-emphasis)] shadow-[inset_0_1px_0_rgba(255,244,230,0.03)]">
             <CausalDAGPanel isActive={isInView} />
           </div>
 
-          {/* Bottom labels */}
-          <div className="absolute bottom-8 left-8 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            SCM active
-          </div>
-          <div className="absolute bottom-8 right-8 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            Trace preserved
-          </div>
         </div>
       </div>
     </section>

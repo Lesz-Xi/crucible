@@ -6,14 +6,16 @@ import { motion } from "framer-motion";
 const R = 26; // node circle radius
 const VW = 540;
 const VH = 390;
+const NODE_FILL = "#1f1a16";
+const NODE_SHADOW = "rgba(0,0,0,0.22)";
 
 // Five SCM nodes — all in the Pearl SCM formalism
 const NODES = [
-  { id: "W",   x: 268, y: 52,  label: "W",     sub: "Confounder",   stroke: "#9e8a72", textSize: 15, latent: true  },
-  { id: "X",   x: 82,  y: 204, label: "X",     sub: "Treatment",    stroke: "#c4855a", textSize: 15, latent: false },
-  { id: "Z",   x: 268, y: 204, label: "Z",     sub: "Mediator",     stroke: "#c4855a", textSize: 15, latent: false },
-  { id: "Y",   x: 455, y: 178, label: "Y",     sub: "Outcome",      stroke: "#a06b3c", textSize: 15, latent: false },
-  { id: "DOX", x: 68,  y: 330, label: "do(·)", sub: "Intervention", stroke: "#5e8050", textSize: 10, latent: false },
+  { id: "W",   x: 268, y: 52,  label: "W",     sub: "Confounder",   stroke: "#8b735f", textSize: 15, latent: true  },
+  { id: "X",   x: 82,  y: 204, label: "X",     sub: "Treatment",    stroke: "#c48854", textSize: 15, latent: false },
+  { id: "Z",   x: 268, y: 204, label: "Z",     sub: "Mediator",     stroke: "#c48854", textSize: 15, latent: false },
+  { id: "Y",   x: 455, y: 178, label: "Y",     sub: "Outcome",      stroke: "#e0a36c", textSize: 15, latent: false },
+  { id: "DOX", x: 68,  y: 330, label: "do(·)", sub: "Intervention", stroke: "#7d9c80", textSize: 10, latent: false },
 ];
 
 const nm = Object.fromEntries(NODES.map((n) => [n.id, n]));
@@ -34,10 +36,10 @@ const EDGES = [
   {
     id: "WX",
     path: `M ${nm.W.x - 10} ${nm.W.y + R + 3} C ${nm.W.x - 95} ${(nm.W.y + nm.X.y) / 2} ${nm.X.x + 50} ${nm.X.y - 70} ${nm.X.x + R + 3} ${nm.X.y - 10}`,
-    stroke: "#9e8a72",
+    stroke: "#8b735f",
     marker: "arrow-confound",
     dashed: false,
-    pulse: "#be9a82",
+    pulse: "#b49579",
     entranceDelay: 0.2,
     pulseDelay: "0s",
     pulseDur: 2.6,
@@ -45,10 +47,10 @@ const EDGES = [
   {
     id: "WY",
     path: `M ${nm.W.x + 13} ${nm.W.y + R + 3} C ${nm.W.x + 85} ${(nm.W.y + nm.Y.y) / 2 - 25} ${nm.Y.x - 55} ${nm.Y.y - 65} ${nm.Y.x} ${nm.Y.y - R - 3}`,
-    stroke: "#9e8a72",
+    stroke: "#8b735f",
     marker: "arrow-confound",
     dashed: false,
-    pulse: "#be9a82",
+    pulse: "#b49579",
     entranceDelay: 0.32,
     pulseDelay: "1.3s",
     pulseDur: 2.6,
@@ -56,10 +58,10 @@ const EDGES = [
   {
     id: "XZ",
     path: straight("X", "Z"),
-    stroke: "#c4855a",
+    stroke: "#c48854",
     marker: "arrow-causal",
     dashed: false,
-    pulse: "#e09a6a",
+    pulse: "#e0a36c",
     entranceDelay: 0.5,
     pulseDelay: "0.4s",
     pulseDur: 1.7,
@@ -67,10 +69,10 @@ const EDGES = [
   {
     id: "ZY",
     path: straight("Z", "Y"),
-    stroke: "#c4855a",
+    stroke: "#c48854",
     marker: "arrow-causal",
     dashed: false,
-    pulse: "#e09a6a",
+    pulse: "#e0a36c",
     entranceDelay: 0.65,
     pulseDelay: "0.75s",
     pulseDur: 1.7,
@@ -79,10 +81,10 @@ const EDGES = [
     id: "XY",
     // Direct arc above — bypassing Z (direct effect)
     path: `M ${nm.X.x + 14} ${nm.X.y - R - 3} Q ${(nm.X.x + nm.Y.x) / 2} ${nm.X.y - 96} ${nm.Y.x - R - 3} ${nm.Y.y - 12}`,
-    stroke: "#a06b3c",
+    stroke: "#e0a36c",
     marker: "arrow-direct",
     dashed: false,
-    pulse: "#c07a4a",
+    pulse: "#e0a36c",
     entranceDelay: 0.78,
     pulseDelay: "1.6s",
     pulseDur: 2.1,
@@ -90,10 +92,10 @@ const EDGES = [
   {
     id: "DOXX",
     path: `M ${nm.DOX.x + 14} ${nm.DOX.y - R - 3} L ${nm.X.x} ${nm.X.y + R + 3}`,
-    stroke: "#5e8050",
+    stroke: "#7d9c80",
     marker: "arrow-intervene",
     dashed: true,
-    pulse: "#80a870",
+    pulse: "#9eb59f",
     entranceDelay: 0.95,
     pulseDelay: "2.6s",
     pulseDur: 1.5,
@@ -125,10 +127,10 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
           {/* Arrow markers for each edge type */}
           {(
             [
-              ["arrow-causal",    "#c4855a"],
-              ["arrow-confound",  "#9e8a72"],
-              ["arrow-direct",    "#a06b3c"],
-              ["arrow-intervene", "#5e8050"],
+              ["arrow-causal",    "#c48854"],
+              ["arrow-confound",  "#8b735f"],
+              ["arrow-direct",    "#e0a36c"],
+              ["arrow-intervene", "#7d9c80"],
             ] as [string, string][]
           ).map(([id, fill]) => (
             <marker
@@ -202,11 +204,11 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
             style={{ transformOrigin: `${n.x}px ${n.y}px` }}
           >
             {/* Drop shadow */}
-            <circle cx={n.x + 1} cy={n.y + 2} r={R} fill="rgba(60,40,20,0.07)" />
+            <circle cx={n.x + 1} cy={n.y + 2} r={R} fill={NODE_SHADOW} />
             {/* Fill */}
             <circle
               cx={n.x} cy={n.y} r={R}
-              fill="#fdf9f5"
+              fill={NODE_FILL}
               stroke={n.stroke}
               strokeWidth={1.6}
               strokeDasharray={n.latent ? "4 2.5" : undefined}
@@ -257,7 +259,7 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
           style={{
             fontSize: 8,
             fontFamily: "var(--font-geist-mono), monospace",
-            fill: "#a06b3c",
+            fill: "#e0a36c",
             letterSpacing: "0.14em",
             textTransform: "uppercase",
           }}
@@ -276,7 +278,7 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
           style={{
             fontSize: 8,
             fontFamily: "var(--font-geist-mono), monospace",
-            fill: "#5e8050",
+            fill: "#7d9c80",
             letterSpacing: "0.1em",
           }}
         >
@@ -287,9 +289,9 @@ export function CausalDAGPanel({ isActive }: { isActive: boolean }) {
       {/* Bottom legend */}
       <div className="absolute bottom-4 left-5 flex items-center gap-5">
         {[
-          { color: "#c4855a", label: "Causal" },
-          { color: "#9e8a72", label: "Confound" },
-          { color: "#5e8050", label: "Intervene", dashed: true },
+          { color: "#c48854", label: "Causal" },
+          { color: "#8b735f", label: "Confound" },
+          { color: "#7d9c80", label: "Intervene", dashed: true },
         ].map((l) => (
           <div key={l.label} className="flex items-center gap-1.5">
             <svg width="18" height="8" style={{ overflow: "visible" }}>

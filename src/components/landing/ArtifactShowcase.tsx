@@ -26,7 +26,7 @@ const artifacts = [
 
 export function ArtifactShowcase() {
   return (
-    <section className="hd-section bg-white py-16 md:py-20">
+    <section className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-12 max-w-2xl">
           <p className="hd-kicker inline-flex items-center gap-3">
@@ -48,7 +48,7 @@ export function ArtifactShowcase() {
               return (
                 <article key={artifact.title} className="hd-panel rounded-[28px] p-7">
                   <div className="flex items-center justify-between">
-                    <div className="rounded-[16px] border border-[var(--border-subtle)] bg-white/70 p-3">
+                    <div className="rounded-[16px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3">
                       <Icon className={`h-5 w-5 ${artifact.accent}`} strokeWidth={1.7} />
                     </div>
                     <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -75,7 +75,7 @@ export function ArtifactShowcase() {
             <p className="mt-5 font-serif text-3xl italic leading-10 text-[var(--text-primary)]">
               Verified artifacts are the visible edge of a much deeper audit discipline.
             </p>
-            <div className="mt-10 border-t border-[rgba(166,133,100,0.2)] pt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            <div className="mt-10 border-t border-[var(--border-subtle)] pt-5 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
               Archive / Evidence / Causality
             </div>
           </aside>
