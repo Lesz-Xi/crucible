@@ -149,13 +149,22 @@ describe("Automated Scientist Personality Transformation", () => {
             expect(SCIENTIFIC_METHOD_SCAFFOLD.prediction.required).toBe(true);
         });
 
-        it("should format scaffold as prompt", () => {
+        it("should format scaffold as prompt with conversational structure", () => {
             const prompt = generateScaffoldPrompt();
 
+            // Core scientific elements present in conversational format
+            expect(prompt).toContain("Phenomenon framing");
+            expect(prompt).toContain("Causal mechanism");
+            expect(prompt).toContain("Evidence grounding");
+            expect(prompt).toContain("Falsification");
+            expect(prompt).toContain("Next epistemic step");
+            expect(prompt).toContain("Confidence");
+            // Pearl layer markers
             expect(prompt).toContain("Observation");
-            expect(prompt).toContain("Hypothesis");
-            expect(prompt).toContain("Prediction");
-            expect(prompt).toContain("Experiment");
+            expect(prompt).toContain("Intervention");
+            expect(prompt).toContain("Counterfactual");
+            // Anti-JSON instruction
+            expect(prompt).toContain("Do NOT output JSON");
         });
     });
 

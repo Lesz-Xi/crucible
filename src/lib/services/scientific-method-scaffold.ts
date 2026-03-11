@@ -114,52 +114,56 @@ export interface ScaffoldOptions {
 }
 
 /**
- * Generate the scientific method scaffold prompt section
+ * Generate the scientific method scaffold prompt section.
+ *
+ * Produces conversational markdown format instructions instead of JSON.
+ * The scientific method phases remain mandatory as thinking scaffolding,
+ * but the output must be natural prose — not labeled sections or JSON.
  */
 export function generateScaffoldPrompt(options: ScaffoldOptions = {}): string {
-    const phases = Object.entries(SCIENTIFIC_METHOD_SCAFFOLD);
+    let prompt = `## RESPONSE STRUCTURE
 
-    let prompt = "## RESPONSE STRUCTURE (MANDATORY)\n\n";
+Your response must embody the scientific method, but present it as a natural scientific discussion — not a filled-out form.
 
-    for (const [key, config] of phases) {
-        if (!config.required && !options.includeOptionalPhases) {
-            continue;
-        }
+**MANDATORY ELEMENTS** (weave these into your response naturally):
 
-        const reqMarker = config.required ? "(REQUIRED)" : "(OPTIONAL)";
-        prompt += `### Phase: ${config.name} ${reqMarker}\n`;
-        prompt += `${config.description}\n`;
-        prompt += `${config.promptTemplate}\n\n`;
+1. **Phenomenon framing** — Open by stating what you're investigating (1-2 sentences). Ground the reader.
+
+2. **Causal mechanism** — Propose a specific, falsifiable explanation. Use causal chains (X → Y → Z) with explicit mechanisms. Vague generalities are not science.
+   - Tag which Pearl layer you're operating at when relevant:
+     - 🔍 *Observation* — describing patterns and correlations
+     - 🔬 *Intervention* — what happens when we change X (do-calculus)
+     - 💭 *Counterfactual* — would Y have occurred without X?
+
+3. **Evidence grounding** — Distinguish strong evidence (direct observation, controlled study) from moderate (inference, model prediction) and weak (analogy, speculation). Be explicit.
+
+4. **Confidence** — State a calibrated confidence level with reasoning. Format: **Confidence: X%** — [why this level, what would raise/lower it].
+
+5. **Falsification** — State what would disprove your hypothesis. Use a blockquote:
+   > ⚡ **Falsification**: [what evidence would collapse this explanation]
+
+6. **Next epistemic step** — Propose a specific experiment, observation, or analysis. Use a blockquote:
+   > 🎯 **Next step**: [the specific test that would advance understanding]
+
+**FORMAT RULES:**
+- Write as a scientist explaining to a curious, intelligent colleague
+- Use markdown headers (## or ###) to organize longer analyses, but NOT as phase labels
+- Use blockquotes (>) for key claims, falsification criteria, and next steps
+- Use tables for structured comparisons when appropriate
+- Use causal chain notation (A → B → C) inline
+- Do NOT output JSON
+- Do NOT use "Phase:", "Observation:", "Hypothesis:" as section labels
+- Do NOT begin with meta-commentary ("Based on the causal graph...", "As an automated scientist...")
+- Start directly with the investigation
+`;
+
+    if (options.constraints && options.constraints.length > 0) {
+        prompt += `\n**DOMAIN CONSTRAINTS:**\n${options.constraints.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n`;
     }
 
-    // Add falsification requirement
-    prompt += `### Falsification Criteria (REQUIRED)
-State explicitly what would disprove the hypothesis. If nothing can disprove it, the hypothesis is invalid.
-
-`;
-
-    // Add next step requirement
-    prompt += `### Next Step (REQUIRED)
-Propose the next epistemic action. What experiment, observation, or analysis would advance understanding?
-
-`;
-
-    // Add output format
-    prompt += `---
-
-**OUTPUT FORMAT:**
-\`\`\`json
-{
-  "observation": "string - phenomenon under investigation",
-  "hypothesis": "string - falsifiable explanation",
-  "prediction": "string - testable consequence",
-  "falsificationCriteria": "string - what would disprove",
-  "testProposal": "string - how to test",
-  "confidence": number between 0 and 1,
-  "nextStep": "string - next epistemic action"
-}
-\`\`\`
-`;
+    if (options.conversationContext) {
+        prompt += `\n**PRIOR CONTEXT:**\n${options.conversationContext}\n`;
+    }
 
     return prompt;
 }

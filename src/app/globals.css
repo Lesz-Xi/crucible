@@ -926,6 +926,64 @@
   display: none;
 }
 
+/* === TABLE STYLING (Scientific data display) === */
+.lab-chat-prose table {
+  width: 100%;
+  margin: 0.8rem 0;
+  border-collapse: collapse;
+  border: 1px solid var(--lab-border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 0.92em;
+}
+
+.lab-chat-prose thead {
+  background: color-mix(in srgb, var(--lab-panel) 60%, transparent);
+}
+
+.lab-chat-prose th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.88em;
+  letter-spacing: 0.02em;
+  color: var(--lab-text-primary);
+  border-bottom: 1px solid var(--lab-border);
+}
+
+.lab-chat-prose td {
+  padding: 7px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--lab-border) 50%, transparent);
+  color: var(--lab-text-primary);
+}
+
+.lab-chat-prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lab-chat-prose tbody tr:nth-child(odd) {
+  background: color-mix(in srgb, var(--lab-panel) 25%, transparent);
+}
+
+/* === BLOCKQUOTE CALLOUTS (Falsification, Next Step, Key Claims) === */
+.lab-chat-prose blockquote {
+  margin: 0.9rem 0;
+  border-left: 3px solid var(--lab-accent-clay, rgba(139, 94, 60, 0.45));
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--lab-accent-clay) 6%, transparent);
+  padding: 10px 14px;
+  color: var(--lab-text-primary);
+  font-size: 0.97em;
+}
+
+.lab-chat-prose blockquote p {
+  margin: 0;
+}
+
+.lab-chat-prose blockquote p + p {
+  margin-top: 0.5rem;
+}
+
 /* === APPLE LIQUID GLASS THEME SYSTEM === */
 :root {
   /* Darker, deeper glass base for premium contrast */
@@ -996,7 +1054,21 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .lab-chat-prose blockquote {
-  border-left-color: rgba(255, 255, 255, 0.28);
+  border-left-color: var(--lab-accent-clay, rgba(200, 150, 90, 0.5));
+  background: color-mix(in srgb, var(--lab-accent-clay) 8%, transparent);
+  color: var(--lab-text-primary);
+}
+
+.dark .lab-chat-prose thead {
+  background: color-mix(in srgb, var(--lab-panel) 80%, transparent);
+}
+
+.dark .lab-chat-prose td {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .lab-chat-prose tbody tr:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .dark .lab-chat-prose code {
@@ -7102,6 +7174,49 @@ body[data-theme-scope="marketing-light"] .theme-landing .wabi-label {
   .protocol-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Warm-lock: override any .dark .feature-* ambient token overrides ─────
+   Specificity (0,2,0) — same as .dark .feature-chat but defined later in the
+   cascade, so this rule wins regardless of class="dark" on <html>.
+   The workbench always renders in the warm MASA palette.                    */
+.app-feature-shell.canonical-workbench-shell {
+  color-scheme: light;
+  --bg:               #FAFAF8;
+  --bg-2:             #F4F2EE;
+  --bg-3:             #EDEAE4;
+  --bg-4:             #E5E2DB;
+  --bg-5:             #DAD6CE;
+  --sidebar-bg:       #F2F0EB;
+  --rail-bg:          #F6F4F0;
+  --card-bg:          #FFFFFF;
+  --input-bg:         #FFFFFF;
+  --border:           rgba(0,0,0,0.08);
+  --border-2:         rgba(0,0,0,0.13);
+  --border-3:         rgba(0,0,0,0.20);
+  --text-1:           #1A1917;
+  --text-2:           rgba(26,25,23,0.55);
+  --text-3:           rgba(26,25,23,0.35);
+  --text-4:           rgba(26,25,23,0.18);
+  --accent:           #A0693A;
+  --accent-2:         #8A5520;
+  --accent-dim:       rgba(160,105,58,0.09);
+  --accent-border:    rgba(160,105,58,0.22);
+  --shadow:           0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.07);
+  --lab-bg:           #FAFAF8;
+  --lab-bg-elevated:  #FFFFFF;
+  --lab-panel:        #FFFFFF;
+  --lab-panel-soft:   #F4F2EE;
+  --lab-border:       rgba(0,0,0,0.08);
+  --lab-border-strong:rgba(0,0,0,0.20);
+  --lab-text-primary: #1A1917;
+  --lab-text-secondary:rgba(26,25,23,0.55);
+  --lab-text-tertiary: rgba(26,25,23,0.35);
+  --lab-accent-earth: #A0693A;
+  --lab-accent-clay:  #8A5520;
+  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
 }
 
 /* Canonical High-Density Workbench */
