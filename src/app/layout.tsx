@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "./landing-theme.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
 
