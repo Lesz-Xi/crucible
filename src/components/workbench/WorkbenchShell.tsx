@@ -24,7 +24,7 @@ export function WorkbenchShell({
   const supportsEvidenceRail = feature === 'chat';
   const resolvedEvidenceRail = evidenceRailOverride || evidenceRail || null;
   const focusReadMode = focusMode && focusModeReady;
-  const showEvidenceRail = supportsEvidenceRail && evidenceRailVisible && !focusReadMode && Boolean(resolvedEvidenceRail);
+  const showEvidenceRail = supportsEvidenceRail && evidenceRailVisible && !focusMode && Boolean(resolvedEvidenceRail);
 
   useEffect(() => {
     if (!showEvidenceRail) setMobileRailOpen(false);
@@ -41,8 +41,8 @@ export function WorkbenchShell({
         setFocusMode,
       }}
     >
-      <AppDashboardShell feature={feature} focusModeActive={focusReadMode}>
-        <div className={cn('shell app-shell', `main-mode-${mainMode}`, !showEvidenceRail && 'rail-hidden', focusReadMode && 'shell-focus-mode')}>
+      <AppDashboardShell feature={feature} focusModeActive={focusMode}>
+        <div className={cn('shell app-shell', `main-mode-${mainMode}`, !showEvidenceRail && 'rail-hidden', focusMode && 'shell-focus-mode')}>
           {showEvidenceRail ? (
             <button type="button" className="mobile-rail-trigger" onClick={() => setMobileRailOpen(true)} aria-label="Open evidence rail">
               <PanelRightOpen className="h-4 w-4" />
