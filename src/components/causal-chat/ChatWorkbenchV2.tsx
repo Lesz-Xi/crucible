@@ -14,7 +14,6 @@ import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grou
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
-import { ProtocolCard } from '@/components/causal-chat/ProtocolCard';
 import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface WorkbenchMessage {
@@ -1059,56 +1058,52 @@ export function ChatWorkbenchV2() {
     messages.length,
     modelProvenanceState,
   ]);
+  const hasAssistantOutput = messages.some(
+    (message) =>
+      message.role === 'assistant' &&
+      (message.content.trim().length > 0 || Boolean(message.scientificAnalysis))
+  );
+  const composerBlock = (
+    <div>
+      <ChatComposerV2
+        value={prompt}
+        onChange={setPrompt}
+        onSend={handleSend}
+        onStop={handleStop}
+        isLoading={isLoading}
+        operatorMode={operatorMode}
+        onOperatorModeChange={setOperatorMode}
+        attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
+        onAddAttachments={handleAddAttachments}
+        onRemoveAttachment={handleRemoveAttachment}
+        placeholder={
+          operatorMode === 'intervene'
+            ? 'Describe the action you want to take, expected impact, and guardrails...'
+            : operatorMode === 'audit'
+              ? 'Paste the claim to validate, evidence available, and what could disprove it...'
+              : 'Describe the real-world situation, what changed, and what outcome you need...'
+        }
+      />
+      {modelFallbackNotice ? <div className="mt-3 text-xs text-[var(--accent)]">Model fallback: {modelFallbackNotice}</div> : null}
+      {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
+    </div>
+  );
 
   return (
     <WorkbenchShell
       feature="chat"
       evidenceRail={railConfig}
       mainMode="chat"
+      focusModeReady={hasAssistantOutput}
       mainContent={
         <div className="chat-workbench">
           <div className="chat-message-scroll">
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">
-                <div className="chat-empty-headline">
-                  <div className="workbench-eyebrow">Sovereign Synthesis Engine</div>
-                  <h1>Scientific<br /><em>Workbench</em></h1>
-                  <p>Select a research protocol to begin your inquiry into the causal structure of the world.</p>
-                </div>
-
-                <div className="protocol-grid stagger">
-                  <ProtocolCard
-                    tag="Protocol 01"
-                    iconKind="discovery"
-                    title="Causal Discovery"
-                    description="Ingest observational data or papers to extract Structural Causal Models (SCM) from raw evidence."
-                    onClick={() => {
-                      setOperatorMode('explore');
-                      setPrompt('Analyze the attached files to extract causal mechanisms and build an SCM.');
-                    }}
-                  />
-
-                  <ProtocolCard
-                    tag="Protocol 02"
-                    iconKind="intervention"
-                    title="Intervention Planning"
-                    description="Simulate do-calculus interventions (do(X)=y) to predict how the system responds to external actions."
-                    onClick={() => {
-                      setOperatorMode('intervene');
-                      setPrompt('I need to simulate an intervention. Here is the scenario:');
-                    }}
-                  />
-
-                  <ProtocolCard
-                    tag="Protocol 03"
-                    iconKind="audit"
-                    title="Counterfactual Audit"
-                    description="Verify specific claims against the causal graph logic, evidence corpus, and falsification criteria."
-                    onClick={() => {
-                      setOperatorMode('audit');
-                      setPrompt('Verify this claim against the known causal graph:');
-                    }}
-                  />
+                <div className="chat-empty-console">
+                  <div className="chat-empty-console-body">
+                    {composerBlock}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -1160,31 +1155,7 @@ export function ChatWorkbenchV2() {
           </div>
         </div>
       }
-      inputArea={
-        <div>
-          <ChatComposerV2
-            value={prompt}
-            onChange={setPrompt}
-            onSend={handleSend}
-            onStop={handleStop}
-            isLoading={isLoading}
-            operatorMode={operatorMode}
-            onOperatorModeChange={setOperatorMode}
-            attachments={attachments.map(({ name, mimeType, sizeBytes }) => ({ name, mimeType, sizeBytes }))}
-            onAddAttachments={handleAddAttachments}
-            onRemoveAttachment={handleRemoveAttachment}
-            placeholder={
-              operatorMode === 'intervene'
-                ? 'Describe the action you want to take, expected impact, and guardrails...'
-                : operatorMode === 'audit'
-                  ? 'Paste the claim to validate, evidence available, and what could disprove it...'
-                  : 'Describe the real-world situation, what changed, and what outcome you need...'
-            }
-          />
-          {modelFallbackNotice ? <div className="mt-3 text-xs text-[var(--accent)]">Model fallback: {modelFallbackNotice}</div> : null}
-          {error ? <div className="mt-3 text-sm text-red-700">{error}</div> : null}
-        </div>
-      }
+      inputArea={messages.length > 0 ? composerBlock : undefined}
     />
   );
 }

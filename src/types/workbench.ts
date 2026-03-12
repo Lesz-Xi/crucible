@@ -46,8 +46,9 @@ export interface WorkbenchShellProps {
   mainTopbar?: ReactNode;
   mainContent: ReactNode;
   inputArea?: ReactNode;
-  evidenceRail: WorkbenchEvidenceRailConfig;
+  evidenceRail?: WorkbenchEvidenceRailConfig;
   mainMode?: 'chat' | 'split' | 'report' | 'canvas';
+  focusModeReady?: boolean;
 }
 
 // Legacy exports kept temporarily so untouched components continue to type-check

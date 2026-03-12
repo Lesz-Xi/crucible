@@ -6,7 +6,6 @@ import { getAnalysisHistory, loadAnalysisFromHistory, saveAnalysisToHistory, typ
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { LegalAnalysisPanelV2, type LegalGateSummary } from '@/components/legal/LegalAnalysisPanelV2';
 import { LegalIntakePanelV2 } from '@/components/legal/LegalIntakePanelV2';
-import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface AnalysisStatus {
   stage: 'idle' | 'uploading' | 'extracting' | 'analyzing' | 'matching' | 'complete' | 'error';
@@ -27,8 +26,6 @@ export function LegalWorkbenchV2() {
   });
   const [result, setResult] = useState<LegalCase | null>(null);
   const [gateState, setGateState] = useState<LegalGateSummary | null>(null);
-  const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
-  const [claimCopied, setClaimCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<LegalHistoryEntry[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -53,8 +50,6 @@ export function LegalWorkbenchV2() {
     setJurisdiction('');
     setResult(null);
     setGateState(null);
-    setLatestClaimId(null);
-    setClaimCopied(false);
     setError(null);
     setTransportMode('idle');
     setDiagnostics(null);
@@ -67,12 +62,6 @@ export function LegalWorkbenchV2() {
 
   const handleStreamEvent = (event: Record<string, unknown>) => {
     const eventType = event.event;
-
-    if (eventType === 'claim_recorded') {
-      const claimId = typeof event.claimId === 'string' ? event.claimId : null;
-      setLatestClaimId(claimId);
-      return;
-    }
 
     if (eventType === 'intervention_gate') {
       setGateState({
@@ -244,8 +233,6 @@ export function LegalWorkbenchV2() {
     if (!loaded) return;
 
     setResult(loaded);
-    setLatestClaimId(null);
-    setClaimCopied(false);
     setCaseTitle(loaded.title);
     setJurisdiction(loaded.jurisdiction || '');
     setCaseType((loaded.caseType as 'criminal' | 'tort' | 'contract' | 'administrative') || 'tort');
@@ -253,51 +240,9 @@ export function LegalWorkbenchV2() {
     setAnalysisStatus({ stage: 'complete', message: 'Loaded historical analysis.', progress: 100 });
   };
 
-  const handleCopyClaimId = async (value: string) => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setClaimCopied(true);
-      window.setTimeout(() => setClaimCopied(false), 1400);
-    } catch {
-      setClaimCopied(false);
-    }
-  };
-
-  const railConfig: WorkbenchEvidenceRailConfig = {
-    subtitle: 'Legal posture and evidence',
-    live: analysisStatus.stage !== 'idle' || latestClaimId !== null || documentNames.length > 0,
-    causalDensity: {
-      activeLevel: gateState?.allowedOutputClass === 'intervention_supported' ? 'L2' : gateState?.allowedOutputClass === 'intervention_inferred' ? 'L1' : null,
-      status: analysisStatus.message,
-    },
-    alignmentPosture: {
-      tone: gateState?.allowed ? 'green' : gateState ? 'red' : 'neutral',
-      text: gateState?.rationale || 'No unaudited intervention claims without identifiability gates.',
-    },
-    modelProvenance: {
-      title: latestClaimId || 'unavailable',
-      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : 'No verified model provenance was emitted for this run.',
-      actions: latestClaimId ? [
-        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
-        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
-        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
-      ] : undefined,
-    },
-    activeDomain: {
-      label: `${caseType}${jurisdiction ? ` · ${jurisdiction}` : ''}` || 'unavailable',
-    },
-    scientificEvidence: documentNames.slice(0, 6).map((name, index) => ({
-      id: `${name}-${index}`,
-      title: name,
-      meta: `${caseType} source document`,
-      badge: index === 0 ? `${documentNames.length} docs` : undefined,
-    })),
-  };
-
   return (
     <WorkbenchShell
       feature="legal"
-      evidenceRail={railConfig}
       mainMode="split"
       mainTopbar={
         <>

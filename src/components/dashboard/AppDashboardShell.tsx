@@ -1,26 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft,
-  ArrowRight,
   BookOpen,
+  Orbit,
+  ChevronDown,
+  ChevronRight,
   FileText,
   FlaskConical,
   Folder,
   FolderMinus,
   FolderPlus,
-  Gauge,
   Gavel,
   GraduationCap,
+  type LucideIcon,
   LogOut,
   MessageSquare,
   Moon,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightOpen,
   Plus,
   Sun,
   Trash2,
@@ -29,19 +27,21 @@ import {
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { useAppShellChrome } from './AppShellChromeContext';
 import { SidebarModelSettings } from './SidebarModelSettings';
-import { AppShellChromeProvider } from './AppShellChromeContext';
-import type { WorkbenchEvidenceRailConfig, WorkbenchFeature } from '@/types/workbench';
+import type { WorkbenchFeature } from '@/types/workbench';
 
 interface AppDashboardShellProps {
   children: ReactNode;
   feature: WorkbenchFeature;
+  focusModeActive?: boolean;
 }
 
 interface ChatSidebarSession {
   id: string;
   title: string;
   updated_at: string;
+  domain_classified?: string | null;
 }
 
 interface SidebarFolder {
@@ -55,24 +55,98 @@ interface SidebarFolderFile {
   createdAt: string;
 }
 
-const PRIMARY_NAV = [
+interface SidebarNavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  code?: string;
+  badge?: string;
+  detail?: string;
+}
+
+function SidebarToggleGlyph({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <g transform={isOpen ? 'translate(24 0) scale(-1 1)' : undefined}>
+        <circle cx="6.5" cy="3" r="1.35" />
+        <circle cx="6.5" cy="6.5" r="1.35" />
+        <circle cx="10" cy="6.5" r="1.35" />
+        <circle cx="6.5" cy="10" r="1.35" />
+        <circle cx="10" cy="10" r="1.35" />
+        <circle cx="13.5" cy="10" r="1.35" />
+        <circle cx="6.5" cy="13.5" r="1.35" />
+        <circle cx="10" cy="13.5" r="1.35" />
+        <circle cx="13.5" cy="13.5" r="1.35" />
+        <circle cx="17" cy="13.5" r="1.35" />
+        <circle cx="6.5" cy="17" r="1.35" />
+        <circle cx="10" cy="17" r="1.35" />
+        <circle cx="13.5" cy="17" r="1.35" />
+        <circle cx="6.5" cy="20.5" r="1.35" />
+        <circle cx="10" cy="20.5" r="1.35" />
+        <circle cx="6.5" cy="22" r="1.35" />
+      </g>
+    </svg>
+  );
+}
+
+const PRIMARY_NAV: SidebarNavItem[] = [
   { href: '/chat', label: 'Chat', icon: MessageSquare },
-  { href: '/hybrid', label: 'Hybrid', icon: Gauge, badge: 'New' },
-] as const;
+  { href: '/hybrid', label: 'Hybrid', icon: Orbit },
+];
 
-const RELICS_NAV = [
-  { href: '/legal', label: 'Legal', icon: Gavel },
-  { href: '/education', label: 'Education', icon: GraduationCap },
-  { href: '/lab', label: 'Lab', icon: FlaskConical },
-] as const;
+const INSTRUMENTS_NAV: SidebarNavItem[] = [
+  { href: '/legal', label: 'Legal', icon: Gavel, code: 'S01', detail: 'Case analysis' },
+  { href: '/education', label: 'Education', icon: GraduationCap, code: 'S02', detail: 'Intervention design' },
+  { href: '/lab', label: 'Lab', icon: FlaskConical, code: 'S03', detail: 'Experimental tools' },
+];
 
-export function AppDashboardShell({ children, feature }: AppDashboardShellProps) {
+function formatLedgerTimestamp(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'Unknown';
+
+  const now = new Date();
+  const isSameDay = now.toDateString() === date.toDateString();
+  if (isSameDay) {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  if (now.getFullYear() === date.getFullYear()) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
+}
+
+function formatDomainTag(domain?: string | null): string {
+  const normalized = domain?.trim().toLowerCase();
+  if (!normalized) return 'General';
+  if (normalized.includes('legal') || normalized.includes('policy')) return 'Legal';
+  if (normalized.includes('market') || normalized.includes('economic') || normalized.includes('finance')) return 'Markets';
+  if (normalized.includes('bio') || normalized.includes('health') || normalized.includes('medical')) return 'Bio';
+  if (normalized.includes('education') || normalized.includes('learning')) return 'Learning';
+  if (normalized.includes('physic') || normalized.includes('chem')) return 'Science';
+  return domain?.trim() || 'General';
+}
+
+export function AppDashboardShell({ children, feature, focusModeActive = false }: AppDashboardShellProps) {
+  const shellChrome = useAppShellChrome();
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [relicsOpen, setRelicsOpen] = useState(false);
+  const [instrumentsOpen, setInstrumentsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -83,14 +157,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-  const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const activeSessionId = typeof window !== 'undefined'
-    ? new URLSearchParams(window.location.search).get('sessionId')
-    : null;
-  const isRelicActive = RELICS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
-
+  const activeSessionId = searchParams.get('sessionId');
+  const isInstrumentActive = INSTRUMENTS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
   useEffect(() => {
     setMounted(true);
     try {
@@ -121,6 +191,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       // Ignore storage failures.
     }
   }, [folderFiles, folders, sidebarCollapsed]);
+
+  useEffect(() => {
+    if (focusModeActive) setMobileSidebarOpen(false);
+  }, [focusModeActive]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -187,8 +261,8 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   }, [userEmail]);
 
   useEffect(() => {
-    if (isRelicActive) setRelicsOpen(true);
-  }, [isRelicActive]);
+    if (isInstrumentActive) setInstrumentsOpen(true);
+  }, [isInstrumentActive]);
 
   const createFolder = () => {
     const name = prompt('Enter folder name:');
@@ -298,160 +372,253 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
     router.refresh();
   };
 
+  const operatorEmail = userEmail || 'Anonymous session';
+  const visibleThreads = recentThreads.slice(0, 36);
+  const shouldShowInstrumentChildren = instrumentsOpen && !sidebarCollapsed;
+
+  const handleMainSurfaceChromeToggle = () => {
+    const isNarrowViewport = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+    if (focusModeActive && shellChrome) {
+      shellChrome.setFocusMode(false);
+      setSidebarCollapsed(false);
+      if (isNarrowViewport) {
+        setMobileSidebarOpen(true);
+      }
+      return;
+    }
+
+    if (isNarrowViewport) {
+      setMobileSidebarOpen((current) => !current);
+      return;
+    }
+
+    setSidebarCollapsed((current) => !current);
+  };
+
+  const handleInstrumentToggle = () => {
+    if (sidebarCollapsed) {
+      setSidebarCollapsed(false);
+      setInstrumentsOpen(true);
+      return;
+    }
+
+    setInstrumentsOpen((current) => !current);
+  };
+
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-header-actions sidebar-header-controls">
+        <div className="sidebar-header-controls" role="group" aria-label="Workbench navigation controls">
           <button
             type="button"
-            className="icon-btn"
-            title={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
-            aria-label={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
-            onClick={() => setSidebarCollapsed((current) => !current)}
+            className="surface-chrome-btn surface-chrome-btn-toggle"
+            title={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            aria-label={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            onClick={handleMainSurfaceChromeToggle}
           >
-            {sidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
+            <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
           </button>
-          {!sidebarCollapsed && (
-            <>
-              <button
-                type="button"
-                className="icon-btn"
-                title="Back"
-                aria-label="Back"
-                onClick={() => window.history.back()}
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className="icon-btn"
-                title="Forward"
-                aria-label="Forward"
-                onClick={() => window.history.forward()}
-              >
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </>
-          )}
         </div>
       </div>
-
-      <nav className="sidebar-nav">
-        {PRIMARY_NAV.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
-          return (
-            <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
-              <Icon className="h-3.5 w-3.5" />
-              <span>{item.label}</span>
-              {'badge' in item && item.badge ? <span className="nav-badge">{item.badge}</span> : null}
-            </Link>
-          );
-        })}
-
-        <button type="button" className={cn('nav-item', isRelicActive && 'active')} onClick={() => setRelicsOpen((current) => !current)}>
-          <FileText className="h-3.5 w-3.5" />
-          <span>Relics</span>
-          <span className="chevron">{relicsOpen ? '▾' : '▸'}</span>
-        </button>
-
-        {relicsOpen ? (
-          <div className="mt-1 space-y-1 pl-4">
-            {RELICS_NAV.map((item) => {
+      <div className="sidebar-scroll">
+        <nav className="sidebar-nav" aria-label="Workbench modes">
+          <div className="sidebar-stack">
+            {PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               return (
-                <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn('nav-item', isActive && 'active')}
+                  onClick={() => setMobileSidebarOpen(false)}
+                  title={item.label}
+                  aria-label={item.label}
+                >
                   <Icon className="h-3.5 w-3.5" />
-                  <span>{item.label}</span>
+                  <span className="nav-copy">
+                    {item.code ? <span className="nav-kicker">{item.code}</span> : null}
+                    <span className="nav-label">{item.label}</span>
+                  </span>
+                  {item.detail || item.badge ? (
+                    <span className="nav-meta">
+                      {item.detail ? <span className="nav-detail">{item.detail}</span> : null}
+                      {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
           </div>
+
+          <div className="sidebar-actions" role="group" aria-label="Operator commands">
+            <button
+              type="button"
+              className="action-btn"
+              onClick={() => {
+                router.push('/chat?new=1');
+                window.dispatchEvent(new Event('newChat'));
+                setMobileSidebarOpen(false);
+              }}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="action-copy">
+                <span className="action-label">New thread</span>
+              </span>
+            </button>
+            <button type="button" className="action-btn" onClick={createFolder}>
+              <FolderPlus className="h-3.5 w-3.5" />
+              <span className="action-copy">
+                <span className="action-label">New folder</span>
+              </span>
+            </button>
+          </div>
+
+          <div className="sidebar-section-label">
+            <span>Systems</span>
+            <span className="sidebar-section-count">{INSTRUMENTS_NAV.length}</span>
+          </div>
+          <button
+            type="button"
+            className={cn('nav-item nav-item-toggle nav-item-system', isInstrumentActive && 'active', instrumentsOpen && 'open')}
+            onClick={handleInstrumentToggle}
+            title={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
+            aria-label={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span className="nav-copy">
+              <span className="nav-label">Instruments</span>
+            </span>
+            <span className="nav-meta">
+              <span className="nav-meta-trailing">
+                <span className="nav-badge">{shouldShowInstrumentChildren ? 'Open' : `${INSTRUMENTS_NAV.length}`}</span>
+                {shouldShowInstrumentChildren ? <ChevronDown className="chevron h-3 w-3" /> : <ChevronRight className="chevron h-3 w-3" />}
+              </span>
+            </span>
+          </button>
+
+          {shouldShowInstrumentChildren ? (
+            <div className="sidebar-subnav">
+              {INSTRUMENTS_NAV.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn('nav-item nav-item-sub nav-item-system', isActive && 'active')}
+                    onClick={() => setMobileSidebarOpen(false)}
+                    title={item.label}
+                    aria-label={item.label}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="nav-copy">
+                      <span className="nav-label">{item.label}</span>
+                    </span>
+                    <span className="nav-meta">
+                      <span className="nav-detail">{item.detail}</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
+        </nav>
+
+        {folders.length > 0 ? (
+          <section className="sidebar-section">
+            <div className="sidebar-section-label">
+              <span>Notebooks</span>
+              <span className="sidebar-section-count">{folders.length}</span>
+            </div>
+            <div className="history-list is-folders">
+              {folders.map((folder) => {
+                const fileCount = folderFiles[folder.id]?.length ?? 0;
+                return (
+                  <div key={folder.id} className="folder-block">
+                    <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                      <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                        {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                        <span className="folder-copy">
+                          <span className="folder-title">{folder.name}</span>
+                          <span className="folder-meta">{fileCount} file{fileCount === 1 ? '' : 's'}</span>
+                        </span>
+                      </button>
+                      <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    {folderOpenState[folder.id] ? (
+                      <div className="folder-files">
+                        <button type="button" className="history-item history-item-inline" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                          <span className="history-inline-label">+ New file</span>
+                          <span className="history-inline-meta">Open thread</span>
+                        </button>
+                        {(folderFiles[folder.id] ?? []).map((file) => (
+                          <div key={file.id} className="folder-file-row">
+                            <span className="history-item history-item-inline">
+                              <span className="history-inline-label">{file.name}</span>
+                              <span className="history-inline-meta">{formatLedgerTimestamp(file.createdAt)}</span>
+                            </span>
+                            <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         ) : null}
 
-      </nav>
-
-      <div className="sidebar-actions">
-        <button
-          type="button"
-          className="action-btn"
-          onClick={() => {
-            router.push('/chat?new=1');
-            window.dispatchEvent(new Event('newChat'));
-            setMobileSidebarOpen(false);
-          }}
-        >
-          <Plus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>chat</span></span>
-        </button>
-        <button type="button" className="action-btn" onClick={createFolder}>
-          <FolderPlus className="h-3 w-3" />
-          <span className="action-label"><span>New</span><span>folder</span></span>
-        </button>
-      </div>
-
-      {folders.length > 0 ? (
-        <>
-          <div className="sidebar-section-label">Folders</div>
-          <div className="history-list is-folders">
-            {folders.map((folder) => (
-              <div key={folder.id} className="folder-block">
-                <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
-                  <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
-                    {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                    <span>{folder.name}</span>
-                  </button>
-                  <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                {folderOpenState[folder.id] ? (
-                  <div className="folder-files">
-                    <button type="button" className="history-item" onClick={() => createFolderFile(folder.id, undefined, true)}>
-                      + New file
-                    </button>
-                    {(folderFiles[folder.id] ?? []).map((file) => (
-                      <div key={file.id} className="folder-file-row">
-                        <span className="history-item">{file.name}</span>
-                        <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ))}
+        <section className="sidebar-section history-section">
+          <div className="sidebar-section-label history-label">
+            <span>Session ledger</span>
+            <span className="sidebar-section-count">{visibleThreads.length}</span>
           </div>
-        </>
-      ) : null}
-
-      <div className="sidebar-section-label history-label">History</div>
-      <div className="history-list">
-        {recentThreads.length === 0 ? (
-          <div className="history-item muted">No threads yet.</div>
-        ) : (
-          recentThreads.slice(0, 36).map((session) => {
-            const isActive = pathname === '/chat' && activeSessionId === session.id;
-            return (
-              <div key={session.id} className={cn('history-row', isActive && 'active')}>
-                <button type="button" className="history-item flex-1 text-left" onClick={() => openThread(session.id)} title={session.title || 'Untitled thread'}>
-                  {session.title || 'Untitled thread'}
-                </button>
-                <button
-                  type="button"
-                  className="folder-action"
-                  onClick={() => void handleDeleteThread(session.id)}
-                  aria-label="Delete thread"
-                  disabled={deletingThreadId === session.id}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            );
-          })
-        )}
+          <div className="history-list history-ledger">
+            {visibleThreads.length === 0 ? (
+              <div className="history-item muted">No notebook sessions recorded.</div>
+            ) : (
+              visibleThreads.map((session) => {
+                const isActive = pathname === '/chat' && activeSessionId === session.id;
+                const isResearch = researchThreadIds.includes(session.id);
+                return (
+                  <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
+                    <button
+                      type="button"
+                      className="history-item thread-item flex-1 text-left"
+                      onClick={() => openThread(session.id)}
+                      title={session.title || 'Untitled thread'}
+                    >
+                      <span className="thread-copy">
+                        <span className="thread-title">{session.title || 'Untitled thread'}</span>
+                        <span className="thread-meta">
+                          <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
+                          {isResearch ? <span className="thread-chip accent">Research</span> : null}
+                          <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="folder-action thread-action"
+                      onClick={() => void handleDeleteThread(session.id)}
+                      aria-label="Delete thread"
+                      disabled={deletingThreadId === session.id}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </section>
       </div>
 
       <div className="sidebar-footer">
@@ -459,23 +626,45 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           type="button"
           className="footer-item"
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+          title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+          aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
         >
           {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          <span>{mounted && resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+          <span className="footer-copy">
+            <span className="footer-meta footer-theme-state">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
+          </span>
         </button>
-        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item">
+        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item" title="Documentation" aria-label="Documentation">
           <BookOpen className="h-3.5 w-3.5" />
-          Documentation
+          <span className="footer-copy">
+            <span className="footer-label">Documentation</span>
+          </span>
         </a>
         <div className="footer-item footer-settings">
-          <SidebarModelSettings collapsed={false} />
+          <SidebarModelSettings collapsed={sidebarCollapsed} />
         </div>
       </div>
 
-      <div className="user-row" onClick={() => setAccountOpen((current) => !current)}>
+      <div
+        className="user-row"
+        onClick={() => {
+          if (sidebarCollapsed) {
+            setSidebarCollapsed(false);
+            setAccountOpen(true);
+            return;
+          }
+
+          setAccountOpen((current) => !current);
+        }}
+        title={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+        aria-label={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+      >
         <div className="user-avatar">{initials}</div>
-        <span className="user-email">{userEmail || 'Anonymous session'}</span>
-        <span className="chevron">▾</span>
+        <span className="account-copy">
+          <span className="user-email">{operatorEmail}</span>
+          <span className="user-role">{userEmail ? 'authenticated operator' : 'guest workspace'}</span>
+        </span>
+        <ChevronDown className="account-chevron h-3.5 w-3.5" />
         {accountOpen ? (
           <div className="account-popover">
             <button type="button" className="account-action" onClick={() => { setAccountOpen(false); router.push('/chat'); setMobileSidebarOpen(false); }}>
@@ -493,15 +682,14 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   );
 
   return (
-    <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed')}>
-      <button type="button" className="mobile-shell-trigger" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
-        <PanelRightOpen className="h-4 w-4" />
+    <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed', focusModeActive && 'focus-mode')}>
+      <button type="button" className="mobile-shell-trigger" onClick={handleMainSurfaceChromeToggle} aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}>
+        <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
       </button>
 
-      <div className="desktop-sidebar">{sidebar}</div>
+      {!focusModeActive && !sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
 
-      {mobileSidebarOpen ? (
+      {!focusModeActive && mobileSidebarOpen ? (
         <div className="mobile-sidebar-overlay" onClick={() => setMobileSidebarOpen(false)}>
           <div className="mobile-sidebar-panel" onClick={(event) => event.stopPropagation()}>
             {sidebar}
@@ -512,7 +700,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       <div className="app-shell-main">
         {children}
       </div>
-      </div>
-    </AppShellChromeProvider>
+    </div>
   );
 }

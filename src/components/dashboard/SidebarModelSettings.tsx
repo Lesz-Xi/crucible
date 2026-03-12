@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
+import { motion } from 'framer-motion';
 import { Cpu, X, Save, Thermometer, ShieldCheck, Settings2 } from 'lucide-react';
 import { useLab } from '../../lib/contexts/LabContext';
 import { AI_CONFIG, AIProviderId } from '../../config/ai-models';
@@ -14,12 +15,21 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
   const [localConfig, setLocalConfig] = useState<LLMConfig>(llmConfig);
   const [showKey, setShowKey] = useState(false);
   const [dirty, setDirty] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
 
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      if (!ref.current || ref.current.contains(target) || popoverRef.current?.contains(target)) {
         return;
       }
       if (isOpen) setIsOpen(false);
@@ -39,6 +49,50 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
       setDirty(false);
     }
   }, [isOpen, state.llmConfig]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+
+      const rect = trigger.getBoundingClientRect();
+      const estimatedWidth = 360;
+      const gutter = 16;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const availableAbove = rect.top - gutter - 12;
+      const availableBelow = viewportHeight - rect.bottom - gutter - 12;
+      const openAbove = !collapsed || availableAbove >= availableBelow;
+      const maxHeight = Math.min(720, Math.max(openAbove ? availableAbove : availableBelow, 280));
+      const left = collapsed
+        ? Math.min(rect.right + 12, viewportWidth - estimatedWidth - gutter)
+        : Math.min(Math.max(rect.left, gutter), viewportWidth - estimatedWidth - gutter);
+      const top = openAbove
+        ? Math.max(gutter, rect.bottom - maxHeight - 12)
+        : Math.min(viewportHeight - maxHeight - gutter, rect.top + 12);
+
+      setPopoverStyle({
+        position: 'fixed',
+        top,
+        left,
+        width: `min(${estimatedWidth}px, calc(100vw - ${gutter * 2}px))`,
+        maxHeight: `min(${maxHeight}px, calc(100vh - ${gutter * 2}px))`,
+        overflowY: 'auto',
+        zIndex: 90,
+        transformOrigin: openAbove ? 'bottom left' : 'top left',
+      });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [collapsed, isOpen]);
 
   const handleProviderChange = (providerId: string) => {
     const provider = AI_CONFIG.providers[providerId as AIProviderId];
@@ -79,31 +133,33 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
   const activeProvider = AI_CONFIG.providers[localConfig.provider as AIProviderId];
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="sidebar-model-settings relative" ref={ref}>
       <button
+        ref={triggerRef}
         type="button"
         className={cn(
-            "lab-nav-pill lg-control w-full",
+            "sidebar-model-settings-trigger lab-nav-pill lg-control w-full",
             isOpen && 'bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)] font-medium'
         )}
         onClick={() => setIsOpen((v) => !v)}
+        aria-expanded={isOpen}
         title={collapsed ? 'Model Settings' : undefined}
       >
         <Settings2 className="h-4 w-4" />
-        {collapsed ? null : <span className="font-serif tracking-wide">Model Settings</span>}
+        {collapsed ? null : <span className="footer-label">Model Settings</span>}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
+      {mounted && isOpen
+        ? createPortal(
           <motion.div
+            ref={popoverRef}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
             className={cn(
-              "absolute z-50 w-[360px] rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] p-5 shadow-[var(--lab-shadow-lift)] lg-dropdown",
-              collapsed ? 'bottom-0 left-16' : 'bottom-[calc(100%+12px)] left-0'
+              "sidebar-model-settings-popover rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] p-5 shadow-[var(--lab-shadow-lift)] lg-dropdown"
             )}
+            style={popoverStyle}
           >
             {/* Header */}
             <div className="mb-5 flex items-center justify-between border-b border-[var(--lab-border)] pb-4">
@@ -242,8 +298,8 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
               </button>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+          , document.body)
+        : null}
     </div>
   );
 }

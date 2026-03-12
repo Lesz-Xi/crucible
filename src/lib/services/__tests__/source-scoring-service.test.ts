@@ -4,7 +4,7 @@
  * Verifies determinism, scoring formulas, boundary conditions, and batch scoring.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
     computeRecencyScore,
     computeCredibilityScore,
@@ -24,7 +24,10 @@ import {
 describe("Determinism — same inputs produce identical outputs", () => {
     it("computeRecencyScore is deterministic for same publishedAt", () => {
         const date = "2025-06-01T00:00:00.000Z";
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date("2026-03-12T00:00:00.000Z"));
         expect(computeRecencyScore(date)).toBe(computeRecencyScore(date));
+        vi.useRealTimers();
     });
 
     it("computeCredibilityScore is deterministic for same domain", () => {

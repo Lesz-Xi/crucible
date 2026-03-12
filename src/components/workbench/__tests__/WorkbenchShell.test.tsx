@@ -57,10 +57,12 @@ describe('WorkbenchShell', () => {
     );
 
     expect(html).toContain('canonical-workbench-shell');
-    expect(html).toContain('Bio-Lab Notebook');
+    expect(html).toContain('Collapse sidebar');
+    expect(html).toContain('Chat');
     expect(html).toContain('Workbench body');
     expect(html).toContain('Workbench input');
-    expect(html).toContain('Evidence Rail');
+    expect(html).toContain('rail-hidden');
+    expect(html).not.toContain('Evidence Rail');
   });
 });
 
