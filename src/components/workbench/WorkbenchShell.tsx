@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PanelRightOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AppDashboardShell } from '@/components/dashboard/AppDashboardShell';
-import { useAppShellChrome } from '@/components/dashboard/AppShellChromeContext';
+import { AppShellChromeProvider } from '@/components/dashboard/AppShellChromeContext';
 import { WorkbenchEvidenceRail } from '@/components/workbench/WorkbenchEvidenceRail';
-import type { WorkbenchShellProps } from '@/types/workbench';
+import type { WorkbenchEvidenceRailConfig, WorkbenchShellProps } from '@/types/workbench';
 
 export function WorkbenchShell({
   feature,
@@ -15,33 +15,58 @@ export function WorkbenchShell({
   inputArea,
   evidenceRail,
   mainMode = 'canvas',
+  focusModeReady = true,
 }: WorkbenchShellProps) {
   const [mobileRailOpen, setMobileRailOpen] = useState(false);
-  const shellChrome = useAppShellChrome();
-  const resolvedEvidenceRail = shellChrome?.evidenceRailOverride || evidenceRail;
+  const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
+  const [evidenceRailVisible, setEvidenceRailVisible] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
+  const supportsEvidenceRail = feature === 'chat';
+  const resolvedEvidenceRail = evidenceRailOverride || evidenceRail || null;
+  const focusReadMode = focusMode && focusModeReady;
+  const showEvidenceRail = supportsEvidenceRail && evidenceRailVisible && !focusReadMode && Boolean(resolvedEvidenceRail);
+
+  useEffect(() => {
+    if (!showEvidenceRail) setMobileRailOpen(false);
+  }, [showEvidenceRail]);
 
   return (
-    <AppDashboardShell feature={feature}>
-      <div className={cn('shell app-shell', `main-mode-${mainMode}`)}>
-        <button type="button" className="mobile-rail-trigger" onClick={() => setMobileRailOpen(true)} aria-label="Open evidence rail">
-          <PanelRightOpen className="h-4 w-4" />
-        </button>
+    <AppShellChromeProvider
+      value={{
+        evidenceRailOverride,
+        setEvidenceRailOverride,
+        evidenceRailVisible,
+        setEvidenceRailVisible,
+        focusMode,
+        setFocusMode,
+      }}
+    >
+      <AppDashboardShell feature={feature} focusModeActive={focusReadMode}>
+        <div className={cn('shell app-shell', `main-mode-${mainMode}`, !showEvidenceRail && 'rail-hidden', focusReadMode && 'shell-focus-mode')}>
+          {showEvidenceRail ? (
+            <button type="button" className="mobile-rail-trigger" onClick={() => setMobileRailOpen(true)} aria-label="Open evidence rail">
+              <PanelRightOpen className="h-4 w-4" />
+            </button>
+          ) : null}
 
-        <main className="main">
-          {mainTopbar ? <div className="main-topbar visible">{mainTopbar}</div> : null}
-          <div className="main-content-shell">{mainContent}</div>
-          {inputArea ? <div className="input-area">{inputArea}</div> : null}
-        </main>
-        <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
-
-        {mobileRailOpen ? (
-          <div className="mobile-rail-overlay" onClick={() => setMobileRailOpen(false)}>
-            <div className="mobile-rail-panel" onClick={(event) => event.stopPropagation()}>
-              <WorkbenchEvidenceRail config={resolvedEvidenceRail} />
+          <main className="main">
+            <div className="main-content-shell" data-main-surface="gridded">
+              {mainTopbar ? <div className="main-topbar-inline">{mainTopbar}</div> : null}
+              {mainContent}
             </div>
-          </div>
-        ) : null}
-      </div>
-    </AppDashboardShell>
+            {inputArea && !focusReadMode ? <div className="input-area">{inputArea}</div> : null}
+          </main>
+          {showEvidenceRail && resolvedEvidenceRail ? <WorkbenchEvidenceRail config={resolvedEvidenceRail} /> : null}
+
+          {showEvidenceRail && mobileRailOpen ? (
+            <div className="mobile-rail-overlay" onClick={() => setMobileRailOpen(false)}>
+              <div className="mobile-rail-panel" onClick={(event) => event.stopPropagation()}>
+                {resolvedEvidenceRail ? <WorkbenchEvidenceRail config={resolvedEvidenceRail} /> : null}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </AppDashboardShell>
+    </AppShellChromeProvider>
   );
 }

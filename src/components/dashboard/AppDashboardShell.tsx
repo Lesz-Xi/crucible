@@ -4,24 +4,21 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
-  ArrowLeft,
-  ArrowRight,
   BookOpen,
+  Orbit,
+  ChevronDown,
+  ChevronRight,
   FileText,
   FlaskConical,
   Folder,
   FolderMinus,
   FolderPlus,
-  Gauge,
   Gavel,
   GraduationCap,
   type LucideIcon,
   LogOut,
   MessageSquare,
   Moon,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightOpen,
   Plus,
   Sun,
   Trash2,
@@ -30,13 +27,14 @@ import {
 import { useTheme } from 'next-themes';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { useAppShellChrome } from './AppShellChromeContext';
 import { SidebarModelSettings } from './SidebarModelSettings';
-import { AppShellChromeProvider } from './AppShellChromeContext';
-import type { WorkbenchEvidenceRailConfig, WorkbenchFeature } from '@/types/workbench';
+import type { WorkbenchFeature } from '@/types/workbench';
 
 interface AppDashboardShellProps {
   children: ReactNode;
   feature: WorkbenchFeature;
+  focusModeActive?: boolean;
 }
 
 interface ChatSidebarSession {
@@ -61,14 +59,39 @@ interface SidebarNavItem {
   href: string;
   label: string;
   icon: LucideIcon;
-  code: string;
+  code?: string;
   badge?: string;
-  detail: string;
+  detail?: string;
+}
+
+function SidebarToggleGlyph({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <g transform={isOpen ? 'translate(24 0) scale(-1 1)' : undefined}>
+        <circle cx="6.5" cy="3" r="1.35" />
+        <circle cx="6.5" cy="6.5" r="1.35" />
+        <circle cx="10" cy="6.5" r="1.35" />
+        <circle cx="6.5" cy="10" r="1.35" />
+        <circle cx="10" cy="10" r="1.35" />
+        <circle cx="13.5" cy="10" r="1.35" />
+        <circle cx="6.5" cy="13.5" r="1.35" />
+        <circle cx="10" cy="13.5" r="1.35" />
+        <circle cx="13.5" cy="13.5" r="1.35" />
+        <circle cx="17" cy="13.5" r="1.35" />
+        <circle cx="6.5" cy="17" r="1.35" />
+        <circle cx="10" cy="17" r="1.35" />
+        <circle cx="13.5" cy="17" r="1.35" />
+        <circle cx="6.5" cy="20.5" r="1.35" />
+        <circle cx="10" cy="20.5" r="1.35" />
+        <circle cx="6.5" cy="22" r="1.35" />
+      </g>
+    </svg>
+  );
 }
 
 const PRIMARY_NAV: SidebarNavItem[] = [
-  { href: '/chat', label: 'Chat', icon: MessageSquare, code: 'M01', badge: 'Core', detail: 'Grounded inquiry' },
-  { href: '/hybrid', label: 'Hybrid', icon: Gauge, code: 'M02', badge: 'Fusion', detail: 'Model synthesis' },
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
+  { href: '/hybrid', label: 'Hybrid', icon: Orbit },
 ];
 
 const INSTRUMENTS_NAV: SidebarNavItem[] = [
@@ -76,15 +99,6 @@ const INSTRUMENTS_NAV: SidebarNavItem[] = [
   { href: '/education', label: 'Education', icon: GraduationCap, code: 'S02', detail: 'Intervention design' },
   { href: '/lab', label: 'Lab', icon: FlaskConical, code: 'S03', detail: 'Experimental tools' },
 ];
-
-const FEATURE_LABELS: Record<WorkbenchFeature, string> = {
-  chat: 'Chat',
-  hybrid: 'Hybrid',
-  legal: 'Legal',
-  report: 'Report',
-  education: 'Education',
-  lab: 'Lab',
-};
 
 function formatLedgerTimestamp(value: string): string {
   const date = new Date(value);
@@ -124,7 +138,8 @@ function formatDomainTag(domain?: string | null): string {
   return domain?.trim() || 'General';
 }
 
-export function AppDashboardShell({ children, feature }: AppDashboardShellProps) {
+export function AppDashboardShell({ children, feature, focusModeActive = false }: AppDashboardShellProps) {
+  const shellChrome = useAppShellChrome();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -142,12 +157,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-  const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const activeSessionId = searchParams.get('sessionId');
   const isInstrumentActive = INSTRUMENTS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
-
   useEffect(() => {
     setMounted(true);
     try {
@@ -178,6 +191,10 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       // Ignore storage failures.
     }
   }, [folderFiles, folders, sidebarCollapsed]);
+
+  useEffect(() => {
+    if (focusModeActive) setMobileSidebarOpen(false);
+  }, [focusModeActive]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -356,75 +373,80 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   };
 
   const operatorEmail = userEmail || 'Anonymous session';
-  const activeFeatureLabel = FEATURE_LABELS[feature];
   const visibleThreads = recentThreads.slice(0, 36);
+  const shouldShowInstrumentChildren = instrumentsOpen && !sidebarCollapsed;
+
+  const handleMainSurfaceChromeToggle = () => {
+    const isNarrowViewport = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+    if (focusModeActive && shellChrome) {
+      shellChrome.setFocusMode(false);
+      setSidebarCollapsed(false);
+      if (isNarrowViewport) {
+        setMobileSidebarOpen(true);
+      }
+      return;
+    }
+
+    if (isNarrowViewport) {
+      setMobileSidebarOpen((current) => !current);
+      return;
+    }
+
+    setSidebarCollapsed((current) => !current);
+  };
+
+  const handleInstrumentToggle = () => {
+    if (sidebarCollapsed) {
+      setSidebarCollapsed(false);
+      setInstrumentsOpen(true);
+      return;
+    }
+
+    setInstrumentsOpen((current) => !current);
+  };
 
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-mark" aria-hidden="true">
-            AS
-          </div>
-          <div className="sidebar-brand-copy">
-            <span className="sidebar-brand-kicker">Automated Scientist</span>
-            <span className="sidebar-brand-mode">{activeFeatureLabel} workbench</span>
-          </div>
-        </div>
-        <div className="sidebar-header-actions sidebar-header-controls">
+        <div className="sidebar-header-controls" role="group" aria-label="Workbench navigation controls">
           <button
             type="button"
-            className="icon-btn"
-            title={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
-            aria-label={sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
-            onClick={() => setSidebarCollapsed((current) => !current)}
+            className="surface-chrome-btn surface-chrome-btn-toggle"
+            title={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            aria-label={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            onClick={handleMainSurfaceChromeToggle}
           >
-            {sidebarCollapsed ? <PanelLeftOpen className="h-3.5 w-3.5" /> : <PanelLeftClose className="h-3.5 w-3.5" />}
+            <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
           </button>
-          {!sidebarCollapsed && (
-            <>
-              <button
-                type="button"
-                className="icon-btn"
-                title="Back"
-                aria-label="Back"
-                onClick={() => window.history.back()}
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className="icon-btn"
-                title="Forward"
-                aria-label="Forward"
-                onClick={() => window.history.forward()}
-              >
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </>
-          )}
         </div>
       </div>
-
       <div className="sidebar-scroll">
         <nav className="sidebar-nav" aria-label="Workbench modes">
-          <div className="sidebar-section-label">
-            <span>Modes</span>
-            <span className="sidebar-section-count">{PRIMARY_NAV.length}</span>
-          </div>
           <div className="sidebar-stack">
             {PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               return (
-                <Link key={item.href} href={item.href} className={cn('nav-item', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn('nav-item', isActive && 'active')}
+                  onClick={() => setMobileSidebarOpen(false)}
+                  title={item.label}
+                  aria-label={item.label}
+                >
                   <Icon className="h-3.5 w-3.5" />
                   <span className="nav-copy">
-                    <span className="nav-kicker">{item.code}</span>
+                    {item.code ? <span className="nav-kicker">{item.code}</span> : null}
                     <span className="nav-label">{item.label}</span>
                   </span>
-                  <span className="nav-detail">{item.detail}</span>
-                  {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
+                  {item.detail || item.badge ? (
+                    <span className="nav-meta">
+                      {item.detail ? <span className="nav-detail">{item.detail}</span> : null}
+                      {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
@@ -442,14 +464,12 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
             >
               <Plus className="h-3.5 w-3.5" />
               <span className="action-copy">
-                <span className="action-kicker">Cmd</span>
                 <span className="action-label">New thread</span>
               </span>
             </button>
             <button type="button" className="action-btn" onClick={createFolder}>
               <FolderPlus className="h-3.5 w-3.5" />
               <span className="action-copy">
-                <span className="action-kicker">Store</span>
                 <span className="action-label">New folder</span>
               </span>
             </button>
@@ -461,32 +481,44 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
           </div>
           <button
             type="button"
-            className={cn('nav-item nav-item-toggle', isInstrumentActive && 'active', instrumentsOpen && 'open')}
-            onClick={() => setInstrumentsOpen((current) => !current)}
+            className={cn('nav-item nav-item-toggle nav-item-system', isInstrumentActive && 'active', instrumentsOpen && 'open')}
+            onClick={handleInstrumentToggle}
+            title={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
+            aria-label={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
           >
             <FileText className="h-3.5 w-3.5" />
             <span className="nav-copy">
-              <span className="nav-kicker">S00</span>
               <span className="nav-label">Instruments</span>
             </span>
-            <span className="nav-detail">Adjacency modes</span>
-            <span className="nav-badge">{instrumentsOpen ? 'Open' : `${INSTRUMENTS_NAV.length}`}</span>
-            <span className="chevron">{instrumentsOpen ? '▾' : '▸'}</span>
+            <span className="nav-meta">
+              <span className="nav-meta-trailing">
+                <span className="nav-badge">{shouldShowInstrumentChildren ? 'Open' : `${INSTRUMENTS_NAV.length}`}</span>
+                {shouldShowInstrumentChildren ? <ChevronDown className="chevron h-3 w-3" /> : <ChevronRight className="chevron h-3 w-3" />}
+              </span>
+            </span>
           </button>
 
-          {instrumentsOpen ? (
+          {shouldShowInstrumentChildren ? (
             <div className="sidebar-subnav">
               {INSTRUMENTS_NAV.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
                 return (
-                  <Link key={item.href} href={item.href} className={cn('nav-item nav-item-sub', isActive && 'active')} onClick={() => setMobileSidebarOpen(false)}>
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn('nav-item nav-item-sub nav-item-system', isActive && 'active')}
+                    onClick={() => setMobileSidebarOpen(false)}
+                    title={item.label}
+                    aria-label={item.label}
+                  >
                     <Icon className="h-3.5 w-3.5" />
                     <span className="nav-copy">
-                      <span className="nav-kicker">{item.code}</span>
                       <span className="nav-label">{item.label}</span>
                     </span>
-                    <span className="nav-detail">{item.detail}</span>
+                    <span className="nav-meta">
+                      <span className="nav-detail">{item.detail}</span>
+                    </span>
                   </Link>
                 );
               })}
@@ -590,25 +622,22 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       </div>
 
       <div className="sidebar-footer">
-        <div className="sidebar-section-label sidebar-section-label-quiet">
-          <span>Utilities</span>
-        </div>
         <button
           type="button"
           className="footer-item"
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+          title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+          aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
         >
           {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
           <span className="footer-copy">
-            <span className="footer-label">Appearance</span>
-            <span className="footer-meta">{mounted && resolvedTheme === 'dark' ? 'Switch to light' : 'Switch to dark'}</span>
+            <span className="footer-meta footer-theme-state">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
           </span>
         </button>
-        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item">
+        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item" title="Documentation" aria-label="Documentation">
           <BookOpen className="h-3.5 w-3.5" />
           <span className="footer-copy">
             <span className="footer-label">Documentation</span>
-            <span className="footer-meta">Open operator docs</span>
           </span>
         </a>
         <div className="footer-item footer-settings">
@@ -616,13 +645,26 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
         </div>
       </div>
 
-      <div className="user-row" onClick={() => setAccountOpen((current) => !current)}>
+      <div
+        className="user-row"
+        onClick={() => {
+          if (sidebarCollapsed) {
+            setSidebarCollapsed(false);
+            setAccountOpen(true);
+            return;
+          }
+
+          setAccountOpen((current) => !current);
+        }}
+        title={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+        aria-label={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+      >
         <div className="user-avatar">{initials}</div>
         <span className="account-copy">
           <span className="user-email">{operatorEmail}</span>
           <span className="user-role">{userEmail ? 'authenticated operator' : 'guest workspace'}</span>
         </span>
-        <span className="chevron">▾</span>
+        <ChevronDown className="account-chevron h-3.5 w-3.5" />
         {accountOpen ? (
           <div className="account-popover">
             <button type="button" className="account-action" onClick={() => { setAccountOpen(false); router.push('/chat'); setMobileSidebarOpen(false); }}>
@@ -640,15 +682,14 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
   );
 
   return (
-    <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed')}>
-      <button type="button" className="mobile-shell-trigger" onClick={() => setMobileSidebarOpen(true)} aria-label="Open navigation">
-        <PanelRightOpen className="h-4 w-4" />
+    <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed', focusModeActive && 'focus-mode')}>
+      <button type="button" className="mobile-shell-trigger" onClick={handleMainSurfaceChromeToggle} aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}>
+        <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
       </button>
 
-      <div className="desktop-sidebar">{sidebar}</div>
+      {!focusModeActive && !sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
 
-      {mobileSidebarOpen ? (
+      {!focusModeActive && mobileSidebarOpen ? (
         <div className="mobile-sidebar-overlay" onClick={() => setMobileSidebarOpen(false)}>
           <div className="mobile-sidebar-panel" onClick={(event) => event.stopPropagation()}>
             {sidebar}
@@ -659,7 +700,6 @@ export function AppDashboardShell({ children, feature }: AppDashboardShellProps)
       <div className="app-shell-main">
         {children}
       </div>
-      </div>
-    </AppShellChromeProvider>
+    </div>
   );
 }

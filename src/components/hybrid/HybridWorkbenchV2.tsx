@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { HybridInputPanelV2 } from '@/components/hybrid/HybridInputPanelV2';
 import { HybridResultPanelV2, type HybridResultData } from '@/components/hybrid/HybridResultPanelV2';
@@ -8,7 +8,6 @@ import { HybridProcessingTimelineV2 } from '@/components/hybrid/HybridProcessing
 import { HybridTimelineSummaryStripV2 } from '@/components/hybrid/HybridTimelineSummaryStripV2';
 import { createInitialTimelineReceipt, updateTimelineStage } from '@/lib/hybrid/timeline';
 import type { HybridTimelineReceipt, HybridTimelineStageKey, HybridTimelineStageState, HybridTimelineStageTelemetry } from '@/types/hybrid-timeline';
-import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
 interface HistoryEntry {
   id: string;
@@ -120,8 +119,6 @@ export function HybridWorkbenchV2() {
   const [gatePreview, setGatePreview] = useState<HybridResultData['noveltyGate']>(null);
   const [timelineReceipt, setTimelineReceipt] = useState<HybridTimelineReceipt | null>(null);
   const [timelineNow, setTimelineNow] = useState<string>(new Date().toISOString());
-  const [latestClaimId, setLatestClaimId] = useState<string | null>(null);
-  const [claimCopied, setClaimCopied] = useState(false);
   const activeRunAbortRef = useRef<AbortController | null>(null);
 
   const totalSources = files.length + companies.length;
@@ -216,9 +213,6 @@ export function HybridWorkbenchV2() {
     setMatrixStats({ rows: 0, highConfidenceRows: 0 });
     setTimelineReceipt(createInitialTimelineReceipt());
     setTimelineNow(new Date().toISOString());
-    setLatestClaimId(null);
-    setClaimCopied(false);
-
     activeRunAbortRef.current?.abort();
     const abortController = new AbortController();
     activeRunAbortRef.current = abortController;
@@ -292,12 +286,6 @@ export function HybridWorkbenchV2() {
             continue;
           }
 
-          if (payload.event === 'claim_recorded' && payload.claimId) {
-            setLatestClaimId(payload.claimId);
-            setLatestEvent('Claim lineage receipt written.');
-            continue;
-          }
-
           if (payload.event === 'complete' && payload.synthesis) {
             const normalized = normalizeRunPayload(payload.synthesis);
             if (!normalized) {
@@ -360,21 +348,6 @@ export function HybridWorkbenchV2() {
       });
       setProofCount(normalized.result.noveltyProof?.length || 0);
       setGatePreview(normalized.result.noveltyGate || null);
-      setLatestClaimId(null);
-
-      try {
-        const claimResponse = await fetch(`/api/claims?sourceFeature=hybrid&traceId=${id}&limit=1`);
-        if (claimResponse.ok) {
-          const claimPayload = (await claimResponse.json()) as { claims?: Array<{ id?: string }> };
-          const firstClaimId = claimPayload.claims?.[0]?.id;
-          if (typeof firstClaimId === 'string' && firstClaimId.length > 0) {
-            setLatestClaimId(firstClaimId);
-          }
-        }
-      } catch {
-        // non-fatal: historical run may predate claim ledger
-      }
-
       setStage('results');
     } catch (loadError) {
       const message = loadError instanceof Error ? loadError.message : 'Unable to load run';
@@ -383,63 +356,9 @@ export function HybridWorkbenchV2() {
     }
   };
 
-  const topOverlaps = useMemo(() => {
-    const all = (result?.noveltyProof || []).flatMap((proof) => proof.closestPriorArt || []);
-    return all
-      .slice()
-      .sort((left, right) => {
-        const leftScore = left.similarity > 1 ? left.similarity : left.similarity * 100;
-        const rightScore = right.similarity > 1 ? right.similarity : right.similarity * 100;
-        return rightScore - leftScore;
-      })
-      .slice(0, 3);
-  }, [result?.noveltyProof]);
-
-  const handleCopyClaimId = useCallback(async (value: string) => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setClaimCopied(true);
-      window.setTimeout(() => setClaimCopied(false), 1400);
-    } catch {
-      setClaimCopied(false);
-    }
-  }, []);
-
-  const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
-    subtitle: 'Live novelty and provenance',
-    live: stage !== 'input' || latestClaimId !== null || totalSources > 0,
-    causalDensity: {
-      activeLevel: stage === 'results' ? 'L2' : stage === 'processing' || stage === 'stabilizing' ? 'L1' : null,
-      status: latestEvent || 'Awaiting synthesis run',
-    },
-    alignmentPosture: {
-      tone: result?.noveltyGate?.decision === 'pass' ? 'green' : gatePreview?.decision === 'recover' ? 'amber' : gatePreview?.decision === 'fail' ? 'red' : 'neutral',
-      text: result?.noveltyGate?.reasons?.join(' ') || gatePreview?.reasons?.join(' ') || 'Awaiting novelty gate output.',
-    },
-    modelProvenance: {
-      title: latestClaimId || 'Runtime signal',
-      text: latestClaimId ? `Claim lineage recorded for ${latestClaimId}.` : `${latestEvent}. Proof cards: ${result?.noveltyProof?.length || proofCount}.`,
-      actions: latestClaimId ? [
-        { label: 'Pretty view', href: `/claims/${latestClaimId}` },
-        { label: 'JSON', href: `/api/claims/${latestClaimId}` },
-        { label: claimCopied ? 'Copied' : 'Copy ID', onClick: () => void handleCopyClaimId(latestClaimId) },
-      ] : undefined,
-    },
-    activeDomain: {
-      label: researchFocus || 'unavailable',
-    },
-    scientificEvidence: topOverlaps.slice(0, 6).map((item, index) => ({
-      id: `${item.title}-${index}`,
-      title: item.title,
-      meta: 'Similarity-backed prior art overlap',
-      badge: `${Math.round(item.similarity > 1 ? item.similarity : item.similarity * 100)}%`,
-    })),
-  }), [claimCopied, gatePreview?.decision, gatePreview?.reasons, handleCopyClaimId, latestClaimId, latestEvent, proofCount, researchFocus, result?.noveltyGate?.decision, result?.noveltyGate?.reasons, result?.noveltyProof?.length, stage, topOverlaps, totalSources]);
-
   return (
     <WorkbenchShell
       feature="hybrid"
-      evidenceRail={railConfig}
       mainMode="split"
       mainTopbar={
         <>

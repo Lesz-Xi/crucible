@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, type ChangeEvent } from 'react';
-import { ChevronDown, Loader2, Paperclip, Send, Square } from 'lucide-react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { ChevronDown, Focus, Loader2, PanelRightClose, PanelRightOpen, Paperclip, Send, Square } from 'lucide-react';
+import { useAppShellChrome } from '@/components/dashboard/AppShellChromeContext';
 
 export interface ComposerAttachment {
   name: string;
@@ -32,10 +33,10 @@ export interface ChatComposerV2Props {
   onSlashCommand?: (id: string) => void;
 }
 
-const MODE_LABELS: Record<'explore' | 'intervene' | 'audit', string> = {
-  explore: 'DAV Mode',
-  intervene: 'DAV Mode',
-  audit: 'DAV Mode',
+const SCENARIO_LABELS: Record<'explore' | 'intervene' | 'audit', string> = {
+  explore: 'Discovery',
+  intervene: 'Intervention',
+  audit: 'Audit',
 };
 
 export function ChatComposerV2({
@@ -54,6 +55,24 @@ export function ChatComposerV2({
 }: ChatComposerV2Props) {
   const canSend = value.trim().length > 0 && !disabled && !isLoading;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const scenarioMenuRef = useRef<HTMLDivElement | null>(null);
+  const shellChrome = useAppShellChrome();
+  const [scenarioMenuOpen, setScenarioMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      if (!scenarioMenuRef.current?.contains(event.target as Node)) {
+        setScenarioMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('touchstart', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('touchstart', handlePointerDown);
+    };
+  }, []);
 
   const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(event.currentTarget.files || []);
@@ -102,21 +121,58 @@ export function ChatComposerV2({
           Attach
         </button>
 
+        <div className="chat-toolbar-menu" ref={scenarioMenuRef}>
+          <button
+            type="button"
+            className="chat-toolbar-chip is-scenarios"
+            onClick={() => setScenarioMenuOpen((current) => !current)}
+            aria-expanded={scenarioMenuOpen}
+            aria-haspopup="menu"
+          >
+            Scenarios
+            <ChevronDown className="h-3 w-3" />
+          </button>
+
+          {scenarioMenuOpen ? (
+            <div className="chat-toolbar-dropdown" role="menu" aria-label="Scenario modes">
+              {(['explore', 'intervene', 'audit'] as const).map((mode) => (
+                <button
+                  key={mode}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={operatorMode === mode}
+                  className={`chat-toolbar-dropdown-item ${operatorMode === mode ? 'active' : ''}`}
+                  onClick={() => {
+                    onOperatorModeChange(mode);
+                    setScenarioMenuOpen(false);
+                  }}
+                >
+                  <span className="chat-toolbar-dropdown-title">{SCENARIO_LABELS[mode]}</span>
+                  <span className="chat-toolbar-dropdown-meta">{mode}</span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
         <button
           type="button"
-          className="chat-toolbar-chip is-mode"
-          onClick={() => onOperatorModeChange(operatorMode === 'explore' ? 'intervene' : operatorMode === 'intervene' ? 'audit' : 'explore')}
+          className="chat-toolbar-chip is-shell-toggle"
+          onClick={() => shellChrome?.setEvidenceRailVisible((current) => !current)}
+          title={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
+          aria-label={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
         >
-          {MODE_LABELS[operatorMode]}
+          {shellChrome?.evidenceRailVisible ? <PanelRightClose className="h-3 w-3" /> : <PanelRightOpen className="h-3 w-3" />}
         </button>
 
         <button
           type="button"
-          className="chat-toolbar-chip is-scenarios"
-          onClick={() => onOperatorModeChange(operatorMode === 'explore' ? 'intervene' : operatorMode === 'intervene' ? 'audit' : 'explore')}
+          className="chat-toolbar-chip is-shell-toggle"
+          onClick={() => shellChrome?.setFocusMode((current) => !current)}
+          title={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+          aria-label={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
         >
-          Scenarios
-          <ChevronDown className="h-3 w-3" />
+          <Focus className="h-3 w-3" />
         </button>
 
         <div className="input-spacer" />
