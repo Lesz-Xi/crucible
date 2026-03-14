@@ -9927,6 +9927,17 @@ body {
   opacity: 1;
 }
 
+.canonical-workbench-shell .account-section {
+  display: grid;
+  gap: 2px;
+}
+
+.canonical-workbench-shell .account-section-divider {
+  height: 1px;
+  margin: 6px 4px;
+  background: color-mix(in srgb, var(--sidebar-shell-border) 82%, transparent);
+}
+
 .canonical-workbench-shell .account-popover {
   position: absolute;
   left: 0;
@@ -9953,6 +9964,43 @@ body {
 .canonical-workbench-shell .account-action:hover {
   background: var(--sidebar-shell-hover);
   color: var(--sidebar-shell-text);
+}
+
+.canonical-workbench-shell .account-action-label {
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.canonical-workbench-shell .account-menu-settings {
+  width: 100%;
+}
+
+.canonical-workbench-shell .sidebar-model-settings-trigger-account {
+  min-height: 38px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--sidebar-shell-text-muted) !important;
+}
+
+.canonical-workbench-shell .sidebar-model-settings-trigger-account:hover,
+.canonical-workbench-shell .sidebar-model-settings-trigger-account[aria-expanded='true'] {
+  background: var(--sidebar-shell-hover) !important;
+  border-color: transparent !important;
+  color: var(--sidebar-shell-text) !important;
+}
+
+.canonical-workbench-shell .sidebar-model-settings-trigger-account span {
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .canonical-workbench-shell .mobile-sidebar-panel,
@@ -10367,7 +10415,6 @@ body {
 }
 
 .canonical-workbench-shell .sidebar-body,
-.canonical-workbench-shell .sidebar-footer,
 .canonical-workbench-shell .user-row {
   flex-shrink: 0;
 }
@@ -10379,31 +10426,36 @@ body {
 
 .canonical-workbench-shell .history-section {
   margin-top: 12px;
-  padding: 2px 0 8px;
+  padding: 2px 0 0;
   gap: 0;
   min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid color-mix(in srgb, var(--sidebar-shell-border) 52%, transparent);
 }
 
 .canonical-workbench-shell .history-section .sidebar-section-label {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  padding-top: 10px;
 }
 
 .canonical-workbench-shell .history-ledger-scroll {
-  padding: 0 6px 8px 0;
+  position: relative;
+  padding: 0 8px 0 0;
   margin-right: -6px;
   scroll-padding-block: 6px;
   overscroll-behavior: contain;
+  mask-image: linear-gradient(180deg, transparent 0, black 12px, black calc(100% - 18px), transparent 100%);
 }
 
 .canonical-workbench-shell .history-ledger {
-  gap: 8px;
-  padding-bottom: 4px;
+  gap: 6px;
+  padding-bottom: 10px;
 }
 
 .canonical-workbench-shell .history-row {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
   transition:
@@ -10439,18 +10491,18 @@ body {
 }
 
 .canonical-workbench-shell .history-item.thread-item {
-  min-height: 62px;
+  min-height: 48px;
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr);
+  grid-template-columns: 8px minmax(0, 1fr);
   align-items: start;
-  gap: 10px;
-  padding: 11px 11px 12px;
+  gap: 8px;
+  padding: 8px 9px 9px;
 }
 
 .canonical-workbench-shell .thread-ledger-dot {
-  width: 8px;
-  height: 8px;
-  margin-top: 8px;
+  width: 7px;
+  height: 7px;
+  margin-top: 6px;
   border-radius: 999px;
   background: color-mix(in srgb, var(--sidebar-shell-text-faint) 72%, transparent);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--sidebar-shell-border) 58%, transparent);
@@ -10465,31 +10517,31 @@ body {
 }
 
 .canonical-workbench-shell .thread-copy {
-  gap: 7px;
+  gap: 5px;
 }
 
 .canonical-workbench-shell .thread-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.42;
+  line-height: 1.32;
   letter-spacing: -0.01em;
 }
 
 .canonical-workbench-shell .thread-meta {
-  gap: 6px 8px;
+  gap: 4px 7px;
   align-items: center;
 }
 
 .canonical-workbench-shell .thread-chip,
 .canonical-workbench-shell .thread-time {
-  min-height: 17px;
-  font-size: 8.5px;
-  letter-spacing: 0.1em;
+  min-height: 16px;
+  font-size: 8px;
+  letter-spacing: 0.09em;
 }
 
 .canonical-workbench-shell .thread-chip {
-  height: 17px;
-  padding: 0 7px;
+  height: 16px;
+  padding: 0 6px;
 }
 
 .canonical-workbench-shell .thread-time {
@@ -10497,10 +10549,10 @@ body {
 }
 
 .canonical-workbench-shell .thread-action {
-  width: 26px;
-  height: 26px;
-  margin: 10px 6px 0 0;
-  border-radius: 8px;
+  width: 24px;
+  height: 24px;
+  margin: 8px 4px 0 0;
+  border-radius: 7px;
   align-self: flex-start;
   opacity: 0;
   transform: translateX(2px);
@@ -10521,22 +10573,40 @@ body {
 
 .canonical-workbench-shell.focus-mode .mobile-shell-trigger.is-visible,
 .canonical-workbench-shell .mobile-shell-trigger.is-focus-exit {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
 }
 
 .canonical-workbench-shell .mobile-shell-trigger.is-focus-exit {
-  top: 22px;
-  left: 22px;
+  top: 24px;
+  left: 24px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--sidebar-shell-border-strong) 72%, transparent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar-shell-bg) 90%, transparent) 0%,
+      color-mix(in srgb, var(--sidebar-shell-bg-2) 82%, transparent) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 6%, transparent),
+    0 10px 24px rgba(0, 0, 0, 0.16);
   color: color-mix(in srgb, var(--sidebar-shell-text) 92%, white 8%);
 }
 
 .canonical-workbench-shell .mobile-shell-trigger.is-focus-exit svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .canonical-workbench-shell .mobile-shell-trigger.is-focus-exit:hover {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--sidebar-shell-hover) 90%, transparent) 0%,
+      color-mix(in srgb, var(--sidebar-shell-chip) 28%, transparent) 100%
+    );
+  border-color: color-mix(in srgb, var(--sidebar-shell-accent-border) 54%, transparent);
   color: var(--sidebar-shell-text);
 }
 
@@ -10568,8 +10638,8 @@ body {
 
 .canonical-workbench-shell.sidebar-collapsed .shell.app-shell.rail-hidden .main,
 .canonical-workbench-shell.focus-mode .main {
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .canonical-workbench-shell.sidebar-collapsed .shell.app-shell.rail-hidden .input-area,
@@ -10583,17 +10653,147 @@ body {
   justify-content: flex-start;
 }
 
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .main-content-shell {
+  width: 100%;
+  align-items: stretch;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-shell {
+  align-items: center;
+  justify-content: center;
+  padding: 42px 48px 34px;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-message-list,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .input-area > div {
+  width: min(1180px, calc(100% - 192px));
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body .chat-composer-shell {
+  width: 100%;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-shell {
+  align-items: center;
+  justify-content: center;
+  padding: 42px 48px 34px;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-message-list,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .input-area > div {
+  width: min(1180px, calc(100% - 192px));
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body .chat-composer-shell {
+  width: 100%;
+}
+
 .canonical-workbench-shell.focus-mode .main-content-shell > * {
   width: 100%;
 }
 
 .canonical-workbench-shell.focus-mode .chat-message-list {
-  width: min(980px, calc(100% - 180px));
-  max-width: 980px;
-  padding-top: 28px;
+  width: min(940px, calc(100% - 160px));
+  max-width: 940px;
+  padding-top: 24px;
 }
 
 .canonical-workbench-shell.focus-mode .chat-empty-console-body {
-  width: min(980px, calc(100% - 180px));
-  max-width: 980px;
+  width: min(940px, calc(100% - 160px));
+  max-width: 940px;
+}
+
+/* Closed-sidebar desktop chat lane — final authority */
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .main-content-shell {
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-shell {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 56px 32px;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console {
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-message-list,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .input-area > div {
+  width: min(1040px, calc(100% - 128px)) !important;
+  max-width: 1040px !important;
+  margin-inline: auto;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body .chat-composer-shell {
+  width: 100%;
+  max-width: none;
+}
+
+/* Closed-sidebar desktop chat lane — final authority */
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .main-content-shell {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-shell {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 56px 32px;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console {
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-message-list,
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .input-area > div {
+  width: min(1040px, calc(100% - 128px)) !important;
+  max-width: 1040px !important;
+  margin-inline: auto;
+}
+
+.canonical-workbench-shell.sidebar-collapsed.feature-chat .shell.app-shell.rail-hidden .chat-empty-console-body .chat-composer-shell {
+  width: 100%;
+  max-width: none;
 }
