@@ -60,7 +60,7 @@ export function evaluateInterventionGate(
     };
   }
 
-  const identifiability = scm.checkIdentifiability({
+  const identifiability = scm.checkConfounderCoverage({
     treatment,
     outcome,
     adjustmentSet,
@@ -71,7 +71,7 @@ export function evaluateInterventionGate(
     return {
       allowed: true,
       allowedOutputClass: "intervention_supported",
-      rationale: "Backdoor confounders are controlled for intervention claims.",
+      rationale: "Known structural confounders are covered for this intervention claim.",
       identifiability,
     };
   }

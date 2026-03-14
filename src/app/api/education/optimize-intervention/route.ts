@@ -276,6 +276,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
       let counterfactualTrace = undefined;
       if (gate.allowed) {
+        // typedScm not passed: scm is built from in-memory EducationalSCM (buildEducationalScm),
+        // not loaded from scm_model_versions. Stays on heuristic BFS path.
+        // v1.1 scope: author typed StructuralEquation[] for the educational DAG.
         const trace = buildCounterfactualTrace(scm, {
           modelRef: {
             modelKey: "education_student_graph",
@@ -296,7 +299,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             "Counterfactual trace computed via deterministic educational SCM propagation.",
           ],
           adjustmentSet,
-          method: "deterministic_graph_diff",
+          method: "heuristic_bfs_propagation",
           uncertainty: "low",
         });
         const persisted = await persistCounterfactualTrace({
@@ -638,6 +641,9 @@ async function generateCounterfactuals(
 
   const scenarios: CounterfactualScenario[] = [];
   for (const spec of scenarioSpecs) {
+    // typedScm not passed: scm is built from in-memory EducationalSCM (buildEducationalScm),
+    // not loaded from scm_model_versions. Stays on heuristic BFS path.
+    // v1.1 scope: author typed StructuralEquation[] for the educational DAG.
     const trace = buildCounterfactualTrace(scm, {
       modelRef: {
         modelKey: "education_student_graph",
@@ -654,7 +660,7 @@ async function generateCounterfactuals(
         topResult.intervention.mechanism,
       ],
       adjustmentSet: topResult.interventionGate?.identifiability.adjustmentSet || [],
-      method: "deterministic_graph_diff",
+      method: "heuristic_bfs_propagation",
       uncertainty: "low",
     });
     const persisted = await persistCounterfactualTrace({

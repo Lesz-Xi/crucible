@@ -429,7 +429,7 @@ export class StructuralCausalModel {
     const value = Number((causeValue * pathWeight).toFixed(4));
 
     return {
-      estimand: `P(${effect} | ${cause})`,
+      estimand: `path_weight(${cause} -> ${effect})`,
       value,
       path,
       note: "Observational estimate only. Use do() operator for causal intervention claims.",
@@ -437,8 +437,9 @@ export class StructuralCausalModel {
   }
 
   /**
-   * Intervention operator: estimate P(Y | do(X = x)).
-   * Propagates an exogenous change through directed edges with depth decay.
+   * @deprecated for formal interventional claims (v1.0+).
+   * Heuristic propagation only: BFS with 0.7 decay factor per edge.
+   * Returns a signal delta, not a formal do-operator estimate.
    */
   queryIntervention(params: {
     interventionVariable: string;
@@ -452,7 +453,7 @@ export class StructuralCausalModel {
     const delta = deltaByNode.get(outcome) ?? 0;
 
     return {
-      estimand: `P(${outcome} | do(${interventionVariable}=${interventionValue}))`,
+      estimand: `[HEURISTIC] delta(${outcome} | ${interventionVariable}=${interventionValue}, bfs_decay)`,
       baselineOutcome,
       intervenedOutcome: Number((baselineOutcome + delta).toFixed(4)),
       delta: Number(delta.toFixed(4)),
@@ -461,7 +462,9 @@ export class StructuralCausalModel {
   }
 
   /**
-   * Counterfactual operator: estimate Y_x(u) given observed world and a hypothetical action.
+   * @deprecated for formal counterfactual claims (v2.0+).
+   * Compares a heuristic intervention estimate against the observed world.
+   * This is not Pearl-style abduction and should not be labeled with formal level-3 counterfactual notation.
    */
   queryCounterfactual(params: {
     interventionVariable: string;
@@ -481,7 +484,7 @@ export class StructuralCausalModel {
     const difference = Number((counterfactualOutcome - actualOutcome).toFixed(4));
 
     return {
-      estimand: `${outcome}_${interventionVariable}(${interventionValue})`,
+      estimand: `[HEURISTIC] intervention_comparison(${outcome}, ${interventionVariable}=${interventionValue})`,
       actualOutcome: Number(actualOutcome.toFixed(4)),
       counterfactualOutcome: Number(counterfactualOutcome.toFixed(4)),
       difference,
@@ -514,9 +517,11 @@ export class StructuralCausalModel {
   }
 
   /**
-   * Backdoor-style identifiability check against known/structural confounders.
+   * @deprecated for formal identifiability (v1.1+).
+   * Checks whether a provided adjustment set covers known structural confounders.
+   * This is a coverage check, not a backdoor-path proof.
    */
-  checkIdentifiability(params: {
+  checkConfounderCoverage(params: {
     treatment: string;
     outcome: string;
     adjustmentSet?: string[];
@@ -535,8 +540,8 @@ export class StructuralCausalModel {
       missingConfounders,
       note:
         missingConfounders.length === 0
-          ? "Backdoor confounders are controlled; effect is identifiable under provided assumptions."
-          : "Effect is not identifiable until missing confounders are controlled.",
+          ? "Known structural confounders are covered by the provided adjustment set."
+          : "Known structural confounders are still missing from the provided adjustment set.",
     };
   }
 
@@ -623,6 +628,10 @@ export class StructuralCausalModel {
     return Number(weight.toFixed(4));
   }
 
+  // DEPRECATED for causal-effect-labeled outputs (v1.0+).
+  // This is BFS with 0.7 decay. Not do-calculus. Not graph mutilation.
+  // Retained for fallback path in counterfactual-trace.ts when TypedSCM is absent.
+  // Do not use for outputs labeled as exact intervention effects.
   private propagateIntervention(variable: string, value: number): Map<string, number> {
     const adjacency = this.buildAdjacency();
     const deltas = new Map<string, number>();

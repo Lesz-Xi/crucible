@@ -22,7 +22,7 @@ type DagJsonLike = { nodes?: unknown; edges?: unknown } | null | undefined;
  * 
  * Implements Chalmers' Universe Tuple: U = ⟨P, M, E, L⟩
  * - P (Physical): Database state, SCM structure
- * - M (Functional): primaryScm, tier2 (Do-Calculus logic)
+ * - M (Functional): primaryScm, tier2 (causal reasoning logic)
  * - E (Phenomenal): phenomenalState (epistemic qualia)
  * - L (Laws): The constraints and bridging function Ψ
  */
