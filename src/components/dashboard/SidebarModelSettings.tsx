@@ -7,7 +7,13 @@ import { AI_CONFIG, AIProviderId } from '../../config/ai-models';
 import { LLMConfig } from '../../types/lab';
 import { cn } from '../../lib/utils';
 
-export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
+export function SidebarModelSettings({
+  collapsed,
+  variant = 'footer',
+}: {
+  collapsed?: boolean;
+  variant?: 'footer' | 'account';
+}) {
   const { state, setLLMConfig } = useLab();
   const { llmConfig } = state;
   
@@ -139,6 +145,7 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
         type="button"
         className={cn(
             "sidebar-model-settings-trigger lab-nav-pill lg-control w-full",
+            variant === 'account' && 'sidebar-model-settings-trigger-account',
             isOpen && 'bg-[var(--lab-active-bg)] text-[var(--lab-text-primary)] font-medium'
         )}
         onClick={() => setIsOpen((v) => !v)}
@@ -146,7 +153,7 @@ export function SidebarModelSettings({ collapsed }: { collapsed?: boolean }) {
         title={collapsed ? 'Model Settings' : undefined}
       >
         <Settings2 className="h-4 w-4" />
-        {collapsed ? null : <span className="footer-label">Model Settings</span>}
+        {collapsed ? null : <span className={variant === 'account' ? 'account-action-label' : 'footer-label'}>Model Settings</span>}
       </button>
 
       {mounted && isOpen

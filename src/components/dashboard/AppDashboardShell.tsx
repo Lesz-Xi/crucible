@@ -628,30 +628,6 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
         </section>
       </div>
 
-      <div className="sidebar-footer">
-        <button
-          type="button"
-          className="footer-item"
-          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-          title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
-          aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
-        >
-          {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          <span className="footer-copy">
-            <span className="footer-meta footer-theme-state">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
-          </span>
-        </button>
-        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item" title="Documentation" aria-label="Documentation">
-          <BookOpen className="h-3.5 w-3.5" />
-          <span className="footer-copy">
-            <span className="footer-label">Documentation</span>
-          </span>
-        </a>
-        <div className="footer-item footer-settings">
-          <SidebarModelSettings collapsed={sidebarCollapsed} />
-        </div>
-      </div>
-
       <div
         className="user-row"
         onClick={() => {
@@ -673,7 +649,34 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
         </span>
         <ChevronDown className="account-chevron h-3.5 w-3.5" />
         {accountOpen ? (
-          <div className="account-popover">
+          <div className="account-popover" onClick={(event) => event.stopPropagation()}>
+            <div className="account-section">
+              <button
+                type="button"
+                className="account-action"
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+                aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+              >
+                {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                <span className="account-action-label">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
+              </button>
+              <a
+                href="https://docs.openclaw.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="account-action"
+                onClick={() => setAccountOpen(false)}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                <span className="account-action-label">Documentation</span>
+              </a>
+              <div className="account-menu-settings">
+                <SidebarModelSettings collapsed={false} variant="account" />
+              </div>
+            </div>
+            <div className="account-section-divider" aria-hidden="true" />
+            <div className="account-section">
             <button type="button" className="account-action" onClick={() => { setAccountOpen(false); router.push('/chat'); setMobileSidebarOpen(false); }}>
               <UserCircle2 className="h-3.5 w-3.5" />
               Workspace
@@ -682,6 +685,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
               <LogOut className="h-3.5 w-3.5" />
               Sign out
             </button>
+            </div>
           </div>
         ) : null}
       </div>
