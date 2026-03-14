@@ -1,10 +1,13 @@
 import { StructuralCausalModel } from "@/lib/ai/causal-blueprint";
+import { runCausalQuery } from "@/lib/compute/causal-engine-bridge";
 import { createServerSupabaseAdminClient } from "@/lib/supabase/server-admin";
 import type {
+  CausalQuery,
   CounterfactualComputationMethod,
   CounterfactualTrace,
   CounterfactualTraceRef,
   CounterfactualUncertainty,
+  TypedSCM,
 } from "@/types/scm";
 
 export type CounterfactualTraceSource =
@@ -70,17 +73,34 @@ function normalizePathToken(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function buildAffectedPaths(intervention: string, affectedNodes: string[]): string[] {
-  const from = intervention.trim() || "Intervention";
-  const paths = affectedNodes
-    .filter((node) => normalizePathToken(node) !== normalizePathToken(from))
-    .map((node) => `${from} -> ${node}`);
-  return Array.from(new Set(paths));
+function normalizeDeterministicTraceValue(value: number): number {
+  return Number.parseFloat(value.toPrecision(15));
+}
+
+function buildAffectedNodes(intervention: string, nodes: string[]): string[] {
+  const from = intervention.trim();
+  return Array.from(
+    new Set(nodes.filter((node) => normalizePathToken(node) !== normalizePathToken(from)))
+  );
+}
+
+function buildObservationalQuery(
+  interventionVariable: string,
+  interventionValue: number,
+  outcome: string
+): CausalQuery {
+  return {
+    type: "observational",
+    treatment: interventionVariable,
+    doValue: interventionValue,
+    outcome,
+  };
 }
 
 export function buildCounterfactualTrace(
   scm: StructuralCausalModel,
-  input: BuildCounterfactualTraceInput
+  input: BuildCounterfactualTraceInput,
+  typedScm?: TypedSCM
 ): CounterfactualTrace {
   const interventionVariable = input.intervention.variable.trim();
   const outcome = input.outcome.trim();
@@ -88,8 +108,57 @@ export function buildCounterfactualTrace(
   const assumptions = sanitizeStrings(input.assumptions);
   const adjustmentSet = sanitizeStrings(input.adjustmentSet);
   const traceId = input.traceId || crypto.randomUUID();
-  const method = input.method ?? "deterministic_graph_diff";
+  const method = input.method ?? "heuristic_bfs_propagation";
   const uncertainty = input.uncertainty ?? "medium";
+
+  if (typedScm) {
+    const engineQuery: CausalQuery = {
+      type: "interventional",
+      treatment: interventionVariable,
+      doValue: input.intervention.value,
+      outcome,
+    };
+    const engineResult = runCausalQuery(typedScm, engineQuery);
+    const actualOutcome =
+      Number.isFinite(observedWorld[outcome])
+        ? observedWorld[outcome]
+        : runCausalQuery(
+            typedScm,
+            buildObservationalQuery(interventionVariable, input.intervention.value, outcome)
+          ).value;
+    const affectedNodes = buildAffectedNodes(interventionVariable, engineResult.evaluationOrder);
+
+    return {
+      traceId,
+      modelRef: {
+        modelKey: input.modelRef.modelKey,
+        version: input.modelRef.version,
+      },
+      query: {
+        intervention: {
+          variable: interventionVariable,
+          value: input.intervention.value,
+        },
+        outcome,
+        observedWorld,
+      },
+      assumptions,
+      adjustmentSet,
+      computation: {
+        method: "structural_equation_solver",
+        affectedNodes,
+        evaluationOrder: engineResult.evaluationOrder,
+        traceValues: engineResult.trace,
+        note: "Deterministic typed SCM solve with explicit graph mutilation and topological evaluation order.",
+        uncertainty: "none",
+      },
+      result: {
+        actualOutcome,
+        counterfactualOutcome: engineResult.value,
+        delta: normalizeDeterministicTraceValue(engineResult.value - actualOutcome),
+      },
+    };
+  }
 
   const counterfactual = scm.queryCounterfactual({
     interventionVariable,
@@ -123,7 +192,8 @@ export function buildCounterfactualTrace(
     adjustmentSet,
     computation: {
       method,
-      affectedPaths: buildAffectedPaths(interventionVariable, intervention.affectedNodes),
+      affectedNodes: buildAffectedNodes(interventionVariable, intervention.affectedNodes),
+      note: "BFS-visited nodes from intervention root. Not a formal causal path or do-calculus result.",
       uncertainty,
     },
     result: {
@@ -174,7 +244,7 @@ export async function persistCounterfactualTrace(
       assumptions_json: input.trace.assumptions,
       adjustment_set: input.trace.adjustmentSet,
       computation_method: input.trace.computation.method,
-      affected_paths: input.trace.computation.affectedPaths,
+      affected_paths: input.trace.computation.affectedNodes,
       uncertainty: input.trace.computation.uncertainty,
       actual_outcome: input.trace.result.actualOutcome,
       counterfactual_outcome: input.trace.result.counterfactualOutcome,

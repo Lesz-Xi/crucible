@@ -86,8 +86,8 @@ export const METHOD_CATALOG: MethodCard[] = [
     },
     {
         id: 'do_calculus',
-        displayName: 'Do-Calculus',
-        description: 'Interventional reasoning using Judea Pearl\'s do-calculus',
+        displayName: 'Intervention Calculus',
+        description: 'Interventional reasoning with explicit intervention semantics',
         minSampleSize: 0,
         requiresInterventions: true,
         requiresTemporalOrder: false,

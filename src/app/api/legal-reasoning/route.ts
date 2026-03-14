@@ -96,6 +96,9 @@ async function attachCounterfactualTracesToLegalChains(
 
   for (const chain of chains) {
     const adjustmentSet = buildLegalAdjustmentSet(chain);
+    // typedScm not passed: legalSCM is a hardcoded LegalSCMTemplate, not a DB model.
+    // No scm_model_versions row exists for intent-action-harm. Stays on heuristic BFS path.
+    // v1.1 scope: author typed StructuralEquation[] for the legal DAG and load via loadTypedSCM().
     const trace = buildCounterfactualTrace(legalSCM, {
       modelRef: {
         modelKey: 'legal_intent_action_harm',
@@ -118,7 +121,7 @@ async function attachCounterfactualTracesToLegalChains(
         'Counterfactual trace uses deterministic legal SCM graph propagation.',
       ],
       adjustmentSet,
-      method: 'deterministic_graph_diff',
+      method: 'heuristic_bfs_propagation',
       uncertainty: 'low',
     });
 
@@ -913,7 +916,7 @@ function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Respons
                 necessitySupported:
                   chain.butForAnalysis.result === 'necessary' || chain.butForAnalysis.result === 'both',
                 sufficiencySupported: chain.butForAnalysis.result === 'sufficient' || chain.butForAnalysis.result === 'both',
-                method: 'deterministic_graph_diff',
+                method: 'heuristic_bfs_propagation',
                 assumptionsJson: [chain.butForAnalysis.reasoning],
                 resultLabel:
                   chain.butForAnalysis.result === 'neither'

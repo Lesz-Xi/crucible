@@ -1,8 +1,8 @@
 /**
- * Phase 28 Component 2: Causal Interventions Service (do-Calculus Approximation)
+ * Phase 28 Component 2: Causal Interventions Service (Pyodide Interventional Simulation)
  * 
  * Approximates Pearl's do-operator for computational mechanisms:
- * P(Y | do(X=x)) ≈ "Run mechanism with X clamped to x, measure Y"
+ * simulated_intervention(Y | clamp(X=x)) ≈ "Run mechanism with X clamped to x, measure Y"
  * 
  * Example:
  * - Claim: "If catalyst = 10g, then yield = 95%"
@@ -58,10 +58,10 @@ export class CausalInterventionTester {
       this.pyodide = await loadPyodide();
       await this.pyodide.loadPackage(['numpy', 'scipy']);
       this.initialized = true;
-      console.log('[do-Calculus] Pyodide initialized for interventional testing');
+      console.log('[causal-interventions] Pyodide initialized for interventional testing');
     } catch (error) {
-      console.error('[do-Calculus] Pyodide initialization failed:', error);
-      console.warn('[do-Calculus] Interventional tests will be disabled for this session');
+      console.error('[causal-interventions] Pyodide initialization failed:', error);
+      console.warn('[causal-interventions] Interventional tests will be disabled for this session');
       this.initialized = false;
     }
   }
@@ -150,7 +150,7 @@ export class CausalInterventionTester {
     claim: InterventionalClaim
   ): Promise<InterventionalTestResult> {
     if (!this.initialized || !this.pyodide) {
-      console.warn('[do-Calculus] Pyodide not initialized, skipping interventional test');
+      console.warn('[causal-interventions] Pyodide not initialized, skipping interventional test');
       return {
         claim_supported: true,  // Default to passing if we can't test
         actual_outcome: 'N/A',
@@ -166,7 +166,7 @@ export class CausalInterventionTester {
         claim.intervention.value
       );
 
-      console.log(`[do-Calculus] Testing: do(${claim.intervention.variable}=${claim.intervention.value}) → ${claim.outcome.variable}=?`);
+      console.log(`[causal-interventions] Testing: do(${claim.intervention.variable}=${claim.intervention.value}) → ${claim.outcome.variable}=?`);
 
       // Step 2: Run simulation in Pyodide
       await this.pyodide.runPythonAsync(clampedCode);
@@ -187,10 +187,10 @@ export class CausalInterventionTester {
       const tolerance = claim.outcome.tolerance || 0.05;
       const withinTolerance = difference <= tolerance * Math.abs(expected);
 
-      console.log(`[do-Calculus] Result: ${claim.outcome.variable}=${actual.toFixed(3)}, expected=${expected.toFixed(3)}, diff=${difference.toFixed(3)}`);
+      console.log(`[causal-interventions] Result: ${claim.outcome.variable}=${actual.toFixed(3)}, expected=${expected.toFixed(3)}, diff=${difference.toFixed(3)}`);
 
       if (withinTolerance) {
-        console.log(`[do-Calculus] ✅ PASS - Claim supported`);
+        console.log(`[causal-interventions] ✅ PASS - Claim supported`);
         return {
           claim_supported: true,
           actual_outcome: actual,
@@ -198,7 +198,7 @@ export class CausalInterventionTester {
           difference
         };
       } else {
-        console.log(`[do-Calculus] ❌ FAIL - Claim NOT supported`);
+        console.log(`[causal-interventions] ❌ FAIL - Claim NOT supported`);
         return {
           claim_supported: false,
           actual_outcome: actual,
@@ -213,7 +213,7 @@ export class CausalInterventionTester {
         };
       }
     } catch (error) {
-      console.error('[do-Calculus] Interventional test error:', error);
+      console.error('[causal-interventions] Interventional test error:', error);
       // Default to passing on error (graceful degradation)
       return {
         claim_supported: true,

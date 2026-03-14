@@ -1617,7 +1617,7 @@ export class BenchmarkService {
     // A) Association control task
     const association = scm.queryAssociation('HoursStudied', 'ExamScore', { HoursStudied: 1.0 });
     const associationPass =
-      association.estimand.includes('P(ExamScore | HoursStudied)') &&
+      association.estimand.includes('path_weight(HoursStudied -> ExamScore)') &&
       association.note.toLowerCase().includes('observational');
 
     if (!associationPass) {
@@ -1634,7 +1634,7 @@ export class BenchmarkService {
       baseline: { ExamScore: 5.4 }
     });
     const interventionPass =
-      intervention.estimand.includes('do(HoursStudied=1.5)') &&
+      intervention.estimand.includes('[HEURISTIC] delta(ExamScore | HoursStudied=1.5, bfs_decay)') &&
       intervention.affectedNodes.length > 1 &&
       Math.abs(intervention.delta) > 0;
 
@@ -1652,7 +1652,7 @@ export class BenchmarkService {
       observed: { ExamScore: 6.2, HoursStudied: 0.7 }
     });
     const counterfactualPass =
-      counterfactual.estimand.includes('ExamScore_HoursStudied') &&
+      counterfactual.estimand.includes('[HEURISTIC] intervention_comparison(ExamScore, HoursStudied=0.2)') &&
       Number.isFinite(counterfactual.counterfactualOutcome);
 
     if (!counterfactualPass) {
@@ -1662,13 +1662,13 @@ export class BenchmarkService {
     this.emitProgress({ type: 'progress', runId, step: 'hybrid_scm_kernel_counterfactual', completed: 3, total: 5 });
 
     // D) Identifiability + assumption transparency task
-    const nonIdentifiable = scm.checkIdentifiability({
+    const nonIdentifiable = scm.checkConfounderCoverage({
       treatment: 'HoursStudied',
       outcome: 'ExamScore',
       adjustmentSet: ['StudyHabits'],
       knownConfounders: ['PriorKnowledge']
     });
-    const identifiable = scm.checkIdentifiability({
+    const identifiable = scm.checkConfounderCoverage({
       treatment: 'HoursStudied',
       outcome: 'ExamScore',
       adjustmentSet: ['StudyHabits', 'PriorKnowledge'],

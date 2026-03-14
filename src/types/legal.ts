@@ -110,8 +110,8 @@ export interface ButForAnalysis {
   counterfactualTrace?: CounterfactualTraceRef;
   
   // Pearl's Rung 3: Counterfactual metrics
-  necessityScore?: number; // P(~Y | do(~X), X, Y) - probability of not harm if action removed
-  sufficiencyScore?: number; // P(Y | do(X), ~X, ~Y) - probability of harm if action done
+  necessityScore?: number; // necessity_prob_sim(~Y | do_sim(~X), X, Y) - probability of not harm if action removed
+  sufficiencyScore?: number; // sufficiency_prob_sim(Y | do_sim(X), ~X, ~Y) - probability of harm if action done
 }
 
 // ============================

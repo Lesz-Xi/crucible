@@ -31,10 +31,10 @@ function buildPassingInput() {
       { hypothesis_id: "h-2", state: "retracted", rationale: "Missing confounder controls." },
     ],
     counterfactualTraces: [
-      { computation_method: "deterministic_graph_diff" },
-      { computation_method: "deterministic_graph_diff" },
-      { computation_method: "deterministic_graph_diff" },
-      { computation_method: "deterministic_graph_diff" },
+      { computation_method: "structural_equation_solver" },
+      { computation_method: "structural_equation_solver" },
+      { computation_method: "structural_equation_solver" },
+      { computation_method: "structural_equation_solver" },
     ],
     requiredFullSuitePasses: 3,
     minimumDeterministicTraces: 3,
@@ -93,9 +93,9 @@ describe("evaluateScientificIntegrity", () => {
   it("freezes promotion when deterministic trace coverage falls below threshold", () => {
     const input = buildPassingInput();
     input.counterfactualTraces = [
-      { computation_method: "deterministic_graph_diff" },
       { computation_method: "structural_equation_solver" },
-      { computation_method: "deterministic_graph_diff" },
+      { computation_method: "structural_equation_solver" },
+      { computation_method: "heuristic_bfs_propagation" },
     ];
 
     const status = evaluateScientificIntegrity(input);
