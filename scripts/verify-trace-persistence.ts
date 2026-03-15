@@ -49,7 +49,7 @@ async function verify() {
         adjustmentSet: [],
         computation: {
             method: "deterministic_graph_diff",
-            affectedNodes: [],
+            affectedPaths: [],
             uncertainty: "low"
         },
         result: {
