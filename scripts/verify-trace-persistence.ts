@@ -48,7 +48,7 @@ async function verify() {
         assumptions: ["test_assumption"],
         adjustmentSet: [],
         computation: {
-            method: "heuristic_bfs_propagation",
+            method: "deterministic_graph_diff",
             affectedNodes: [],
             uncertainty: "low"
         },
