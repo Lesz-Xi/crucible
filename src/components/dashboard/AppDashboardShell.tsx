@@ -13,6 +13,7 @@ import {
   Folder,
   FolderMinus,
   FolderPlus,
+  Minimize2,
   Gavel,
   GraduationCap,
   type LucideIcon,
@@ -373,7 +374,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   };
 
   const operatorEmail = userEmail || 'Anonymous session';
-  const visibleThreads = recentThreads.slice(0, 36);
+  const visibleThreads = recentThreads;
   const shouldShowInstrumentChildren = instrumentsOpen && !sidebarCollapsed;
 
   const handleMainSurfaceChromeToggle = () => {
@@ -417,12 +418,13 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
             aria-label={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
             onClick={handleMainSurfaceChromeToggle}
           >
-            <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
+            {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
           </button>
         </div>
       </div>
-      <div className="sidebar-scroll">
-        <nav className="sidebar-nav" aria-label="Workbench modes">
+      <div className="sidebar-body">
+        <div className="sidebar-main">
+          <nav className="sidebar-nav" aria-label="Workbench modes">
           <div className="sidebar-stack">
             {PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
@@ -524,125 +526,106 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
               })}
             </div>
           ) : null}
-        </nav>
+          </nav>
 
-        {folders.length > 0 ? (
-          <section className="sidebar-section">
-            <div className="sidebar-section-label">
-              <span>Notebooks</span>
-              <span className="sidebar-section-count">{folders.length}</span>
-            </div>
-            <div className="history-list is-folders">
-              {folders.map((folder) => {
-                const fileCount = folderFiles[folder.id]?.length ?? 0;
-                return (
-                  <div key={folder.id} className="folder-block">
-                    <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
-                      <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
-                        {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
-                        <span className="folder-copy">
-                          <span className="folder-title">{folder.name}</span>
-                          <span className="folder-meta">{fileCount} file{fileCount === 1 ? '' : 's'}</span>
-                        </span>
-                      </button>
-                      <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                    {folderOpenState[folder.id] ? (
-                      <div className="folder-files">
-                        <button type="button" className="history-item history-item-inline" onClick={() => createFolderFile(folder.id, undefined, true)}>
-                          <span className="history-inline-label">+ New file</span>
-                          <span className="history-inline-meta">Open thread</span>
+          {folders.length > 0 ? (
+            <section className="sidebar-section">
+              <div className="sidebar-section-label">
+                <span>Notebooks</span>
+                <span className="sidebar-section-count">{folders.length}</span>
+              </div>
+              <div className="history-list is-folders">
+                {folders.map((folder) => {
+                  const fileCount = folderFiles[folder.id]?.length ?? 0;
+                  return (
+                    <div key={folder.id} className="folder-block">
+                      <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                        <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                          {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                          <span className="folder-copy">
+                            <span className="folder-title">{folder.name}</span>
+                            <span className="folder-meta">{fileCount} file{fileCount === 1 ? '' : 's'}</span>
+                          </span>
                         </button>
-                        {(folderFiles[folder.id] ?? []).map((file) => (
-                          <div key={file.id} className="folder-file-row">
-                            <span className="history-item history-item-inline">
-                              <span className="history-inline-label">{file.name}</span>
-                              <span className="history-inline-meta">{formatLedgerTimestamp(file.createdAt)}</span>
-                            </span>
-                            <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ))}
+                        <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       </div>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ) : null}
+                      {folderOpenState[folder.id] ? (
+                        <div className="folder-files">
+                          <button type="button" className="history-item history-item-inline" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                            <span className="history-inline-label">+ New file</span>
+                            <span className="history-inline-meta">Open thread</span>
+                          </button>
+                          {(folderFiles[folder.id] ?? []).map((file) => (
+                            <div key={file.id} className="folder-file-row">
+                              <span className="history-item history-item-inline">
+                                <span className="history-inline-label">{file.name}</span>
+                                <span className="history-inline-meta">{formatLedgerTimestamp(file.createdAt)}</span>
+                              </span>
+                              <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+        </div>
 
         <section className="sidebar-section history-section">
           <div className="sidebar-section-label history-label">
             <span>Session ledger</span>
             <span className="sidebar-section-count">{visibleThreads.length}</span>
           </div>
-          <div className="history-list history-ledger">
-            {visibleThreads.length === 0 ? (
-              <div className="history-item muted">No notebook sessions recorded.</div>
-            ) : (
-              visibleThreads.map((session) => {
-                const isActive = pathname === '/chat' && activeSessionId === session.id;
-                const isResearch = researchThreadIds.includes(session.id);
-                return (
-                  <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
-                    <button
-                      type="button"
-                      className="history-item thread-item flex-1 text-left"
-                      onClick={() => openThread(session.id)}
-                      title={session.title || 'Untitled thread'}
-                    >
-                      <span className="thread-copy">
-                        <span className="thread-title">{session.title || 'Untitled thread'}</span>
-                        <span className="thread-meta">
-                          <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
-                          {isResearch ? <span className="thread-chip accent">Research</span> : null}
-                          <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+          <div className="history-ledger-scroll">
+            <div className="history-list history-ledger">
+              {visibleThreads.length === 0 ? (
+                <div className="history-item muted">No notebook sessions recorded.</div>
+              ) : (
+                visibleThreads.map((session) => {
+                  const isActive = pathname === '/chat' && activeSessionId === session.id;
+                  const isResearch = researchThreadIds.includes(session.id);
+                  const sessionTitle = session.title || 'Untitled thread';
+                  return (
+                    <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
+                      <button
+                        type="button"
+                        className="history-item thread-item flex-1 text-left"
+                        onClick={() => openThread(session.id)}
+                        aria-label={`Open session: ${sessionTitle}`}
+                      >
+                        <span className="thread-ledger-dot" aria-hidden="true" />
+                        <span className="thread-copy">
+                          <span className="thread-title">{sessionTitle}</span>
+                          <span className="thread-meta">
+                            <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
+                            {isResearch ? <span className="thread-chip accent">Research</span> : null}
+                            <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="folder-action thread-action"
-                      onClick={() => void handleDeleteThread(session.id)}
-                      aria-label="Delete thread"
-                      disabled={deletingThreadId === session.id}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                );
-              })
-            )}
+                      </button>
+                      <button
+                        type="button"
+                        className="folder-action thread-action"
+                        onClick={() => void handleDeleteThread(session.id)}
+                        aria-label={`Delete session: ${sessionTitle}`}
+                        disabled={deletingThreadId === session.id}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </section>
-      </div>
-
-      <div className="sidebar-footer">
-        <button
-          type="button"
-          className="footer-item"
-          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-          title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
-          aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
-        >
-          {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-          <span className="footer-copy">
-            <span className="footer-meta footer-theme-state">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
-          </span>
-        </button>
-        <a href="https://docs.openclaw.ai" target="_blank" rel="noreferrer" className="footer-item" title="Documentation" aria-label="Documentation">
-          <BookOpen className="h-3.5 w-3.5" />
-          <span className="footer-copy">
-            <span className="footer-label">Documentation</span>
-          </span>
-        </a>
-        <div className="footer-item footer-settings">
-          <SidebarModelSettings collapsed={sidebarCollapsed} />
-        </div>
       </div>
 
       <div
@@ -666,7 +649,34 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
         </span>
         <ChevronDown className="account-chevron h-3.5 w-3.5" />
         {accountOpen ? (
-          <div className="account-popover">
+          <div className="account-popover" onClick={(event) => event.stopPropagation()}>
+            <div className="account-section">
+              <button
+                type="button"
+                className="account-action"
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+                aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+              >
+                {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                <span className="account-action-label">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
+              </button>
+              <a
+                href="https://docs.openclaw.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="account-action"
+                onClick={() => setAccountOpen(false)}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                <span className="account-action-label">Documentation</span>
+              </a>
+              <div className="account-menu-settings">
+                <SidebarModelSettings collapsed={false} variant="account" />
+              </div>
+            </div>
+            <div className="account-section-divider" aria-hidden="true" />
+            <div className="account-section">
             <button type="button" className="account-action" onClick={() => { setAccountOpen(false); router.push('/chat'); setMobileSidebarOpen(false); }}>
               <UserCircle2 className="h-3.5 w-3.5" />
               Workspace
@@ -675,6 +685,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
               <LogOut className="h-3.5 w-3.5" />
               Sign out
             </button>
+            </div>
           </div>
         ) : null}
       </div>
@@ -683,8 +694,14 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
 
   return (
     <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed', focusModeActive && 'focus-mode')}>
-      <button type="button" className="mobile-shell-trigger" onClick={handleMainSurfaceChromeToggle} aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}>
-        <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />
+      <button
+        type="button"
+        className={cn('mobile-shell-trigger', (sidebarCollapsed || focusModeActive) && 'is-visible', focusModeActive && 'is-focus-exit')}
+        onClick={handleMainSurfaceChromeToggle}
+        aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
+        title={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
+      >
+        {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
       </button>
 
       {!focusModeActive && !sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
