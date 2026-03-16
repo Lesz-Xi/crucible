@@ -10491,45 +10491,85 @@ body {
 }
 
 .canonical-workbench-shell .history-item.thread-item {
-  min-height: 48px;
+  position: relative;
   display: grid;
-  grid-template-columns: 8px minmax(0, 1fr);
+  grid-template-columns: 10px minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
+  gap: 12px;
   align-items: start;
-  gap: 8px;
-  padding: 8px 9px 9px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: normal;
+  color: var(--text-2);
+  background: transparent;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.canonical-workbench-shell .history-item.thread-item:hover,
+.canonical-workbench-shell .history-item.thread-item:focus-visible {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(151, 116, 79, 0.12);
+}
+
+.canonical-workbench-shell .history-item.thread-item.active {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(217, 148, 75, 0.24);
+}
+
+.canonical-workbench-shell .history-item.thread-item::before {
+  content: none;
 }
 
 .canonical-workbench-shell .thread-ledger-dot {
-  width: 7px;
-  height: 7px;
-  margin-top: 6px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--sidebar-shell-text-faint) 72%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sidebar-shell-border) 58%, transparent);
-  opacity: 0.72;
+  background: rgba(151, 116, 79, 0.38);
+  margin-top: 7px;
 }
 
-.canonical-workbench-shell .history-row:hover .thread-ledger-dot,
-.canonical-workbench-shell .history-row.active .thread-ledger-dot {
-  background: color-mix(in srgb, var(--sidebar-shell-accent) 92%, white 8%);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sidebar-shell-accent-border) 44%, transparent);
-  opacity: 1;
+.canonical-workbench-shell .history-item.thread-item.active .thread-ledger-dot {
+  background: rgba(217, 148, 75, 0.9);
 }
 
 .canonical-workbench-shell .thread-copy {
-  gap: 5px;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+  white-space: normal;
 }
 
 .canonical-workbench-shell .thread-title {
-  font-size: 11px;
+  display: -webkit-box;
+  overflow: hidden;
+  min-width: 0;
+  width: 100%;
+  font-family: var(--font-geist-sans), Inter, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
   font-weight: 600;
-  line-height: 1.32;
-  letter-spacing: -0.01em;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  color: var(--text-1);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .canonical-workbench-shell .thread-meta {
-  gap: 4px 7px;
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 8px;
+  white-space: normal;
 }
 
 .canonical-workbench-shell .thread-chip,
