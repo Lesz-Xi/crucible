@@ -57,7 +57,7 @@ describe('WorkbenchShell', () => {
     );
 
     expect(html).toContain('canonical-workbench-shell');
-    expect(html).toContain('Collapse sidebar');
+    expect(html).toContain('Close sidebar');
     expect(html).toContain('Chat');
     expect(html).toContain('Workbench body');
     expect(html).toContain('Workbench input');
