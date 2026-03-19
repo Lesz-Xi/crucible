@@ -27,8 +27,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { createClient } from "@/lib/supabase/client";
-import type { WorkbenchEvidenceRailConfig, WorkbenchFeature } from "@/types/workbench";
-import { AppShellChromeProvider } from "./AppShellChromeContext";
+import type { WorkbenchFeature } from "@/types/workbench";
 import { SidebarModelSettings } from "./SidebarModelSettings";
 
 type NavItem = {
@@ -137,7 +136,6 @@ export function AppDashboardShell({
   const [foldersExpanded, setFoldersExpanded] = useState(true);
   const [accountOpen, setAccountOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [evidenceRailOverride, setEvidenceRailOverride] = useState<WorkbenchEvidenceRailConfig | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
@@ -691,8 +689,7 @@ export function AppDashboardShell({
   );
 
   return (
-    <AppShellChromeProvider value={{ evidenceRailOverride, setEvidenceRailOverride }}>
-      <div className={`canonical-workbench-shell feature-${feature} ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+    <div className={`canonical-workbench-shell feature-${feature} ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
         {!sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
 
         <button
@@ -721,7 +718,6 @@ export function AppDashboardShell({
         <div className="main-content-shell" data-main-surface="gridded">
           {children}
         </div>
-      </div>
-    </AppShellChromeProvider>
+    </div>
   );
 }
