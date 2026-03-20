@@ -124,6 +124,7 @@ export function AppDashboardShell({
 }: {
   children: ReactNode;
   feature: WorkbenchFeature;
+  focusModeActive?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
