@@ -82,19 +82,17 @@
 .canonical-workbench-shell .sidebar-main {
   display: flex;
   min-height: 0;
-  flex: 1;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 2px;
 }
 
-.canonical-workbench-shell .sidebar-main::-webkit-scrollbar,
 .canonical-workbench-shell .history-ledger-scroll::-webkit-scrollbar {
   width: 6px;
 }
 
-.canonical-workbench-shell .sidebar-main::-webkit-scrollbar-thumb,
 .canonical-workbench-shell .history-ledger-scroll::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: color-mix(in srgb, var(--text-3) 26%, transparent);
@@ -338,6 +336,7 @@
 .canonical-workbench-shell .history-section {
   display: flex;
   min-height: 0;
+  flex: 1 1 0%;
   flex-direction: column;
   gap: 8px;
   border-top: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
@@ -1077,35 +1076,7 @@
   }
 }
 
-/* Final shell overrides for ledger stability and collapsed-trigger consistency. */
-.canonical-workbench-shell .desktop-sidebar,
-.canonical-workbench-shell .sidebar,
-.canonical-workbench-shell .sidebar-body,
-.canonical-workbench-shell .sidebar-main,
-.canonical-workbench-shell .history-section {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.canonical-workbench-shell .sidebar-main,
-.canonical-workbench-shell .sidebar-nav,
-.canonical-workbench-shell .sidebar-actions,
-.canonical-workbench-shell .sidebar-section:not(.history-section) {
-  flex: 0 0 auto;
-}
-
-.canonical-workbench-shell .sidebar-main {
-  overflow: visible;
-  padding-bottom: 0;
-}
-
-.canonical-workbench-shell .history-section {
-  flex: 1 1 0%;
-  margin-top: 0;
-  padding-top: 10px;
-  gap: 8px;
-  border-top: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
-}
+/* Final ledger sizing and trigger consistency. */
 
 .canonical-workbench-shell .history-ledger-scroll {
   min-height: 0;
