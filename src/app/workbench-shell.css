@@ -265,34 +265,37 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   border-radius: 16px;
-  border: 1px solid transparent;
-  padding: 0 10px;
-  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 0 14px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 94%, transparent) 0%, color-mix(in srgb, var(--bg-2) 82%, transparent) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 7%, transparent);
 }
 
 .canonical-workbench-shell .action-btn:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent-border) 60%, transparent);
+  border-color: color-mix(in srgb, var(--accent-border) 66%, transparent);
   background: color-mix(in srgb, var(--bg-hover) 90%, transparent);
 }
 
 .canonical-workbench-shell .action-btn.is-primary {
-  border-color: color-mix(in srgb, var(--accent-border) 72%, transparent);
+  border-color: color-mix(in srgb, var(--border) 92%, transparent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent-dim) 78%, transparent) 0%, color-mix(in srgb, var(--bg-card) 92%, transparent) 100%);
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 94%, transparent) 0%, color-mix(in srgb, var(--bg-2) 82%, transparent) 100%);
 }
 
 .canonical-workbench-shell .action-btn.is-primary:hover {
-  border-color: color-mix(in srgb, var(--accent-border) 88%, transparent);
+  border-color: color-mix(in srgb, var(--accent-border) 66%, transparent);
 }
 
 .canonical-workbench-shell .action-btn .action-copy {
   min-width: 0;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   justify-content: center;
+  align-items: flex-start;
 }
 
 .canonical-workbench-shell .action-icon-shell {
@@ -310,8 +313,8 @@
 }
 
 .canonical-workbench-shell .action-btn.is-primary .action-icon-shell {
-  border-color: color-mix(in srgb, var(--accent-border) 74%, transparent);
-  color: var(--accent);
+  border-color: color-mix(in srgb, var(--border) 86%, transparent);
+  color: var(--text-2);
 }
 
 .canonical-workbench-shell .action-label {
@@ -749,6 +752,13 @@
   padding: 24px 0 8px;
 }
 
+.canonical-workbench-shell .chat-message-list.is-history-review {
+  width: min(1100px, calc(100% - 56px));
+  max-width: 1100px;
+  gap: 22px;
+  padding-top: 30px;
+}
+
 .canonical-workbench-shell .chat-message {
   width: min(88%, 820px);
   border-radius: 22px;
@@ -763,6 +773,17 @@
   margin-left: auto;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--bg-3) 94%, transparent) 0%, color-mix(in srgb, var(--accent-dim) 58%, transparent) 100%);
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-message.assistant {
+  width: 100%;
+  max-width: 1100px;
+  padding: 22px 24px;
+  border-radius: 26px;
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-message.user {
+  width: min(100%, 920px);
 }
 
 .canonical-workbench-shell .chat-message-head {
@@ -794,9 +815,180 @@
   line-height: 1.7;
 }
 
-.canonical-workbench-shell .chat-message-body .lab-chat-prose,
-.canonical-workbench-shell .chat-message-body .lab-chat-prose * {
-  color: inherit;
+.canonical-workbench-shell .chat-message-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.canonical-workbench-shell .chat-markdown {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--text-1);
+  min-width: 0;
+}
+
+.canonical-workbench-shell .chat-markdown > * {
+  min-width: 0;
+}
+
+.canonical-workbench-shell .chat-markdown p,
+.canonical-workbench-shell .chat-markdown li,
+.canonical-workbench-shell .chat-markdown blockquote,
+.canonical-workbench-shell .chat-markdown td {
+  color: var(--text-1);
+  font-size: 15px;
+  line-height: 1.78;
+}
+
+.canonical-workbench-shell .chat-markdown strong {
+  color: var(--text-1);
+  font-weight: 650;
+}
+
+.canonical-workbench-shell .chat-markdown em {
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .chat-markdown h1,
+.canonical-workbench-shell .chat-markdown h2,
+.canonical-workbench-shell .chat-markdown h3 {
+  color: var(--text-1);
+  line-height: 1.2;
+  font-weight: 650;
+}
+
+.canonical-workbench-shell .chat-markdown h1 {
+  font-size: 28px;
+}
+
+.canonical-workbench-shell .chat-markdown h2 {
+  font-size: 22px;
+  margin-top: 6px;
+}
+
+.canonical-workbench-shell .chat-markdown h3 {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.canonical-workbench-shell .chat-markdown ul,
+.canonical-workbench-shell .chat-markdown ol {
+  padding-left: 1.4rem;
+  display: grid;
+  gap: 8px;
+}
+
+.canonical-workbench-shell .chat-markdown hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  margin: 6px 0;
+}
+
+.canonical-workbench-shell .chat-inline-code {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  padding: 0 8px;
+  background: color-mix(in srgb, var(--bg-3) 88%, transparent);
+  color: var(--text-1);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.canonical-workbench-shell .chat-code-frame {
+  position: relative;
+  max-width: 100%;
+  max-height: 360px;
+  overflow: auto;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 94%, transparent);
+  background: color-mix(in srgb, var(--bg-2) 96%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--bg-card) 24%, transparent);
+}
+
+.canonical-workbench-shell .chat-code-block {
+  display: block;
+  min-width: max-content;
+  padding: 18px 20px 20px;
+  color: var(--text-1);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre;
+}
+
+.canonical-workbench-shell .chat-code-block[data-language]::before {
+  content: attr(data-language);
+  display: inline-flex;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent-border) 52%, transparent);
+  padding: 0 8px;
+  color: var(--accent);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .chat-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 94%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+}
+
+.canonical-workbench-shell .chat-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+}
+
+.canonical-workbench-shell .chat-table th,
+.canonical-workbench-shell .chat-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  text-align: left;
+}
+
+.canonical-workbench-shell .chat-table th {
+  color: var(--text-2);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .chat-table tbody tr:nth-child(odd) {
+  background: color-mix(in srgb, var(--bg-2) 72%, transparent);
+}
+
+.canonical-workbench-shell .chat-blockquote {
+  border-left: 3px solid color-mix(in srgb, var(--accent-border) 62%, transparent);
+  padding-left: 14px;
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .chat-link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent-border) 54%, transparent);
+  text-underline-offset: 3px;
+}
+
+.canonical-workbench-shell .chat-artifact-slot {
+  width: min(100%, 920px);
+  margin-bottom: 4px;
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-artifact-slot {
+  width: min(100%, 1000px);
 }
 
 .canonical-workbench-shell .chat-citations {
@@ -833,6 +1025,10 @@
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 24%, var(--bg) 100%);
   backdrop-filter: blur(18px);
+}
+
+.canonical-workbench-shell .chat-composer-panel.is-history-review {
+  opacity: 0.98;
 }
 
 .canonical-workbench-shell .chat-composer-shell {
@@ -976,6 +1172,200 @@
   color: var(--text-3);
 }
 
+.canonical-workbench-shell .scientific-card {
+  width: 100%;
+  border-radius: 22px;
+  border: 1px solid color-mix(in srgb, var(--border) 94%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 97%, transparent) 0%, color-mix(in srgb, var(--bg-2) 90%, transparent) 100%);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.canonical-workbench-shell .scientific-card-toggle {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  text-align: left;
+}
+
+.canonical-workbench-shell .scientific-card-leading {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.canonical-workbench-shell .scientific-card-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-3) 82%, transparent);
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .scientific-card-heading {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.canonical-workbench-shell .scientific-card-kicker,
+.canonical-workbench-shell .scientific-card-footer-chip,
+.canonical-workbench-shell .scientific-card-meta-chip,
+.canonical-workbench-shell .scientific-card-status {
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .scientific-card-kicker {
+  color: var(--text-3);
+}
+
+.canonical-workbench-shell .scientific-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.canonical-workbench-shell .scientific-card-title {
+  color: var(--text-1);
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.canonical-workbench-shell .scientific-card-summary {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.canonical-workbench-shell .scientific-card-status,
+.canonical-workbench-shell .scientific-card-meta-chip,
+.canonical-workbench-shell .scientific-card-footer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  padding: 0 10px;
+}
+
+.canonical-workbench-shell .scientific-card-status.is-completed {
+  color: color-mix(in srgb, #0f7b5f 72%, var(--text-1));
+  background: color-mix(in srgb, #0f7b5f 10%, var(--bg-card));
+}
+
+.canonical-workbench-shell .scientific-card-status.is-partial,
+.canonical-workbench-shell .scientific-card-meta-chip.is-warning {
+  color: color-mix(in srgb, #9a6200 78%, var(--text-1));
+  background: color-mix(in srgb, #d39b2c 12%, var(--bg-card));
+}
+
+.canonical-workbench-shell .scientific-card-status.is-failed {
+  color: color-mix(in srgb, #8f3333 78%, var(--text-1));
+  background: color-mix(in srgb, #c45d5d 10%, var(--bg-card));
+}
+
+.canonical-workbench-shell .scientific-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--text-3);
+}
+
+.canonical-workbench-shell .scientific-card-panel {
+  display: grid;
+  gap: 16px;
+  padding: 0 20px 18px;
+}
+
+.canonical-workbench-shell .scientific-card-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.canonical-workbench-shell .scientific-card-section {
+  display: grid;
+  gap: 12px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 16px;
+  background: color-mix(in srgb, var(--bg-2) 84%, transparent);
+}
+
+.canonical-workbench-shell .scientific-card-section.is-warning {
+  background: color-mix(in srgb, #d39b2c 8%, var(--bg-card));
+}
+
+.canonical-workbench-shell .scientific-card-section-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-2);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .scientific-card-warning-list,
+.canonical-workbench-shell .scientific-card-evidence-list {
+  display: grid;
+  gap: 8px;
+}
+
+.canonical-workbench-shell .scientific-card-warning-list li {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.canonical-workbench-shell .scientific-card-evidence-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.canonical-workbench-shell .scientific-card-evidence-value {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 0 8px;
+  color: var(--text-1);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 12px;
+}
+
+.canonical-workbench-shell .scientific-card-evidence-context {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.canonical-workbench-shell .scientific-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .canonical-workbench-shell .rail {
   display: flex;
   min-height: 100vh;
@@ -1016,6 +1406,391 @@
 .canonical-workbench-shell .file-meta,
 .canonical-workbench-shell .rail-empty {
   color: var(--text-2);
+}
+
+.canonical-workbench-shell .rail-header-status {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.canonical-workbench-shell .rail-settings-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .rail-settings-btn:hover {
+  border-color: color-mix(in srgb, var(--accent-border) 62%, transparent);
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .rail-section {
+  padding: 16px 18px 18px;
+}
+
+.canonical-workbench-shell .rail-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.canonical-workbench-shell .rail-section-icon-shell {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .rail-section-head > span:first-of-type {
+  flex: 1 1 auto;
+}
+
+.canonical-workbench-shell .rail-status-chip {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+  color: var(--text-3);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .rail-status-chip.is-live,
+.canonical-workbench-shell .rail-status-chip.is-green {
+  border-color: color-mix(in srgb, var(--green-border) 70%, transparent);
+  background: color-mix(in srgb, var(--green-dim) 78%, transparent);
+  color: var(--green);
+}
+
+.canonical-workbench-shell .rail-status-chip.is-amber {
+  border-color: color-mix(in srgb, var(--accent-border) 76%, transparent);
+  background: color-mix(in srgb, var(--accent-dim) 82%, transparent);
+  color: var(--accent);
+}
+
+.canonical-workbench-shell .rail-status-chip.is-red {
+  border-color: color-mix(in srgb, var(--red) 46%, transparent);
+  background: color-mix(in srgb, var(--red-dim) 82%, transparent);
+  color: color-mix(in srgb, var(--red) 84%, var(--text-1));
+}
+
+.canonical-workbench-shell .rail-module,
+.canonical-workbench-shell .rail-module-compact,
+.canonical-workbench-shell .rail-module-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  border-radius: 20px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--accent-dim) 18%, transparent) 0%, transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 95%, transparent) 0%, color-mix(in srgb, var(--bg-2) 90%, transparent) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 7%, transparent);
+}
+
+.canonical-workbench-shell .rail-summary-card,
+.canonical-workbench-shell .rail-info-card,
+.canonical-workbench-shell .rail-domain-card,
+.canonical-workbench-shell .rail-empty-card {
+  border: 1px solid color-mix(in srgb, var(--border) 94%, transparent);
+  border-radius: 16px;
+  padding: 14px 14px 13px;
+  background: color-mix(in srgb, var(--bg) 82%, var(--bg-card));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.canonical-workbench-shell .rail-summary-meta {
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.canonical-workbench-shell .rail-summary-title,
+.canonical-workbench-shell .rail-domain-card strong {
+  margin-top: 5px;
+  display: block;
+  color: var(--text-1);
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.canonical-workbench-shell .rail-summary-copy {
+  margin-top: 6px;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.canonical-workbench-shell .rung-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.canonical-workbench-shell .rung-bar-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.canonical-workbench-shell .rung-row-level,
+.canonical-workbench-shell .rung-row-label {
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .rung-row-level {
+  color: var(--text-3);
+}
+
+.canonical-workbench-shell .rung-row-label {
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .rung-track {
+  position: relative;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-hover) 94%, transparent);
+}
+
+.canonical-workbench-shell .rung-fill {
+  position: absolute;
+  inset: 0;
+  width: 28%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--border) 86%, transparent);
+}
+
+.canonical-workbench-shell .rung-bar-row.active .rung-fill {
+  width: 100%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 92%, white) 0%, color-mix(in srgb, var(--accent-border) 84%, transparent) 100%);
+}
+
+.canonical-workbench-shell .rung-bar-row.active .rung-row-level,
+.canonical-workbench-shell .rung-bar-row.active .rung-row-label {
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .rung-status-line {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.canonical-workbench-shell .rung-status-line strong {
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .rail-info-card.green {
+  border-color: color-mix(in srgb, var(--green-border) 70%, transparent);
+  background: color-mix(in srgb, var(--green-dim) 54%, var(--bg-card));
+}
+
+.canonical-workbench-shell .rail-info-card.amber {
+  border-color: color-mix(in srgb, var(--accent-border) 76%, transparent);
+  background: color-mix(in srgb, var(--accent-dim) 58%, var(--bg-card));
+}
+
+.canonical-workbench-shell .rail-info-card.red {
+  border-color: color-mix(in srgb, var(--red) 42%, transparent);
+  background: color-mix(in srgb, var(--red-dim) 56%, var(--bg-card));
+}
+
+.canonical-workbench-shell .confidence-meter {
+  display: grid;
+  gap: 8px;
+}
+
+.canonical-workbench-shell .confidence-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.canonical-workbench-shell .confidence-label strong {
+  color: var(--text-1);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .meter-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-hover) 94%, transparent);
+}
+
+.canonical-workbench-shell .meter-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--border) 88%, transparent);
+}
+
+.canonical-workbench-shell .meter-fill.is-green {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--green) 88%, white) 0%, color-mix(in srgb, var(--green-border) 84%, transparent) 100%);
+}
+
+.canonical-workbench-shell .meter-fill.is-amber {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 88%, white) 0%, color-mix(in srgb, var(--accent-border) 82%, transparent) 100%);
+}
+
+.canonical-workbench-shell .meter-fill.is-red {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--red) 86%, white) 0%, color-mix(in srgb, var(--red) 46%, transparent) 100%);
+}
+
+.canonical-workbench-shell .meter-fill.is-neutral {
+  background: color-mix(in srgb, var(--text-3) 32%, transparent);
+}
+
+.canonical-workbench-shell .rail-provenance-card.is-empty,
+.canonical-workbench-shell .rail-empty-card {
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .rail-provenance-title,
+.canonical-workbench-shell .rail-empty-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-1);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .rail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.canonical-workbench-shell .rail-link {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg) 84%, var(--bg-card));
+  color: var(--text-2);
+  text-decoration: none;
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.canonical-workbench-shell .rail-link:hover {
+  border-color: color-mix(in srgb, var(--accent-border) 66%, transparent);
+  color: var(--text-1);
+}
+
+.canonical-workbench-shell .rail-domain-card {
+  gap: 4px;
+}
+
+.canonical-workbench-shell .evidence-file {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  padding: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.canonical-workbench-shell .evidence-file:hover {
+  border-color: color-mix(in srgb, var(--accent-border) 58%, transparent);
+  background: color-mix(in srgb, var(--bg-hover) 82%, transparent);
+}
+
+.canonical-workbench-shell .file-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+  background: color-mix(in srgb, var(--bg) 84%, var(--bg-card));
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .file-info {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  gap: 5px;
+}
+
+.canonical-workbench-shell .file-name {
+  color: var(--text-1);
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.canonical-workbench-shell .file-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.canonical-workbench-shell .file-badge {
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent-border) 58%, transparent);
+  background: color-mix(in srgb, var(--accent-dim) 76%, transparent);
+  color: var(--accent);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 @media (max-width: 1279px) {

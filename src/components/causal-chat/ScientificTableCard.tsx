@@ -1,7 +1,19 @@
-import { useState } from 'react';
-import { FileText, Table, Database, AlertTriangle, ChevronDown, ChevronRight, TrendingUp, BookOpen } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  BookOpen,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  FileText,
+  Table,
+  TrendingUp,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ScientificAnalysisResponse, ScientificNumericEvidenceItem } from '@/lib/science/scientific-analysis-service';
+import type {
+  ScientificAnalysisResponse,
+  ScientificNumericEvidenceItem,
+} from '@/lib/science/scientific-analysis-service';
 
 interface ScientificTableCardProps {
   analysis: ScientificAnalysisResponse;
@@ -10,138 +22,126 @@ interface ScientificTableCardProps {
 
 function EvidenceRow({ item }: { item: ScientificNumericEvidenceItem }) {
   return (
-    <div className="flex items-start gap-2 text-xs border-l-2 border-[var(--lab-border)] pl-2 py-0.5">
-      <div className="font-mono font-medium text-[var(--lab-text-primary)] shrink-0">
-        {item.value}
-      </div>
-      <div className="text-[var(--lab-text-tertiary)] line-clamp-2" title={item.contextSnippet}>
-        {item.contextSnippet || "No context"}
-      </div>
+    <div className="scientific-card-evidence-row">
+      <span className="scientific-card-evidence-value">{item.value}</span>
+      <span className="scientific-card-evidence-context" title={item.contextSnippet}>
+        {item.contextSnippet || 'No contextual excerpt available.'}
+      </span>
     </div>
   );
 }
 
 export function ScientificTableCard({ analysis, className }: ScientificTableCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
   const { summary, numericEvidence, warnings, observability } = analysis;
-  const hasWarnings = warnings.length > 0;
-  const statusColor = analysis.status === 'failed' ? 'text-red-400' : 
-                      analysis.status === 'partial' ? 'text-amber-400' : 'text-emerald-400';
 
-  // Group evidence by category for display
-  const metrics = numericEvidence.filter(item => item.source === 'table');
-  const prose = numericEvidence.filter(item => item.source === 'prose');
+  const metrics = useMemo(
+    () => numericEvidence.filter((item) => item.source === 'table'),
+    [numericEvidence]
+  );
+  const prose = useMemo(
+    () => numericEvidence.filter((item) => item.source === 'prose'),
+    [numericEvidence]
+  );
+
+  const summaryText = `${summary.trustedTableCount}/${summary.tableCount} trusted tables • ${summary.dataPointCount} extracted points • ${prose.length} prose claims`;
+  const statusTone =
+    analysis.status === 'failed' ? 'is-failed' : analysis.status === 'partial' ? 'is-partial' : 'is-completed';
 
   return (
-    <div className={cn("lab-card overflow-hidden !p-0 border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]", className)}>
-      {/* Header */}
-      <div 
-        className="flex items-center justify-between p-3 cursor-pointer hover:bg-[var(--lab-panel)] transition-colors"
-        onClick={() => setIsExpanded(!isExpanded)}
+    <section className={cn('scientific-card', className)}>
+      <button
+        type="button"
+        className="scientific-card-toggle"
+        onClick={() => setIsExpanded((current) => !current)}
+        aria-expanded={isExpanded}
       >
-        <div className="flex items-center gap-3">
-          <div className={cn("p-1.5 rounded-md bg-[var(--lab-bg)] border border-[var(--lab-border)]")}>
-            <FileText className="h-4 w-4 text-[var(--lab-text-secondary)]" />
+        <div className="scientific-card-leading">
+          <div className="scientific-card-icon">
+            <FileText className="h-4 w-4" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-medium text-[var(--lab-text-primary)]">
-                {observability.fileName}
-              </h4>
-              <span className={cn("text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-[var(--lab-bg)] border border-[var(--lab-border)]", statusColor)}>
-                {analysis.status.toUpperCase()}
-              </span>
+          <div className="scientific-card-heading">
+            <span className="scientific-card-kicker">Scientific Artifact</span>
+            <div className="scientific-card-title-row">
+              <h4 className="scientific-card-title">{observability.fileName}</h4>
+              <span className={cn('scientific-card-status', statusTone)}>{analysis.status}</span>
             </div>
-            <div className="flex items-center gap-3 mt-0.5 text-xs text-[var(--lab-text-tertiary)] font-mono">
-              <span className="flex items-center gap-1">
-                <Table className="h-3 w-3" />
-                {summary.trustedTableCount}/{summary.tableCount} tables
-              </span>
-              <span className="flex items-center gap-1">
-                <Database className="h-3 w-3" />
-                {summary.dataPointCount} points
-              </span>
-            </div>
+            <p className="scientific-card-summary">{summaryText}</p>
           </div>
         </div>
-        
-        <div className="flex items-center gap-2">
-          {hasWarnings && (
-            <div title={`${warnings.length} warnings`}>
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-            </div>
-          )}
-          {isExpanded ? 
-            <ChevronDown className="h-4 w-4 text-[var(--lab-text-tertiary)]" /> : 
-            <ChevronRight className="h-4 w-4 text-[var(--lab-text-tertiary)]" />
-          }
-        </div>
-      </div>
 
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="border-t border-[var(--lab-border)] bg-[var(--lab-bg)] p-4 space-y-4">
-          
-          {/* Warnings Section */}
-          {hasWarnings && (
-            <div className="bg-amber-500/5 border border-amber-500/10 rounded-lg p-3">
-              <h5 className="text-xs font-semibold text-amber-500 mb-2 flex items-center gap-1.5">
-                <AlertTriangle className="h-3 w-3" />
-                Ingestion Warnings
-              </h5>
-              <ul className="space-y-1">
-                {warnings.slice(0, 3).map((w, idx) => (
-                  <li key={idx} className="text-xs text-[var(--lab-text-secondary)] pl-3 border-l text-wrap break-words border-amber-500/20">
-                    {w}
-                  </li>
+        <div className="scientific-card-meta">
+          <span className="scientific-card-meta-chip">
+            <Table className="h-3.5 w-3.5" />
+            {summary.tableCount} tables
+          </span>
+          <span className="scientific-card-meta-chip">
+            <Database className="h-3.5 w-3.5" />
+            {summary.dataPointCount} points
+          </span>
+          {warnings.length > 0 ? (
+            <span className="scientific-card-meta-chip is-warning">
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {warnings.length} warnings
+            </span>
+          ) : null}
+          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </div>
+      </button>
+
+      {isExpanded ? (
+        <div className="scientific-card-panel">
+          {warnings.length > 0 ? (
+            <div className="scientific-card-section is-warning">
+              <div className="scientific-card-section-head">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                <span>Warnings</span>
+              </div>
+              <ul className="scientific-card-warning-list">
+                {warnings.slice(0, 4).map((warning, index) => (
+                  <li key={`${warning}-${index}`}>{warning}</li>
                 ))}
-                {warnings.length > 3 && (
-                  <li className="text-[10px] text-[var(--lab-text-tertiary)] pt-1 italic">
-                    + {warnings.length - 3} more warnings
-                  </li>
-                )}
               </ul>
             </div>
-          )}
+          ) : null}
 
-          {/* Metrics Preview */}
-          {metrics.length > 0 && (
-            <div>
-              <h5 className="text-xs font-semibold text-[var(--lab-text-secondary)] mb-2 flex items-center gap-1.5">
-                <TrendingUp className="h-3 w-3" />
-                Extracted Metrics (Table)
-              </h5>
-              <div className="grid grid-cols-1 gap-2">
-                {metrics.slice(0, 4).map((item, idx) => (
-                  <EvidenceRow key={idx} item={item} />
-                ))}
+          <div className="scientific-card-grid">
+            {metrics.length > 0 ? (
+              <div className="scientific-card-section">
+                <div className="scientific-card-section-head">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  <span>Table Metrics</span>
+                </div>
+                <div className="scientific-card-evidence-list">
+                  {metrics.slice(0, 4).map((item, index) => (
+                    <EvidenceRow key={`metric-${index}`} item={item} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ) : null}
 
-           {/* Prose Claims Preview */}
-           {prose.length > 0 && (
-            <div>
-              <h5 className="text-xs font-semibold text-[var(--lab-text-secondary)] mb-2 flex items-center gap-1.5">
-                <BookOpen className="h-3 w-3" />
-                Textual Claims (Prose)
-              </h5>
-              <div className="grid grid-cols-1 gap-2">
-                {prose.slice(0, 3).map((item, idx) => (
-                  <EvidenceRow key={idx} item={item} />
-                ))}
+            {prose.length > 0 ? (
+              <div className="scientific-card-section">
+                <div className="scientific-card-section-head">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span>Prose Claims</span>
+                </div>
+                <div className="scientific-card-evidence-list">
+                  {prose.slice(0, 3).map((item, index) => (
+                    <EvidenceRow key={`prose-${index}`} item={item} />
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ) : null}
+          </div>
 
-          {/* Footer Metadata */}
-          <div className="pt-2 border-t border-[var(--lab-border)] flex items-center justify-between text-[10px] text-[var(--lab-text-tertiary)] font-mono">
-             <span>ID: {analysis.ingestionId.slice(0, 8)}</span>
-             <span>{Math.round(observability.durationMs)}ms</span>
+          <div className="scientific-card-footer">
+            <span className="scientific-card-footer-chip">Ingestion {analysis.ingestionId.slice(0, 8)}</span>
+            <span className="scientific-card-footer-chip">{Math.round(observability.durationMs)} ms</span>
+            <span className="scientific-card-footer-chip">{observability.warningsCount} warnings observed</span>
           </div>
         </div>
-      )}
-    </div>
+      ) : null}
+    </section>
   );
 }
