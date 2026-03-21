@@ -1,8 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Focus, PanelRightClose, PanelRightOpen } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
 import { parseSSEChunk } from '@/lib/services/sse-event-parser';
@@ -16,6 +16,7 @@ import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analys
 import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
 import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
+import { cn } from '@/lib/utils';
 
 interface WorkbenchMessage {
   id: string;
@@ -232,6 +233,7 @@ interface SessionHistoryMessage {
     label?: string;
     confidence?: number;
   } | null;
+  scientific_analysis?: ScientificAnalysisResponse | null;
 }
 
 const isRealDomain = (value: string | null | undefined): value is string =>
@@ -279,6 +281,65 @@ const extractSourcesFromText = (text: string): GroundingSource[] => {
   return sources.slice(0, 5);
 };
 
+const flattenMarkdownText = (value: ReactNode): string => {
+  if (typeof value === 'string' || typeof value === 'number') return String(value);
+  if (Array.isArray(value)) return value.map(flattenMarkdownText).join('');
+  return '';
+};
+
+const CHAT_MARKDOWN_COMPONENTS: Components = {
+  pre({ children }) {
+    return <div className="chat-code-frame">{children}</div>;
+  },
+  code({ children, className, ...props }) {
+    const text = flattenMarkdownText(children).replace(/\n$/, '');
+    const language = className?.match(/language-([\w-]+)/)?.[1];
+    const isBlock = Boolean(language) || text.includes('\n');
+
+    if (!isBlock) {
+      return (
+        <code className="chat-inline-code" {...props}>
+          {text}
+        </code>
+      );
+    }
+
+    return (
+      <code
+        className={cn('chat-code-block', className)}
+        data-language={language || undefined}
+        {...props}
+      >
+        {text}
+      </code>
+    );
+  },
+  table({ children }) {
+    return (
+      <div className="chat-table-wrap">
+        <table className="chat-table">{children}</table>
+      </div>
+    );
+  },
+  blockquote({ children }) {
+    return <blockquote className="chat-blockquote">{children}</blockquote>;
+  },
+  a({ href, children, ...props }) {
+    const external = typeof href === 'string' && /^https?:\/\//.test(href);
+    return (
+      <a
+        {...props}
+        href={href}
+        className="chat-link"
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noreferrer' : undefined}
+      >
+        {children}
+      </a>
+    );
+  },
+};
+
 
 
 const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
@@ -314,6 +375,7 @@ export function ChatWorkbenchV2() {
   const [operatorMode, setOperatorMode] = useState<OperatorMode>('explore');
   const [attachments, setAttachments] = useState<PendingAttachment[]>([]);
   const [loadingStageIndex, setLoadingStageIndex] = useState(0);
+  const [isHistoricalReview, setIsHistoricalReview] = useState(false);
   const assistantContentRef = useRef<string>('');
   const scientificAnalysisRef = useRef<ScientificAnalysisResponse | undefined>(undefined);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -334,6 +396,7 @@ export function ChatWorkbenchV2() {
     setPrompt('');
     setError(null);
     setDbSessionId(null);
+    setIsHistoricalReview(false);
     setCurrentDomain('unclassified');
     currentDomainRef.current = 'unclassified';
     setCurrentModelKey('default');
@@ -401,6 +464,7 @@ export function ChatWorkbenchV2() {
       role: message.__role,
       content: message.content,
       createdAt: new Date(message.created_at),
+      scientificAnalysis: message.__role === 'assistant' ? message.scientific_analysis || undefined : undefined,
     }));
 
     const latestAssistantWithDensity = [...filteredMessages]
@@ -433,6 +497,7 @@ export function ChatWorkbenchV2() {
 
     console.log('[DEBUG applySessionHistory] setting', loadedMessages.length, 'messages for session', sessionId);
     setMessages(loadedMessages);
+    setIsHistoricalReview(loadedMessages.length > 0);
     setCurrentDomain(restoredDomain);
     currentDomainRef.current = restoredDomain;
     setCurrentModelKey(restoredModelKey);
@@ -456,6 +521,11 @@ export function ChatWorkbenchV2() {
     }
 
     const latestAssistantText = [...loadedMessages].reverse().find((m) => m.role === 'assistant')?.content || '';
+    const latestAssistantAnalysis = [...loadedMessages]
+      .reverse()
+      .find((m) => m.role === 'assistant' && m.scientificAnalysis)?.scientificAnalysis;
+    assistantContentRef.current = latestAssistantText;
+    scientificAnalysisRef.current = latestAssistantAnalysis;
     const restoredSources = extractSourcesFromText(latestAssistantText);
     const citedRanks = extractCitedRanksFromText(latestAssistantText);
     const citedOnly = citedRanks.size > 0 ? restoredSources.filter((source) => citedRanks.has(source.rank)) : restoredSources;
@@ -1127,7 +1197,7 @@ export function ChatWorkbenchV2() {
       (message.content.trim().length > 0 || Boolean(message.scientificAnalysis))
   );
   const composerBlock = (
-    <div>
+    <div className={cn('chat-composer-panel', isHistoricalReview && 'is-history-review')}>
       <ChatComposerV2
         value={prompt}
         onChange={setPrompt}
@@ -1165,7 +1235,7 @@ export function ChatWorkbenchV2() {
         />
       }
       mainContent={
-        <div className="chat-workbench">
+        <div className={cn('chat-workbench', isHistoricalReview && 'is-history-review')}>
           <div className="chat-message-scroll">
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">
@@ -1176,27 +1246,32 @@ export function ChatWorkbenchV2() {
                 </div>
               </div>
             ) : (
-              <div className="chat-message-list">
+              <div className={cn('chat-message-list', isHistoricalReview && 'is-history-review')}>
                 {messages.map((message, index) => (
                   <article
                     key={message.id}
-                    className={`chat-message ${message.role === 'user' ? 'user' : 'assistant'}`}
+                    className={cn(
+                      'chat-message',
+                      message.role === 'user' ? 'user' : 'assistant',
+                      isHistoricalReview && 'is-history-review-message',
+                      message.role === 'assistant' && message.scientificAnalysis && 'has-artifact'
+                    )}
                   >
                     <div className="chat-message-head">
                       <span className="chat-message-role">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
                       <span className="chat-message-time">{message.createdAt.toLocaleTimeString()}</span>
                     </div>
                     {message.role === 'assistant' && message.scientificAnalysis && (
-                      <div className="mb-4 max-w-2xl">
+                      <div className="chat-artifact-slot">
                         <ScientificTableCard analysis={message.scientificAnalysis} />
                       </div>
                     )}
                     <div className="chat-message-body">
                       {message.role === 'assistant' ? (
-                        <div className="lab-chat-prose">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {message.content || '...'}
-                        </ReactMarkdown>
+                        <div className="chat-markdown">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={CHAT_MARKDOWN_COMPONENTS}>
+                            {message.content || ''}
+                          </ReactMarkdown>
                         </div>
                       ) : (
                         <p className="whitespace-pre-wrap">{message.content || '...'}</p>
