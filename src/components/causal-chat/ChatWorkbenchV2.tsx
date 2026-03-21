@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Focus, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -9,6 +9,7 @@ import { parseSSEChunk } from '@/lib/services/sse-event-parser';
 import { ChatPersistence } from '@/lib/services/chat-persistence';
 import { ChatComposerV2, type ComposerAttachment } from '@/components/causal-chat/ChatComposerV2';
 import { ThinkingAnimation } from '@/components/causal-chat/ThinkingAnimation';
+import { useAppShellChrome } from '@/components/dashboard/AppShellChromeContext';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grounding';
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
@@ -50,6 +51,61 @@ interface AssistantEventPayload {
 }
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
+
+const OPERATOR_MODE_LABELS: Record<OperatorMode, string> = {
+  explore: 'Discovery',
+  intervene: 'Intervention',
+  audit: 'Audit',
+};
+
+function ChatWorkbenchTopbar({
+  operatorMode,
+  sourceCount,
+}: {
+  operatorMode: OperatorMode;
+  sourceCount: number;
+}) {
+  const shellChrome = useAppShellChrome();
+
+  return (
+    <>
+      <span className="topbar-tag">Causal Research Workbench</span>
+      <div className="topbar-pipeline">
+        <span className="step done">observe</span>
+        <span className="arrow">→</span>
+        <span className={operatorMode !== 'explore' ? 'step done' : 'step'}>intervene</span>
+        <span className="arrow">→</span>
+        <span className={operatorMode === 'audit' ? 'step done' : 'step'}>audit</span>
+      </div>
+      <span className="topbar-phase">Mode: {OPERATOR_MODE_LABELS[operatorMode]}</span>
+      <div className="workbench-toolbar">
+        <span className="workbench-toolbar-meta">
+          Sources <strong>{sourceCount}</strong>
+        </span>
+        <button
+          type="button"
+          className={shellChrome?.evidenceRailVisible ? 'workbench-toolbar-chip is-active' : 'workbench-toolbar-chip'}
+          onClick={() => shellChrome?.setEvidenceRailVisible((current) => !current)}
+          aria-label={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
+          title={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
+        >
+          {shellChrome?.evidenceRailVisible ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
+          <span>Evidence</span>
+        </button>
+        <button
+          type="button"
+          className={shellChrome?.focusMode ? 'workbench-toolbar-chip is-active' : 'workbench-toolbar-chip'}
+          onClick={() => shellChrome?.setFocusMode((current) => !current)}
+          aria-label={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+          title={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
+        >
+          <Focus className="h-3.5 w-3.5" />
+          <span>Focus</span>
+        </button>
+      </div>
+    </>
+  );
+}
 
 interface PendingAttachment extends ComposerAttachment {
   file: File;
@@ -235,7 +291,6 @@ const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
 
 export function ChatWorkbenchV2() {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
-  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -526,16 +581,16 @@ export function ChatWorkbenchV2() {
     [applySessionHistory]
   );
 
-  useEffect(() => {
-    const urlSessionId = searchParams.get('sessionId');
-    const isNew = searchParams.get('new') === '1';
+  const syncThreadFromUrl = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlSessionId = params.get('sessionId');
+    const isNew = params.get('new') === '1';
 
     if (isNew) {
       resetThread();
-      if (typeof window !== 'undefined') {
-        const cleanPath = window.location.pathname;
-        window.history.replaceState({}, '', cleanPath);
-      }
+      window.history.replaceState({}, '', window.location.pathname);
       return;
     }
 
@@ -546,7 +601,15 @@ export function ChatWorkbenchV2() {
     } else {
       console.log('[DEBUG URL effect] SKIPPED — same session or no sessionId');
     }
-  }, [dbSessionId, loadSession, resetThread, searchParams]);
+  }, [dbSessionId, loadSession, resetThread]);
+
+  useEffect(() => {
+    syncThreadFromUrl();
+    window.addEventListener('popstate', syncThreadFromUrl);
+    return () => {
+      window.removeEventListener('popstate', syncThreadFromUrl);
+    };
+  }, [syncThreadFromUrl]);
 
   useEffect(() => {
     const onLoadSessionEvent = (event: Event) => {
@@ -1095,6 +1158,12 @@ export function ChatWorkbenchV2() {
       evidenceRail={railConfig}
       mainMode="chat"
       focusModeReady={hasAssistantOutput}
+      mainTopbar={
+        <ChatWorkbenchTopbar
+          operatorMode={operatorMode}
+          sourceCount={groundingSources.length}
+        />
+      }
       mainContent={
         <div className="chat-workbench">
           <div className="chat-message-scroll">
