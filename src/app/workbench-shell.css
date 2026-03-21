@@ -82,10 +82,10 @@
 .canonical-workbench-shell .sidebar-main {
   display: flex;
   min-height: 0;
-  flex: 1;
+  flex: 0 0 auto;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
+  overflow: visible;
   padding-right: 2px;
 }
 
@@ -1089,6 +1089,7 @@
 
 .canonical-workbench-shell .history-section {
   flex: 1 1 auto;
+  min-height: 0;
   margin-top: 0;
   padding-top: 10px;
   gap: 8px;
