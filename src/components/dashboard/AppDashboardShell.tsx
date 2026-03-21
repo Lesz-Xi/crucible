@@ -296,10 +296,30 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   useEffect(() => {
     if (!activeSessionId || !historyLedgerRef.current || !activeThreadButtonRef.current) return;
 
-    activeThreadButtonRef.current.scrollIntoView({
-      block: 'nearest',
-      inline: 'nearest',
-    });
+    const ledger = historyLedgerRef.current;
+    const activeThread = activeThreadButtonRef.current;
+    const ledgerRect = ledger.getBoundingClientRect();
+    const threadRect = activeThread.getBoundingClientRect();
+    const threadTop = threadRect.top - ledgerRect.top + ledger.scrollTop;
+    const threadBottom = threadRect.bottom - ledgerRect.top + ledger.scrollTop;
+    const viewportTop = ledger.scrollTop;
+    const viewportBottom = viewportTop + ledger.clientHeight;
+    const padding = 10;
+
+    if (threadTop < viewportTop + padding) {
+      ledger.scrollTo({
+        top: Math.max(0, threadTop - padding),
+        behavior: 'smooth',
+      });
+      return;
+    }
+
+    if (threadBottom > viewportBottom - padding) {
+      ledger.scrollTo({
+        top: Math.max(0, threadBottom - ledger.clientHeight + padding),
+        behavior: 'smooth',
+      });
+    }
   }, [activeSessionId, recentThreads]);
 
   const createFolder = () => {
