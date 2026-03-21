@@ -1,14 +1,14 @@
 import { createClient } from '@/lib/supabase/client';
 import type { AppAuthUser } from '@/types/auth';
 
-function hasPublicSupabaseEnv(): boolean {
+export function hasPublicSupabaseEnv(): boolean {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 }
 
-export async function signInWithGoogle(): Promise<{ error?: string }> {
+export async function signInWithGoogle(nextPathOverride?: string): Promise<{ error?: string }> {
   if (!hasPublicSupabaseEnv()) {
     return {
       error:
@@ -26,7 +26,9 @@ export async function signInWithGoogle(): Promise<{ error?: string }> {
 
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const nextPath =
-    typeof window !== 'undefined'
+    typeof nextPathOverride === 'string' && nextPathOverride.startsWith('/')
+      ? nextPathOverride
+      : typeof window !== 'undefined'
       ? `${window.location.pathname}${window.location.search}`
       : '/chat';
   const redirectUrl = new URL('/auth/callback', origin);
