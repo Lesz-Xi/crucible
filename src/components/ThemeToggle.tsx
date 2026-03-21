@@ -4,8 +4,14 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  variant?: "shell" | "landing";
+  className?: string;
+}
+
+export function ThemeToggle({ variant = "shell", className }: ThemeToggleProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -16,32 +22,55 @@ export function ThemeToggle() {
 
   if (!mounted) return null;
 
+  const isDark = resolvedTheme === "dark";
+  const isLanding = variant === "landing";
+
   return (
     <button
-      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="relative flex h-7 w-12 items-center rounded-full border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] p-1 transition-colors duration-300 focus:outline-none hover:bg-[var(--lab-hover-bg)]"
-      aria-label="Toggle Dark Mode"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className={cn(
+        "relative flex items-center rounded-full p-1 transition-colors duration-300 focus:outline-none",
+        isLanding
+          ? "h-10 w-[72px] border border-[var(--border-subtle)] bg-[rgba(255,250,244,0.76)] text-[var(--text-primary)] shadow-[var(--shadow-soft)] backdrop-blur-xl hover:bg-[var(--bg-card-soft)] dark:bg-[rgba(23,20,17,0.84)]"
+          : "h-7 w-12 border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] hover:bg-[var(--lab-hover-bg)]",
+        className
+      )}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      {/* Background Track Icons (Static) */}
-      <div className="absolute left-1.5 text-[var(--lab-text-secondary)] opacity-60">
-        <Sun className="w-3.5 h-3.5" />
+      <div
+        className={cn(
+          "absolute left-1.5 opacity-60",
+          isLanding ? "text-[var(--text-secondary)]" : "text-[var(--lab-text-secondary)]"
+        )}
+      >
+        <Sun className={cn(isLanding ? "h-4 w-4" : "h-3.5 w-3.5")} />
       </div>
-      <div className="absolute right-1.5 text-[var(--lab-text-secondary)] opacity-60">
-        <Moon className="w-3.5 h-3.5" />
+      <div
+        className={cn(
+          "absolute right-1.5 opacity-60",
+          isLanding ? "text-[var(--text-secondary)]" : "text-[var(--lab-text-secondary)]"
+        )}
+      >
+        <Moon className={cn(isLanding ? "h-4 w-4" : "h-3.5 w-3.5")} />
       </div>
 
-      {/* Sliding Pill */}
       <motion.div
-        className="relative z-10 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--lab-panel)] shadow-[var(--lab-shadow-soft)] pointer-events-none"
+        className={cn(
+          "pointer-events-none relative z-10 flex items-center justify-center rounded-full",
+          isLanding
+            ? "h-8 w-8 bg-[var(--bg-elevated)] text-[var(--text-primary)] shadow-[var(--shadow-soft)]"
+            : "h-5 w-5 bg-[var(--lab-panel)] text-[var(--lab-text-primary)] shadow-[var(--lab-shadow-soft)]"
+        )}
         layout
         transition={{ type: "spring", stiffness: 700, damping: 30 }}
-        animate={{ x: resolvedTheme === "dark" ? 20 : 0 }}
+        animate={{ x: isDark ? (isLanding ? 28 : 20) : 0 }}
       >
-        <div className="text-[var(--lab-text-primary)]">
-          {resolvedTheme === "dark" ? (
-             <Moon className="w-3 h-3 text-[var(--lab-text-primary)]" strokeWidth={2.5} />
+        <div>
+          {isDark ? (
+             <Moon className={cn(isLanding ? "h-4 w-4" : "h-3 w-3")} strokeWidth={2.5} />
           ) : (
-             <Sun className="w-3 h-3 text-[var(--lab-text-primary)]" strokeWidth={2.5} />
+             <Sun className={cn(isLanding ? "h-4 w-4" : "h-3 w-3")} strokeWidth={2.5} />
           )}
         </div>
       </motion.div>

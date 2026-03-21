@@ -5,8 +5,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { getCurrentUser } from "@/lib/auth/actions";
 import { PixelArrowIcon, PixelChevronDownIcon } from "@/components/landing/PixelIcons";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   {
@@ -47,8 +48,6 @@ export function Navbar() {
   const router = useRouter();
   const [isLoadingAuthState, setIsLoadingAuthState] = useState(true);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [isBusy, setIsBusy] = useState(false);
-  const [authError, setAuthError] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,27 +78,14 @@ export function Navbar() {
   }, []);
 
   const handlePrimaryAction = async () => {
-    setAuthError(null);
-
-    if (isLoadingAuthState || isBusy) return;
+    if (isLoadingAuthState) return;
 
     if (isSignedIn) {
       router.push("/chat");
       return;
     }
 
-    setIsBusy(true);
-
-    try {
-      const { error } = await signInWithGoogle();
-      if (error) {
-        setAuthError(error);
-      }
-    } catch {
-      setAuthError("Unable to start sign-in. Please try again.");
-    } finally {
-      setIsBusy(false);
-    }
+    router.push("/auth?next=%2Fchat");
   };
 
   return (
@@ -137,7 +123,7 @@ export function Navbar() {
 
                 {openMenu === item.label && (
                   <div className="absolute left-0 top-full pt-2 z-40">
-                    <div className="min-w-[220px] rounded-[18px] border border-[var(--border-subtle)] bg-[rgba(27,23,20,0.96)] p-3 shadow-[var(--shadow-soft)] backdrop-blur-xl">
+                    <div className="min-w-[220px] rounded-[18px] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-3 shadow-[var(--shadow-soft)] backdrop-blur-xl">
                       <div className="space-y-1">
                         {item.links.map((link) => (
                           <Link
@@ -159,34 +145,32 @@ export function Navbar() {
           </nav>
           </div>
 
-          <div className="flex items-center divide-x divide-[var(--border-subtle)] overflow-hidden rounded-[14px] border border-[var(--border-subtle)] bg-[rgba(23,20,17,0.84)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+          <div className="flex items-center divide-x divide-[var(--border-subtle)] overflow-hidden rounded-[14px] border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+            <div className="px-3 py-2">
+              <ThemeToggle variant="landing" />
+            </div>
+
             <Link
               href="#contact"
               className="group hidden items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-rust-soft)] md:inline-flex"
             >
-              <span>Contact Sales</span>
+              <span>Join Synthesis</span>
               <PixelArrowIcon className="h-3.5 w-3.5 text-[var(--text-muted)] transition-transform duration-200 group-hover:translate-x-1 group-hover:text-[var(--text-primary)]" />
             </Link>
 
             <button
               type="button"
               onClick={handlePrimaryAction}
-              disabled={isLoadingAuthState || isBusy}
+              disabled={isLoadingAuthState}
               className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-rust-soft)] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {(isLoadingAuthState || isBusy) && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isLoadingAuthState && <Loader2 className="h-4 w-4 animate-spin" />}
               <span>
                 {isLoadingAuthState ? "Loading" : isSignedIn ? "Open Instrument" : "Try Wu-Weism"}
               </span>
             </button>
           </div>
         </div>
-
-        {authError && (
-          <p className="mt-2 text-right font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
-            {authError}
-          </p>
-        )}
       </div>
     </header>
   );

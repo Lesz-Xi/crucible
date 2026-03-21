@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { LogIn, LogOut, Loader2 } from 'lucide-react';
-import { getCurrentUser, signInWithGoogle, signOut } from '@/lib/auth/actions';
+import { getCurrentUser, signOut } from '@/lib/auth/actions';
 import { collectLocalHistoryExport } from '@/lib/migration/local-history-export';
 import type { AppAuthUser } from '@/types/auth';
 
@@ -12,9 +13,11 @@ interface AuthButtonProps {
   className?: string;
   compact?: boolean;
   autoImport?: boolean;
+  nextPath?: string;
 }
 
-export function AuthButton({ className, compact = false, autoImport = true }: AuthButtonProps) {
+export function AuthButton({ className, compact = false, autoImport = true, nextPath }: AuthButtonProps) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<AppAuthUser | null>(null);
   const [isBusy, setIsBusy] = useState(false);
@@ -71,14 +74,15 @@ export function AuthButton({ className, compact = false, autoImport = true }: Au
     void runImport();
   }, [autoImport, user?.id]);
 
-  const handleSignIn = async () => {
-    setIsBusy(true);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setStatusMessage(error);
-      setIsBusy(false);
-      return;
-    }
+  const handleSignIn = () => {
+    const resolvedNext =
+      typeof nextPath === 'string' && nextPath.startsWith('/')
+        ? nextPath
+        : typeof window !== 'undefined'
+          ? `${window.location.pathname}${window.location.search}`
+          : '/chat';
+
+    router.push(`/auth?next=${encodeURIComponent(resolvedNext)}`);
   };
 
   const handleSignOut = async () => {

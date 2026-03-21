@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import type { ReactNode } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   BookOpen,
+  Orbit,
   ChevronDown,
   ChevronRight,
   FileText,
@@ -13,130 +13,141 @@ import {
   Folder,
   FolderMinus,
   FolderPlus,
+  Minimize2,
   Gavel,
   GraduationCap,
+  type LucideIcon,
   LogOut,
   MessageSquare,
   Moon,
-  Orbit,
   Plus,
   Sun,
   Trash2,
   UserCircle2,
-  type LucideIcon,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-import { createClient } from "@/lib/supabase/client";
-import type { WorkbenchFeature } from "@/types/workbench";
-import { SidebarModelSettings } from "./SidebarModelSettings";
+} from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
+import { useAppShellChrome } from './AppShellChromeContext';
+import { SidebarModelSettings } from './SidebarModelSettings';
+import type { WorkbenchFeature } from '@/types/workbench';
 
-type NavItem = {
-  id: string;
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  badge?: string;
-  detail?: string;
-};
+interface AppDashboardShellProps {
+  children: ReactNode;
+  feature: WorkbenchFeature;
+  focusModeActive?: boolean;
+}
 
-type ChatSidebarSession = {
+interface ChatSidebarSession {
   id: string;
-  title: string | null;
-  updated_at: string | null;
-  created_at?: string | null;
+  title: string;
+  updated_at: string;
   domain_classified?: string | null;
-};
+}
 
-type SidebarFolder = {
+interface SidebarFolder {
   id: string;
   name: string;
-};
+}
 
-type SidebarFolderFile = {
+interface SidebarFolderFile {
   id: string;
   name: string;
   createdAt: string;
-};
+}
 
-const PRIMARY_NAV: NavItem[] = [
-  { id: "chat", label: "Chat", href: "/chat", icon: MessageSquare },
-  { id: "hybrid", label: "Hybrid", href: "/hybrid", icon: Orbit },
-];
-
-const INSTRUMENTS_NAV: NavItem[] = [
-  { id: "legal", label: "Legal", href: "/legal", icon: Gavel, detail: "Case analysis" },
-  { id: "education", label: "Education", href: "/education", icon: GraduationCap, detail: "Intervention design" },
-  { id: "lab", label: "Lab", href: "/lab", icon: FlaskConical, detail: "Experimental tools" },
-];
-
-const FOLDERS_STORAGE_KEY = "chat-folders-v1";
-const FOLDER_FILES_STORAGE_KEY = "chat-folder-files-v1";
-const SIDEBAR_COLLAPSED_STORAGE_KEY = "sidebar-collapsed-v1";
-const RESEARCH_THREAD_IDS_STORAGE_KEY = "chat-research-thread-ids";
-
-function canCreateSupabaseClient() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+interface SidebarNavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  code?: string;
+  badge?: string;
+  detail?: string;
 }
 
 function SidebarToggleGlyph({ isOpen }: { isOpen: boolean }) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      className="sidebar-toggle-glyph"
-    >
-      {[16, 12, 9, 6, 4, 6, 9, 12, 16].map((dotY, index) => {
-        const rowCount = index < 4 ? index + 1 : index === 4 ? 4 : 9 - index;
-        const y = 4 + index * 3;
-        return Array.from({ length: rowCount }).map((_, dotIndex) => {
-          const x = isOpen ? 8 + dotIndex * 4.4 : 24 - dotIndex * 4.4;
-          return <circle key={`${index}-${dotIndex}`} cx={x} cy={y} r={1.35} fill="currentColor" />;
-        });
-      })}
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+      <g transform={isOpen ? 'translate(24 0) scale(-1 1)' : undefined}>
+        <circle cx="6.5" cy="3" r="1.35" />
+        <circle cx="6.5" cy="6.5" r="1.35" />
+        <circle cx="10" cy="6.5" r="1.35" />
+        <circle cx="6.5" cy="10" r="1.35" />
+        <circle cx="10" cy="10" r="1.35" />
+        <circle cx="13.5" cy="10" r="1.35" />
+        <circle cx="6.5" cy="13.5" r="1.35" />
+        <circle cx="10" cy="13.5" r="1.35" />
+        <circle cx="13.5" cy="13.5" r="1.35" />
+        <circle cx="17" cy="13.5" r="1.35" />
+        <circle cx="6.5" cy="17" r="1.35" />
+        <circle cx="10" cy="17" r="1.35" />
+        <circle cx="13.5" cy="17" r="1.35" />
+        <circle cx="6.5" cy="20.5" r="1.35" />
+        <circle cx="10" cy="20.5" r="1.35" />
+        <circle cx="6.5" cy="22" r="1.35" />
+      </g>
     </svg>
   );
 }
 
-function formatLedgerTimestamp(value: string | null | undefined) {
-  if (!value) return "Recent";
+const PRIMARY_NAV: SidebarNavItem[] = [
+  { href: '/chat', label: 'Chat', icon: MessageSquare },
+  { href: '/hybrid', label: 'Hybrid', icon: Orbit },
+];
+
+const INSTRUMENTS_NAV: SidebarNavItem[] = [
+  { href: '/legal', label: 'Legal', icon: Gavel, code: 'S01', detail: 'Case analysis' },
+  { href: '/education', label: 'Education', icon: GraduationCap, code: 'S02', detail: 'Intervention design' },
+  { href: '/lab', label: 'Lab', icon: FlaskConical, code: 'S03', detail: 'Experimental tools' },
+];
+
+function formatLedgerTimestamp(value: string): string {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Recent";
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  if (Number.isNaN(date.getTime())) return 'Unknown';
+
+  const now = new Date();
+  const isSameDay = now.toDateString() === date.toDateString();
+  if (isSameDay) {
+    return new Intl.DateTimeFormat(undefined, {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  if (now.getFullYear() === date.getFullYear()) {
+    return new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date);
 }
 
-function formatDomainTag(value?: string | null) {
-  if (!value) return null;
-  const normalized = value
-    .replace(/[^a-zA-Z0-9\s]/g, " ")
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .join("_")
-    .toUpperCase();
-  return normalized || null;
+function formatDomainTag(domain?: string | null): string {
+  const normalized = domain?.trim().toLowerCase();
+  if (!normalized) return 'General';
+  if (normalized.includes('legal') || normalized.includes('policy')) return 'Legal';
+  if (normalized.includes('market') || normalized.includes('economic') || normalized.includes('finance')) return 'Markets';
+  if (normalized.includes('bio') || normalized.includes('health') || normalized.includes('medical')) return 'Bio';
+  if (normalized.includes('education') || normalized.includes('learning')) return 'Learning';
+  if (normalized.includes('physic') || normalized.includes('chem')) return 'Science';
+  return domain?.trim() || 'General';
 }
 
-export function AppDashboardShell({
-  children,
-  feature,
-}: {
-  children: ReactNode;
-  feature: WorkbenchFeature;
-  focusModeActive?: boolean;
-}) {
+export function AppDashboardShell({ children, feature, focusModeActive = false }: AppDashboardShellProps) {
+  const shellChrome = useAppShellChrome();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
-  const supabase = useMemo(() => (canCreateSupabaseClient() ? createClient() : null), []);
-
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [foldersExpanded, setFoldersExpanded] = useState(true);
+  const [instrumentsOpen, setInstrumentsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [recentThreads, setRecentThreads] = useState<ChatSidebarSession[]>([]);
@@ -146,269 +157,231 @@ export function AppDashboardShell({
   const [folderOpenState, setFolderOpenState] = useState<Record<string, boolean>>({});
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
-
-  const accountRef = useRef<HTMLDivElement>(null);
-
-  const activeSessionId = searchParams.get("sessionId");
-  const isChatRoute = pathname?.startsWith("/chat") ?? false;
-
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const accountShellRef = useRef<HTMLDivElement | null>(null);
+  const activeSessionId = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('sessionId')
+    : null;
+  const isInstrumentActive = INSTRUMENTS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
   useEffect(() => {
     setMounted(true);
-
     try {
-      const savedFolders = window.localStorage.getItem(FOLDERS_STORAGE_KEY);
-      const savedFolderFiles = window.localStorage.getItem(FOLDER_FILES_STORAGE_KEY);
-      const savedSidebarCollapsed = window.localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
-      const savedResearchThreadIds = window.localStorage.getItem(RESEARCH_THREAD_IDS_STORAGE_KEY);
-
+      const savedFolders = window.localStorage.getItem('chat-folders-v1');
+      const savedFolderFiles = window.localStorage.getItem('chat-folder-files-v1');
       if (savedFolders) {
         const parsedFolders = JSON.parse(savedFolders) as SidebarFolder[];
         if (Array.isArray(parsedFolders)) setFolders(parsedFolders);
       }
-
       if (savedFolderFiles) {
         const parsedFolderFiles = JSON.parse(savedFolderFiles) as Record<string, SidebarFolderFile[]>;
-        if (parsedFolderFiles && typeof parsedFolderFiles === "object") setFolderFiles(parsedFolderFiles);
+        if (parsedFolderFiles && typeof parsedFolderFiles === 'object') setFolderFiles(parsedFolderFiles);
       }
-
-      if (savedSidebarCollapsed === "true") setSidebarCollapsed(true);
-
-      if (savedResearchThreadIds) {
-        const parsedResearch = JSON.parse(savedResearchThreadIds) as string[];
-        if (Array.isArray(parsedResearch)) setResearchThreadIds(parsedResearch);
-      }
+      const savedSidebarCollapsed = window.localStorage.getItem('sidebar-collapsed-v1');
+      if (savedSidebarCollapsed === 'true') setSidebarCollapsed(true);
     } catch {
       setFolders([]);
       setFolderFiles({});
-      setResearchThreadIds([]);
     }
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-
     try {
-      window.localStorage.setItem(FOLDERS_STORAGE_KEY, JSON.stringify(folders));
-      window.localStorage.setItem(FOLDER_FILES_STORAGE_KEY, JSON.stringify(folderFiles));
-      window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, JSON.stringify(sidebarCollapsed));
-      window.localStorage.setItem(RESEARCH_THREAD_IDS_STORAGE_KEY, JSON.stringify(researchThreadIds));
+      window.localStorage.setItem('chat-folders-v1', JSON.stringify(folders));
+      window.localStorage.setItem('chat-folder-files-v1', JSON.stringify(folderFiles));
+      window.localStorage.setItem('sidebar-collapsed-v1', JSON.stringify(sidebarCollapsed));
     } catch {
-      // Ignore storage write failures.
+      // Ignore storage failures.
     }
-  }, [folderFiles, folders, mounted, researchThreadIds, sidebarCollapsed]);
+  }, [folderFiles, folders, sidebarCollapsed]);
 
   useEffect(() => {
-    let cancelled = false;
+    if (focusModeActive) setMobileSidebarOpen(false);
+  }, [focusModeActive]);
 
-    if (!supabase) {
-      setUserEmail(null);
-      setAuthChecked(true);
-      return;
-    }
+  useEffect(() => {
+    if (!accountOpen) return;
 
-    void supabase.auth
-      .getUser()
-      .then(({ data }) => {
-        if (cancelled) return;
-        setUserEmail(data.user?.email ?? null);
-        setAuthChecked(true);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setUserEmail(null);
-        setAuthChecked(true);
-      });
+    const handlePointerDown = (event: PointerEvent) => {
+      if (accountShellRef.current?.contains(event.target as Node)) return;
+      setAccountOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAccountOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      cancelled = true;
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [supabase]);
+  }, [accountOpen]);
+
+  useEffect(() => {
+    setAccountOpen(false);
+  }, [pathname, sidebarCollapsed, focusModeActive]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data.user?.email ?? null);
+      setAuthChecked(true);
+    }).catch(() => {
+      setUserEmail(null);
+      setAuthChecked(true);
+    });
+  }, []);
 
   useEffect(() => {
     if (!authChecked || !userEmail) {
-      if (authChecked && !userEmail) setRecentThreads([]);
+      if (!userEmail) setRecentThreads([]);
       return;
     }
 
-    let cancelled = false;
-
     const loadHistory = async () => {
       try {
-        const response = await fetch("/api/causal-chat/history");
+        const response = await fetch('/api/causal-chat/history');
         if (!response.ok) throw new Error(`History fetch failed: ${response.status}`);
         const payload = (await response.json()) as { history?: ChatSidebarSession[] };
-        if (cancelled) return;
         setRecentThreads(Array.isArray(payload.history) ? payload.history : []);
       } catch {
-        if (!cancelled) {
-          setRecentThreads((current) => current);
-        }
+        // Keep prior list if fetch fails.
       }
     };
 
     void loadHistory();
+    try {
+      const savedResearch = window.localStorage.getItem('chat-research-thread-ids');
+      if (savedResearch) {
+        const parsed = JSON.parse(savedResearch) as string[];
+        if (Array.isArray(parsed)) setResearchThreadIds(parsed);
+      }
+    } catch {
+      setResearchThreadIds([]);
+    }
 
-    const handleFocus = () => void loadHistory();
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") void loadHistory();
+    const onFocus = () => void loadHistory();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') void loadHistory();
     };
-    const handleHistoryImported = () => void loadHistory();
 
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("historyImported", handleHistoryImported);
-    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener('historyImported', loadHistory);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
     return () => {
-      cancelled = true;
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("historyImported", handleHistoryImported);
-      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener('historyImported', loadHistory);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [authChecked, userEmail]);
 
   useEffect(() => {
-    const handleDocumentClick = (event: MouseEvent) => {
-      const target = event.target as Node;
-      if (accountRef.current?.contains(target)) return;
-      setAccountOpen(false);
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAccountOpen(false);
-    };
-
-    document.addEventListener("mousedown", handleDocumentClick);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
-
-  useEffect(() => {
-    setAccountOpen(false);
-    setMobileSidebarOpen(false);
-  }, [pathname, searchParams]);
+    window.localStorage.setItem('chat-research-thread-ids', JSON.stringify(researchThreadIds));
+  }, [researchThreadIds]);
 
   const initials = useMemo(() => {
-    if (!userEmail) return "CO";
-    const local = userEmail.split("@")[0] || "";
-    return local.slice(0, 2).toUpperCase() || "CO";
+    if (!userEmail) return 'CO';
+    const local = userEmail.split('@')[0] || '';
+    return local.slice(0, 2).toUpperCase() || 'CO';
   }, [userEmail]);
 
-  const ledgerEntries = useMemo(
-    () =>
-      recentThreads.map((conversation) => ({
-        id: conversation.id,
-        title: conversation.title?.trim() || "Untitled session",
-        timestamp: formatLedgerTimestamp(conversation.updated_at ?? conversation.created_at),
-        domainTag: formatDomainTag(conversation.domain_classified),
-        active: activeSessionId === conversation.id,
-        research: researchThreadIds.includes(conversation.id),
-      })),
-    [activeSessionId, recentThreads, researchThreadIds]
-  );
+  useEffect(() => {
+    if (isInstrumentActive) setInstrumentsOpen(true);
+  }, [isInstrumentActive]);
 
-  const handleCreateConversation = () => {
-    setAccountOpen(false);
-    router.push("/chat?new=1");
-    window.dispatchEvent(new Event("newChat"));
-    setMobileSidebarOpen(false);
-  };
-
-  const handleCreateFolder = () => {
-    setAccountOpen(false);
-    const name = window.prompt("Enter folder name:");
-    if (!name?.trim()) return;
+  const createFolder = () => {
+    const name = prompt('Enter folder name:');
+    if (!name) return;
 
     const nextFolderId = crypto.randomUUID();
-    const nextName = name.trim();
-    setFolders((current) => [...current, { id: nextFolderId, name: nextName }]);
-    setFolderOpenState((current) => ({ ...current, [nextFolderId]: true }));
+    setFolders((prev) => [...prev, { id: nextFolderId, name }]);
+    setFolderOpenState((prev) => ({ ...prev, [nextFolderId]: true }));
     setActiveFolderId(nextFolderId);
+    createFolderFile(nextFolderId, undefined, true);
   };
 
-  const handleDeleteFolder = (folderId: string) => {
-    setFolders((current) => current.filter((folder) => folder.id !== folderId));
-    setFolderFiles((current) => {
-      const next = { ...current };
+  const toggleFolder = (folderId: string) => {
+    setActiveFolderId((current) => (current === folderId ? null : folderId));
+    setFolderOpenState((prev) => ({ ...prev, [folderId]: !prev[folderId] }));
+  };
+
+  const createFolderFile = (folderId: string, defaultName?: string, startNewChat = false) => {
+    const proposed = defaultName ?? `Untitled file ${(folderFiles[folderId]?.length ?? 0) + 1}`;
+    const name = prompt('Enter file name:', proposed);
+    if (!name) return;
+
+    const nextFile: SidebarFolderFile = {
+      id: crypto.randomUUID(),
+      name,
+      createdAt: new Date().toISOString(),
+    };
+
+    setFolderFiles((prev) => ({
+      ...prev,
+      [folderId]: [...(prev[folderId] ?? []), nextFile],
+    }));
+    setFolderOpenState((prev) => ({ ...prev, [folderId]: true }));
+    setActiveFolderId(folderId);
+    if (startNewChat) {
+      router.push('/chat?new=1');
+      window.dispatchEvent(new Event('newChat'));
+      setMobileSidebarOpen(false);
+    }
+  };
+
+  const removeFolderFile = (folderId: string, fileId: string) => {
+    setFolderFiles((prev) => ({
+      ...prev,
+      [folderId]: (prev[folderId] ?? []).filter((file) => file.id !== fileId),
+    }));
+  };
+
+  const removeFolder = (folderId: string) => {
+    setFolders((prev) => prev.filter((folder) => folder.id !== folderId));
+    setFolderFiles((prev) => {
+      const next = { ...prev };
       delete next[folderId];
       return next;
     });
-    setFolderOpenState((current) => {
-      const next = { ...current };
+    setFolderOpenState((prev) => {
+      const next = { ...prev };
       delete next[folderId];
       return next;
     });
     setActiveFolderId((current) => (current === folderId ? null : current));
   };
 
-  const toggleFolder = (folderId: string) => {
-    setFolderOpenState((current) => ({ ...current, [folderId]: !current[folderId] }));
-    setActiveFolderId((current) => (current === folderId ? null : folderId));
-  };
-
-  const createFolderFile = (folderId: string, defaultName?: string, startNewChat = false) => {
-    const proposed = defaultName ?? `Untitled file ${(folderFiles[folderId]?.length ?? 0) + 1}`;
-    const name = window.prompt("Enter file name:", proposed);
-    if (!name?.trim()) return;
-
-    const nextFile: SidebarFolderFile = {
-      id: crypto.randomUUID(),
-      name: name.trim(),
-      createdAt: new Date().toISOString(),
-    };
-
-    setFolderFiles((current) => ({
-      ...current,
-      [folderId]: [...(current[folderId] ?? []), nextFile],
-    }));
-    setFolderOpenState((current) => ({ ...current, [folderId]: true }));
-    setActiveFolderId(folderId);
-
-    if (startNewChat) {
-      handleCreateConversation();
-    }
-  };
-
-  const removeFolderFile = (folderId: string, fileId: string) => {
-    setFolderFiles((current) => ({
-      ...current,
-      [folderId]: (current[folderId] ?? []).filter((file) => file.id !== fileId),
-    }));
-  };
-
-  const openConversation = (sessionId: string) => {
-    setAccountOpen(false);
-    const currentSessionId = searchParams.get("sessionId");
-
-    if (isChatRoute && currentSessionId === sessionId) {
-      window.dispatchEvent(new CustomEvent("loadSession", { detail: { sessionId } }));
+  const openThread = (sessionId: string) => {
+    const currentParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const currentSessionId = currentParams.get('sessionId');
+    if (pathname?.startsWith('/chat') && currentSessionId === sessionId) {
+      window.dispatchEvent(new CustomEvent('loadSession', { detail: { sessionId } }));
     } else {
       router.push(`/chat?sessionId=${sessionId}`);
     }
-
     setMobileSidebarOpen(false);
   };
 
-  const handleDeleteConversation = async (conversationId: string) => {
-    if (deletingThreadId === conversationId) return;
+  const handleDeleteThread = async (sessionId: string) => {
+    if (deletingThreadId === sessionId) return;
+    setDeletingThreadId(sessionId);
 
-    const confirmed = window.confirm("Delete this session from the ledger?");
-    if (!confirmed) return;
-
-    setDeletingThreadId(conversationId);
     const previousThreads = recentThreads;
     const previousResearch = researchThreadIds;
-
-    setRecentThreads((current) => current.filter((session) => session.id !== conversationId));
-    setResearchThreadIds((current) => current.filter((id) => id !== conversationId));
+    setRecentThreads((current) => current.filter((session) => session.id !== sessionId));
+    setResearchThreadIds((current) => current.filter((id) => id !== sessionId));
 
     try {
-      const response = await fetch(`/api/causal-chat/sessions/${conversationId}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete thread");
-
-      if (isChatRoute && searchParams.get("sessionId") === conversationId) {
-        handleCreateConversation();
+      const response = await fetch(`/api/causal-chat/sessions/${sessionId}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete thread');
+      if (pathname?.startsWith('/chat')) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('sessionId') === sessionId) {
+          router.push('/chat?new=1');
+          window.dispatchEvent(new Event('newChat'));
+        }
       }
     } catch {
       setRecentThreads(previousThreads);
@@ -419,306 +392,372 @@ export function AppDashboardShell({
   };
 
   const handleSignOut = async () => {
-    if (!supabase) {
-      setAccountOpen(false);
-      router.push("/");
-      router.refresh();
-      return;
-    }
+    const supabase = createClient();
     await supabase.auth.signOut();
     setAccountOpen(false);
-    router.push("/");
+    router.push('/');
     router.refresh();
+  };
+
+  const operatorEmail = userEmail || 'Anonymous session';
+  const visibleThreads = recentThreads;
+  const shouldShowInstrumentChildren = instrumentsOpen && !sidebarCollapsed;
+
+  const handleMainSurfaceChromeToggle = () => {
+    const isNarrowViewport = typeof window !== 'undefined' && window.innerWidth < 1024;
+
+    if (focusModeActive && shellChrome) {
+      shellChrome.setFocusMode(false);
+      setSidebarCollapsed(false);
+      if (isNarrowViewport) {
+        setMobileSidebarOpen(true);
+      }
+      return;
+    }
+
+    if (isNarrowViewport) {
+      setMobileSidebarOpen((current) => !current);
+      return;
+    }
+
+    setSidebarCollapsed((current) => !current);
+  };
+
+  const handleInstrumentToggle = () => {
+    if (sidebarCollapsed) {
+      setSidebarCollapsed(false);
+      setInstrumentsOpen(true);
+      return;
+    }
+
+    setInstrumentsOpen((current) => !current);
   };
 
   const sidebar = (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-header-controls">
+        <div className="sidebar-header-controls" role="group" aria-label="Workbench navigation controls">
           <button
             type="button"
             className="surface-chrome-btn surface-chrome-btn-toggle"
-            onClick={() => setSidebarCollapsed((current) => !current)}
-            aria-label={sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
-            title={sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
+            title={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            aria-label={focusModeActive ? 'Exit focus mode and open sidebar' : sidebarCollapsed ? 'Open sidebar' : 'Collapse sidebar'}
+            onClick={handleMainSurfaceChromeToggle}
           >
-            <SidebarToggleGlyph isOpen={!sidebarCollapsed} />
+            {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
           </button>
         </div>
       </div>
-
       <div className="sidebar-body">
         <div className="sidebar-main">
-          <nav className="sidebar-nav">
+          <nav className="sidebar-nav" aria-label="Workbench modes">
+          <div className="sidebar-stack">
             {PRIMARY_NAV.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
               return (
-                <Link key={item.id} href={item.href} className={`nav-item ${isActive ? "active" : ""}`}>
-                  <span className="nav-item-icon">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="nav-item-copy">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn('nav-item', isActive && 'active')}
+                  onClick={() => setMobileSidebarOpen(false)}
+                  title={item.label}
+                  aria-label={item.label}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span className="nav-copy">
+                    {item.code ? <span className="nav-kicker">{item.code}</span> : null}
                     <span className="nav-label">{item.label}</span>
                   </span>
-                  {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
+                  {item.detail || item.badge ? (
+                    <span className="nav-meta">
+                      {item.detail ? <span className="nav-detail">{item.detail}</span> : null}
+                      {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
-          </nav>
+          </div>
 
-          <div className="sidebar-actions">
-            <button type="button" className="action-btn" onClick={handleCreateConversation}>
-              <Plus className="h-5 w-5" />
-              <span className="action-label">New thread</span>
+          <div className="sidebar-actions" role="group" aria-label="Operator commands">
+            <button
+              type="button"
+              className="action-btn is-primary"
+              onClick={() => {
+                router.push('/chat?new=1');
+                window.dispatchEvent(new Event('newChat'));
+                setMobileSidebarOpen(false);
+              }}
+            >
+              <span className="action-icon-shell" aria-hidden="true">
+                <Plus className="h-3.5 w-3.5" />
+              </span>
+              <span className="action-copy">
+                <span className="action-label">New thread</span>
+              </span>
             </button>
-            <button type="button" className="action-btn" onClick={handleCreateFolder}>
-              <FolderPlus className="h-5 w-5" />
-              <span className="action-label">New folder</span>
+            <button type="button" className="action-btn is-secondary" onClick={createFolder}>
+              <span className="action-icon-shell" aria-hidden="true">
+                <FolderPlus className="h-3.5 w-3.5" />
+              </span>
+              <span className="action-copy">
+                <span className="action-label">New folder</span>
+              </span>
             </button>
           </div>
 
-          <div className="sidebar-section-heading">
-            <span className="sidebar-section-label">Systems</span>
+          <div className="sidebar-section-label">
+            <span>Systems</span>
             <span className="sidebar-section-count">{INSTRUMENTS_NAV.length}</span>
           </div>
-
           <button
             type="button"
-            className="nav-item nav-item-system"
-            onClick={() => setFoldersExpanded((current) => !current)}
+            className={cn('nav-item nav-item-toggle nav-item-system', isInstrumentActive && 'active', instrumentsOpen && 'open')}
+            onClick={handleInstrumentToggle}
+            title={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
+            aria-label={sidebarCollapsed ? 'Open sidebar and show instruments' : 'Toggle instruments'}
           >
-            <span className="nav-item-icon">
-              <FileText className="h-5 w-5" />
-            </span>
-            <span className="nav-item-copy">
+            <FileText className="h-3.5 w-3.5" />
+            <span className="nav-copy">
               <span className="nav-label">Instruments</span>
             </span>
-            <span className="nav-badge">{foldersExpanded ? "Open" : INSTRUMENTS_NAV.length}</span>
-            {foldersExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            <span className="nav-meta">
+              <span className="nav-meta-trailing">
+                <span className="nav-badge">{shouldShowInstrumentChildren ? 'Open' : `${INSTRUMENTS_NAV.length}`}</span>
+                {shouldShowInstrumentChildren ? <ChevronDown className="chevron h-3 w-3" /> : <ChevronRight className="chevron h-3 w-3" />}
+              </span>
+            </span>
           </button>
 
-          {foldersExpanded ? (
+          {shouldShowInstrumentChildren ? (
             <div className="sidebar-subnav">
               {INSTRUMENTS_NAV.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
                 return (
-                  <Link key={item.id} href={item.href} className={`nav-item nav-item-sub ${isActive ? "active" : ""}`}>
-                    <span className="nav-item-icon">
-                      <Icon className="h-4.5 w-4.5" />
-                    </span>
-                    <span className="nav-item-copy">
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn('nav-item nav-item-sub nav-item-system', isActive && 'active')}
+                    onClick={() => setMobileSidebarOpen(false)}
+                    title={item.label}
+                    aria-label={item.label}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="nav-copy">
                       <span className="nav-label">{item.label}</span>
-                      {item.detail ? <span className="nav-detail">{item.detail}</span> : null}
+                    </span>
+                    <span className="nav-meta">
+                      <span className="nav-detail">{item.detail}</span>
                     </span>
                   </Link>
                 );
               })}
+            </div>
+          ) : null}
+          </nav>
 
-              {folders.length > 0 ? (
-                <div className="sidebar-section-heading">
-                  <span className="sidebar-section-label">Notebooks</span>
-                  <span className="sidebar-section-count">{folders.length}</span>
-                </div>
-              ) : null}
+          {folders.length > 0 ? (
+            <section className="sidebar-section">
+              <div className="sidebar-section-label">
+                <span>Notebooks</span>
+                <span className="sidebar-section-count">{folders.length}</span>
+              </div>
+              <div className="history-list is-folders">
+                {folders.map((folder) => {
+                  const fileCount = folderFiles[folder.id]?.length ?? 0;
+                  return (
+                    <div key={folder.id} className="folder-block">
+                      <div className={cn('folder-row', activeFolderId === folder.id && 'active')}>
+                        <button type="button" className="folder-label" onClick={() => toggleFolder(folder.id)}>
+                          {folderOpenState[folder.id] ? <Folder className="h-3.5 w-3.5" /> : <FolderMinus className="h-3.5 w-3.5" />}
+                          <span className="folder-copy">
+                            <span className="folder-title">{folder.name}</span>
+                            <span className="folder-meta">{fileCount} file{fileCount === 1 ? '' : 's'}</span>
+                          </span>
+                        </button>
+                        <button type="button" className="folder-action" onClick={() => removeFolder(folder.id)} aria-label="Delete folder">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      {folderOpenState[folder.id] ? (
+                        <div className="folder-files">
+                          <button type="button" className="history-item history-item-inline" onClick={() => createFolderFile(folder.id, undefined, true)}>
+                            <span className="history-inline-label">+ New file</span>
+                            <span className="history-inline-meta">Open thread</span>
+                          </button>
+                          {(folderFiles[folder.id] ?? []).map((file) => (
+                            <div key={file.id} className="folder-file-row">
+                              <span className="history-item history-item-inline">
+                                <span className="history-inline-label">{file.name}</span>
+                                <span className="history-inline-meta">{formatLedgerTimestamp(file.createdAt)}</span>
+                              </span>
+                              <button type="button" className="folder-action" onClick={() => removeFolderFile(folder.id, file.id)} aria-label="Remove file">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
+        </div>
 
-              {folders.map((folder) => {
-                const active = activeFolderId === folder.id;
-                return (
-                  <div key={folder.id}>
-                    <button
-                      type="button"
-                      className={`nav-item nav-item-sub ${active ? "active" : ""}`}
-                      onClick={() => toggleFolder(folder.id)}
-                    >
-                      <span className="nav-item-icon">
-                        <Folder className="h-4.5 w-4.5" />
-                      </span>
-                      <span className="nav-item-copy">
-                        <span className="nav-label">{folder.name}</span>
-                      </span>
+        <section className="sidebar-section history-section">
+          <div className="sidebar-section-label history-label">
+            <span>Session ledger</span>
+            <span className="sidebar-section-count">{visibleThreads.length}</span>
+          </div>
+          <div className="history-ledger-scroll">
+            <div className="history-list history-ledger">
+              {visibleThreads.length === 0 ? (
+                <div className="history-item muted">No notebook sessions recorded.</div>
+              ) : (
+                visibleThreads.map((session) => {
+                  const isActive = pathname === '/chat' && activeSessionId === session.id;
+                  const isResearch = researchThreadIds.includes(session.id);
+                  const sessionTitle = session.title || 'Untitled thread';
+                  return (
+                    <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
                       <button
                         type="button"
-                        className="folder-action"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          handleDeleteFolder(folder.id);
-                        }}
-                        aria-label={`Delete folder ${folder.name}`}
-                        title="Delete folder"
+                        className="history-item thread-item flex-1 text-left"
+                        onClick={() => openThread(session.id)}
+                        aria-label={`Open session: ${sessionTitle}`}
                       >
-                        <FolderMinus className="h-4 w-4" />
-                      </button>
-                    </button>
-                    {folderOpenState[folder.id] ? (
-                      <div className="folder-files">
-                        <button
-                          type="button"
-                          className="history-item"
-                          onClick={() => createFolderFile(folder.id, undefined, true)}
-                        >
-                          + New file
-                        </button>
-                        {(folderFiles[folder.id] ?? []).map((file) => (
-                          <div key={file.id} className="folder-file-row">
-                            <span className="history-item">{file.name}</span>
-                            <button
-                              type="button"
-                              className="folder-action"
-                              onClick={() => removeFolderFile(folder.id, file.id)}
-                              aria-label="Remove file"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="history-section">
-          <div className="sidebar-section-heading history-section-heading">
-            <span className="sidebar-section-label">Session ledger</span>
-            <span className="sidebar-section-count">{ledgerEntries.length}</span>
-          </div>
-
-          <div className="history-ledger-scroll">
-            {ledgerEntries.length === 0 ? (
-              <div className="empty-ledger">No notebook sessions recorded.</div>
-            ) : (
-              <div className="history-list history-ledger">
-                {ledgerEntries.map((entry) => (
-                  <div key={entry.id} className="history-row thread-row thread-ledger-row">
-                    <button
-                      type="button"
-                      className={`history-item thread-item thread-ledger-item ${entry.active ? "active" : ""}`}
-                      onClick={() => openConversation(entry.id)}
-                      title={entry.title}
-                    >
-                      <span className="thread-ledger-dot" />
-                      <span className="thread-ledger-copy">
-                        <span className="thread-ledger-title">{entry.title}</span>
-                        <span className="thread-ledger-meta">
-                          {entry.domainTag ? <span className="thread-ledger-chip">{entry.domainTag}</span> : null}
-                          <span className="thread-ledger-time">{entry.timestamp}</span>
+                        <span className="thread-ledger-dot" aria-hidden="true" />
+                        <span className="thread-copy">
+                          <span className="thread-title">{sessionTitle}</span>
+                          <span className="thread-meta">
+                            <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
+                            {isResearch ? <span className="thread-chip accent">Research</span> : null}
+                            <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="folder-action thread-action"
-                      onClick={() => void handleDeleteConversation(entry.id)}
-                      title="Delete session"
-                      aria-label={`Delete ${entry.title}`}
-                      disabled={deletingThreadId === entry.id}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      </button>
+                      <button
+                        type="button"
+                        className="folder-action thread-action"
+                        onClick={() => void handleDeleteThread(session.id)}
+                        aria-label={`Delete session: ${sessionTitle}`}
+                        disabled={deletingThreadId === session.id}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <div ref={accountRef} className="user-row">
-          {accountOpen ? (
-            <div className="account-popover">
-              <div className="account-section">
-                <button
-                  type="button"
-                  className="account-action"
-                  onClick={() => {
-                    setTheme(resolvedTheme === "light" ? "dark" : "light");
-                    setAccountOpen(false);
-                  }}
-                >
-                  {resolvedTheme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                  <span className="account-action-label">{resolvedTheme === "light" ? "Dark" : "Light"}</span>
-                </button>
+      <div
+        ref={accountShellRef}
+        className="user-row"
+        onClick={() => {
+          if (sidebarCollapsed) {
+            setSidebarCollapsed(false);
+            setAccountOpen(true);
+            return;
+          }
 
-                <Link href="/docs" className="account-action" onClick={() => setAccountOpen(false)}>
-                  <BookOpen className="h-4 w-4" />
-                  <span className="account-action-label">Documentation</span>
-                </Link>
-
-                <div className="account-menu-settings">
-                  <SidebarModelSettings collapsed={false} variant="account" />
-                </div>
-
-                <div className="account-section-divider" />
-
-                <button type="button" className="account-action">
-                  <UserCircle2 className="h-4 w-4" />
-                  <span className="account-action-label">Workspace</span>
-                </button>
-
-                {userEmail ? (
-                  <button type="button" className="account-action" onClick={() => void handleSignOut()}>
-                    <LogOut className="h-4 w-4" />
-                    <span className="account-action-label">Sign out</span>
-                  </button>
-                ) : null}
+          setAccountOpen((current) => !current);
+        }}
+        title={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+        aria-label={sidebarCollapsed ? 'Open account panel' : operatorEmail}
+      >
+        <div className="user-avatar">{initials}</div>
+        <span className="account-copy">
+          <span className="user-email">{operatorEmail}</span>
+          <span className="user-role">{userEmail ? 'authenticated operator' : 'guest workspace'}</span>
+        </span>
+        <ChevronDown className="account-chevron h-3.5 w-3.5" />
+        {accountOpen ? (
+          <div className="account-popover" onClick={(event) => event.stopPropagation()}>
+            <div className="account-section">
+              <button
+                type="button"
+                className="account-action"
+                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+                title={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+                aria-label={mounted ? `Theme: ${resolvedTheme === 'dark' ? 'Dark' : 'Light'}` : 'Theme: Light'}
+              >
+                {mounted && resolvedTheme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                <span className="account-action-label">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
+              </button>
+              <a
+                href="https://docs.openclaw.ai"
+                target="_blank"
+                rel="noreferrer"
+                className="account-action"
+                onClick={() => setAccountOpen(false)}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                <span className="account-action-label">Documentation</span>
+              </a>
+              <div className="account-menu-settings">
+                <SidebarModelSettings collapsed={false} variant="account" />
               </div>
             </div>
-          ) : null}
-
-          <button
-            type="button"
-            className="user-panel"
-            onClick={() => setAccountOpen((current) => !current)}
-            aria-expanded={accountOpen}
-            aria-haspopup="menu"
-          >
-            <span className="user-avatar">{initials}</span>
-            <span className="account-copy">
-              <span className="user-email">{userEmail ?? "Anonymous session"}</span>
-              <span className="user-role">{userEmail ? "Authenticated operator" : "Guest workspace"}</span>
-            </span>
-            <ChevronDown className="account-chevron h-4 w-4" />
-          </button>
-        </div>
+            <div className="account-section-divider" aria-hidden="true" />
+            <div className="account-section">
+            <button type="button" className="account-action" onClick={() => { setAccountOpen(false); router.push('/chat'); setMobileSidebarOpen(false); }}>
+              <UserCircle2 className="h-3.5 w-3.5" />
+              Workspace
+            </button>
+            <button type="button" className="account-action" onClick={() => void handleSignOut()}>
+              <LogOut className="h-3.5 w-3.5" />
+              Sign out
+            </button>
+            </div>
+          </div>
+        ) : null}
       </div>
     </aside>
   );
 
   return (
-    <div className={`canonical-workbench-shell feature-${feature} ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-        {!sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
-
+    <div
+      className={cn(
+        'app-feature-shell canonical-workbench-shell',
+        `feature-${feature}`,
+        sidebarCollapsed && 'sidebar-collapsed',
+        focusModeActive && 'focus-mode',
+        mobileSidebarOpen && 'nav-drawer-open'
+      )}
+    >
+      {!mobileSidebarOpen ? (
         <button
           type="button"
-          className="mobile-shell-trigger"
-          onClick={() => {
-            if (mounted && window.matchMedia("(max-width: 1023px)").matches) {
-              setMobileSidebarOpen(true);
-            } else {
-              setSidebarCollapsed((current) => !current);
-            }
-          }}
-          aria-label={sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
+          className={cn('mobile-shell-trigger', (sidebarCollapsed || focusModeActive) && 'is-visible', focusModeActive && 'is-focus-exit')}
+          onClick={handleMainSurfaceChromeToggle}
+          aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
+          title={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
         >
-          <SidebarToggleGlyph isOpen={!sidebarCollapsed} />
+          {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
         </button>
+      ) : null}
 
-        {mobileSidebarOpen ? (
-          <div className="mobile-sidebar-overlay" onClick={() => setMobileSidebarOpen(false)}>
-            <div className="mobile-sidebar-panel" onClick={(event) => event.stopPropagation()}>
-              {sidebar}
-            </div>
+      {!focusModeActive && !sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
+
+      {!focusModeActive && mobileSidebarOpen ? (
+        <div className="mobile-sidebar-overlay" onClick={() => setMobileSidebarOpen(false)}>
+          <div className="mobile-sidebar-panel" onClick={(event) => event.stopPropagation()}>
+            {sidebar}
           </div>
-        ) : null}
-
-        <div className="main-content-shell" data-main-surface="gridded">
-          {children}
         </div>
+      ) : null}
+
+      <div className="app-shell-main">
+        {children}
+      </div>
     </div>
   );
 }
