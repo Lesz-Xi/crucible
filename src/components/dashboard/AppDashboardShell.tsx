@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   BookOpen,
   Orbit,
@@ -143,7 +143,6 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   const shellChrome = useAppShellChrome();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -159,8 +158,12 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   const [folderFiles, setFolderFiles] = useState<Record<string, SidebarFolderFile[]>>({});
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
-  const activeSessionId = searchParams.get('sessionId');
+  const accountShellRef = useRef<HTMLDivElement | null>(null);
+  const historyLedgerRef = useRef<HTMLDivElement | null>(null);
+  const activeThreadButtonRef = useRef<HTMLButtonElement | null>(null);
+  const activeSessionId = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('sessionId')
+    : null;
   const isInstrumentActive = INSTRUMENTS_NAV.some((item) => pathname === item.href || pathname?.startsWith(`${item.href}/`));
   useEffect(() => {
     setMounted(true);
@@ -196,6 +199,31 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   useEffect(() => {
     if (focusModeActive) setMobileSidebarOpen(false);
   }, [focusModeActive]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (accountShellRef.current?.contains(event.target as Node)) return;
+      setAccountOpen(false);
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setAccountOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [accountOpen]);
+
+  useEffect(() => {
+    setAccountOpen(false);
+  }, [pathname, sidebarCollapsed, focusModeActive]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -264,6 +292,15 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   useEffect(() => {
     if (isInstrumentActive) setInstrumentsOpen(true);
   }, [isInstrumentActive]);
+
+  useEffect(() => {
+    if (!activeSessionId || !historyLedgerRef.current || !activeThreadButtonRef.current) return;
+
+    activeThreadButtonRef.current.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+    });
+  }, [activeSessionId, recentThreads]);
 
   const createFolder = () => {
     const name = prompt('Enter folder name:');
@@ -457,20 +494,24 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
           <div className="sidebar-actions" role="group" aria-label="Operator commands">
             <button
               type="button"
-              className="action-btn"
+              className="action-btn is-primary"
               onClick={() => {
                 router.push('/chat?new=1');
                 window.dispatchEvent(new Event('newChat'));
                 setMobileSidebarOpen(false);
               }}
             >
-              <Plus className="h-3.5 w-3.5" />
+              <span className="action-icon-shell" aria-hidden="true">
+                <Plus className="h-3.5 w-3.5" />
+              </span>
               <span className="action-copy">
                 <span className="action-label">New thread</span>
               </span>
             </button>
-            <button type="button" className="action-btn" onClick={createFolder}>
-              <FolderPlus className="h-3.5 w-3.5" />
+            <button type="button" className="action-btn is-secondary" onClick={createFolder}>
+              <span className="action-icon-shell" aria-hidden="true">
+                <FolderPlus className="h-3.5 w-3.5" />
+              </span>
               <span className="action-copy">
                 <span className="action-label">New folder</span>
               </span>
@@ -583,7 +624,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
             <span>Session ledger</span>
             <span className="sidebar-section-count">{visibleThreads.length}</span>
           </div>
-          <div className="history-ledger-scroll">
+          <div ref={historyLedgerRef} className="history-ledger-scroll">
             <div className="history-list history-ledger">
               {visibleThreads.length === 0 ? (
                 <div className="history-item muted">No notebook sessions recorded.</div>
@@ -599,6 +640,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
                         className="history-item thread-item flex-1 text-left"
                         onClick={() => openThread(session.id)}
                         aria-label={`Open session: ${sessionTitle}`}
+                        ref={isActive ? activeThreadButtonRef : null}
                       >
                         <span className="thread-ledger-dot" aria-hidden="true" />
                         <span className="thread-copy">
@@ -629,6 +671,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
       </div>
 
       <div
+        ref={accountShellRef}
         className="user-row"
         onClick={() => {
           if (sidebarCollapsed) {
@@ -693,16 +736,26 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
   );
 
   return (
-    <div className={cn('app-feature-shell canonical-workbench-shell', `feature-${feature}`, sidebarCollapsed && 'sidebar-collapsed', focusModeActive && 'focus-mode')}>
-      <button
-        type="button"
-        className={cn('mobile-shell-trigger', (sidebarCollapsed || focusModeActive) && 'is-visible', focusModeActive && 'is-focus-exit')}
-        onClick={handleMainSurfaceChromeToggle}
-        aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
-        title={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
-      >
-        {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
-      </button>
+    <div
+      className={cn(
+        'app-feature-shell canonical-workbench-shell',
+        `feature-${feature}`,
+        sidebarCollapsed && 'sidebar-collapsed',
+        focusModeActive && 'focus-mode',
+        mobileSidebarOpen && 'nav-drawer-open'
+      )}
+    >
+      {!mobileSidebarOpen ? (
+        <button
+          type="button"
+          className={cn('mobile-shell-trigger', (sidebarCollapsed || focusModeActive) && 'is-visible', focusModeActive && 'is-focus-exit')}
+          onClick={handleMainSurfaceChromeToggle}
+          aria-label={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
+          title={focusModeActive ? 'Exit focus mode and open navigation' : 'Open navigation'}
+        >
+          {focusModeActive ? <Minimize2 className="h-4 w-4" /> : <SidebarToggleGlyph isOpen={!focusModeActive && !sidebarCollapsed} />}
+        </button>
+      ) : null}
 
       {!focusModeActive && !sidebarCollapsed ? <div className="desktop-sidebar">{sidebar}</div> : null}
 
