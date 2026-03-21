@@ -70,10 +70,10 @@
 }
 
 .canonical-workbench-shell .sidebar-body {
-  display: flex;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
   flex: 1;
-  flex-direction: column;
   gap: 12px;
   overflow: hidden;
   padding: 8px 12px 14px;
@@ -82,7 +82,7 @@
 .canonical-workbench-shell .sidebar-main {
   display: flex;
   min-height: 0;
-  flex: 0 0 auto;
+  align-self: start;
   flex-direction: column;
   gap: 12px;
   overflow: visible;
@@ -336,7 +336,6 @@
 .canonical-workbench-shell .history-section {
   display: flex;
   min-height: 0;
-  flex: 1 1 0%;
   flex-direction: column;
   gap: 8px;
   border-top: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
