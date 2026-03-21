@@ -1076,3 +1076,155 @@
     padding: 16px;
   }
 }
+
+/* Final shell overrides for ledger stability and collapsed-trigger consistency. */
+.canonical-workbench-shell .desktop-sidebar,
+.canonical-workbench-shell .sidebar,
+.canonical-workbench-shell .sidebar-body,
+.canonical-workbench-shell .sidebar-main,
+.canonical-workbench-shell .history-section {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.canonical-workbench-shell .history-section {
+  flex: 1 1 auto;
+  margin-top: 0;
+  padding-top: 10px;
+  gap: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 90%, transparent);
+}
+
+.canonical-workbench-shell .history-ledger-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 8px;
+  margin-right: -2px;
+}
+
+.canonical-workbench-shell .history-ledger {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  overflow: visible;
+  padding-inline: 0;
+  padding-bottom: 10px;
+}
+
+.canonical-workbench-shell .history-list {
+  min-width: 0;
+  width: 100%;
+  flex: 0 0 auto;
+  overflow: visible;
+  padding: 0;
+}
+
+.canonical-workbench-shell .history-row {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 6px;
+}
+
+.canonical-workbench-shell .history-item.thread-item {
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  align-items: start;
+  overflow: hidden;
+  padding: 8px 10px 9px;
+}
+
+.canonical-workbench-shell .thread-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.canonical-workbench-shell .thread-title {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.canonical-workbench-shell .thread-meta {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.canonical-workbench-shell .thread-chip,
+.canonical-workbench-shell .thread-time {
+  flex: 0 0 auto;
+}
+
+.canonical-workbench-shell .thread-action {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 6px 0 0;
+}
+
+.canonical-workbench-shell .mobile-shell-trigger,
+.canonical-workbench-shell .mobile-shell-trigger.is-visible,
+.canonical-workbench-shell.sidebar-collapsed .mobile-shell-trigger,
+.canonical-workbench-shell.focus-mode .mobile-shell-trigger.is-focus-exit {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.canonical-workbench-shell .mobile-shell-trigger,
+.canonical-workbench-shell .mobile-shell-trigger.is-visible,
+.canonical-workbench-shell.sidebar-collapsed .mobile-shell-trigger {
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  color: var(--text-1);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.canonical-workbench-shell .mobile-shell-trigger svg,
+.canonical-workbench-shell .mobile-shell-trigger.is-visible svg,
+.canonical-workbench-shell.sidebar-collapsed .mobile-shell-trigger svg,
+.canonical-workbench-shell.focus-mode .mobile-shell-trigger.is-focus-exit svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
