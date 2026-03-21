@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -235,7 +234,6 @@ const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
 
 export function ChatWorkbenchV2() {
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
-  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -526,16 +524,16 @@ export function ChatWorkbenchV2() {
     [applySessionHistory]
   );
 
-  useEffect(() => {
-    const urlSessionId = searchParams.get('sessionId');
-    const isNew = searchParams.get('new') === '1';
+  const syncThreadFromUrl = useCallback(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlSessionId = params.get('sessionId');
+    const isNew = params.get('new') === '1';
 
     if (isNew) {
       resetThread();
-      if (typeof window !== 'undefined') {
-        const cleanPath = window.location.pathname;
-        window.history.replaceState({}, '', cleanPath);
-      }
+      window.history.replaceState({}, '', window.location.pathname);
       return;
     }
 
@@ -546,7 +544,15 @@ export function ChatWorkbenchV2() {
     } else {
       console.log('[DEBUG URL effect] SKIPPED — same session or no sessionId');
     }
-  }, [dbSessionId, loadSession, resetThread, searchParams]);
+  }, [dbSessionId, loadSession, resetThread]);
+
+  useEffect(() => {
+    syncThreadFromUrl();
+    window.addEventListener('popstate', syncThreadFromUrl);
+    return () => {
+      window.removeEventListener('popstate', syncThreadFromUrl);
+    };
+  }, [syncThreadFromUrl]);
 
   useEffect(() => {
     const onLoadSessionEvent = (event: Event) => {
