@@ -6,301 +6,494 @@
     <title>MASA: Methods of Automated Scientific Analysis - Technical White Paper</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
         :root {
-            --primary: #0a0a12;
-            --accent: #22d3ee;
-            --accent-dark: #0891b2;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --bg: #ffffff;
-            --bg-alt: #f8fafc;
-            --border: #e5e7eb;
+            /* Surface elevation ladder */
+            --bg:           #0E0D0C;
+            --bg-2:         #131210;
+            --bg-3:         #1A1816;
+            --bg-4:         #211F1C;
+            --bg-5:         #282523;
+
+            /* Text — opacity-scaled warm white */
+            --text-1:       rgba(255, 252, 245, 0.92);
+            --text-2:       rgba(255, 252, 245, 0.62);
+            --text-3:       rgba(255, 252, 245, 0.38);
+            --text-4:       rgba(255, 252, 245, 0.20);
+
+            /* Amber accent */
+            --accent:       #C8965A;
+            --accent-muted: rgba(200, 150, 90, 0.55);
+            --accent-dim:   rgba(200, 150, 90, 0.14);
+
+            /* Borders */
+            --border:       rgba(255, 252, 245, 0.07);
+            --border-2:     rgba(255, 252, 245, 0.12);
+
+            /* Semantic status */
+            --success:      #4CAF81;
+            --success-dim:  rgba(76, 175, 129, 0.10);
+            --warning:      #D4935A;
+            --warning-dim:  rgba(212, 147, 90, 0.10);
+            --info:         #6B9FD4;
+            --info-dim:     rgba(107, 159, 212, 0.10);
+
+            /* Typography */
+            --font-serif:  'Instrument Serif', Georgia, serif;
+            --font-sans:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono:   'JetBrains Mono', monospace;
+
+            --r-sm:  4px;
+            --r:     8px;
+            --r-lg:  12px;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.7;
-            color: var(--text);
+            font-family: var(--font-sans);
+            line-height: 1.75;
+            color: var(--text-1);
             background: var(--bg);
+            background-image: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(200,150,90,0.055) 0%, transparent 60%);
+            background-attachment: fixed;
             -webkit-font-smoothing: antialiased;
         }
-        
+
         .container {
             max-width: 850px;
             margin: 0 auto;
-            padding: 60px 40px;
+            padding: 64px 40px;
         }
-        
-        /* Header */
+
+        /* ─── Header ─── */
         .header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 64px;
             padding-bottom: 40px;
             border-bottom: 1px solid var(--border);
         }
-        
+
         .logo {
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 3px;
-            color: var(--accent-dark);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.14em;
+            color: var(--accent);
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
-        
+
         h1 {
+            font-family: var(--font-serif);
+            font-style: italic;
             font-size: 42px;
-            font-weight: 700;
-            color: var(--primary);
+            font-weight: 400;
+            color: var(--text-1);
             line-height: 1.2;
+            letter-spacing: -0.02em;
             margin-bottom: 16px;
         }
-        
+
         .subtitle {
-            font-size: 20px;
-            color: var(--text-light);
-            font-weight: 400;
+            font-size: 16px;
+            color: var(--text-2);
+            font-weight: 300;
+            line-height: 1.5;
         }
-        
+
         .meta {
-            margin-top: 30px;
-            font-size: 13px;
-            color: var(--text-light);
+            margin-top: 28px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.10em;
+            color: var(--text-3);
+            text-transform: uppercase;
         }
-        
+
         .meta span {
-            margin: 0 12px;
+            margin: 0 10px;
         }
-        
-        /* Sections */
+
+        /* ─── Sections ─── */
         section {
-            margin-bottom: 50px;
+            margin-bottom: 52px;
         }
-        
+
         h2 {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--primary);
+            font-size: 19px;
+            font-weight: 500;
+            color: var(--text-1);
             margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 2px solid var(--accent);
+            padding-left: 14px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
         }
-        
+
+        h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 3px;
+            bottom: 13px;
+            width: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
         h3 {
-            font-size: 20px;
+            font-size: 15px;
             font-weight: 600;
-            color: var(--primary);
-            margin: 30px 0 15px 0;
+            color: var(--text-1);
+            margin: 28px 0 12px 0;
         }
-        
+
         h4 {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text);
-            margin: 20px 0 10px 0;
+            color: var(--text-2);
+            margin: 20px 0 8px 0;
         }
-        
+
         p {
-            margin-bottom: 16px;
-            color: var(--text);
+            margin-bottom: 14px;
+            color: var(--text-1);
         }
-        
-        /* Abstract Box */
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            text-decoration-color: var(--accent-muted);
+        }
+
+        /* ─── Abstract ─── */
         .abstract {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-left: 4px solid var(--accent);
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            border-left: 2px solid var(--accent);
             padding: 24px 28px;
             margin: 30px 0;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 var(--r) var(--r) 0;
         }
-        
+
         .abstract h3 {
             margin-top: 0;
-            color: var(--accent-dark);
+            color: var(--accent);
         }
-        
-        /* Lists */
+
+        /* ─── Lists ─── */
         ul, ol {
-            margin: 16px 0;
-            padding-left: 28px;
+            margin: 14px 0;
+            padding-left: 24px;
         }
-        
+
         li {
-            margin: 10px 0;
+            margin: 8px 0;
+            color: var(--text-1);
         }
-        
-        /* Tables */
+
+        /* ─── Tables ─── */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 24px 0;
-            font-size: 14px;
+            margin: 20px 0;
+            font-size: 13px;
         }
-        
+
         th, td {
             border: 1px solid var(--border);
-            padding: 14px 16px;
+            padding: 11px 14px;
             text-align: left;
+            vertical-align: top;
         }
-        
+
         th {
-            background: var(--bg-alt);
-            font-weight: 600;
-            color: var(--primary);
+            background: var(--bg-3);
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-2);
         }
-        
-        tr:nth-child(even) {
-            background: var(--bg-alt);
+
+        tr:nth-child(even) td {
+            background: var(--bg-2);
         }
-        
-        /* Code */
-        code {
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--bg-alt);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 13px;
-            color: var(--accent-dark);
-        }
-        
-        pre {
-            background: var(--primary);
-            color: #e5e7eb;
-            padding: 20px 24px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            margin: 20px 0;
-        }
-        
-        /* Mermaid Diagrams */
-        .mermaid {
-            background: var(--bg-alt);
-            border-radius: 12px;
-            padding: 30px;
-            margin: 24px 0;
+
+        td[colspan] {
+            background: var(--bg-4) !important;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent) !important;
             text-align: center;
         }
-        
-        /* Callouts */
-        .callout {
+
+        /* ─── Code ─── */
+        code {
+            font-family: var(--font-mono);
+            background: var(--bg-3);
+            padding: 1px 7px;
+            border-radius: var(--r-sm);
+            font-size: 12px;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        pre {
+            background: var(--bg-2);
+            color: var(--text-1);
             padding: 20px 24px;
-            border-radius: 8px;
-            margin: 24px 0;
+            border-radius: var(--r);
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.65;
+            margin: 20px 0;
+            border: 1px solid var(--border);
         }
-        
+
+        /* ─── Mermaid ─── */
+        .mermaid {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 24px 16px;
+            margin: 20px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+
+        /* ─── Callouts ─── */
+        .callout {
+            padding: 18px 22px;
+            border-radius: var(--r);
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+
         .callout-info {
-            background: #eff6ff;
-            border-left: 4px solid #3b82f6;
+            background: var(--info-dim);
+            border-left: 2px solid var(--info);
         }
-        
+
         .callout-success {
-            background: #ecfdf5;
-            border-left: 4px solid var(--success);
+            background: var(--success-dim);
+            border-left: 2px solid var(--success);
         }
-        
+
         .callout-warning {
-            background: #fffbeb;
-            border-left: 4px solid var(--warning);
+            background: var(--warning-dim);
+            border-left: 2px solid var(--warning);
         }
-        
+
         .callout > strong:first-of-type {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-2);
         }
-        
-        /* Phase Cards */
+
+        .callout-info > strong:first-of-type    { color: var(--info); }
+        .callout-success > strong:first-of-type { color: var(--success); }
+        .callout-warning > strong:first-of-type { color: var(--warning); }
+
+        /* ─── Phase Cards ─── */
         .phase-card {
-            background: var(--bg-alt);
+            background: var(--bg-3);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
+            border-radius: var(--r-lg);
+            padding: 22px;
             margin: 20px 0;
         }
-        
+
         .phase-card h4 {
             margin-top: 0;
-            color: var(--accent-dark);
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
         }
-        
-        /* Status Badges */
+
+        /* ─── Badges ─── */
         .badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 2px 10px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.12em;
+            border: 1px solid transparent;
+            vertical-align: middle;
         }
-        
+
         .badge-complete {
-            background: #d1fae5;
-            color: #065f46;
+            background: var(--success-dim);
+            color: var(--success);
+            border-color: rgba(76, 175, 129, 0.22);
         }
-        
+
         .badge-foundation {
-            background: #fef3c7;
-            color: #92400e;
+            background: var(--warning-dim);
+            color: var(--warning);
+            border-color: rgba(212, 147, 90, 0.22);
         }
-        
+
         .badge-core {
-            background: #dbeafe;
-            color: #1e40af;
+            background: var(--info-dim);
+            color: var(--info);
+            border-color: rgba(107, 159, 212, 0.22);
         }
-        
-        /* Architecture Grid */
+
+        /* ─── Architecture Grid ─── */
         .arch-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin: 24px 0;
+            gap: 14px;
+            margin: 20px 0;
         }
-        
+
         .arch-item {
-            background: var(--bg-alt);
+            background: var(--bg-3);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--r);
             padding: 16px;
         }
-        
+
         .arch-item h5 {
-            font-size: 14px;
-            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.10em;
+            text-transform: uppercase;
+            color: var(--accent);
             margin-bottom: 8px;
-            color: var(--primary);
         }
-        
+
         .arch-item p {
-            font-size: 13px;
-            color: var(--text-light);
+            font-size: 12px;
+            color: var(--text-2);
             margin: 0;
+            line-height: 1.55;
         }
-        
-        /* Footer */
+
+        /* ─── Footer ─── */
         .footer {
-            margin-top: 60px;
-            padding-top: 30px;
+            margin-top: 64px;
+            padding-top: 28px;
             border-top: 1px solid var(--border);
             text-align: center;
-            color: var(--text-light);
-            font-size: 13px;
+            color: var(--text-3);
+            font-size: 12px;
         }
-        
-        /* Print Optimization */
+
+        .footer p strong {
+            color: var(--text-2);
+        }
+
+        .footer p[style] {
+            color: var(--text-4) !important;
+        }
+
+        /* ─── Mobile ─── */
+        @media (max-width: 640px) {
+            .container {
+                padding: 32px 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .meta {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 4px 0;
+                font-size: 9px;
+            }
+
+            .meta span {
+                margin: 0 6px;
+            }
+
+            .arch-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .abstract {
+                padding: 18px 16px;
+            }
+
+            .callout {
+                padding: 14px 16px;
+            }
+
+            .phase-card {
+                padding: 16px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                min-width: 100px;
+            }
+
+            pre {
+                font-size: 11px;
+                padding: 14px 16px;
+            }
+
+            .mermaid {
+                padding: 16px 8px;
+            }
+
+            h2 {
+                font-size: 17px;
+            }
+
+            .footer {
+                margin-top: 40px;
+            }
+        }
+
+        /* ─── Print ─── */
         @media print {
+            body {
+                background: white;
+                color: black;
+            }
             .container {
                 padding: 20px;
             }
@@ -318,11 +511,11 @@
         <header class="header">
             <div class="logo">Technical White Paper</div>
             <h1>MASA: Methods of Automated Scientific Analysis</h1>
-            <p class="subtitle">A Self-Improving AI Architecture for Autonomous Scientific Discovery</p>
+            <p class="subtitle">A Trust-First AI Architecture for Scientific Discovery, Causal Governance, and Auditable Reasoning</p>
             <p class="meta">
-                <span>Version 1.1</span>
+                <span>Version 1.2</span>
                 <span>•</span>
-                <span>February 2026</span>
+                <span>March 2026</span>
                 <span>•</span>
                 <span>Rhine Lesther Tague</span>
             </p>
@@ -330,15 +523,29 @@
 
         <div class="abstract">
             <h3>Abstract</h3>
-            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture designed to automate scientific discovery with causal discipline. Unlike conventional LLM applications that generate plausible text, MASA implements a closed-loop system spanning: (1) hypothesis generation from heterogeneous evidence, (2) multi-agent critique under explicit causal constraints, (3) durable memory of evaluations and traces, and (4) validation protocols that move outputs toward falsifiable science. Core breakthroughs include the implementation of <strong>Pearl's Causal Blueprint</strong> (observation, intervention, counterfactual layers), a domain registry of constraint templates, and a governance stack that measures drift between architectural claims and code reality. This paper presents the architecture as implemented and identifies remaining gaps required to reach fully autonomous, high-integrity scientific operation.</p>
+            <p>MASA (Methods of Automated Scientific Analysis) is a proprietary AI architecture for causally disciplined scientific discovery. Unlike conventional LLM applications that only generate plausible text, MASA runs a closed loop: (1) hypothesis generation from heterogeneous evidence, (2) multi-agent critique under explicit causal and methodological constraints, (3) durable memory of evaluations and traces, and (4) governance protocols that force claims to match implementation reality. Core breakthroughs now include a <strong>deterministic Causal Engine v1.0 core</strong> for fully specified linear DAGs, a domain registry of constraint templates, and a governance stack that tracks drift between architectural claims and code reality. This paper documents the implemented architecture and the remaining gaps toward high-integrity scientific operation.</p>
             <div class="callout callout-info" style="margin-top: 20px;">
-                <strong>Code-Reality Update (February 2026)</strong><br>
-                MASA now includes an additive persistent-memory v1.1 path in production code (causal pruning policy, compaction receipts, hybrid retrieval fusion, and cross-session lattice events) behind feature flags for controlled rollout. Governance sentinels for claim drift and memory integrity are operational in report-first mode. Additionally, Phase B Thermodynamic Basis Expansion (TBE) is now fully integrated, providing deterministic spectral gap detection and dynamic temperature steering (T=1.5) to escape coherence traps, complete with real-time UI telemetry.
+                <strong>Code-Reality Update (March 2026)</strong><br>
+                MASA now includes an additive persistent-memory v1.1 path in production code (causal pruning policy, compaction receipts, hybrid retrieval fusion, and cross-session lattice events) behind feature flags for controlled rollout. Governance sentinels for claim drift and memory integrity are available in report-first mode. Separately, the Causal Engine v1.0 formal core now exists in code with local B1-B6 solver benchmarks passing, but production runtime verification of typed-SCM loading remains pending.
             </div>
         </div>
 
         <section>
-            <h2>1. Introduction</h2>
+            <div class="callout callout-info" style="margin-top: 8px;">
+                <strong>Quick Navigation</strong><br>
+                <a href="#sec-introduction">Introduction</a> ·
+                <a href="#sec-foundations">Theoretical Foundations</a> ·
+                <a href="#sec-pipeline">Synthesis Pipeline</a> ·
+                <a href="#sec-memory">Sovereign Memory</a> ·
+                <a href="#sec-chemical">Chemical Validation</a> ·
+                <a href="#sec-results">Results</a> ·
+                <a href="#sec-limitations">Limitations</a> ·
+                <a href="#sec-appendix-a">Appendix A</a>
+            </div>
+        </section>
+
+        <section>
+            <h2 id="sec-introduction">1. Introduction</h2>
             
             <h3>1.1 The Problem</h3>
             <p>Current AI systems for scientific research face a fundamental limitation: they are <strong>philosophers without empirical grounding</strong>. They can reason logically about hypotheses but cannot:</p>
@@ -361,7 +568,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="3" style="background: #dbeafe; font-weight: 600; text-align: center;">Core Three-Pillar Closed Loop</td>
+                        <td colspan="3">Core Three-Pillar Closed Loop</td>
                     </tr>
                     <tr>
                         <td><strong>Generator</strong></td>
@@ -379,7 +586,7 @@
                         <td>Vector-based learning + simulation validation</td>
                     </tr>
                     <tr>
-                        <td colspan="3" style="background: #fef3c7; font-weight: 600; text-align: center;">Enhancement Layers</td>
+                        <td colspan="3">Enhancement Layers</td>
                     </tr>
                     <tr>
                         <td><strong>Optimization</strong></td>
@@ -398,7 +605,7 @@
         <section>
             <h2>2. Beyond the Armchair Philosopher</h2>
             
-            <p>A common critique of AI in scientific research is that Large Language Models are merely "armchair philosophers"—they predict what valid science <em>looks like</em> based on text probability, not physical laws. This critique is accurate for standalone LLMs, but it fundamentally misunderstands agentic architectures like MASA.</p>
+            <p>A common critique in AI for science is that Large Language Models are merely "armchair philosophers"—they predict what valid science <em>looks like</em> from text statistics rather than physical laws. That critique is accurate for standalone LLMs, but it under-describes agentic architectures like MASA.</p>
             
             <h3>2.1 The Two Paradigms</h3>
             <table>
@@ -627,7 +834,7 @@ flowchart TB
     EXPGEN --> PYODIDE
     PYODIDE --> METRICS
     METRICS --> ARCH
-    style Causal fill:#e0f2fe,stroke:#0891b2,stroke-width:3px
+    style Causal fill:#1A1816,stroke:#C8965A,stroke-width:2px
             </div>
             
             <h3>3.2 Core Modules</h3>
@@ -660,7 +867,7 @@ flowchart TB
         </section>
 
         <section>
-            <h2>4. Theoretical Foundations: Combinatorial, Causal, and Cybernetic</h2>
+            <h2 id="sec-foundations">4. Theoretical Foundations: Combinatorial, Causal, and Cybernetic</h2>
             
             <p>MASA's architecture is mathematically grounded in three complementary theoretical frameworks: <strong>Carina Hong's Combinatorics</strong> for hypothesis space exploration, <strong>Judea Pearl's Causal Inference</strong> for reasoning depth, and <strong>Maxwell Maltz's Psycho-Cybernetics</strong> for goal-directed self-correction.</p>
             
@@ -801,219 +1008,141 @@ flowchart TB
         </section>
 
         <section>
-            <h2>4.7 Pearl's Causal Blueprint: Full 3-Layer Implementation</h2>
-            <span class="badge badge-complete">Complete</span>
+            <h2>4.7 Pearl's Causal Blueprint: Implemented v1.0 Core and Deferred Layers</h2>
+            <span class="badge badge-foundation">Implemented Core / Deferred Layers</span>
             
-            <p>Phase 28 (January 2026) marked MASA's transition from <em>purely epistemic</em> validation to <strong>causal-first validation</strong>. The system now implements Judea Pearl's complete "Ladder of Causation" as a <strong>gatekeeper layer</strong> that validates ideas <em>before</em> expensive epistemic agent audits.</p>
+            <p>MASA now has a real <strong>Causal Engine v1.0 core</strong>, but it is narrower than the earlier white-paper claim of a complete Pearl ladder implementation. The implemented core is a <strong>deterministic structural-equation executor</strong> for fully specified linear DAGs with typed equations, local benchmark coverage, and explicit graceful degradation to heuristic paths when typed SCMs are unavailable.</p>
 
-            <h3>4.7.1 The Sequential Gating Architecture</h3>
-            <p>Ideas now pass through a multi-tier causal validation pipeline:</p>
+            <div class="callout callout-warning">
+                <strong>Code-Reality Boundary</strong><br>
+                MASA does <strong>not</strong> currently implement full do-calculus, general identifiability, or unrestricted counterfactual inference as a production gatekeeper layer. The formal engine currently covers typed SCM loading, DAG validation, graph mutilation, forward solving, and deterministic trace generation for models inside the v1.0 assumption envelope.
+            </div>
+
+            <h3>4.7.1 Implemented Execution Architecture</h3>
+            <p>The currently implemented causal path is:</p>
             
             <div class="mermaid">
 flowchart TB
-    A["Novel Idea Generated"] --> B["Tier 1 SCM: Universal Physics"]
-    B -->|"Pass"| C["Tier 2 SCM: Domain Template"]
-    C -->|"Pass"| D["Layer 2: do-calculus"]
-    D -->|"Pass"| E["Layer 3: Counterfactuals"]
-    E -->|"Pass"| F["Causal Credit Assignment"]
-    F -->|"Credit OK"| G["Epistemic Agents"]
-    B -->|"Fail"| H["Reject: Physics Violation"]
-    C -->|"Fail"| I["Reject: Domain Violation"]
-    D -->|"Fail"| J["Reject: Interventional Error"]
-    E -->|"Warning"| F
-    F -->|"High Fault"| K["Record Failure Pattern"]
-    K --> L["Sovereign Memory Learning"]
-    style B fill:#e0f2fe,stroke:#0891b2,stroke-width:2px
-    style C fill:#e0f2fe,stroke:#0891b2,stroke-width:2px
-    style H fill:#fee,stroke:#f00
-    style I fill:#fee,stroke:#f00
-    style J fill:#fee,stroke:#f00
+    A["Route Call"] --> B["Load TypedSCM if model-backed"]
+    B -->|"Typed model available"| C["Validate DAG + Topological Order"]
+    B -->|"No typed model"| H["Graceful fallback: heuristic_bfs_propagation"]
+    C --> D["Graph Mutilation (deterministic do-operator)"]
+    D --> E["Forward Solver"]
+    E --> F["Counterfactual Trace + Provenance"]
+    F --> G["Governance / Audit Layer"]
+    H --> F
+    style C fill:#1A1816,stroke:#C8965A,stroke-width:2px
+    style D fill:#1A1816,stroke:#C8965A,stroke-width:2px
+    style E fill:#1A1816,stroke:#C8965A,stroke-width:2px
+    style H fill:#1A1816,stroke:#D4935A,stroke-width:2px
             </div>
 
-            <h3>4.7.2 Layer 1 (Observation): Structural Causal Models</h3>
-            <p>MASA implements <strong>two-tier SCM validation</strong>:</p>
-            
+            <p><strong>Current route boundary:</strong> the formal path is wired in <code>causal-chat/route.ts</code> when a typed SCM can be loaded through <code>SCMRegistryService</code>. Other callers such as legal reasoning and educational optimization remain explicitly on fallback because they still operate on in-memory templates rather than typed structural equations.</p>
+
+            <h3>4.7.2 What Is Implemented Now</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Tier</th>
-                        <th>Scope</th>
-                        <th>Constraint Examples</th>
-                        <th>Rejection Criterion</th>
+                        <th>Capability</th>
+                        <th>Implemented State</th>
+                        <th>Current Boundary</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Tier 1</strong></td>
-                        <td>Universal Physics</td>
-                        <td>Conservation of Energy, Entropy ≥ 0, Causality (no FTL)</td>
-                        <td>Any critical violation → Auto-reject</td>
+                        <td><strong>Formal SCM Types</strong></td>
+                        <td><code>TypedSCM</code>, <code>StructuralEquation</code>, <code>CausalQuery</code>, and <code>CausalResult</code> are defined in code.</td>
+                        <td>Typed equations must exist; legacy blobs are retained only as deprecated compatibility.</td>
                     </tr>
                     <tr>
-                        <td><strong>Tier 2</strong></td>
-                        <td>Domain-Specific</td>
-                        <td>Ecology: Network Cooperation (18.9x resilience), Empirical bounds (fragmentation data)</td>
-                        <td>Domain violations → Context-dependent</td>
+                        <td><strong>Graph Operations</strong></td>
+                        <td>DAG validation, deterministic topological sort, and graph mutilation are implemented.</td>
+                        <td>v1.0 remains DAG-only and linear-only.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solver</strong></td>
+                        <td>Forward solving passes the local B1-B6 causal-engine benchmark suite.</td>
+                        <td>This is local compute evidence, not yet universal production-path proof.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Trace Provenance</strong></td>
+                        <td>Deterministic traces can carry evaluation order, value maps, and explicit computation method labels.</td>
+                        <td>Migration/runtime readback verification is still required in the target environment.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Graceful Degradation</strong></td>
+                        <td>Unsupported or untyped models fall back to <code>heuristic_bfs_propagation</code>.</td>
+                        <td>The fallback is explicitly labeled as heuristic and should not be described as formal intervention math.</td>
                     </tr>
                 </tbody>
             </table>
-            
-            <div class="callout callout-success">
-                <strong>"Truth Cartridge Library" — Multi-Scale Validation Architecture</strong>
-                Tier 2 now provides <strong>comprehensive multi-domain validation</strong> via four modular SCM templates that can <strong>stack</strong> on a single idea for holistic analysis:
-                
-                <table class="constraint-table" style="margin-top: 16px;">
-                    <tr>
-                        <th>Template</th>
-                        <th>Source</th>
-                        <th>Scale</th>
-                        <th>Core Constraint</th>
-                        <th>Phase</th>
-                    </tr>
-                    <tr>
-                        <td><code>BiologicalEcologyTemplate</code></td>
-                        <td>Forest ecology research</td>
-                        <td>Population</td>
-                        <td>Network cooperation (τ > 0.3)</td>
-                        <td>28.5</td>
-                    </tr>
-                    <tr>
-                        <td><code>SelfishGeneTemplate</code></td>
-                        <td>Dawkins' <em>The Selfish Gene</em></td>
-                        <td>Gene</td>
-                        <td>Hamilton's Rule (rB > C), r ∈ {0.5, 0.75}</td>
-                        <td>29</td>
-                    </tr>
-                    <tr>
-                        <td><code>CognitivePsychologyTemplate</code></td>
-                        <td>Kahneman's <em>Thinking, Fast and Slow</em></td>
-                        <td>Individual</td>
-                        <td>Reference Point + Loss Aversion (λ ≈ 2.25)</td>
-                        <td>30</td>
-                    </tr>
-                    <tr>
-                        <td><code>ScalingLawsTemplate</code></td>
-                        <td>West's <em>Scale</em></td>
-                        <td>Multi-Scale</td>
-                        <td>Beta Regime (β < 1 bounded, β > 1 singular)</td>
-                        <td>31</td>
-                    </tr>
-                </table>
-                
-                <p style="margin-top: 16px;"><strong>Multi-Template Stacking Example:</strong> An idea about <em>"sustainable urban climate policy"</em> triggers <strong>all three templates</strong>—ScalingLaws (urban growth β=1.15), Ecology (ecosystem mutualism τ>0.3), and CognitivePsychology (policy loss aversion λ≈2.25)—providing gene → individual → population → systems-level validation.</p>
-                
-                <p>This "Truth Cartridge" pattern allows MASA to load falsifiable domain knowledge extracted from authoritative scientific sources, with each template implementing numerical thresholds for automated constraint checking.</p>
-            </div>
 
-            <h3>4.7.3 Layer 2 (Intervention): do-calculus via Pyodide</h3>
-            <p>When a mechanism includes computational claims (e.g., "Algorithm X reduces complexity from O(n²) to O(n log n)"), MASA extracts Python code and tests interventional hypotheses:</p>
-            
+            <h3>4.7.3 Deterministic Intervention Execution (Implemented)</h3>
+            <p>The formal engine executes interventions by mutilating a typed SCM and solving it forward in deterministic topological order. This is the true mathematical core of the current implementation. It is appropriate to describe this as <strong>deterministic intervention execution over a fully specified SCM</strong>.</p>
+
             <div class="phase-card">
-                <h4>Interventional Testing Protocol</h4>
+                <h4>v1.0 Assumption Envelope</h4>
                 <ol>
-                    <li><strong>Extract Claims:</strong> LLM parses mechanism for "If we do X, then Y" statements</li>
-                    <li><strong>Generate Test Code:</strong> Automated synthesis of validation logic</li>
-                    <li><strong>Execute in Pyodide:</strong> Sandboxed WebAssembly prevents side effects</li>
-                    <li><strong>Capture Evidence:</strong> stdout/metrics parsed for validation results</li>
+                    <li><strong>Fully specified models:</strong> all required variables and equations must be known</li>
+                    <li><strong>Linear structural equations:</strong> no nonlinear or learned structural functions</li>
+                    <li><strong>Acyclic graphs only:</strong> no feedback loops</li>
+                    <li><strong>Deterministic execution:</strong> no probabilistic sampling inside the formal path</li>
                 </ol>
-                <p><strong>Example:</strong> An idea claiming "Doubling input size halves runtime" would be tested by running the mechanism code with inputs of size [100, 200, 400] and verifying Δ runtime < 0.</p>
+                <p><strong>Result:</strong> given the same typed model and query, the engine is intended to return the same result.</p>
             </div>
 
-            <h3>4.7.4 Layer 3 (Counterfactuals): Mechanism Robustness Evaluation</h3>
-            <p>The <code>CounterfactualGenerator</code> service generates three adversarial scenarios to test mechanism completeness:</p>
-            
+            <h3>4.7.4 Deferred or Support-Layer Capabilities</h3>
             <table>
                 <thead>
                     <tr>
-                        <th>Scenario Type</th>
-                        <th>Tests For</th>
-                        <th>Example</th>
+                        <th>Claimed Capability</th>
+                        <th>Current Status</th>
+                        <th>Why It Is Deferred</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Boundary Condition</strong></td>
-                        <td>Edge case handling</td>
-                        <td>"What if the forest had only 2 tree species instead of 20?"</td>
+                        <td><strong>Full do-calculus</strong></td>
+                        <td>Not implemented as formal engine math</td>
+                        <td>Current intervention support is deterministic mutilation/forward solve, not symbolic do-calculus.</td>
                     </tr>
                     <tr>
-                        <td><strong>Confounding Variable</strong></td>
-                        <td>Hidden variable awareness</td>
-                        <td>"What if soil pH varies spatially and isn't measured?"</td>
+                        <td><strong>General identifiability</strong></td>
+                        <td>Deferred</td>
+                        <td>v1.0 does not claim adjustment-set completeness or hidden-confounder resolution.</td>
                     </tr>
                     <tr>
-                        <td><strong>Reversed Causality</strong></td>
-                        <td>Causal direction clarity</td>
-                        <td>"What if tree diversity is a <em>result</em> of resilience, not a cause?"</td>
+                        <td><strong>Counterfactual abduction with hidden variables</strong></td>
+                        <td>Deferred</td>
+                        <td>The current engine does not perform stochastic abduction or latent-variable recovery.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Production route activation everywhere</strong></td>
+                        <td>Not true yet</td>
+                        <td>Only the model-backed chat path attempts typed loading today; other routes remain heuristic by design.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Runtime operational closure</strong></td>
+                        <td>Pending verification</td>
+                        <td>Typed-SCM loading still requires live RLS/runtime verification in the intended environment.</td>
                     </tr>
                 </tbody>
             </table>
-            
-            <p>The mechanism is scored on 4 dimensions:</p>
-            <ul>
-                <li><strong>Completeness</strong> (0-1): Does it handle all plausible scenarios?</li>
-                <li><strong>Boundary Awareness</strong> (0-1): Does it acknowledge limitations?</li>
-                <li><strong>Confounder Handling</strong> (0-1): Does it address alternative explanations?</li>
-                <li><strong>Causal Direction</strong> (0-1): Is the arrow of causality justified?</li>
-            </ul>
 
-            <h3>4.7.5 Causal Credit Assignment & Meta-Learning</h3>
-            <p>Phase 28 Component 4 implements a centralized <code>CausalCreditService</code> that aggregates fault signals across all three layers:</p>
-            
-            <div class="callout callout-info">
-                <strong>Fault Vector Calculation</strong><br>
-                <code>
-                causal_credit = {<br>
-                &nbsp;&nbsp;mechanism_fault: 1 - completeness,<br>
-                &nbsp;&nbsp;evidence_fault: 1 - confounderHandling,<br>
-                &nbsp;&nbsp;novelty_fault: calculateNoveltyFault(priorArt),<br>
-                &nbsp;&nbsp;formulation_fault: 1 - boundaryAwareness<br>
-                }
-                </code>
-            </div>
-            
-            <p><strong>Integration with Sovereign Memory:</strong> When <code>mechanism_fault > 0.7</code>, the system records a <code>FailurePattern</code> in <code>MasaMemory</code>, enabling meta-learning:</p>
+            <h3>4.7.5 Evidence and Current Boundaries</h3>
             <ul>
-                <li>Ideas in <em>ecology</em> that fail due to ignoring network effects</li>
-                <li>Ideas in <em>algorithms</em> that fail due to incorrect complexity claims</li>
-                <li>Ideas in <em>economics</em> that fail due to rational agent assumptions</li>
+                <li><strong>Local benchmark evidence:</strong> the formal solver passes 6/6 causal-engine benchmarks (B1-B6) in local verification.</li>
+                <li><strong>LLM independence:</strong> the implemented mathematical path is deterministic TypeScript compute, not prompt-based reasoning.</li>
+                <li><strong>Claim discipline:</strong> fallback vocabulary has been renamed toward explicit heuristic framing, though support-layer cleanup may still remain outside engine-core.</li>
+                <li><strong>Operational boundary:</strong> production RLS verification and migration readback are still required before claiming full route activation.</li>
             </ul>
-            <p>This creates a feedback loop where MASA learns <em>patterns of failure</em> specific to each domain.</p>
-
-            <h3>4.7.6 Performance Impact</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Before Phase 28</th>
-                        <th>After Phase 28</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>False Positive Rate (physically impossible ideas)</td>
-                        <td>~25%</td>
-                        <td><strong>&lt;5%</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Audit Cost (ideas auto-rejected pre-epistemic)</td>
-                        <td>N/A</td>
-                        <td><strong>~15% cost savings</strong></td>
-                    </tr>
-                    <tr>
-                        <td>Domain Coverage (causal templates available)</td>
-                        <td>0</td>
-                        <td><strong>4 (Ecology, Selfish Gene, Cognitive, Scaling Laws)</strong></td>
-                    </tr>
-                </tbody>
-            </table>
 
             <div class="callout callout-success">
                 <strong>Architectural Significance</strong><br>
-                Phase 28 elevates MASA from <em>"statistically plausible reasoning"</em> to <em>"causally grounded reasoning."</em> By implementing Pearl's complete framework as a pre-filter, the system now rejects ideas that violate known physical laws or domain-specific causal structures <strong>before</strong> wasting epistemic reasoning resources. This is a foundational step toward true scientific rigor.
+                The important shift is not that MASA now implements Pearl's complete ladder. The important shift is that MASA now contains a real deterministic causal-compute core with typed SCMs, explicit fallback behavior, benchmark evidence, and governance strong enough to reject overclaims about what has and has not been implemented.
             </div>
 
-            <h3>4.7.7 Consciousness Framework Extensions (Phase 32+)</h3>
+            <h3>4.7.6 Consciousness Framework Extensions (Phase 32+)</h3>
             <p>Following the initial Truth Cartridge deployment, MASA extended its causal validation infrastructure to include <strong>7 consciousness and theoretical frameworks</strong>, transitioning from a "template library" to a <strong>Canonical Registry architecture</strong>.</p>
 
             <h4>Architecture: JSON Graph Storage + Database Seeding</h4>
@@ -1197,8 +1326,8 @@ flowchart TD
     C -->|Optimizes| D["Hypothesis Generation"]
     D -->|Validates| E["Auditor (Consist with Model)"]
     E -->|Reinforces| A
-    style A fill:#fca,stroke:#f00,stroke-width:2px
-    style E fill:#fca,stroke:#f00,stroke-width:2px
+    style A fill:#281A14,stroke:#D4935A,stroke-width:2px
+    style E fill:#281A14,stroke:#D4935A,stroke-width:2px
             </div>
 
             <div class="callout callout-warning">
@@ -1263,20 +1392,19 @@ flowchart TD
                     <tr>
                         <td><strong>UI Visualization</strong></td>
                         <td><span class="badge badge-complete">Complete</span></td>
-                        <td>February 2026</td>
+                        <td>January 2026</td>
                     </tr>
                     <tr>
                         <td><strong>Empirical Validation</strong></td>
-                        <td><span class="badge badge-complete">Complete</span></td>
-                        <td>February 2026</td>
+                        <td><span class="badge badge-foundation">Pending</span></td>
+                        <td>Q1 2026</td>
                     </tr>
                 </tbody>
             </table>
             
             <div class="callout callout-success">
                 <strong>Validation Metrics</strong><br>
-                Target: Reduce duplicate idea generation from 40% to &lt;10% in narrow-domain synthesis. Spectral gap analysis provides early warning 5-10 ideas before stagnation occurs, enabling proactive diversification.<br><br>
-                <strong>Results (Phase A):</strong> System achieved 100% adherence to thermal cooldown constraints across consecutive generation cycles. Spectral gap correctly triggered T=1.5 expansion at 1 / &radic;L threshold, preventing stagnation in simulated coherence traps. Phase B UI integration actively visualizes these events in the Synthesis Disagreement Engine.
+                Target: Reduce duplicate idea generation from 40% to &lt;10% in narrow-domain synthesis. Spectral gap analysis provides early warning 5-10 ideas before stagnation occurs, enabling proactive diversification.
             </div>
             
             <h3>4.11.3 Breakthrough #2: Vector-Space Orthogonality</h3>
@@ -1380,7 +1508,7 @@ flowchart TD
         </section>
 
         <section>
-            <h2>5. The Synthesis Pipeline</h2>
+            <h2 id="sec-pipeline">5. The Synthesis Pipeline</h2>
             
             <h3>5.1 Pipeline Stages</h3>
             <div class="mermaid">
@@ -1429,7 +1557,7 @@ flowchart LR
         </section>
 
         <section>
-            <h2>6. Sovereign Memory</h2>
+            <h2 id="sec-memory">6. Sovereign Memory</h2>
             <span class="badge badge-foundation">Foundation + Operational v1.1 (Flag-Gated)</span>
             
             <h3>6.1 The Closed-Loop Problem</h3>
@@ -1499,7 +1627,7 @@ flowchart TD
         </section>
 
         <section>
-            <h2>7. Chemical Entity Validation</h2>
+            <h2 id="sec-chemical">7. Chemical Entity Validation</h2>
             <span class="badge badge-complete">Complete</span>
             
             <h3>7.1 The Philosopher-to-Scientist Transition</h3>
@@ -1630,10 +1758,15 @@ flowchart LR
         </section>
 
         <section>
-            <h2>9. Results & Conclusion</h2>
+            <h2 id="sec-results">9. Results & Conclusion</h2>
             
-            <h3>8.1 Achievement Summary</h3>
-            <p>MASA implements the three pillars required for a causal scientific-discovery engine. <strong>Code-reality note (February 2026):</strong> the Update Mechanism now includes operational persistent-memory primitives (flag-gated) beyond pure rejection caching, while true online parameter learning remains future work.</p>
+            <div class="callout callout-info" style="margin-top: 14px;">
+                <strong>Status Legend</strong><br>
+                ✅ Implemented &nbsp;&nbsp; 🟨 Integrated behind feature flags &nbsp;&nbsp; 🧪 Experimental &nbsp;&nbsp; 🗺 Planned
+            </div>
+            
+            <h3>9.1 Achievement Summary</h3>
+            <p>MASA now implements key foundations for a causal scientific-discovery engine. <strong>Code-Reality Note (March 2026):</strong> the Update Mechanism includes operational persistent-memory primitives (flag-gated), and the Causal Engine v1.0 formal core exists in code, but full production closure still depends on rollout and runtime verification.</p>
             
             <table>
                 <thead>
@@ -1657,7 +1790,7 @@ flowchart LR
                     <tr>
                         <td>Update Mechanism</td>
                         <td><span class="badge badge-foundation">Foundation</span></td>
-                        <td>Sovereign Memory + causal pruning + compaction receipts + retrieval fusion + lattice events (feature-flag rollout). <em>No online weight updates yet.</em></td>
+                        <td>Sovereign Memory + causal pruning + compaction receipts + retrieval fusion + lattice events (feature-flagged rollout). <em>No online weight updates yet.</em></td>
                     </tr>
                     <tr>
                         <td>Physical Validation</td>
@@ -1666,8 +1799,8 @@ flowchart LR
                     </tr>
                     <tr>
                         <td>Causal Validation (Canonical Registry)</td>
-                        <td><span class="badge badge-complete">Complete</span></td>
-                        <td><strong>11 frameworks</strong> (4 domain templates: BioEcology, SelfishGene, CognitivePsych, ScalingLaws + 7 consciousness/theoretical: IIT, HOT, Chalmers, Neural Topology, Interpretable Epistemology, Neural Dynamics, Alignment) with JSON-based registry, validation pipeline, and UI integration</td>
+                        <td><span class="badge badge-foundation">Foundation</span></td>
+                        <td>Registry and support-layer template infrastructure exist, while the formal deterministic engine currently covers typed linear SCM execution, local B1-B6 solver benchmarks, and partial route integration. Broader causal-template enforcement remains a support-layer and roadmap concern.</td>
                     </tr>
                 </tbody>
             </table>
@@ -1677,7 +1810,7 @@ flowchart LR
                 The Truth Cartridge Library (Phases 28.5-31) implements four domain-specific SCM templates that can <strong>stack</strong> on a single idea: <code>BiologicalEcologyTemplate</code> (population dynamics, τ>0.3), <code>SelfishGeneTemplate</code> (gene selection, rB>C), <code>CognitivePsychologyTemplate</code> (individual decision-making, λ≈2.25), and <code>ScalingLawsTemplate</code> (complex systems physics, β regime). This enables comprehensive validation across organizational scales, from molecular genetics to urban systems.
             </div>
             
-            <h3>8.2 Key Innovations</h3>
+            <h3>9.2 Key Innovations</h3>
             <ul>
                 <li><strong>Dialectical Synthesis:</strong> Novel ideas emerge from contradictions between sources, not just summarization</li>
                 <li><strong>Causal Persistent Memory:</strong> Rejection memory expanded to pruning policy, compaction receipts, retrieval fusion, and cross-session lattice events</li>
@@ -1685,25 +1818,25 @@ flowchart LR
                 <li><strong>Real-Time Transparency:</strong> SSE streaming now includes memory and grounding telemetry for auditable reasoning</li>
             </ul>
             
-            <h3>8.3 Empirical Audit Response (January 2026)</h3>
-            <p>Following the <strong>K-Dense AI Forensic Audit</strong>, MASA underwent a rigorous empirical validation phase. The results from the newly implemented Benchmark Suite refute the core structural weaknesses identified in the audit:</p>
+            <h3>9.3 Empirical Audit Response (January 2026)</h3>
+            <p>Following the <strong>K-Dense AI Forensic Audit</strong>, MASA underwent a broader empirical validation phase. The benchmark items below describe MASA-wide evaluation work and should be read separately from the <strong>Causal Engine v1.0 B1-B6 solver suite</strong>, which is a local deterministic compute benchmark family for the typed SCM engine.</p>
             
             <div class="arch-grid">
                 <div class="arch-item">
                     <h5>Hallucination Rejection</h5>
-                    <p><strong>Metric:</strong> 88.4% rejection of adversarial counter-factuals. Proves the audit loop acts as a corrective filter, not a reinforcement chamber.</p>
+                    <p><strong>Metric:</strong> 88.4% rejection of adversarial counterfactuals [B1]. This indicates that the audit loop can act as a corrective filter rather than a reinforcement chamber under the benchmark conditions measured. Canonical sample-size/baseline/interval details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
                 <div class="arch-item">
                     <h5>Novelty Velocity</h5>
-                    <p><strong>Metric:</strong> 0.68 learning slope in sequential synthesis. Demonstrates that Sovereign Memory improves generator output quality over time.</p>
+                    <p><strong>Metric:</strong> 0.68 learning slope in sequential synthesis [B2]. This suggests that Sovereign Memory can improve generator output quality over time under the benchmark conditions measured. Canonical sample-size/baseline details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
                 <div class="arch-item">
                     <h5>Chemical Validation</h5>
-                    <p><strong>Metric:</strong> 82.1% PubChem CID alignment. Moving from "creative writing" to "valid syntax" by verifying chemical entities exist in reality.</p>
+                    <p><strong>Metric:</strong> 82.1% PubChem CID alignment [B3]. Moving from "creative writing" to "valid syntax" by verifying chemical entities exist in reality. Canonical sample-size/baseline details are tracked in Appendix A benchmark artifacts.</p>
                 </div>
             </div>
 
-            <h3>8.4 Future Directions</h3>
+            <h3>9.4 Future Directions</h3>
             <ul>
                 <li>Expansion to reaction pathway simulators (ChemCrow/RXN) for feasibility validation</li>
                 <li>Integration with LoRA-adapter swapping for true parameter-space partitioning</li>
@@ -1711,16 +1844,21 @@ flowchart LR
                 <li>Collaborative human-AI hypothesis refinement interface</li>
             </ul>
 
-            <h3>10. Limitations and Roadmap</h3>
+            <div class="callout callout-success" style="margin-top: 20px;">
+                <strong>Definition of Done (MASA vCurrent)</strong><br>
+                A claim is considered "done" only if it is linked to (1) an implementation artifact (module/commit/flag), (2) a benchmark protocol with sample size and baseline, (3) uncertainty reporting where applicable, and (4) explicit failure modes/boundary conditions with reproducible run paths.
+            </div>
+
+            <h3 id="sec-limitations">10. Limitations and Roadmap</h3>
             
             <div class="callout callout-info" style="margin-bottom: 20px;">
-                <strong>Implementation Status Update (February 2026)</strong><br>
-                Pearl's Causal Blueprint and domain registry foundations are complete, and persistent-memory v1.1 services are integrated in code with report-first governance. Remaining work is rollout hardening: migration application, feature-flag activation, benchmark baselines, and enforcement thresholds.
+                <strong>Implementation Status Update (March 2026)</strong><br>
+                Domain-registry and governance foundations are in code, and the deterministic Causal Engine v1.0 core now exists with local B1-B6 benchmark success. Remaining work is rollout hardening: migration application, feature-flag activation, runtime RLS verification, benchmark baselines outside the solver core, and enforcement thresholds.
             </div>
             
-            <p>While MASA now supports causal trace persistence and policy-gated cross-session continuity, transition to a fully autonomous self-improving scientist still requires proving stability under long-horizon workloads and enforcing governance thresholds in CI.</p>
+            <p>MASA now supports causal trace persistence, policy-gated cross-session continuity, and a deterministic SCM engine for typed linear models. However, reaching a more autonomous scientific system still requires demonstrated long-horizon stability, enforced governance thresholds in CI, and live runtime verification that the formal causal path is readable and persists correctly in the intended environment.</p>
             
-            <h4>9.1 Vector-Space Orthogonality (Phase 3)</h4>
+            <h4>10.1 Vector-Space Orthogonality (Phase 3)</h4>
             <p><strong>Constraint:</strong> Memory is now stateful, but orthogonality learning still lacks a validated optimizer and enough per-domain audit data. Since the base models are API-hosted, weight-level Fisher-Hessian control remains inaccessible.</p>
             
             <p><strong>Planned Implementation:</strong></p>
@@ -1730,7 +1868,7 @@ flowchart LR
                 <li><strong>Timeline:</strong> Phase 3 Engineering hardening (Q2 2026), pending benchmark dataset readiness.</li>
             </ul>
             
-            <h4>9.2 Chemical Entity Validation & Epistemological Caveats</h4>
+            <h4>10.2 Chemical Entity Validation & Epistemological Caveats</h4>
             <p><strong>Constraint:</strong> Validation is currently limited to <em>In Silico</em> computational simulations and database alignment (PubChem). It does not prove reaction feasibility or biological safety.</p>
             
             <p><strong>Caveat:</strong> While Chemical Validation verifies that the <em>nouns</em> (chemical compounds) exist, it does not guarantee that the <em>verbs</em> (reaction protocols) are safe or feasible. Furthermore, the 'Skeptic' and 'Epistemologist' agents are bound by the fundamental training gaps of the underlying base model and cannot verify mechanisms that fall entirely outside its latent representation.</p>
@@ -1739,26 +1877,60 @@ flowchart LR
             
             <div class="callout callout-warning">
                 <strong>Operator Dependencies (Human Follow-Up Required)</strong><br>
-                Production-grade memory rollout depends on: (1) applying additive Supabase migrations, (2) enabling memory feature flags in deployment environments, and (3) approving governance thresholds for sentinel enforcement.
+                Production-grade rollout depends on: (1) applying additive Supabase migrations, (2) enabling memory feature flags in deployment environments, (3) approving governance thresholds for sentinel enforcement, and (4) verifying that typed-SCM loading and trace persistence behave correctly under production RLS policies.
             </div>
             
             <div class="callout callout-success">
                 <strong>Conclusion</strong>
-                MASA represents a significant step toward autonomous scientific discovery. The architecture has moved from narrative-only claims to auditable, code-level causal operations: deterministic gating, persistent causal memory artifacts, retrieval fusion, and governance sentinels. While still constrained by API-model boundaries and pending rollout gates, MASA now operates as a measurable scientific system rather than a purely semantic assistant.
+                MASA is a significant step toward high-integrity scientific discovery. The architecture has moved from narrative-only causal claims toward auditable, code-level operations: a deterministic typed-SCM core, explicit heuristic degradation paths, persistent causal memory artifacts, retrieval fusion, and governance sentinels. Although still constrained by API-model boundaries, rollout gates, and pending runtime verification, MASA now contains measurable scientific sub-systems rather than only semantic narration about them.
             </div>
+        </section>
+
+        <section>
+            <h2 id="sec-appendix-a">Appendix A. Benchmark Methodology & Reproducibility</h2>
+            <p><strong>Citation Conventions:</strong> [B#] benchmark metric claims, [A#] reproducibility artifact requirements, [R#] external references.</p>
+            <ul>
+                <li><strong>[A1] Model/Runtime:</strong> Pin exact model versions and runtime hashes used for benchmark execution.</li>
+                <li><strong>[A2] Feature Flags:</strong> Record enabled/disabled flags for each run profile.</li>
+                <li><strong>[A3] Datasets:</strong> Publish dataset composition, sampling method, and exclusion criteria.</li>
+                <li><strong>[A4] Reproduction Contract:</strong> Include seed strategy, command invocations, and artifact output paths.</li>
+                <li><strong>[A5] Evidence Mapping:</strong> Metrics tagged [B1]-[B3] in this appendix map to MASA-wide benchmark protocol cards and run logs; they are distinct from the Causal Engine v1.0 B1-B6 local solver suite.</li>
+            </ul>
+
+            <h2>References</h2>
+            <ol>
+                <li><strong>[R1]</strong> Judea Pearl and Dana Mackenzie. <em>The Book of Why</em>. Basic Books, 2018.</li>
+                <li><strong>[R2]</strong> Karl Popper. <em>The Logic of Scientific Discovery</em>. Routledge, 1959.</li>
+                <li><strong>[R3]</strong> David Deutsch. <em>The Beginning of Infinity</em>. Viking, 2011.</li>
+                <li><strong>[R4]</strong> Maxwell Maltz. <em>Psycho-Cybernetics</em>. Prentice-Hall, 1960.</li>
+            </ol>
         </section>
 
         <footer class="footer">
             <p><strong>MASA: Methods of Automated Scientific Analysis</strong></p>
-            <p>Synthetic Mind Labs • February 2026</p>
-            <p style="margin-top: 12px; font-size: 11px; color: #9ca3af;">Made with Google Antigravity</p>
+            <p>Synthetic Mind Labs • March 2026</p>
+            <p style="margin-top: 12px; font-size: 11px; color: #9ca3af;">Made with Google Antigravity, Codex, and Claude Code</p>
         </footer>
     </div>
 
     <script>
-        mermaid.initialize({ 
-            startOnLoad: true, 
-            theme: 'default',
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            themeVariables: {
+                background:          '#131210',
+                primaryColor:        '#211F1C',
+                primaryTextColor:    'rgba(255,252,245,0.88)',
+                primaryBorderColor:  'rgba(255,252,245,0.10)',
+                lineColor:           '#C8965A',
+                secondaryColor:      '#1A1816',
+                tertiaryColor:       '#282523',
+                edgeLabelBackground: '#1A1816',
+                clusterBkg:          '#1A1816',
+                clusterBorder:       'rgba(255,252,245,0.10)',
+                titleColor:          'rgba(255,252,245,0.88)',
+                fontFamily:          'Inter, sans-serif',
+            },
             flowchart: {
                 useMaxWidth: true,
                 htmlLabels: true,
