@@ -14,6 +14,13 @@ const LEVELS = [
   { id: 'L3', label: 'Counterfactual' },
 ] as const;
 
+const TONE_LABEL: Record<NonNullable<WorkbenchEvidenceRailConfig['alignmentPosture']['tone']>, string> = {
+  green: 'Ready',
+  amber: 'Guarded',
+  red: 'Blocked',
+  neutral: 'Pending',
+};
+
 function normalizeStatus(status: string) {
   const trimmed = status.trim();
   if (!trimmed) {
@@ -37,8 +44,41 @@ function evidenceMetaParts(meta: string) {
     .filter(Boolean);
 }
 
+function deriveConfidenceLabel(tone: WorkbenchEvidenceRailConfig['alignmentPosture']['tone']) {
+  switch (tone) {
+    case 'green':
+      return 'High';
+    case 'amber':
+      return 'Medium';
+    case 'red':
+      return 'Low';
+    default:
+      return 'Unscored';
+  }
+}
+
+function deriveConfidencePercent(tone: WorkbenchEvidenceRailConfig['alignmentPosture']['tone']) {
+  switch (tone) {
+    case 'green':
+      return 82;
+    case 'amber':
+      return 58;
+    case 'red':
+      return 24;
+    default:
+      return 8;
+  }
+}
+
 export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
   const status = normalizeStatus(config.causalDensity.status);
+  const confidenceLabel = deriveConfidenceLabel(config.alignmentPosture.tone);
+  const confidencePercent = deriveConfidencePercent(config.alignmentPosture.tone);
+  const activeLevelLabel = LEVELS.find((level) => level.id === config.causalDensity.activeLevel)?.label || 'Unavailable';
+  const evidenceCount = config.scientificEvidence.length;
+  const evidenceStateLabel = evidenceCount > 0 ? `${evidenceCount} evidence record${evidenceCount === 1 ? '' : 's'}` : 'No evidence records';
+  const hasModelProvenance = Boolean(config.modelProvenance.title && config.modelProvenance.title !== 'unavailable');
+  const hasActiveDomain = Boolean(config.activeDomain.label && config.activeDomain.label !== 'unavailable');
 
   return (
     <aside className="rail">
@@ -58,10 +98,20 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
       <div className="rail-body">
         <section className="rail-section">
           <div className="rail-section-head">
-            <Waves className="h-3.5 w-3.5" />
+            <div className="rail-section-icon-shell">
+              <Waves className="h-3.5 w-3.5" />
+            </div>
             <span>Causal Density</span>
+            <span className={cn('rail-status-chip', config.causalDensity.activeLevel ? 'is-live' : 'is-neutral')}>
+              {config.causalDensity.activeLevel || 'pending'}
+            </span>
           </div>
           <div className="rail-module">
+            <div className="rail-summary-card">
+              <div className="rail-summary-meta">Active rung</div>
+              <div className="rail-summary-title">{activeLevelLabel}</div>
+              <div className="rail-summary-copy">{status.secondary}</div>
+            </div>
             <div className="rung-bars">
               {LEVELS.map((level) => (
                 <div key={level.id} className={cn('rung-bar-row', config.causalDensity.activeLevel === level.id && 'active')}>
@@ -91,8 +141,11 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
 
         <section className="rail-section">
           <div className="rail-section-head">
-            <ShieldCheck className="h-3.5 w-3.5" />
+            <div className="rail-section-icon-shell">
+              <ShieldCheck className="h-3.5 w-3.5" />
+            </div>
             <span>Alignment Posture</span>
+            <span className={cn('rail-status-chip', `is-${config.alignmentPosture.tone}`)}>{TONE_LABEL[config.alignmentPosture.tone]}</span>
           </div>
           <div className="rail-module">
             <div className={cn('rail-info-card', config.alignmentPosture.tone !== 'neutral' && config.alignmentPosture.tone)}>
@@ -101,10 +154,10 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
             <div className="confidence-meter">
               <div className="confidence-label">
                 <span>Confidence</span>
-                <strong>—</strong>
+                <strong>{confidenceLabel}</strong>
               </div>
               <div className="meter-track">
-                <div className="meter-fill" style={{ width: '0%' }} />
+                <div className={cn('meter-fill', `is-${config.alignmentPosture.tone}`)} style={{ width: `${confidencePercent}%` }} />
               </div>
             </div>
           </div>
@@ -112,11 +165,16 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
 
         <section className="rail-section">
           <div className="rail-section-head">
-            <Database className="h-3.5 w-3.5" />
+            <div className="rail-section-icon-shell">
+              <Database className="h-3.5 w-3.5" />
+            </div>
             <span>Model Provenance</span>
+            <span className={cn('rail-status-chip', hasModelProvenance ? 'is-live' : 'is-neutral')}>
+              {hasModelProvenance ? 'verified' : 'pending'}
+            </span>
           </div>
           <div className="rail-module">
-            <div className="unavailable rail-empty">
+            <div className={cn('rail-info-card rail-provenance-card', !config.modelProvenance.title && 'is-empty')}>
               {config.modelProvenance.title ? <strong className="rail-provenance-title">{config.modelProvenance.title}</strong> : null}
               <div className="rail-provenance-copy">{config.modelProvenance.text}</div>
               {config.modelProvenance.actions?.length ? (
@@ -140,11 +198,17 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
 
         <section className="rail-section">
           <div className="rail-section-head">
-            <FileText className="h-3.5 w-3.5" />
+            <div className="rail-section-icon-shell">
+              <FileText className="h-3.5 w-3.5" />
+            </div>
             <span>Active Domain</span>
+            <span className={cn('rail-status-chip', hasActiveDomain ? 'is-live' : 'is-neutral')}>
+              {hasActiveDomain ? 'routed' : 'pending'}
+            </span>
           </div>
           <div className="rail-module rail-module-compact">
             <div className="rail-domain-card">
+              <span className="rail-summary-meta">Current domain</span>
               <strong>{config.activeDomain.label || 'unavailable'}</strong>
             </div>
           </div>
@@ -152,8 +216,11 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
 
         <section className="rail-section">
           <div className="rail-section-head">
-            <BookOpen className="h-3.5 w-3.5" />
+            <div className="rail-section-icon-shell">
+              <BookOpen className="h-3.5 w-3.5" />
+            </div>
             <span>Scientific Evidence</span>
+            <span className={cn('rail-status-chip', evidenceCount > 0 ? 'is-live' : 'is-neutral')}>{evidenceStateLabel}</span>
           </div>
           <div className="rail-module rail-module-evidence">
             {config.scientificEvidence.length > 0 ? (
@@ -168,6 +235,7 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
                       <div className="file-info">
                         <div className="file-name">{item.title}</div>
                         <div className="file-meta">
+                          {item.badge ? <span className="file-badge">{item.badge}</span> : null}
                           {metaParts.length > 0 ? metaParts.map((part) => (
                             <span key={`${item.id}-${part}`}>{part}</span>
                           )) : <span>{item.meta}</span>}
@@ -188,7 +256,7 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
                 })}
               </div>
             ) : (
-              <div className="unavailable rail-empty">
+              <div className="rail-info-card rail-empty-card">
                 <strong>unavailable</strong>
                 No scientific evidence is available for this run.
               </div>

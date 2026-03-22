@@ -752,11 +752,22 @@
   padding: 24px 0 8px;
 }
 
+.canonical-workbench-shell .chat-review-stage {
+  width: 100%;
+}
+
+.canonical-workbench-shell .chat-review-stage.is-history-review {
+  width: min(1180px, calc(100% - 56px));
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-bottom: 24px;
+}
+
 .canonical-workbench-shell .chat-message-list.is-history-review {
-  width: min(1100px, calc(100% - 56px));
-  max-width: 1100px;
-  gap: 22px;
-  padding-top: 30px;
+  width: 100%;
+  max-width: none;
+  gap: 26px;
+  padding-top: 32px;
 }
 
 .canonical-workbench-shell .chat-message {
@@ -777,13 +788,20 @@
 
 .canonical-workbench-shell .chat-message-list.is-history-review .chat-message.assistant {
   width: 100%;
-  max-width: 1100px;
-  padding: 22px 24px;
-  border-radius: 26px;
+  max-width: 1120px;
+  padding: 24px 26px;
+  border-radius: 28px;
+  border-color: color-mix(in srgb, var(--border) 98%, transparent);
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--accent-dim) 18%, transparent) 0%, transparent 30%),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 98%, transparent) 0%, color-mix(in srgb, var(--bg-2) 92%, transparent) 100%);
+  box-shadow: var(--shadow);
 }
 
 .canonical-workbench-shell .chat-message-list.is-history-review .chat-message.user {
-  width: min(100%, 920px);
+  width: min(100%, 980px);
+  padding: 20px 22px;
+  border-radius: 24px;
 }
 
 .canonical-workbench-shell .chat-message-head {
@@ -821,6 +839,25 @@
   gap: 14px;
 }
 
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-message-head {
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-message-role {
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 0 10px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--bg) 82%, var(--bg-card));
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-message-body {
+  gap: 18px;
+}
+
 .canonical-workbench-shell .chat-markdown {
   display: flex;
   flex-direction: column;
@@ -840,6 +877,14 @@
   color: var(--text-1);
   font-size: 15px;
   line-height: 1.78;
+}
+
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-markdown p,
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-markdown li,
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-markdown blockquote,
+.canonical-workbench-shell .chat-message-list.is-history-review .chat-markdown td {
+  font-size: 16px;
+  line-height: 1.82;
 }
 
 .canonical-workbench-shell .chat-markdown strong {
@@ -988,7 +1033,8 @@
 }
 
 .canonical-workbench-shell .chat-message-list.is-history-review .chat-artifact-slot {
-  width: min(100%, 1000px);
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 .canonical-workbench-shell .chat-citations {
@@ -1029,6 +1075,9 @@
 
 .canonical-workbench-shell .chat-composer-panel.is-history-review {
   opacity: 0.98;
+  width: min(1180px, calc(100% - 56px));
+  max-width: 1180px;
+  margin-inline: auto;
 }
 
 .canonical-workbench-shell .chat-composer-shell {
@@ -1251,6 +1300,40 @@
   line-height: 1.6;
 }
 
+.canonical-workbench-shell .scientific-card-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.canonical-workbench-shell .scientific-card-overview-item {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 0 10px;
+  color: var(--text-2);
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--bg) 82%, var(--bg-card));
+}
+
+.canonical-workbench-shell .scientific-card-alert {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent-border) 48%, transparent);
+  padding: 10px 12px;
+  color: color-mix(in srgb, var(--accent) 88%, var(--text-1));
+  font-size: 12px;
+  line-height: 1.55;
+  background: color-mix(in srgb, var(--accent-dim) 42%, var(--bg-card));
+}
+
 .canonical-workbench-shell .scientific-card-status,
 .canonical-workbench-shell .scientific-card-meta-chip,
 .canonical-workbench-shell .scientific-card-footer-chip {
@@ -1291,6 +1374,21 @@
   display: grid;
   gap: 16px;
   padding: 0 20px 18px;
+}
+
+.canonical-workbench-shell .scientific-card-provenance {
+  display: grid;
+  gap: 8px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
+  padding: 16px;
+  background: color-mix(in srgb, var(--bg-2) 84%, transparent);
+}
+
+.canonical-workbench-shell .scientific-card-provenance-copy {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .canonical-workbench-shell .scientific-card-grid {

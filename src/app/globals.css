@@ -4354,8 +4354,8 @@ body {
   color: var(--text-1);
 }
 
-.chat-message-body .lab-chat-prose,
-.chat-message-body .lab-chat-prose * {
+.chat-theme-shell .chat-message-body .lab-chat-prose,
+.chat-theme-shell .chat-message-body .lab-chat-prose * {
   color: inherit;
 }
 

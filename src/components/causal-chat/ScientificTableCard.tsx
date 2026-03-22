@@ -47,6 +47,7 @@ export function ScientificTableCard({ analysis, className }: ScientificTableCard
   const summaryText = `${summary.trustedTableCount}/${summary.tableCount} trusted tables • ${summary.dataPointCount} extracted points • ${prose.length} prose claims`;
   const statusTone =
     analysis.status === 'failed' ? 'is-failed' : analysis.status === 'partial' ? 'is-partial' : 'is-completed';
+  const primaryWarning = warnings[0];
 
   return (
     <section className={cn('scientific-card', className)}>
@@ -67,6 +68,19 @@ export function ScientificTableCard({ analysis, className }: ScientificTableCard
               <span className={cn('scientific-card-status', statusTone)}>{analysis.status}</span>
             </div>
             <p className="scientific-card-summary">{summaryText}</p>
+            <div className="scientific-card-overview">
+              <span className="scientific-card-overview-item">{summary.trustedTableCount}/{summary.tableCount} trusted tables</span>
+              <span className="scientific-card-overview-item">{summary.dataPointCount} points restored</span>
+              {analysis.provenance?.methodVersion ? (
+                <span className="scientific-card-overview-item">method {analysis.provenance.methodVersion}</span>
+              ) : null}
+            </div>
+            {primaryWarning ? (
+              <div className="scientific-card-alert">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                <span>{primaryWarning}</span>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -91,6 +105,18 @@ export function ScientificTableCard({ analysis, className }: ScientificTableCard
 
       {isExpanded ? (
         <div className="scientific-card-panel">
+          {analysis.provenance ? (
+            <div className="scientific-card-provenance">
+              <div className="scientific-card-section-head">
+                <Database className="h-3.5 w-3.5" />
+                <span>Lineage</span>
+              </div>
+              <p className="scientific-card-provenance-copy">
+                Ingestion {analysis.provenance.ingestionId.slice(0, 8)} • {analysis.provenance.sourceTableIds.length} source tables • {analysis.provenance.dataPointIds.length} data points.
+              </p>
+            </div>
+          ) : null}
+
           {warnings.length > 0 ? (
             <div className="scientific-card-section is-warning">
               <div className="scientific-card-section-head">
