@@ -751,6 +751,10 @@
   scrollbar-width: thin;
 }
 
+.canonical-workbench-shell .chat-workbench.is-empty {
+  justify-content: center;
+}
+
 .canonical-workbench-shell .chat-workbench::-webkit-scrollbar {
   width: 8px;
 }
@@ -772,7 +776,7 @@
 
 .canonical-workbench-shell .chat-empty-shell {
   flex: 1 1 auto;
-  min-height: 0;
+  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -788,6 +792,10 @@
 .canonical-workbench-shell .chat-workbench.is-empty .chat-empty-console,
 .canonical-workbench-shell .chat-workbench.is-empty .chat-empty-console-body {
   flex: 1 1 auto;
+}
+
+.canonical-workbench-shell .chat-workbench.is-empty .chat-message-scroll {
+  justify-content: center;
 }
 
 .canonical-workbench-shell .chat-empty-console-body,
