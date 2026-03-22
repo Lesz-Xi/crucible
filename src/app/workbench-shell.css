@@ -117,7 +117,7 @@
 .canonical-workbench-shell .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   padding: 0;
 }
 
@@ -138,13 +138,13 @@
 
 .canonical-workbench-shell .nav-item {
   position: relative;
-  min-height: 40px;
+  min-height: 34px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 12px;
+  gap: 10px;
+  padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 10px;
   color: var(--text-2);
   background: transparent;
 }
@@ -155,23 +155,23 @@
 }
 
 .canonical-workbench-shell .nav-item:hover {
-  background: color-mix(in srgb, var(--bg-hover) 90%, transparent);
+  background: color-mix(in srgb, var(--bg-hover) 76%, transparent);
 }
 
 .canonical-workbench-shell .nav-item.active {
-  border-color: color-mix(in srgb, var(--accent-border) 82%, transparent);
+  border-color: color-mix(in srgb, var(--accent-border) 58%, transparent);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent-dim) 92%, transparent) 0%, color-mix(in srgb, var(--bg-3) 86%, transparent) 100%);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+    linear-gradient(180deg, color-mix(in srgb, var(--accent-dim) 68%, transparent) 0%, color-mix(in srgb, var(--bg-3) 74%, transparent) 100%);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
 }
 
 .canonical-workbench-shell .nav-item.active::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 10px;
-  bottom: 10px;
-  width: 3px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
   border-radius: 999px;
   background: var(--accent);
 }
@@ -192,6 +192,13 @@
 .canonical-workbench-shell .action-label,
 .canonical-workbench-shell .user-email {
   color: var(--text-1);
+}
+
+.canonical-workbench-shell .nav-label {
+  font-family: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .canonical-workbench-shell .nav-kicker,
@@ -225,23 +232,29 @@
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
+}
+
+.canonical-workbench-shell .nav-meta-trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .canonical-workbench-shell .nav-badge,
 .canonical-workbench-shell .thread-chip {
   display: inline-flex;
-  min-height: 18px;
+  min-height: 16px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent-border) 58%, transparent);
-  padding: 0 8px;
-  background: color-mix(in srgb, var(--accent-dim) 62%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-border) 46%, transparent);
+  padding: 0 7px;
+  background: color-mix(in srgb, var(--accent-dim) 44%, transparent);
   color: var(--accent);
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
-  font-size: 9px;
+  font-size: 8px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -255,45 +268,42 @@
 .canonical-workbench-shell .sidebar-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 92%, transparent) 0%, color-mix(in srgb, var(--bg-2) 70%, transparent) 100%);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 7%, transparent);
+  gap: 4px;
+  padding: 3px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  background: color-mix(in srgb, var(--bg-card) 76%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 4%, transparent);
 }
 
 .canonical-workbench-shell .action-btn {
-  min-height: 42px;
+  min-height: 36px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 7px;
   flex: 1 1 0;
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--border) 92%, transparent);
-  padding: 0 10px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 84%, transparent) 0%, color-mix(in srgb, var(--bg-2) 80%, transparent) 100%);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 7%, transparent);
+  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  padding: 0 9px;
+  background: color-mix(in srgb, var(--bg) 42%, transparent);
+  box-shadow: none;
 }
 
 .canonical-workbench-shell .action-btn:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent-border) 66%, transparent);
-  background: color-mix(in srgb, var(--bg-hover) 90%, transparent);
+  transform: none;
+  border-color: color-mix(in srgb, var(--accent-border) 54%, transparent);
+  background: color-mix(in srgb, var(--bg-hover) 72%, transparent);
 }
 
 .canonical-workbench-shell .action-btn.is-primary {
-  border-color: color-mix(in srgb, var(--accent-border) 58%, transparent);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent-dim) 52%, transparent) 0%, color-mix(in srgb, var(--bg-card) 92%, transparent) 100%);
+  border-color: color-mix(in srgb, var(--accent-border) 42%, transparent);
+  background: color-mix(in srgb, var(--accent-dim) 26%, transparent);
 }
 
 .canonical-workbench-shell .action-btn.is-primary:hover {
-  border-color: color-mix(in srgb, var(--accent-border) 78%, transparent);
+  border-color: color-mix(in srgb, var(--accent-border) 58%, transparent);
 }
 
 .canonical-workbench-shell .action-btn .action-copy {
@@ -304,17 +314,17 @@
 }
 
 .canonical-workbench-shell .action-icon-shell {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--border) 86%, transparent);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  border-radius: 7px;
+  border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
   color: var(--text-2);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 4%, transparent);
 }
 
 .canonical-workbench-shell .action-btn.is-primary .action-icon-shell {
@@ -324,7 +334,7 @@
 
 .canonical-workbench-shell .action-label {
   font-family: var(--font-geist-sans), "Inter", system-ui, sans-serif;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
@@ -334,8 +344,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 6px 2px 0;
-  padding: 0 10px;
+  margin: 4px 2px 0;
+  padding: 0 8px;
   color: var(--text-3);
 }
 
@@ -368,6 +378,31 @@
   align-items: center;
   gap: 6px;
   border-radius: 12px;
+}
+
+.canonical-workbench-shell .nav-item-system {
+  min-height: 32px;
+  gap: 9px;
+  padding-inline: 8px;
+}
+
+.canonical-workbench-shell .nav-item-system .nav-label {
+  font-size: 10.5px;
+}
+
+.canonical-workbench-shell .nav-item-sub {
+  min-height: 30px;
+  gap: 9px;
+  padding-inline: 8px;
+}
+
+.canonical-workbench-shell .nav-item-sub .nav-label {
+  font-size: 10px;
+  color: var(--text-2);
+}
+
+.canonical-workbench-shell .nav-item-toggle .chevron {
+  color: var(--text-3);
 }
 
 .canonical-workbench-shell .history-row {
@@ -752,7 +787,9 @@
 }
 
 .canonical-workbench-shell .chat-workbench.is-empty {
-  justify-content: center;
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .canonical-workbench-shell .chat-workbench::-webkit-scrollbar {
@@ -775,11 +812,10 @@
 }
 
 .canonical-workbench-shell .chat-empty-shell {
-  flex: 1 1 auto;
+  width: 100%;
   min-height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   padding: 24px;
 }
 
@@ -795,7 +831,10 @@
 }
 
 .canonical-workbench-shell .chat-workbench.is-empty .chat-message-scroll {
-  justify-content: center;
+  min-height: 100%;
+  height: 100%;
+  display: grid;
+  align-items: center;
 }
 
 .canonical-workbench-shell .chat-empty-console-body,
