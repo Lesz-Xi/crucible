@@ -20,6 +20,9 @@ export interface SCMModelVersion {
     nodes: Array<Record<string, unknown>>;
     edges: Array<Record<string, unknown>>;
   };
+  /**
+   * @deprecated Use TypedSCM.equations (typed StructuralEquation[]). Migration required for v1.0 engine.
+   */
   structuralEquationsJson: Array<Record<string, unknown>>;
   assumptionsJson: Array<Record<string, unknown> | string>;
   confoundersJson: Array<Record<string, unknown> | string>;
@@ -42,6 +45,10 @@ export interface SCMVariable {
   aliases: string[];
   unit?: string | null;
   description?: string | null;
+  domain?: {
+    min: number;
+    max: number;
+  } | null;
   datatype: 'number' | 'integer' | 'boolean' | 'string' | 'categorical' | 'json';
   createdAt: string;
   updatedAt: string;
@@ -56,6 +63,101 @@ export interface SCMVariableMap {
   notes?: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * A linear structural equation: V = intercept + sum(coefficient_i * parent_i)
+ * v1.0 scope: linear only. Nonlinear deferred to v1.1.
+ */
+export interface StructuralEquation {
+  /** The variable this equation defines. */
+  variable: string;
+  /** Parent variables (direct causes) in the DAG. */
+  parents: string[];
+  /** Coefficient for each parent: { parentName: coefficient }. */
+  coefficients: Record<string, number>;
+  /** Constant term (intercept). Includes absorbed exogenous effect (U_i = 0). */
+  intercept: number;
+}
+
+/**
+ * A fully specified Structural Causal Model for v1.0.
+ * Deterministic (U_i = 0), linear, acyclic, no hidden confounders.
+ */
+export interface TypedSCM {
+  /** All variables in the model with metadata. */
+  variables: SCMVariable[];
+  /** One structural equation per endogenous variable. */
+  equations: StructuralEquation[];
+  /** The causal DAG. */
+  dag: {
+    nodes: string[];
+    edges: Array<{ from: string; to: string }>;
+  };
+}
+
+/**
+ * A formal causal query for the v1.0 engine.
+ * v1.0 supports: observational and interventional.
+ * Adjustment queries are deferred to v1.1.
+ */
+export interface CausalQuery {
+  type: 'observational' | 'interventional';
+  /** The intervention variable (for interventional queries). */
+  treatment: string;
+  /** The outcome variable to compute. */
+  outcome: string;
+  /** The value to set the treatment to: do(treatment = doValue). */
+  doValue: number;
+  /** Optional conditioning: compute Y_{do(X=x)} given Z=z. */
+  conditions?: Record<string, number>;
+}
+
+/**
+ * The result of a v1.0 engine computation.
+ * Returns a deterministic point value, not a distribution.
+ */
+export interface CausalResult {
+  /** The computed value: Y_{do(X=x)}. */
+  value: number;
+  /** The query that produced this result. */
+  query: CausalQuery;
+  /** Variable values computed during forward evaluation. */
+  trace: Record<string, number>;
+  /** Explicit topological evaluation sequence from the mutilated graph solver. */
+  evaluationOrder: string[];
+  /** The mutilated DAG (edges removed by do-operator). */
+  mutilatedEdges: Array<{ from: string; to: string }>;
+  /** Computation method, always 'structural_equation_solver' for v1.0. */
+  method: 'structural_equation_solver';
+}
+
+/**
+ * The raw output of forwardSolve.
+ * Caller maps this to CausalResult.
+ */
+export interface SolverResult {
+  /** The computed value of the queried outcome variable. */
+  outcomeValue: number;
+  /** All computed values, keyed by variable name. */
+  valueMap: Record<string, number>;
+  /** The topological evaluation sequence used by the solver. */
+  evaluationOrder: string[];
+}
+
+export interface SolverError {
+  code:
+    | 'OUTCOME_NOT_IN_DAG'
+    | 'EQUATION_MISSING'
+    | 'PARENT_VALUE_MISSING'
+    | 'CYCLE_DETECTED'
+    | 'CONDITION_VARIABLE_NOT_COMPUTED'
+    | 'CONDITION_NOT_SATISFIED';
+  message: string;
+  variable?: string;
+  missingParent?: string;
+  computedValue?: number;
+  requiredValue?: number;
 }
 
 export interface VariableAlignment {
@@ -127,7 +229,7 @@ export interface CausalLiteracyResponse {
     mode: TeachBackMode;
     operation: TeachBackEdit["type"];
     persisted: false;
-    method: 'heuristic_graph_propagation' | 'deterministic_graph_diff';
+    method: 'heuristic_graph_propagation' | 'structural_reachability_recompute';
     uncertainty: 'high' | 'medium';
     limitations: string[];
     affectedNodes: string[];
@@ -340,10 +442,10 @@ export type InterventionAllowedOutputClass =
   | "intervention_supported";
 
 export type CounterfactualComputationMethod =
-  | "deterministic_graph_diff"
+  | "heuristic_bfs_propagation"
   | "structural_equation_solver";
 
-export type CounterfactualUncertainty = "high" | "medium" | "low";
+export type CounterfactualUncertainty = "none" | "high" | "medium" | "low";
 
 export interface CounterfactualTrace {
   traceId: string;
@@ -363,7 +465,10 @@ export interface CounterfactualTrace {
   adjustmentSet: string[];
   computation: {
     method: CounterfactualComputationMethod;
-    affectedPaths: string[];
+    affectedNodes: string[];
+    evaluationOrder?: string[];
+    traceValues?: Record<string, number>;
+    note?: string;
     uncertainty: CounterfactualUncertainty;
   };
   result: {

@@ -11,18 +11,17 @@ export interface CausalState {
 }
 
 /**
- * The Obsidian Causal Solver
- * 
- * "We don't predict the future; we derive it." - The Obsidian Protocol
- * 
- * This service implements the Do-Calculus (Rung 2/3) logic.
- * It takes a Structural Causal Model (SCM) and a set of Interventions (do(X=x))
- * and calculates the mandatory state of the downstream nodes.
+ * Legacy intervention-state helper for fallback causal flows.
+ *
+ * This service records intervention state and discovers downstream nodes for
+ * heuristic/LLM-assisted handling. Formal deterministic computation lives in
+ * the TypedSCM solver bridge, not in this class.
  */
 export class CausalSolver {
   /**
-   * Solves the graph for a given set of interventions.
-   * Applying do(X=x) effectively "mutilates" the graph by removing all incoming edges to X.
+   * Applies interventions to the causal state.
+   * Downstream propagation is handled elsewhere: deterministic engine path via
+   * TypedSCM, fallback narrative path via generateDoPrompt().
    */
   solve(
     scm: StructuralCausalModel, 
@@ -54,7 +53,7 @@ export class CausalSolver {
 
   /**
    * Identifies which nodes are downstream of the intervention set.
-   * These are the nodes whose values MUST change according to the 3rd Rule of Do-Calculus.
+   * This is a reachability helper for downstream nodes, not a formal intervention solver.
    */
   getAffectedNodes(scm: StructuralCausalModel, interventionRoot: string): string[] {
     const { edges } = scm.getFullStructure(); // Get full graph structure (Tier 1 + Tier 2)
@@ -83,21 +82,22 @@ export class CausalSolver {
   }
 
   /**
-   * Generates the "Surgery Prompt" for the LLM.
-   * This tells the Constraint Injector: "X is fixed to x. Ignore all previous correlations for X."
+   * @deprecated Direct LLM fallback path. Use the structural equation solver
+   * bridge when a TypedSCM is available.
    */
   generateDoPrompt(interventions: Intervention[]): string {
     if (interventions.length === 0) return "";
 
     return `
-### CAUSAL SURGERY (DO-OPERATOR ACTIVE):
+### CAUSAL SURGERY CONTEXT (FALLBACK NARRATIVE ONLY):
 The user has performed a Structural Intervention:
 ${interventions.map(i => `- do(${i.nodeName} = ${i.value})`).join('\n')}
 
 **CRITICAL INSTRUCTION:**
 1.  **Graph Mutilation**: You must IGNORE any prior causes of [${interventions.map(i => i.nodeName).join(', ')}]. Their values are now fixed by FIAT, not by their parents.
-2.  **Forward Propagation**: You must strictly derive the consequences on downstream nodes based on the structural equations.
-3.  **Counterfactual Logic**: If this contradicts observing reality (e.g. "The sun is cold"), you MUST accept the intervention and describe the counterfactual world. Do not revert to the "likely" world.
+2.  **Approximate Narrative Only**: Describe likely downstream consequences using domain understanding. Formal structural equations are not loaded in this path.
+3.  **Honest Framing**: Do not present the result as exact do-calculus, structural-equation output, or a proven causal effect. Label uncertainty clearly.
+4.  **Counterfactual Logic**: If this contradicts observing reality (e.g. "The sun is cold"), accept the intervention and describe the counterfactual world rather than reverting to the likely world.
 `;
   }
 }

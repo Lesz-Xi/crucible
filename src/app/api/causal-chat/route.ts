@@ -14,6 +14,7 @@ import { evaluateInterventionGate } from "@/lib/services/identifiability-gate";
 import { CausalSolver, type Intervention } from '@/lib/services/causal-solver';
 import { CounterfactualGenerator } from '@/lib/services/counterfactual-generator';
 import { buildCounterfactualTrace, persistCounterfactualTrace } from '@/lib/services/counterfactual-trace';
+import { loadTypedSCM } from '@/lib/compute/scm-loader';
 import { selectLatestAlignmentAuditReport } from "@/lib/services/alignment-audit";
 import type { AlignmentAuditReportRow } from "@/lib/services/alignment-audit";
 import { buildConversationContext, normalizeChatTurns, type ChatTurn } from "@/lib/services/conversation-context";
@@ -822,7 +823,7 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
         const cfGenerator = new CounterfactualGenerator();
         await cfGenerator.initialize();
 
-        // Check for Do-Calculus Intervention
+        // Check for an explicit intervention request
         if (intervention && intervention.node_id) {
           const subjectScm = scmContext.tier2 || scmContext.primaryScm;
           const outcomeVar =
@@ -861,7 +862,7 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
               allowedOutputClass: gate.allowedOutputClass,
             });
           } else {
-            sendEvent("thinking", { message: `Performing Do-Calculus: do(${intervention.node_id}=${intervention.value})...` });
+            sendEvent("thinking", { message: `Applying intervention scenario: do(${intervention.node_id}=${intervention.value})...` });
             const interventions: Intervention[] = [{
               nodeName: intervention.node_id,
               value: intervention.value
@@ -890,6 +891,13 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
               const traceValue = typeof intervention.value === "number" ? intervention.value : 1;
               const outcomeVar = typeof intervention.outcome_var === "string" ? intervention.outcome_var.trim() : inferOutcomeVariableFromScm(subjectScm);
 
+              // Load TypedSCM for engine path (graceful — undefined if not available,
+              // falls back to heuristic_bfs_propagation)
+              const modelKey = scmContext.model?.modelKey;
+              const typedScm = modelKey
+                ? await loadTypedSCM(modelKey, supabase)
+                : undefined;
+
               const trace = buildCounterfactualTrace(subjectScm, {
                 modelRef: {
                   modelKey: scmContext.model?.modelKey || "unknown",
@@ -900,14 +908,14 @@ Keep your response brief (1-2 sentences). If the user asks who you are, explain 
                   value: traceValue,
                 },
                 outcome: outcomeVar,
-                method: "deterministic_graph_diff",
+                method: "heuristic_bfs_propagation",
                 traceId: traceId || crypto.randomUUID(), // Ensure we log it even if client didn't send traceId
                 assumptions: sanitizeStringArray(intervention.known_confounders),
                 adjustmentSet: sanitizeStringArray(intervention.adjustment_set),
                 // Chat mode usually lacks precise numeric observation of the world state,
                 // so we use an abstract baseline (empty) to capture the *causal mechanism's* predicted binding.
                 observedWorld: {},
-              });
+              }, typedScm);
 
               // M6.2: Inject Provider Metadata (Safe Cast)
               // We inject the provider ID into the trace object so it's persisted in the JSONB column.

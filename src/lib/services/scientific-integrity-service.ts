@@ -119,9 +119,10 @@ export function evaluateScientificIntegrity(input: ScientificIntegrityEvaluation
 
   const minimumDeterministicTraces = Math.max(1, input.minimumDeterministicTraces);
   const totalRecentTraces = input.counterfactualTraces.length;
-  const deterministicTraces = input.counterfactualTraces.filter(
-    (trace) => normalizeString(trace.computation_method) === "deterministic_graph_diff"
-  ).length;
+  const deterministicTraces = input.counterfactualTraces.filter((trace) => {
+    const method = normalizeString(trace.computation_method);
+    return method === "structural_equation_solver" || method === "deterministic_graph_diff";
+  }).length;
   const deterministicCoverage =
     totalRecentTraces > 0 ? deterministicTraces / totalRecentTraces : 0;
   const requiredCoverage = input.minimumDeterministicCoverage;

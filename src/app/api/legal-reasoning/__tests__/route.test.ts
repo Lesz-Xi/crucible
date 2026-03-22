@@ -113,7 +113,7 @@ describe("legal reasoning intervention gate integration", () => {
     expect(json.interventionGate.allowedChains).toBeGreaterThan(0);
     expect(json.case.causalChains.length).toBeGreaterThan(0);
     expect(json.case.causalChains[0].butForAnalysis.counterfactualTrace.traceId).toBeTypeOf("string");
-    expect(json.case.causalChains[0].butForAnalysis.counterfactualTrace.method).toBe("deterministic_graph_diff");
+    expect(json.case.causalChains[0].butForAnalysis.counterfactualTrace.method).toBe("heuristic_bfs_propagation");
   });
 
   it("downgrades to intervention_inferred when confounders are missing", async () => {

@@ -56,8 +56,9 @@ describe("counterfactual trace retrieval route", () => {
       assumptions: [],
       adjustmentSet: [],
       computation: {
-        method: "deterministic_graph_diff",
-        affectedPaths: ["X -> Y"],
+        method: "heuristic_bfs_propagation",
+        affectedNodes: ["Y"],
+        note: "BFS-visited nodes from intervention root. Not a formal causal path or do-calculus result.",
         uncertainty: "low",
       },
       result: { actualOutcome: 0.5, counterfactualOutcome: 0.8, delta: 0.3 },

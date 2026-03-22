@@ -508,7 +508,7 @@ function computeTeachBack(params: {
     mode,
     operation: editResult.lastOperation,
     persisted: false,
-    method: mode === "full_recompute" ? "deterministic_graph_diff" : "heuristic_graph_propagation",
+    method: mode === "full_recompute" ? "structural_reachability_recompute" : "heuristic_graph_propagation",
     uncertainty: mode === "full_recompute" ? "medium" : "high",
     limitations: mode === "full_recompute" ? FULL_LIMITATIONS : QUICK_LIMITATIONS,
     affectedNodes,
