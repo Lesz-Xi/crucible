@@ -52,39 +52,6 @@ interface AssistantEventPayload {
 
 type OperatorMode = 'explore' | 'intervene' | 'audit';
 
-const OPERATOR_MODE_LABELS: Record<OperatorMode, string> = {
-  explore: 'Discovery',
-  intervene: 'Intervention',
-  audit: 'Audit',
-};
-
-function ChatWorkbenchTopbar({
-  operatorMode,
-  sourceCount,
-}: {
-  operatorMode: OperatorMode;
-  sourceCount: number;
-}) {
-  return (
-    <>
-      <span className="topbar-tag">Causal Research Workbench</span>
-      <div className="topbar-pipeline">
-        <span className="step done">observe</span>
-        <span className="arrow">→</span>
-        <span className={operatorMode !== 'explore' ? 'step done' : 'step'}>intervene</span>
-        <span className="arrow">→</span>
-        <span className={operatorMode === 'audit' ? 'step done' : 'step'}>audit</span>
-      </div>
-      <span className="topbar-phase">Mode: {OPERATOR_MODE_LABELS[operatorMode]}</span>
-      <div className="workbench-toolbar">
-        <span className="workbench-toolbar-meta">
-          Sources <strong>{sourceCount}</strong>
-        </span>
-      </div>
-    </>
-  );
-}
-
 interface PendingAttachment extends ComposerAttachment {
   file: File;
 }
@@ -1303,12 +1270,6 @@ export function ChatWorkbenchV2() {
       evidenceRail={railConfig}
       mainMode="chat"
       focusModeReady={hasAssistantOutput}
-      mainTopbar={
-        <ChatWorkbenchTopbar
-          operatorMode={operatorMode}
-          sourceCount={groundingSources.length}
-        />
-      }
       mainContent={
         <div className={cn('chat-workbench', isHistoricalReview && 'is-history-review')}>
           <div className="chat-message-scroll">
