@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Database, FileText, ShieldCheck, SlidersHorizontal, Waves } from 'lucide-react';
+import { BookOpen, Database, FileText, ShieldCheck, Waves } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
 
@@ -90,9 +90,9 @@ export function WorkbenchEvidenceRail({ config }: WorkbenchEvidenceRailProps) {
             <div className="rail-sub">{config.subtitle || 'Live causal posture'}</div>
           </div>
         </div>
-        <button type="button" className="rail-settings-btn" aria-label="Evidence rail settings">
-          <SlidersHorizontal className="h-3.5 w-3.5" />
-        </button>
+        <span className={cn('rail-status-chip', config.live ? 'is-live' : 'is-neutral')}>
+          {config.live ? 'live' : 'review'}
+        </span>
       </div>
 
       <div className="rail-body">

@@ -50,7 +50,7 @@ export function WorkbenchShell({
           ) : null}
 
           <main className="main">
-            <div className="main-content-shell" data-main-surface="gridded">
+            <div className="main-content-shell" data-main-surface={feature === 'chat' ? 'editorial' : 'gridded'}>
               {mainTopbar ? <div className="main-topbar-inline">{mainTopbar}</div> : null}
               {mainContent}
             </div>

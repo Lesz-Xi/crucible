@@ -1350,30 +1350,33 @@ export function ChatWorkbenchV2() {
                       className={cn(
                         'chat-message',
                         message.role === 'user' ? 'user' : 'assistant',
+                        message.role === 'assistant' ? 'assistant-document' : 'user-prompt-card',
                         isHistoricalReview && 'is-history-review-message',
                         message.role === 'assistant' && message.scientificAnalysis && 'has-artifact'
                       )}
                     >
                       <div className="chat-message-head">
-                        <span className="chat-message-role">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
+                        <span className="chat-message-role">{message.role === 'user' ? 'Researcher prompt' : 'Wu-Weism review'}</span>
                         <span className="chat-message-time">{message.createdAt.toLocaleTimeString()}</span>
                       </div>
-                      {message.role === 'assistant' && message.scientificAnalysis && (
-                        <div className="chat-artifact-slot">
-                          <ScientificTableCard analysis={message.scientificAnalysis} />
-                        </div>
-                      )}
-                      <div className="chat-message-body">
-                        {message.role === 'assistant' ? (
+                      {message.role === 'assistant' ? (
+                        <div className="chat-message-body chat-review-document">
+                          {message.scientificAnalysis ? (
+                            <div className="chat-artifact-slot">
+                              <ScientificTableCard analysis={message.scientificAnalysis} />
+                            </div>
+                          ) : null}
                           <div className="chat-markdown">
                             <ReactMarkdown remarkPlugins={[remarkGfm]} components={CHAT_MARKDOWN_COMPONENTS}>
                               {message.content || ''}
                             </ReactMarkdown>
                           </div>
-                        ) : (
+                        </div>
+                      ) : (
+                        <div className="chat-message-body chat-user-callout">
                           <p className="whitespace-pre-wrap">{message.content || '...'}</p>
-                        )}
-                      </div>
+                        </div>
+                      )}
                       {message.role === 'assistant' && index === messages.length - 1 && inlineGroundingSources.length > 0 ? (
                         <div className="chat-citations">
                           {inlineGroundingSources.map((source) => (
