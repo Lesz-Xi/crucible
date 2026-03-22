@@ -15,7 +15,7 @@ import type { FactualConfidenceResult, GroundingSource } from '@/types/chat-grou
 import type { ScientificAnalysisResponse } from '@/lib/science/scientific-analysis-service';
 import { buildModelProvenanceDisplayState } from '@/lib/workbench/model-provenance-display';
 import { ScientificTableCard } from '@/components/causal-chat/ScientificTableCard';
-import type { WorkbenchEvidenceRailConfig } from '@/types/workbench';
+import type { WorkbenchEvidenceItem, WorkbenchEvidenceRailConfig, WorkbenchTone } from '@/types/workbench';
 import { cn } from '@/lib/utils';
 
 interface WorkbenchMessage {
@@ -348,6 +348,70 @@ const normalizeHistoryRole = (role: unknown): 'user' | 'assistant' | null => {
   if (['user', 'human', 'researcher', 'client'].includes(value)) return 'user';
   if (['assistant', 'ai', 'model', 'system', 'agent', 'wu-weism'].includes(value)) return 'assistant';
   return null;
+};
+
+const inferHistoricalTone = (analysis?: ScientificAnalysisResponse | null): WorkbenchTone => {
+  if (!analysis) return 'neutral';
+  if (analysis.status === 'completed') return 'green';
+  if (analysis.status === 'partial') return 'amber';
+  return 'red';
+};
+
+const buildHistoricalConfidence = (
+  analysis: ScientificAnalysisResponse | undefined,
+  density: { score: number; label: string; confidence: number } | null,
+): FactualConfidenceResult | null => {
+  if (!analysis) return null;
+
+  const tone = inferHistoricalTone(analysis);
+  const score =
+    typeof density?.confidence === 'number' && Number.isFinite(density.confidence)
+      ? density.confidence
+      : tone === 'green'
+        ? 0.82
+        : tone === 'amber'
+          ? 0.58
+          : 0.24;
+
+  const rationale =
+    analysis.warnings[0] ||
+    `Restored ${analysis.summary.dataPointCount} quantitative points across ${analysis.summary.trustedTableCount}/${analysis.summary.tableCount} trusted tables.`;
+
+  return {
+    level: tone === 'green' ? 'high' : tone === 'amber' ? 'medium' : 'low',
+    score,
+    rationale,
+  };
+};
+
+const buildHistoricalEvidenceItems = (
+  analysis: ScientificAnalysisResponse | undefined,
+): WorkbenchEvidenceItem[] => {
+  if (!analysis) return [];
+
+  return analysis.numericEvidence.slice(0, 6).map((item, index) => {
+    const variableLabel =
+      item.variableYName && item.variableXName
+        ? `${item.variableYName} vs ${item.variableXName}`
+        : item.variableYName || item.variableXName || `Evidence record ${index + 1}`;
+
+    return {
+      id: `${analysis.ingestionId}-${index}`,
+      title: variableLabel,
+      meta: item.contextSnippet || 'Restored from historical scientific analysis.',
+      badge: item.source,
+    };
+  });
+};
+
+const buildHistoricalAlignmentCopy = (
+  analysis: ScientificAnalysisResponse | undefined,
+  fallback: string,
+): string => {
+  if (!analysis) return fallback;
+  if (analysis.warnings.length > 0) return analysis.warnings[0];
+
+  return `Restored scientific review recovered ${analysis.summary.dataPointCount} quantified points across ${analysis.summary.trustedTableCount}/${analysis.summary.tableCount} trusted tables.`;
 };
 
 export function ChatWorkbenchV2() {
@@ -1127,14 +1191,33 @@ export function ChatWorkbenchV2() {
     setAttachments((previous) => previous.filter((item) => item.name !== name));
   }, []);
 
+  const latestAssistantAnalysis = useMemo(
+    () =>
+      [...messages]
+        .reverse()
+        .find((message) => message.role === 'assistant' && message.scientificAnalysis)?.scientificAnalysis,
+    [messages],
+  );
+  const derivedHistoricalConfidence = useMemo(
+    () => buildHistoricalConfidence(latestAssistantAnalysis, lastDensity),
+    [lastDensity, latestAssistantAnalysis],
+  );
+  const effectiveConfidence = factualConfidence || derivedHistoricalConfidence;
+  const effectiveAlignmentText =
+    factualConfidence?.rationale ||
+    buildHistoricalAlignmentCopy(latestAssistantAnalysis, alignmentPosture);
   const domainDisplay = isRealDomain(currentDomain) ? currentDomain : 'unavailable';
   const inlineGroundingSources = groundingSources.slice(0, 3);
   const modelProvenanceState = buildModelProvenanceDisplayState({
     modelKey: currentModelKey,
     latestClaimId,
   });
+  const historicalEvidenceItems = useMemo(
+    () => buildHistoricalEvidenceItems(latestAssistantAnalysis),
+    [latestAssistantAnalysis],
+  );
   const railConfig = useMemo<WorkbenchEvidenceRailConfig>(() => ({
-    subtitle: 'Live causal posture',
+    subtitle: isHistoricalReview ? 'Restored session posture' : 'Live causal posture',
     live: groundingSources.length > 0 || latestClaimId !== null || messages.length > 0,
     causalDensity: {
       activeLevel:
@@ -1150,18 +1233,26 @@ export function ChatWorkbenchV2() {
         : 'Awaiting scored output',
     },
     alignmentPosture: {
-      tone: factualConfidence?.level === 'high'
+      tone: effectiveConfidence?.level === 'high'
         ? 'green'
-        : factualConfidence?.level === 'medium'
+        : effectiveConfidence?.level === 'medium'
           ? 'amber'
-          : factualConfidence?.level === 'low'
+          : effectiveConfidence?.level === 'low'
             ? 'red'
-            : 'neutral',
-      text: factualConfidence?.rationale || alignmentPosture,
+            : inferHistoricalTone(latestAssistantAnalysis),
+      text: effectiveAlignmentText,
     },
     modelProvenance: {
-      title: modelProvenanceState.title,
-      text: modelProvenanceState.text,
+      title:
+        modelProvenanceState.title !== 'unavailable'
+          ? modelProvenanceState.title
+          : latestAssistantAnalysis?.provenance
+            ? `method ${latestAssistantAnalysis.provenance.methodVersion}`
+            : modelProvenanceState.title,
+      text:
+        latestAssistantAnalysis?.provenance && modelProvenanceState.title === 'unavailable'
+          ? `Scientific lineage restored for ingestion ${latestAssistantAnalysis.provenance.ingestionId.slice(0, 8)} with ${latestAssistantAnalysis.provenance.sourceTableIds.length} source tables and ${latestAssistantAnalysis.provenance.dataPointIds.length} data points.`
+          : modelProvenanceState.text,
       actions: latestClaimId ? [
         { label: 'Pretty view', href: `/claims/${latestClaimId}` },
         { label: 'JSON', href: `/api/claims/${latestClaimId}` },
@@ -1171,23 +1262,28 @@ export function ChatWorkbenchV2() {
     activeDomain: {
       label: domainDisplay,
     },
-    scientificEvidence: groundingSources.slice(0, 6).map((source) => ({
-      id: `${source.rank}-${source.link}`,
-      title: `[${source.rank}] ${source.title}`,
-      meta: source.snippet || source.domain,
-      href: source.link,
-      badge: source.domain,
-    })),
+    scientificEvidence:
+      groundingSources.length > 0
+        ? groundingSources.slice(0, 6).map((source) => ({
+            id: `${source.rank}-${source.link}`,
+            title: `[${source.rank}] ${source.title}`,
+            meta: source.snippet || source.domain,
+            href: source.link,
+            badge: source.domain,
+          }))
+        : historicalEvidenceItems,
   }), [
-    alignmentPosture,
     claimCopied,
     domainDisplay,
-    factualConfidence?.level,
-    factualConfidence?.rationale,
+    effectiveAlignmentText,
+    effectiveConfidence?.level,
     groundingSources,
     handleCopyClaimId,
+    historicalEvidenceItems,
+    isHistoricalReview,
     lastDensity,
     latestClaimId,
+    latestAssistantAnalysis,
     messages.length,
     modelProvenanceState,
   ]);
@@ -1246,54 +1342,59 @@ export function ChatWorkbenchV2() {
                 </div>
               </div>
             ) : (
-              <div className={cn('chat-message-list', isHistoricalReview && 'is-history-review')}>
-                {messages.map((message, index) => (
-                  <article
-                    key={message.id}
-                    className={cn(
-                      'chat-message',
-                      message.role === 'user' ? 'user' : 'assistant',
-                      isHistoricalReview && 'is-history-review-message',
-                      message.role === 'assistant' && message.scientificAnalysis && 'has-artifact'
-                    )}
-                  >
-                    <div className="chat-message-head">
-                      <span className="chat-message-role">{message.role === 'user' ? 'Researcher' : 'Wu-Weism'}</span>
-                      <span className="chat-message-time">{message.createdAt.toLocaleTimeString()}</span>
-                    </div>
-                    {message.role === 'assistant' && message.scientificAnalysis && (
-                      <div className="chat-artifact-slot">
-                        <ScientificTableCard analysis={message.scientificAnalysis} />
+              <div className={cn('chat-review-stage', isHistoricalReview && 'is-history-review')}>
+                <div className={cn('chat-message-list', isHistoricalReview && 'is-history-review')}>
+                  {messages.map((message, index) => (
+                    <article
+                      key={message.id}
+                      className={cn(
+                        'chat-message',
+                        message.role === 'user' ? 'user' : 'assistant',
+                        message.role === 'assistant' ? 'assistant-document' : 'user-prompt-card',
+                        isHistoricalReview && 'is-history-review-message',
+                        message.role === 'assistant' && message.scientificAnalysis && 'has-artifact'
+                      )}
+                    >
+                      <div className="chat-message-head">
+                        <span className="chat-message-role">{message.role === 'user' ? 'Researcher prompt' : 'Wu-Weism review'}</span>
+                        <span className="chat-message-time">{message.createdAt.toLocaleTimeString()}</span>
                       </div>
-                    )}
-                    <div className="chat-message-body">
                       {message.role === 'assistant' ? (
-                        <div className="chat-markdown">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={CHAT_MARKDOWN_COMPONENTS}>
-                            {message.content || ''}
-                          </ReactMarkdown>
+                        <div className="chat-message-body chat-review-document">
+                          {message.scientificAnalysis ? (
+                            <div className="chat-artifact-slot">
+                              <ScientificTableCard analysis={message.scientificAnalysis} />
+                            </div>
+                          ) : null}
+                          <div className="chat-markdown">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]} components={CHAT_MARKDOWN_COMPONENTS}>
+                              {message.content || ''}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       ) : (
-                        <p className="whitespace-pre-wrap">{message.content || '...'}</p>
+                        <div className="chat-message-body chat-user-callout">
+                          <p className="whitespace-pre-wrap">{message.content || '...'}</p>
+                        </div>
                       )}
-                    </div>
-                    {message.role === 'assistant' && index === messages.length - 1 && inlineGroundingSources.length > 0 ? (
-                      <div className="chat-citations">
-                        {inlineGroundingSources.map((source) => (
-                          <a key={`${source.rank}-${source.link}`} href={source.link} target="_blank" rel="noreferrer" className="chat-citation">
-                            <span>[{source.rank}] {source.title}</span>
-                          </a>
-                        ))}
-                      </div>
-                    ) : null}
-                    {message.isStreaming ? (
-                      <ThinkingAnimation
-                        stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}
-                        stageIndex={loadingStageIndex}
-                      />
-                    ) : null}
-                  </article>
-                ))}
+                      {message.role === 'assistant' && index === messages.length - 1 && inlineGroundingSources.length > 0 ? (
+                        <div className="chat-citations">
+                          {inlineGroundingSources.map((source) => (
+                            <a key={`${source.rank}-${source.link}`} href={source.link} target="_blank" rel="noreferrer" className="chat-citation">
+                              <span>[{source.rank}] {source.title}</span>
+                            </a>
+                          ))}
+                        </div>
+                      ) : null}
+                      {message.isStreaming ? (
+                        <ThinkingAnimation
+                          stageLabel={AUTOMATED_SCIENTIST_STAGES[loadingStageIndex]}
+                          stageIndex={loadingStageIndex}
+                        />
+                      ) : null}
+                    </article>
+                  ))}
+                </div>
               </div>
             )}
           </div>
