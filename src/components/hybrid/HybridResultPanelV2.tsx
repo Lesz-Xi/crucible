@@ -176,9 +176,13 @@ export function HybridResultPanelV2({ result, stage }: HybridResultPanelV2Props)
 
   if (!result || stage !== 'results') {
     return (
-      <div className="lab-empty-state h-full">
-        <p className="font-serif text-2xl text-[var(--lab-text-primary)]">Dialectical Synthesis Canvas</p>
-        <p className="mt-2 text-sm">Upload sources and run synthesis to render contradiction matrix, novelty proof, and falsification protocol.</p>
+      <div className="flex flex-col items-center justify-center w-full h-full gap-3 py-24">
+        <p className="text-[var(--lab-text-tertiary)] text-xs font-mono tracking-widest uppercase">
+          Dialectical Synthesis Canvas
+        </p>
+        <p className="text-[var(--lab-text-tertiary)] text-xs max-w-xs text-center leading-relaxed">
+          Upload sources and run synthesis to render contradiction matrix, novelty proof, and falsification protocol.
+        </p>
       </div>
     );
   }

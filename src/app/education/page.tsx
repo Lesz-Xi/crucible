@@ -82,19 +82,19 @@ function gateTone(value: AllowedOutputClass | undefined): {
 } {
   if (value === 'intervention_supported') {
     return {
-      shell: 'border-emerald-300/60 bg-emerald-100/60',
-      chip: 'bg-emerald-100 text-emerald-700',
+      shell: 'border-l-2 border-l-[#7B9E7E] border border-[var(--lab-border)] bg-transparent pl-4',
+      chip: 'bg-[rgba(123,158,126,0.12)] text-[#7B9E7E] border border-[rgba(123,158,126,0.25)] rounded-full px-2 py-0.5 text-xs',
     };
   }
   if (value === 'intervention_inferred') {
     return {
-      shell: 'border-amber-300/60 bg-amber-100/60',
-      chip: 'bg-amber-100 text-amber-700',
+      shell: 'border-l-2 border-l-[var(--lab-accent-clay)] border border-[var(--lab-border)] bg-transparent pl-4',
+      chip: 'bg-[var(--lab-accent-dim)] text-[var(--lab-accent-clay)] border border-[rgba(200,150,90,0.25)] rounded-full px-2 py-0.5 text-xs',
     };
   }
   return {
-    shell: 'border-rose-300/60 bg-rose-100/60',
-    chip: 'bg-rose-100 text-rose-700',
+    shell: 'border-l-2 border-l-[rgba(240,237,232,0.25)] border border-[var(--lab-border)] bg-transparent pl-4',
+    chip: 'bg-[rgba(240,237,232,0.08)] text-[var(--lab-text-secondary)] border border-[var(--lab-border-strong)] rounded-full px-2 py-0.5 text-xs',
   };
 }
 
@@ -1149,7 +1149,7 @@ export default function EducationPage() {
                             href={`/api/scm/counterfactual-traces/${traceId}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-full border border-[var(--border-subtle)] bg-white/75 px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-secondary)] hover:border-wabi-clay/45"
+                            className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
                           >
                             Trace {traceId.slice(0, 8)}
                           </a>
@@ -1205,7 +1205,7 @@ export default function EducationPage() {
                               href={interventions.topRecommendation.interventionGate.counterfactualTrace.retrievalPath}
                               target="_blank"
                               rel="noreferrer"
-                              className="rounded-full border border-[var(--border-subtle)] bg-white/75 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-secondary)] hover:border-wabi-clay/45"
+                              className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
                             >
                               Trace {interventions.topRecommendation.interventionGate.counterfactualTrace.traceId.slice(0, 8)}
                             </a>
@@ -1605,7 +1605,7 @@ function InterventionCard({ result, rank }: { result: InterventionResult; rank: 
                 href={result.interventionGate.counterfactualTrace.retrievalPath}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[var(--border-subtle)] bg-white/75 px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-secondary)] hover:border-wabi-clay/45"
+                className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
               >
                 Trace {result.interventionGate.counterfactualTrace.traceId.slice(0, 8)}
               </a>

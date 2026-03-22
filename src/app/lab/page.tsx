@@ -52,45 +52,29 @@ function CausalRoleBadge({ role }: { role: string }) {
     );
 }
 
-// Experiment card with Liquid Glass styling
+// Experiment card — flush divider row
 function ExperimentCard({ experiment }: { experiment: LabExperiment }) {
-    const toolIcons: Record<string, React.ReactNode> = {
-        fetch_protein_structure: <Atom className="w-4 h-4" />,
-        analyze_protein_sequence: <FlaskConical className="w-4 h-4" />,
-        dock_ligand: <Network className="w-4 h-4" />,
-        simulate_scientific_phenomenon: <Sparkles className="w-4 h-4" />,
-    };
-
     return (
         <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lab-card-interactive group"
+            className="py-3 border-b border-[var(--lab-border)] last:border-0"
         >
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                    <div className="rounded-lg border border-[var(--lab-border)] bg-[var(--lab-panel-soft)] p-2">
-                        {toolIcons[experiment.tool_name] || <Database className="w-4 h-4" />}
-                    </div>
-                    <div>
-                        <h4 className="text-sm font-medium text-[var(--lab-text-primary)]">
-                            {experiment.tool_name?.replace(/_/g, ' ') || 'Unknown Tool'}
-                        </h4>
-                        <div className="flex items-center gap-2 mt-1">
-                            <CausalRoleBadge role={experiment.causal_role} />
-                            <StatusBadge status={experiment.status} />
-                        </div>
-                    </div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--lab-accent-clay)] shrink-0" />
+                    <span className="text-sm text-[var(--lab-text-primary)]">
+                        {experiment.tool_name?.replace(/_/g, ' ') || 'Unknown Tool'}
+                    </span>
+                    <CausalRoleBadge role={experiment.causal_role} />
+                    <StatusBadge status={experiment.status} />
                 </div>
-                <div className="text-right">
-                    <div className="text-[10px] text-[var(--lab-text-tertiary)] font-mono">
-                        {new Date(experiment.created_at).toLocaleTimeString()}
-                    </div>
-                </div>
+                <span className="text-[10px] font-mono text-[var(--lab-text-tertiary)] shrink-0">
+                    {new Date(experiment.created_at).toLocaleTimeString()}
+                </span>
             </div>
-            
             {experiment.result_json && (
-                <div className="mt-3 pt-3 border-t border-[var(--lab-border)]">
+                <div className="mt-2 pl-5 text-xs text-[var(--lab-text-secondary)]">
                     <ResultDispatcher experiment={experiment} />
                 </div>
             )}
@@ -478,84 +462,45 @@ export default function LabPage() {
                 )}
             </AnimatePresence>
             <div className="flex-1 flex flex-col h-full bg-transparent">
-                {/* Header / Mode Switcher with Liquid Glass */}
-                <div className="flex justify-center p-4">
-                    <div className="flex gap-1 lab-panel p-1.5">
-                        {(['dashboard', 'builder', 'history'] as const).map((mode) => (
-                            <button
-                                key={mode}
-                                onClick={() => setViewMode(mode)}
-                                data-active={viewMode === mode}
-                                className="lab-nav-pill cursor-pointer hover:bg-white/10 transition-all duration-200"
-                            >
-                                {mode === 'dashboard' && <Database className="w-4 h-4 mr-1.5" />}
-                                {mode === 'builder' && <Sparkles className="w-4 h-4 mr-1.5" />}
-                                {mode === 'history' && <Clock className="w-4 h-4 mr-1.5" />}
-                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                            </button>
-                        ))}
-                    </div>
+                {/* Header / Mode Switcher — underline tabs */}
+                <div className="flex items-center px-6 border-b border-[var(--lab-border)]">
+                    {(['dashboard', 'builder', 'history'] as const).map((mode) => (
+                        <button
+                            key={mode}
+                            onClick={() => setViewMode(mode)}
+                            data-active={viewMode === mode}
+                            className="lab-nav-pill capitalize"
+                        >
+                            {mode}
+                        </button>
+                    ))}
                 </div>
 
-                {/* Instruments Rail (restored): keep Labs tools accessible while using shared app sidebar */}
-                <div className="px-4 pb-2">
-                    <div className="lab-panel p-2">
-                        <div className="mb-2 px-1 lab-section-title text-[10px] opacity-70">Instruments</div>
-                        <div className="grid grid-cols-1 gap-1.5 md:grid-cols-4">
-                            <button
-                                onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'fetch_structure' as any });
-                                    setViewMode('tool');
-                                }}
-                                className={cn(
-                                    'lab-nav-pill w-full justify-start',
-                                    state.activeTool === 'fetch_structure' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
-                                )}
-                            >
-                                <Box className="w-4 h-4" />
-                                <span className="font-serif tracking-wide">Protein Fetch</span>
-                            </button>
-                            <button
-                                onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_sequence' as any });
-                                    setViewMode('tool');
-                                }}
-                                className={cn(
-                                    'lab-nav-pill w-full justify-start',
-                                    state.activeTool === 'analyze_sequence' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
-                                )}
-                            >
-                                <Dna className="w-4 h-4" />
-                                <span className="font-serif tracking-wide">Seq. Analysis</span>
-                            </button>
-                            <button
-                                onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'dock_ligand' as any });
-                                    setViewMode('tool');
-                                }}
-                                className={cn(
-                                    'lab-nav-pill w-full justify-start',
-                                    state.activeTool === 'dock_ligand' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
-                                )}
-                            >
-                                <Network className="w-4 h-4" />
-                                <span className="font-serif tracking-wide">Ligand Docking</span>
-                            </button>
-                            <button
-                                onClick={() => {
-                                    dispatch({ type: 'SET_ACTIVE_TOOL', payload: 'analyze_report' as any });
-                                    setViewMode('tool');
-                                }}
-                                className={cn(
-                                    'lab-nav-pill w-full justify-start',
-                                    state.activeTool === 'analyze_report' && viewMode === 'tool' ? 'sidebar-history-item-active' : ''
-                                )}
-                            >
-                                <FileText className="w-4 h-4" />
-                                <span className="font-serif tracking-wide">Causal Report</span>
-                            </button>
-                        </div>
-                    </div>
+                {/* Instruments Rail — single horizontal strip */}
+                <div className="flex items-center border-b border-[var(--lab-border)]">
+                    {[
+                        { id: 'fetch_structure', icon: Box, label: 'Protein Fetch' },
+                        { id: 'analyze_sequence', icon: Dna, label: 'Seq. Analysis' },
+                        { id: 'dock_ligand', icon: Network, label: 'Ligand Docking' },
+                        { id: 'analyze_report', icon: FileText, label: 'Causal Report' },
+                    ].map(({ id, icon: Icon, label }) => (
+                        <button
+                            key={id}
+                            onClick={() => {
+                                dispatch({ type: 'SET_ACTIVE_TOOL', payload: id as any });
+                                setViewMode('tool');
+                            }}
+                            className={cn(
+                                'flex flex-1 flex-col items-center gap-1.5 py-3 border-r border-[var(--lab-border)] last:border-r-0 transition-colors',
+                                state.activeTool === id && viewMode === 'tool'
+                                    ? 'bg-[var(--lab-accent-dim)] text-[var(--lab-accent-clay)]'
+                                    : 'bg-transparent text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]'
+                            )}
+                        >
+                            <Icon className="w-4 h-4" />
+                            <span className="font-mono tracking-wide uppercase" style={{ fontSize: '0.60rem' }}>{label}</span>
+                        </button>
+                    ))}
                 </div>
 
                 {/* Content Area */}
@@ -609,12 +554,9 @@ export default function LabPage() {
                                 </div>
                                 
                                 {experiments.length === 0 ? (
-                                    <div className="text-center py-12 text-[var(--lab-text-tertiary)]">
-                                        <Database className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                                        <p className="text-sm">No experiments recorded yet</p>
-                                    </div>
+                                    <p className="lab-empty-state py-10">No experiments recorded yet.</p>
                                 ) : (
-                                    <div className="space-y-3">
+                                    <div>
                                         {experiments.map((exp) => (
                                             <ExperimentCard key={exp.id} experiment={exp} />
                                         ))}
@@ -623,120 +565,67 @@ export default function LabPage() {
                             </div>
                         </motion.div>
                     ) : (
-                        <motion.div 
+                        <motion.div
                             key="dashboard"
-                            initial={{ opacity: 0, scale: 0.96 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.96 }}
-                            transition={{ duration: 0.4, ease: EASE_OUT_EXPO }}
-                            className="flex items-center justify-center h-full text-muted-foreground flex-col gap-6 p-4"
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
+                            className="p-8 max-w-lg lab-animate-in"
                         >
-                            {/* Hero Section */}
-                            <motion.div 
-                                initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
-                                className="relative"
-                            >
-                                <div className="lab-card p-8 rounded-full flex items-center justify-center relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
-                                    <FlaskConical className="w-16 h-16 opacity-50 text-stone-500 relative z-10" />
-                                </div>
-                                <motion.div 
-                                    animate={{ rotate: 360 }}
-                                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                                    className="absolute -inset-2 border border-dashed border-white/20 rounded-full"
-                                />
-                            </motion.div>
-                            
-                            <div className="text-center max-w-lg">
-                                <motion.h2 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                    className="text-2xl font-semibold mb-3 lab-section-title text-base tracking-widest"
+                            <p className="lab-section-title mb-3">Laboratory</p>
+                            <h1 className="text-2xl font-display text-[var(--lab-text-primary)] mb-2">
+                                Scientific Workbench
+                            </h1>
+                            <p className="text-sm text-[var(--lab-text-secondary)] mb-8 leading-relaxed max-w-sm">
+                                Protein structures, sequence analysis, ligand docking, and causal report synthesis.
+                            </p>
+
+                            {/* Inline action buttons */}
+                            <div className="flex flex-wrap gap-3 mb-10">
+                                <button
+                                    onClick={handleLoadTest}
+                                    disabled={isLoading}
+                                    className="lab-button-primary"
+                                    style={{ width: 'auto', padding: '8px 20px' }}
                                 >
-                                    Bio-Computation Lab
-                                </motion.h2>
-                                <motion.p 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.3 }}
-                                    className="text-sm opacity-70 mb-8 font-serif leading-relaxed"
+                                    {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                                    Load Protein
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('builder')}
+                                    className="lab-button-secondary"
                                 >
-                                    An in silico environment for structural causal model extraction. 
-                                    Distinguish observation from intervention. Build hypotheses. Run experiments.
-                                </motion.p>
-                                
-                                {/* Quick Actions */}
-                                <motion.div 
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.4 }}
-                                    className="grid grid-cols-3 gap-3"
+                                    New Hypothesis
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('history')}
+                                    className="lab-button-secondary"
                                 >
-                                    <button 
-                                        onClick={handleLoadTest}
-                                        disabled={isLoading}
-                                        className="group lab-card-interactive flex flex-col items-center gap-2 py-4"
-                                    >
-                                        <div className="p-2 rounded-lg bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors">
-                                            {isLoading ? (
-                                                <Loader2 className="w-5 h-5 text-cyan-400 animate-spin" />
-                                            ) : (
-                                                <Atom className="w-5 h-5 text-cyan-400" />
-                                            )}
-                                        </div>
-                                        <span className="text-xs font-medium text-[var(--lab-text-secondary)]">
-                                            Load Protein
-                                        </span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setViewMode('builder')}
-                                        className="group lab-card-interactive flex flex-col items-center gap-2 py-4"
-                                    >
-                                        <div className="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
-                                            <Sparkles className="w-5 h-5 text-purple-400" />
-                                        </div>
-                                        <span className="text-xs font-medium text-[var(--lab-text-secondary)]">
-                                            New Hypothesis
-                                        </span>
-                                    </button>
-                                    
-                                    <button 
-                                        onClick={() => setViewMode('history')}
-                                        className="group lab-card-interactive flex flex-col items-center gap-2 py-4"
-                                    >
-                                        <div className="p-2 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
-                                            <Clock className="w-5 h-5 text-emerald-400" />
-                                        </div>
-                                        <span className="text-xs font-medium text-[var(--lab-text-secondary)]">
-                                            View History
-                                        </span>
-                                    </button>
-                                </motion.div>
-                                
-                                {/* Stats Bar */}
-                                <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 }}
-                                    className="mt-6 flex justify-center gap-6 text-xs text-[var(--lab-text-tertiary)]"
-                                >
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                        <span>{experiments.filter(e => e.status === 'success').length} completed</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                        <span>{experiments.filter(e => e.status === 'pending').length} pending</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <div className="w-2 h-2 rounded-full bg-blue-500" />
-                                        <span>{proteinStructureCache.getStats().size} cached</span>
-                                    </div>
-                                </motion.div>
+                                    View History
+                                </button>
+                            </div>
+
+                            {/* Minimal stats strip */}
+                            <div className="flex gap-8 text-xs font-mono text-[var(--lab-text-tertiary)]">
+                                <span>
+                                    <span className="text-[var(--lab-text-primary)] mr-1">
+                                        {experiments.filter(e => e.status === 'success').length}
+                                    </span>
+                                    completed
+                                </span>
+                                <span>
+                                    <span className="text-[var(--lab-text-primary)] mr-1">
+                                        {experiments.filter(e => e.status === 'pending').length}
+                                    </span>
+                                    pending
+                                </span>
+                                <span>
+                                    <span className="text-[var(--lab-accent-clay)] mr-1">
+                                        {proteinStructureCache.getStats().size}
+                                    </span>
+                                    cached
+                                </span>
                             </div>
                         </motion.div>
                     )}

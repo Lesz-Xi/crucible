@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { WorkbenchShell } from '@/components/workbench/WorkbenchShell';
 import { HybridInputPanelV2 } from '@/components/hybrid/HybridInputPanelV2';
 import { HybridResultPanelV2, type HybridResultData } from '@/components/hybrid/HybridResultPanelV2';
@@ -363,23 +363,22 @@ export function HybridWorkbenchV2() {
       mainTopbar={
         <>
           <span className="topbar-tag">Hybrid Discovery Engine</span>
-          <div className="topbar-pipeline">
-            <span className="step done">Ingest</span>
-            <span className="arrow">→</span>
-            <span className="step done">contradict</span>
-            <span className="arrow">→</span>
-            <span className="step done">synthesize</span>
-            <span className="arrow">→</span>
-            <span className="step">prove novelty</span>
+          <div className="topbar-pipeline flex items-center gap-1 font-mono text-xs">
+            {['Ingest', 'Contradict', 'Synthesize', 'Prove Novelty'].map((s, i) => (
+              <React.Fragment key={s}>
+                {i > 0 && <span className="mx-1.5 text-[var(--lab-text-tertiary)]">·</span>}
+                <span className="text-[var(--lab-text-tertiary)] tabular-nums">0{i + 1}</span>
+                <span className="ml-1 text-[var(--lab-text-secondary)] tracking-wide">{s}</span>
+              </React.Fragment>
+            ))}
           </div>
-          <span className="topbar-phase">Phase: {latestEvent}</span>
+          <span className="topbar-phase text-[var(--lab-text-tertiary)] text-xs font-mono tracking-widest uppercase">{latestEvent}</span>
         </>
       }
       mainContent={
         <div className="split-workspace">
           <div className="split-sidebar">
-            <div className="hybrid-section-head">Input Rail</div>
-            <p className="hybrid-sub">Source inventory, focus constraints, and execution</p>
+            <p className="lab-section-title">Input Rail</p>
 
             <div className="feature-panel-stack mt-5">
               <div className="feature-panel-shell">
@@ -402,15 +401,20 @@ export function HybridWorkbenchV2() {
               </div>
 
               <div className="feature-panel-shell">
-                <div className="panel-section-head">Historical Runs</div>
+                <p className="lab-section-title">Historical Runs</p>
                 {historyLoading ? (
-                  <p className="text-sm text-[var(--text-2)]">Loading...</p>
+                  <p className="lab-empty-state">Loading...</p>
                 ) : history.length === 0 ? (
-                  <p className="text-sm text-[var(--text-3)]">No runs available.</p>
+                  <p className="lab-empty-state">No runs available.</p>
                 ) : (
-                  <div className="space-y-2">
+                  <div>
                     {history.slice(0, 6).map((entry) => (
-                      <button key={entry.id} type="button" className="history-item" onClick={() => void loadHistoricalRun(entry.id)}>
+                      <button
+                        key={entry.id}
+                        type="button"
+                        className="w-full text-left py-2 border-b border-[var(--lab-border)] last:border-0 text-xs text-[var(--lab-text-secondary)] hover:text-[var(--lab-text-primary)] font-mono truncate transition-colors"
+                        onClick={() => void loadHistoricalRun(entry.id)}
+                      >
                         {entry.synthesis_goal || entry.id}
                       </button>
                     ))}
