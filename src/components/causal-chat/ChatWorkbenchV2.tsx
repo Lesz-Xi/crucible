@@ -415,6 +415,7 @@ const buildHistoricalAlignmentCopy = (
 };
 
 export function ChatWorkbenchV2() {
+  const shellChrome = useAppShellChrome();
   const chatPersistence = useMemo(() => new ChatPersistence(), []);
   const [messages, setMessages] = useState<WorkbenchMessage[]>([]);
   const [prompt, setPrompt] = useState('');
@@ -562,6 +563,7 @@ export function ChatWorkbenchV2() {
     console.log('[DEBUG applySessionHistory] setting', loadedMessages.length, 'messages for session', sessionId);
     setMessages(loadedMessages);
     setIsHistoricalReview(loadedMessages.length > 0);
+    shellChrome?.setFocusMode(false);
     setCurrentDomain(restoredDomain);
     currentDomainRef.current = restoredDomain;
     setCurrentModelKey(restoredModelKey);
@@ -603,7 +605,7 @@ export function ChatWorkbenchV2() {
     setLatestClaimId(null);
     setClaimCopied(false);
     setDbSessionId(sessionId);
-  }, []);
+  }, [shellChrome]);
 
   const loadSession = useCallback(
     async (sessionId: string) => {
