@@ -1271,7 +1271,7 @@ export function ChatWorkbenchV2() {
       mainMode="chat"
       focusModeReady={hasAssistantOutput}
       mainContent={
-        <div className={cn('chat-workbench', isHistoricalReview && 'is-history-review')}>
+        <div className={cn('chat-workbench', messages.length === 0 && 'is-empty', isHistoricalReview && 'is-history-review')}>
           <div className="chat-message-scroll">
             {messages.length === 0 ? (
               <div className="chat-empty-shell fade-in">

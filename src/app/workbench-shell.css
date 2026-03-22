@@ -762,14 +762,17 @@
 
 .canonical-workbench-shell .chat-message-scroll {
   min-height: 0;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   overflow: visible;
   padding-bottom: 28px;
   pointer-events: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .canonical-workbench-shell .chat-empty-shell {
-  min-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -779,6 +782,12 @@
 .canonical-workbench-shell .chat-empty-console,
 .canonical-workbench-shell .chat-empty-console-body {
   width: 100%;
+}
+
+.canonical-workbench-shell .chat-workbench.is-empty .chat-message-scroll,
+.canonical-workbench-shell .chat-workbench.is-empty .chat-empty-console,
+.canonical-workbench-shell .chat-workbench.is-empty .chat-empty-console-body {
+  flex: 1 1 auto;
 }
 
 .canonical-workbench-shell .chat-empty-console-body,
