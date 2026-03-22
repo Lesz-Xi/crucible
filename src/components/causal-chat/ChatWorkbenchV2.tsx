@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Focus, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createClient } from '@/lib/supabase/client';
@@ -66,8 +65,6 @@ function ChatWorkbenchTopbar({
   operatorMode: OperatorMode;
   sourceCount: number;
 }) {
-  const shellChrome = useAppShellChrome();
-
   return (
     <>
       <span className="topbar-tag">Causal Research Workbench</span>
@@ -83,26 +80,6 @@ function ChatWorkbenchTopbar({
         <span className="workbench-toolbar-meta">
           Sources <strong>{sourceCount}</strong>
         </span>
-        <button
-          type="button"
-          className={shellChrome?.evidenceRailVisible ? 'workbench-toolbar-chip is-active' : 'workbench-toolbar-chip'}
-          onClick={() => shellChrome?.setEvidenceRailVisible((current) => !current)}
-          aria-label={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
-          title={shellChrome?.evidenceRailVisible ? 'Hide evidence rail' : 'Show evidence rail'}
-        >
-          {shellChrome?.evidenceRailVisible ? <PanelRightClose className="h-3.5 w-3.5" /> : <PanelRightOpen className="h-3.5 w-3.5" />}
-          <span>Evidence</span>
-        </button>
-        <button
-          type="button"
-          className={shellChrome?.focusMode ? 'workbench-toolbar-chip is-active' : 'workbench-toolbar-chip'}
-          onClick={() => shellChrome?.setFocusMode((current) => !current)}
-          aria-label={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
-          title={shellChrome?.focusMode ? 'Exit focus mode' : 'Enter focus mode'}
-        >
-          <Focus className="h-3.5 w-3.5" />
-          <span>Focus</span>
-        </button>
       </div>
     </>
   );
