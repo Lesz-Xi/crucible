@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,36 +9,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
-            /* Surface elevation ladder */
-            --bg:           #0E0D0C;
-            --bg-2:         #131210;
-            --bg-3:         #1A1816;
-            --bg-4:         #211F1C;
-            --bg-5:         #282523;
-
-            /* Text — opacity-scaled warm white */
-            --text-1:       rgba(255, 252, 245, 0.92);
-            --text-2:       rgba(255, 252, 245, 0.62);
-            --text-3:       rgba(255, 252, 245, 0.38);
-            --text-4:       rgba(255, 252, 245, 0.20);
-
-            /* Amber accent */
-            --accent:       #C8965A;
-            --accent-muted: rgba(200, 150, 90, 0.55);
-            --accent-dim:   rgba(200, 150, 90, 0.14);
-
-            /* Borders */
-            --border:       rgba(255, 252, 245, 0.07);
-            --border-2:     rgba(255, 252, 245, 0.12);
-
-            /* Semantic status */
-            --success:      #4CAF81;
-            --success-dim:  rgba(76, 175, 129, 0.10);
-            --warning:      #D4935A;
-            --warning-dim:  rgba(212, 147, 90, 0.10);
-            --info:         #6B9FD4;
-            --info-dim:     rgba(107, 159, 212, 0.10);
-
             /* Typography */
             --font-serif:  'Instrument Serif', Georgia, serif;
             --font-sans:   'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -47,6 +17,56 @@
             --r-sm:  4px;
             --r:     8px;
             --r-lg:  12px;
+        }
+
+        /* ─── Dark Theme (default) ─── */
+        [data-theme="dark"] {
+            --bg:           #0E0D0C;
+            --bg-2:         #131210;
+            --bg-3:         #1A1816;
+            --bg-4:         #211F1C;
+            --bg-5:         #282523;
+            --text-1:       rgba(255, 252, 245, 0.92);
+            --text-2:       rgba(255, 252, 245, 0.62);
+            --text-3:       rgba(255, 252, 245, 0.38);
+            --text-4:       rgba(255, 252, 245, 0.20);
+            --accent:       #C8965A;
+            --accent-muted: rgba(200, 150, 90, 0.55);
+            --accent-dim:   rgba(200, 150, 90, 0.14);
+            --border:       rgba(255, 252, 245, 0.07);
+            --border-2:     rgba(255, 252, 245, 0.12);
+            --success:      #4CAF81;
+            --success-dim:  rgba(76, 175, 129, 0.10);
+            --warning:      #D4935A;
+            --warning-dim:  rgba(212, 147, 90, 0.10);
+            --info:         #6B9FD4;
+            --info-dim:     rgba(107, 159, 212, 0.10);
+            --bg-glow:      rgba(200,150,90,0.055);
+        }
+
+        /* ─── Light Theme ─── */
+        [data-theme="light"] {
+            --bg:           #FAFAF8;
+            --bg-2:         #F4F2EE;
+            --bg-3:         #EDEAE4;
+            --bg-4:         #E5E2DB;
+            --bg-5:         #DDD9D1;
+            --text-1:       rgba(26, 24, 22, 0.92);
+            --text-2:       rgba(26, 24, 22, 0.60);
+            --text-3:       rgba(26, 24, 22, 0.38);
+            --text-4:       rgba(26, 24, 22, 0.18);
+            --accent:       #A0693A;
+            --accent-muted: rgba(160, 105, 58, 0.55);
+            --accent-dim:   rgba(160, 105, 58, 0.10);
+            --border:       rgba(26, 24, 22, 0.08);
+            --border-2:     rgba(26, 24, 22, 0.14);
+            --success:      #3A7D5E;
+            --success-dim:  rgba(58, 125, 94, 0.08);
+            --warning:      #B87D42;
+            --warning-dim:  rgba(184, 125, 66, 0.08);
+            --info:         #4A7BAF;
+            --info-dim:     rgba(74, 123, 175, 0.08);
+            --bg-glow:      rgba(200,150,90,0.04);
         }
 
         * {
@@ -60,7 +80,8 @@
             line-height: 1.75;
             color: var(--text-1);
             background: var(--bg);
-            background-image: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(200,150,90,0.055) 0%, transparent 60%);
+            background-image: radial-gradient(ellipse 80% 40% at 50% 0%, var(--bg-glow) 0%, transparent 60%);
+            transition: background 0.3s ease, color 0.3s ease;
             background-attachment: fixed;
             -webkit-font-smoothing: antialiased;
         }
@@ -488,6 +509,56 @@
             }
         }
 
+        /* ─── Theme Toggle ─── */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border-2);
+            background: var(--bg-3);
+            color: var(--text-2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: scale(1.08);
+        }
+
+        .theme-toggle .icon-sun,
+        .theme-toggle .icon-moon {
+            position: absolute;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle .icon-sun  { opacity: 1; transform: rotate(0deg); }
+        [data-theme="dark"] .theme-toggle .icon-moon  { opacity: 0; transform: rotate(-90deg); }
+        [data-theme="light"] .theme-toggle .icon-sun { opacity: 0; transform: rotate(90deg); }
+        [data-theme="light"] .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg); }
+
+        @media (max-width: 640px) {
+            .theme-toggle {
+                top: 16px;
+                right: 16px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+        }
+
         /* ─── Print ─── */
         @media print {
             body {
@@ -507,6 +578,10 @@
     </style>
 </head>
 <body>
+    <button class="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle theme">
+        <span class="icon-sun">☀</span>
+        <span class="icon-moon">☽</span>
+    </button>
     <div class="container">
         <header class="header">
             <div class="logo">Technical White Paper</div>
@@ -1938,5 +2013,19 @@ flowchart LR
             }
         });
     </script>
+<script>
+    (function() {
+        const toggle = document.querySelector('.theme-toggle');
+        const html = document.documentElement;
+        const stored = localStorage.getItem('masa-wp-theme');
+        if (stored) html.setAttribute('data-theme', stored);
+
+        toggle.addEventListener('click', function() {
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('masa-wp-theme', next);
+        });
+    })();
+</script>
 </body>
 </html>
