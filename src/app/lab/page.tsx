@@ -154,13 +154,16 @@ export default function LabPage() {
                 }
             });
 
-            await createExperiment?.(
+            const experiment = await createExperiment?.(
                 'fetch_protein_structure',
                 source === 'rcsb'
                     ? { pdbId: resolvedId, source }
                     : { pdbId: resolvedId, source, uniprotId: resolvedId },
                 'observation'
             );
+            if (experiment) {
+                await updateExperimentResult?.(experiment.id, { pdbId: resolvedId, source } as any, 'success');
+            }
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to fetch protein structure';
             setFetchErrorMessage(message);
@@ -573,18 +576,21 @@ export default function LabPage() {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -6 }}
                             transition={{ duration: 0.3, ease: EASE_OUT_EXPO }}
-                            className="p-8 max-w-lg lab-animate-in"
+                            className="p-8 w-full h-full flex flex-col items-center justify-center text-center lab-animate-in"
                         >
+                            <div className="w-16 h-16 rounded-2xl bg-[var(--lab-panel-soft)] border border-[var(--lab-border)] flex items-center justify-center mb-6 shadow-sm">
+                                <FlaskConical className="w-8 h-8 text-[var(--lab-accent-clay)] opacity-80" />
+                            </div>
                             <p className="lab-section-title mb-3">Laboratory</p>
                             <h1 className="text-2xl font-display text-[var(--lab-text-primary)] mb-2">
                                 Scientific Workbench
                             </h1>
-                            <p className="text-sm text-[var(--lab-text-secondary)] mb-8 leading-relaxed max-w-sm">
+                            <p className="text-sm text-[var(--lab-text-secondary)] mb-8 leading-relaxed max-w-sm mx-auto">
                                 Protein structures, sequence analysis, ligand docking, and causal report synthesis.
                             </p>
 
                             {/* Inline action buttons */}
-                            <div className="flex flex-wrap gap-3 mb-10">
+                            <div className="flex flex-wrap justify-center gap-3 mb-12">
                                 <button
                                     onClick={handleLoadTest}
                                     disabled={isLoading}
@@ -609,7 +615,7 @@ export default function LabPage() {
                             </div>
 
                             {/* Minimal stats strip */}
-                            <div className="flex gap-8 text-xs font-mono text-[var(--lab-text-tertiary)]">
+                            <div className="flex justify-center gap-8 text-xs font-mono text-[var(--lab-text-tertiary)]">
                                 <span>
                                     <span className="text-[var(--lab-text-primary)] mr-1">
                                         {experiments.filter(e => e.status === 'success').length}

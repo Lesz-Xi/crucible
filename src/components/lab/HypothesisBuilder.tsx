@@ -126,9 +126,10 @@ function HypothesisBuilderContent({ onSimulate }: HypothesisBuilderProps) {
         proOptions={{ hideAttribution: true }}
       >
         <Background gap={20} size={1} color="rgba(150, 150, 150, 0.2)" />
-        <Controls className="!bg-white/80 !border-white/20 !fill-stone-600 !backdrop-blur" />
+        <Controls className="!bg-white/80 !border-white/20 !fill-stone-600 !backdrop-blur dark:!bg-zinc-900/80 dark:!border-zinc-800 dark:!fill-stone-300" />
         <MiniMap 
-            className="!bg-white/50 !border-white/20 !backdrop-blur" 
+            className="!bg-white/50 !border-white/20 !backdrop-blur dark:!bg-zinc-900/50 dark:!border-zinc-800" 
+            maskColor="var(--lab-panel-soft)"
             nodeColor={(n) => {
                 if (n.id.startsWith('S')) return '#06b6d4';
                 if (n.id.startsWith('C')) return '#a855f7';

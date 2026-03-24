@@ -261,7 +261,7 @@ export function LegalWorkbenchV2() {
       }
       mainContent={
         <div className="split-workspace">
-          <div className="split-sidebar">
+          <div className="split-sidebar w-[380px] lg:w-[420px] shrink-0">
             <div className="hybrid-section-head">Case Intake</div>
             <p className="hybrid-sub">Documents, jurisdiction, and legal context setup</p>
 

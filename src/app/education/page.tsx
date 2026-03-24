@@ -703,7 +703,7 @@ export default function EducationPage() {
         {analysisState.stage === 'intake' && (
           <div className="grid lg:grid-cols-[300px,1fr] gap-8">
             {/* Left Sidebar - Progress & Presets */}
-            <aside className="space-y-6">
+            <aside className="space-y-6 lg:sticky lg:top-8 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2 pb-4 lab-scroll-region">
               {/* Progress Indicator */}
               <div className="edu-card p-4">
                 <IntakeFormProgress

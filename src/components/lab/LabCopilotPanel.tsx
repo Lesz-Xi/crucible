@@ -317,7 +317,12 @@ export function LabCopilotPanel({ isOpen, onToggle }: LabCopilotPanelProps) {
   }
 
   return (
-    <div className="flex h-full w-[380px] shrink-0 flex-col border-l border-[var(--lab-border)] bg-[var(--lab-panel-soft)]">
+    <div className="fixed lg:relative right-0 z-20 flex h-full w-[380px] shrink-0 flex-col border-l border-[var(--lab-border)] bg-[var(--lab-bg)] lg:bg-[var(--lab-panel-soft)] shadow-2xl lg:shadow-none">
+      {/* Mobile close overlay */}
+      <div 
+        className="fixed inset-0 bg-black/20 z-[-1] lg:hidden"
+        onClick={onToggle}
+      />
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-[var(--lab-border)] bg-[var(--lab-panel)] px-3 py-2.5">
         <Bot className="w-4 h-4 text-[var(--lab-accent-rust)]" />

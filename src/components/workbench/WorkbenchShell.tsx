@@ -51,7 +51,7 @@ export function WorkbenchShell({
 
           <main className="main">
             <div className="main-content-shell" data-main-surface={feature === 'chat' ? 'editorial' : 'gridded'}>
-              {mainTopbar ? <div className="main-topbar-inline">{mainTopbar}</div> : null}
+              {mainTopbar ? <div className="main-topbar-inline pl-[60px] lg:pl-[26px]">{mainTopbar}</div> : null}
               {mainContent}
             </div>
             {inputArea && !focusReadMode ? <div className="input-area">{inputArea}</div> : null}
