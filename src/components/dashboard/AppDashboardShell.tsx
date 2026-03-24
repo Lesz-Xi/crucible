@@ -579,9 +579,6 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
                     <span className="nav-copy">
                       <span className="nav-label">{item.label}</span>
                     </span>
-                    <span className="nav-meta">
-                      <span className="nav-detail">{item.detail}</span>
-                    </span>
                   </Link>
                 );
               })}
@@ -639,55 +636,57 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
           ) : null}
         </div>
 
-        <section className="sidebar-section history-section">
-          <div className="sidebar-section-label history-label">
-            <span>Session ledger</span>
-            <span className="sidebar-section-count">{visibleThreads.length}</span>
-          </div>
-          <div ref={historyLedgerRef} className="history-ledger-scroll">
-            <div className="history-list history-ledger">
-              {visibleThreads.length === 0 ? (
-                <div className="history-item muted">No notebook sessions recorded.</div>
-              ) : (
-                visibleThreads.map((session) => {
-                  const isActive = pathname === '/chat' && activeSessionId === session.id;
-                  const isResearch = researchThreadIds.includes(session.id);
-                  const sessionTitle = session.title || 'Untitled thread';
-                  return (
-                    <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
-                      <button
-                        type="button"
-                        className="history-item thread-item flex-1 text-left"
-                        onClick={() => openThread(session.id)}
-                        aria-label={`Open session: ${sessionTitle}`}
-                        ref={isActive ? activeThreadButtonRef : null}
-                      >
-                        <span className="thread-ledger-dot" aria-hidden="true" />
-                        <span className="thread-copy">
-                          <span className="thread-title">{sessionTitle}</span>
-                          <span className="thread-meta">
-                            <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
-                            {isResearch ? <span className="thread-chip accent">Research</span> : null}
-                            <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
-                          </span>
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        className="folder-action thread-action"
-                        onClick={() => void handleDeleteThread(session.id)}
-                        aria-label={`Delete session: ${sessionTitle}`}
-                        disabled={deletingThreadId === session.id}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  );
-                })
-              )}
+        {feature === 'chat' && (
+          <section className="sidebar-section history-section">
+            <div className="sidebar-section-label history-label">
+              <span>Session ledger</span>
+              <span className="sidebar-section-count">{visibleThreads.length}</span>
             </div>
-          </div>
-        </section>
+            <div ref={historyLedgerRef} className="history-ledger-scroll">
+              <div className="history-list history-ledger">
+                {visibleThreads.length === 0 ? (
+                  <div className="history-item muted">No notebook sessions recorded.</div>
+                ) : (
+                  visibleThreads.map((session) => {
+                    const isActive = pathname === '/chat' && activeSessionId === session.id;
+                    const isResearch = researchThreadIds.includes(session.id);
+                    const sessionTitle = session.title || 'Untitled thread';
+                    return (
+                      <div key={session.id} className={cn('history-row', 'thread-row', isActive && 'active')}>
+                        <button
+                          type="button"
+                          className="history-item thread-item flex-1 text-left"
+                          onClick={() => openThread(session.id)}
+                          aria-label={`Open session: ${sessionTitle}`}
+                          ref={isActive ? activeThreadButtonRef : null}
+                        >
+                          <span className="thread-ledger-dot" aria-hidden="true" />
+                          <span className="thread-copy">
+                            <span className="thread-title">{sessionTitle}</span>
+                            <span className="thread-meta">
+                              <span className="thread-chip">{formatDomainTag(session.domain_classified)}</span>
+                              {isResearch ? <span className="thread-chip accent">Research</span> : null}
+                              <span className="thread-time">{formatLedgerTimestamp(session.updated_at)}</span>
+                            </span>
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          className="folder-action thread-action"
+                          onClick={() => void handleDeleteThread(session.id)}
+                          aria-label={`Delete session: ${sessionTitle}`}
+                          disabled={deletingThreadId === session.id}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </section>
+        )}
       </div>
 
       <div
