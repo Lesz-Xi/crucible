@@ -443,7 +443,8 @@ export type InterventionAllowedOutputClass =
 
 export type CounterfactualComputationMethod =
   | "heuristic_bfs_propagation"
-  | "structural_equation_solver";
+  | "structural_equation_solver"
+  | "deterministic_graph_diff";
 
 export type CounterfactualUncertainty = "none" | "high" | "medium" | "low";
 
