@@ -665,14 +665,16 @@ export default function EducationPage() {
       mainContent={
         <div className="edu-page feature-education min-h-full transition-colors duration-500">
       {/* Header */}
-      <header className="edu-header px-8 py-6">
+      <header className="edu-header px-8 pt-8 pb-6">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <GraduationCap className="w-6 h-6 text-wabi-moss" />
-            <h1 className="font-serif text-2xl tracking-wide">Educational Systems</h1>
-          </div>
-          <p className="text-[var(--text-secondary)] font-mono text-sm">
-            Personalized Learning Through Causal Fingerprinting
+          <p className="text-[9px] font-mono tracking-[0.18em] uppercase text-[var(--lab-text-tertiary)] mb-2">
+            S02 · Educational Systems
+          </p>
+          <h1 className="font-serif text-[28px] leading-tight tracking-[-0.01em] text-[var(--lab-text-primary)]">
+            Personalized Causal Fingerprint
+          </h1>
+          <p className="mt-1.5 text-xs text-[var(--lab-text-secondary)] font-mono">
+            Motivation → Study Habits → Performance
           </p>
         </div>
       </header>
@@ -682,18 +684,18 @@ export default function EducationPage() {
         <div className="mb-8">
           <div className="edu-status">
             {analysisState.stage === 'analyzing' && (
-              <div className="w-4 h-4 border-2 border-wabi-clay border-t-transparent rounded-full animate-spin" />
+              <div className="w-3 h-3 border border-[var(--lab-accent-clay)] border-t-transparent rounded-full animate-spin" />
             )}
             {analysisState.stage === 'results' && (
-              <CheckCircle className="w-4 h-4 text-wabi-moss" />
+              <CheckCircle className="w-3.5 h-3.5 text-[var(--lab-accent-moss)]" />
             )}
             {analysisState.stage === 'error' && (
-              <AlertTriangle className="w-4 h-4 text-wabi-rust" />
+              <AlertTriangle className="w-3.5 h-3.5 text-[var(--wabi-rust)]" />
             )}
             {analysisState.stage === 'intake' && (
-              <Lightbulb className="w-4 h-4 text-[var(--text-tertiary)]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--lab-text-tertiary)]" />
             )}
-            <span className="font-mono text-sm">{analysisState.message}</span>
+            <span className="text-[var(--lab-text-secondary)]">{analysisState.message}</span>
           </div>
         </div>
         
@@ -717,19 +719,19 @@ export default function EducationPage() {
                   className="w-full flex items-center justify-between mb-3 group"
                 >
                   <div className="text-left">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)] block">
+                    <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--lab-text-secondary)] block">
                       Quick Start
                     </span>
                     <span className="font-serif text-base text-[var(--text-primary)]">
                       Example Profiles
                     </span>
                   </div>
-                  <div className="w-8 h-8 rounded-full border border-[var(--border-subtle)] flex items-center justify-center text-[var(--text-secondary)] group-hover:text-wabi-clay group-hover:border-wabi-clay/50 transition-colors">
+                  <div className="w-8 h-8 rounded-full border border-[var(--lab-border)] flex items-center justify-center text-[var(--lab-text-secondary)] group-hover:text-wabi-clay group-hover:border-wabi-clay/50 transition-colors">
                     <ChevronRight className={`w-4 h-4 transition-transform ${showPresets ? 'rotate-90' : ''}`} />
                   </div>
                 </button>
                 
-                <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-4">
+                <p className="text-xs text-[var(--lab-text-tertiary)] leading-relaxed mb-4">
                   Load a gentle baseline to see how the system interprets your profile, then refine.
                 </p>
 
@@ -754,17 +756,17 @@ export default function EducationPage() {
                 </div>
                 
                 <details className="mb-6">
-                  <summary className="text-xs text-[var(--text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
+                  <summary className="text-xs text-[var(--lab-text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
                     Why this matters
                   </summary>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">
+                  <p className="text-xs text-[var(--lab-text-tertiary)] mt-2 leading-relaxed">
                     Context helps calibrate recommendations to your current level and pace.
                   </p>
                 </details>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--text-secondary)] mb-2">
+                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--lab-text-secondary)] mb-2">
                       Academic Level
                     </label>
                     <select
@@ -784,7 +786,7 @@ export default function EducationPage() {
                   </div>
                   
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--text-secondary)] mb-2">
+                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--lab-text-secondary)] mb-2">
                       Prior GPA (optional)
                     </label>
                     <input
@@ -814,10 +816,10 @@ export default function EducationPage() {
                 </div>
                 
                 <details className="mb-6">
-                  <summary className="text-xs text-[var(--text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
+                  <summary className="text-xs text-[var(--lab-text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
                     Why this matters
                   </summary>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">
+                  <p className="text-xs text-[var(--lab-text-tertiary)] mt-2 leading-relaxed">
                     Motivation shapes habits and persistence. Small shifts here create large downstream effects.
                   </p>
                 </details>
@@ -862,10 +864,10 @@ export default function EducationPage() {
                 </div>
                 
                 <details className="mb-6">
-                  <summary className="text-xs text-[var(--text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
+                  <summary className="text-xs text-[var(--lab-text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
                     Why this matters
                   </summary>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">
+                  <p className="text-xs text-[var(--lab-text-tertiary)] mt-2 leading-relaxed">
                     Environment shapes energy, focus, and resilience during hard weeks.
                   </p>
                 </details>
@@ -901,7 +903,7 @@ export default function EducationPage() {
               <section className="edu-card p-6">
                 <div className="flex items-center justify-between mb-2">
                   <h2 className="font-serif text-lg flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-wabi-ink-light" />
+                    <Brain className="w-5 h-5 text-[var(--lab-text-secondary)]" />
                     Learning Profile
                   </h2>
                   <span className="edu-chip">
@@ -910,17 +912,17 @@ export default function EducationPage() {
                 </div>
                 
                 <details className="mb-6">
-                  <summary className="text-xs text-[var(--text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
+                  <summary className="text-xs text-[var(--lab-text-secondary)] cursor-pointer font-mono uppercase tracking-[0.2em]">
                     Why this matters
                   </summary>
-                  <p className="text-xs text-[var(--text-tertiary)] mt-2 leading-relaxed">
+                  <p className="text-xs text-[var(--lab-text-tertiary)] mt-2 leading-relaxed">
                     Your learning style and foundations determine which strategies will actually work.
                   </p>
                 </details>
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--text-secondary)] mb-2">
+                    <label className="block font-mono text-xs uppercase tracking-wider text-[var(--lab-text-secondary)] mb-2">
                       Learning Style
                     </label>
                     <select
@@ -971,11 +973,11 @@ export default function EducationPage() {
         
         {/* Analyzing State */}
         {analysisState.stage === 'analyzing' && (
-          <div className="flex flex-col items-center justify-center py-24">
-            <div className="w-16 h-16 border-4 border-wabi-clay border-t-transparent rounded-full animate-spin mb-6" />
-            <p className="font-serif text-xl mb-2">Building Your Causal Graph</p>
-            <p className="text-[var(--text-secondary)] font-mono text-sm">
-              Tracing causal paths: Motivation → Study_Habits → Performance
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <div className="w-8 h-8 border border-[var(--lab-accent-clay)] border-t-transparent rounded-full animate-spin" />
+            <p className="font-serif text-xl text-[var(--lab-text-primary)]">Building Causal Graph</p>
+            <p className="text-[var(--lab-text-tertiary)] font-mono text-xs tracking-wide">
+              Motivation → Study_Habits → Performance
             </p>
           </div>
         )}
@@ -991,13 +993,13 @@ export default function EducationPage() {
                   <Leaf className="w-6 h-6 text-wabi-clay" />
                   <div>
                     <p className="font-serif text-xl">Analysis complete</p>
-                    <p className="text-xs text-[var(--text-secondary)]">
+                    <p className="text-xs text-[var(--lab-text-secondary)]">
                       Your learning system has been mapped. Start with one small action.
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                  <p className="text-sm text-[var(--text-secondary)]">
+                  <p className="text-sm text-[var(--lab-text-secondary)]">
                     Next step: build a light, three‑step plan for this week.
                   </p>
                   <a
@@ -1046,7 +1048,7 @@ export default function EducationPage() {
                       {formatNodeName(analysisResult.causalGraph.bottleneck || 'StudyHabits')}
                     </p>
                   </ResearchTooltip>
-                  <p className="text-[var(--text-secondary)] text-sm mt-1">
+                  <p className="text-[var(--lab-text-secondary)] text-sm mt-1">
                     Primary limiting factor in your chain
                   </p>
                 </div>
@@ -1075,7 +1077,7 @@ export default function EducationPage() {
                       {formatNodeName(analysisResult.causalGraph.leveragePoint || 'Motivation')}
                     </p>
                   </ResearchTooltip>
-                  <p className="text-[var(--text-secondary)] text-sm mt-1">
+                  <p className="text-[var(--lab-text-secondary)] text-sm mt-1">
                     Highest‑ROI intervention target
                   </p>
                 </div>
@@ -1083,7 +1085,7 @@ export default function EducationPage() {
 
               {/* Learning Chain */}
               <div className="mt-6 edu-card-soft p-4">
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mb-4">
+                <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--lab-text-secondary)] mb-4">
                   Your Learning Chain
                 </h3>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
@@ -1099,13 +1101,13 @@ export default function EducationPage() {
                             ? 'bg-wabi-rust/10 text-wabi-rust border-wabi-rust/40 font-semibold'
                             : node === analysisResult.causalGraph.leveragePoint
                               ? 'bg-wabi-moss/10 text-wabi-moss border-wabi-moss/40 font-semibold'
-                              : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border-[var(--border-subtle)]'
+                              : 'bg-[var(--bg-primary)] text-[var(--lab-text-secondary)] border-[var(--lab-border)]'
                         }`}>
                           {formatNodeName(node)}
                         </div>
                       </ResearchTooltip>
                       {i < arr.length - 1 && (
-                        <ChevronRight className="w-4 h-4 text-[var(--text-tertiary)]" />
+                        <ChevronRight className="w-4 h-4 text-[var(--lab-text-tertiary)]" />
                       )}
                     </React.Fragment>
                   ))}
@@ -1124,7 +1126,7 @@ export default function EducationPage() {
                   <span className="edu-chip">Action‑First</span>
                 </div>
 
-                <p className="text-xs text-[var(--text-secondary)] mb-6">
+                <p className="text-xs text-[var(--lab-text-secondary)] mb-6">
                   Start with one action. Depth beats volume.
                 </p>
 
@@ -1134,11 +1136,11 @@ export default function EducationPage() {
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-[0.14em] ${gateTone(interventions.allowedOutputClass).chip}`}>
                         {formatAllowedOutputClass(interventions.allowedOutputClass)}
                       </span>
-                      <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-secondary)]">
+                      <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--lab-text-secondary)]">
                         Allowed {interventions.interventionGateSummary?.allowedInterventions ?? 0} • Blocked {interventions.interventionGateSummary?.blockedInterventions ?? 0}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    <p className="mt-2 text-sm text-[var(--lab-text-secondary)]">
                       {interventions.interventionGateSummary?.rationale || 'Intervention gate status unavailable.'}
                     </p>
                     {(interventions.counterfactualTraceIds?.length ?? 0) > 0 && (
@@ -1149,7 +1151,7 @@ export default function EducationPage() {
                             href={`/api/scm/counterfactual-traces/${traceId}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
+                            className="rounded-full border border-[var(--lab-border)] bg-[rgba(255,255,255,0.05)] px-2.5 py-1 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
                           >
                             Trace {traceId.slice(0, 8)}
                           </a>
@@ -1161,7 +1163,7 @@ export default function EducationPage() {
 
                 {/* Top Recommendation */}
                 {interventions.topRecommendation && (
-                  <div className="p-5 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-subtle)] mb-6">
+                  <div className="p-5 rounded-xl bg-[var(--bg-primary)] border border-[var(--lab-border)] mb-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div>
                         <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-wabi-moss">
@@ -1175,37 +1177,37 @@ export default function EducationPage() {
                         <div className="font-mono text-2xl text-wabi-moss">
                           +{interventions.topRecommendation.expectedGain}
                         </div>
-                        <div className="text-xs text-[var(--text-secondary)]">expected points</div>
+                        <div className="text-xs text-[var(--lab-text-secondary)]">expected points</div>
                       </div>
                     </div>
 
-                    <p className="text-[var(--text-secondary)] text-sm mt-3">
+                    <p className="text-[var(--lab-text-secondary)] text-sm mt-3">
                       {interventions.topRecommendation.intervention.mechanism}
                     </p>
 
                     {interventions.topRecommendation.interventionGate && (
-                      <div className="mt-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-3">
+                      <div className="mt-3 rounded-lg border border-[var(--lab-border)] bg-[var(--bg-secondary)] p-3">
                         <div className="flex flex-wrap items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-secondary)]">
+                          <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--lab-text-secondary)]">
                             Intervention Gate
                           </span>
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-[0.14em] ${gateTone(interventions.topRecommendation.interventionGate.allowedOutputClass).chip}`}>
                             {formatAllowedOutputClass(interventions.topRecommendation.interventionGate.allowedOutputClass)}
                           </span>
                         </div>
-                        <p className="mt-2 text-xs text-[var(--text-secondary)]">
+                        <p className="mt-2 text-xs text-[var(--lab-text-secondary)]">
                           {interventions.topRecommendation.interventionGate.rationale}
                         </p>
                         {interventions.topRecommendation.interventionGate.counterfactualTrace && (
                           <div className="mt-2 flex flex-wrap items-center gap-2">
-                            <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+                            <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--lab-text-tertiary)]">
                               {interventions.topRecommendation.interventionGate.counterfactualTrace.method}
                             </span>
                             <a
                               href={interventions.topRecommendation.interventionGate.counterfactualTrace.retrievalPath}
                               target="_blank"
                               rel="noreferrer"
-                              className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
+                              className="rounded-full border border-[var(--lab-border)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
                             >
                               Trace {interventions.topRecommendation.interventionGate.counterfactualTrace.traceId.slice(0, 8)}
                             </a>
@@ -1214,7 +1216,7 @@ export default function EducationPage() {
                       </div>
                     )}
 
-                    <div className="flex flex-wrap gap-4 text-xs font-mono text-[var(--text-tertiary)] mt-4">
+                    <div className="flex flex-wrap gap-4 text-xs font-mono text-[var(--lab-text-tertiary)] mt-4">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {interventions.topRecommendation.timeToEffect}
@@ -1241,7 +1243,7 @@ export default function EducationPage() {
                       >
                         {apprenticeshipLoading ? 'Starting...' : 'Start Apprenticeship Lab'}
                       </button>
-                      <details className="text-xs text-[var(--text-secondary)]">
+                      <details className="text-xs text-[var(--lab-text-secondary)]">
                         <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px]">
                           Why this works
                         </summary>
@@ -1263,10 +1265,10 @@ export default function EducationPage() {
                 {/* Explanation */}
                 {interventions.explanation && (
                   <details className="mt-6">
-                    <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--text-secondary)]">
+                    <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--lab-text-secondary)]">
                       Understanding Your Results
                     </summary>
-                    <p className="text-[var(--text-secondary)] text-sm mt-3 leading-relaxed">
+                    <p className="text-[var(--lab-text-secondary)] text-sm mt-3 leading-relaxed">
                       {interventions.explanation}
                     </p>
                   </details>
@@ -1299,11 +1301,11 @@ export default function EducationPage() {
 
               <div className="space-y-3">
                 {actionPlanSteps.map((step, index) => (
-                  <div key={step} className="flex items-start gap-3 p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
-                    <span className="w-6 h-6 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)] flex items-center justify-center text-xs font-mono">
+                  <div key={step} className="flex items-start gap-3 p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--lab-border)]">
+                    <span className="w-6 h-6 rounded-full bg-[var(--bg-primary)] border border-[var(--lab-border)] flex items-center justify-center text-xs font-mono">
                       {index + 1}
                     </span>
-                    <p className="text-sm text-[var(--text-secondary)]">{step}</p>
+                    <p className="text-sm text-[var(--lab-text-secondary)]">{step}</p>
                   </div>
                 ))}
               </div>
@@ -1324,7 +1326,7 @@ export default function EducationPage() {
               </div>
 
               {planSaved && (
-                <p className="text-xs text-[var(--text-tertiary)] mt-2">
+                <p className="text-xs text-[var(--lab-text-tertiary)] mt-2">
                   {planSaveMessage || 'Saved locally in this browser.'}
                 </p>
               )}
@@ -1332,13 +1334,13 @@ export default function EducationPage() {
                 <p className="text-xs text-wabi-rust mt-2">{planSaveError}</p>
               )}
 
-              <div className="mt-4 p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-subtle)]">
+              <div className="mt-4 p-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--lab-border)]">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                    <p className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--lab-text-secondary)]">
                       Weekly reminder (local only)
                     </p>
-                    <p className="text-xs text-[var(--text-tertiary)]">
+                    <p className="text-xs text-[var(--lab-text-tertiary)]">
                       Optional nudge to revisit your plan.
                     </p>
                   </div>
@@ -1354,7 +1356,7 @@ export default function EducationPage() {
                     className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] border ${
                       reminderEnabled
                         ? 'border-wabi-clay/60 text-wabi-clay bg-wabi-clay/10'
-                        : 'border-[var(--border-subtle)] text-[var(--text-secondary)]'
+                        : 'border-[var(--lab-border)] text-[var(--lab-text-secondary)]'
                     }`}
                   >
                     {reminderEnabled ? 'Enabled' : 'Enable'}
@@ -1389,13 +1391,13 @@ export default function EducationPage() {
                 )}
               </div>
               {reminderNotice && (
-                <p className="text-xs text-[var(--text-tertiary)] mt-2">{reminderNotice}</p>
+                <p className="text-xs text-[var(--lab-text-tertiary)] mt-2">{reminderNotice}</p>
               )}
 
               <div className="edu-divider my-6" />
 
               <div>
-                <p className="text-sm text-[var(--text-secondary)] mb-3">
+                <p className="text-sm text-[var(--lab-text-secondary)] mb-3">
                   How did this feel today?
                 </p>
                 <div className="flex items-center gap-3">
@@ -1414,7 +1416,7 @@ export default function EducationPage() {
                       className={`flex items-center gap-2 px-3 py-2 rounded-full border text-xs font-mono uppercase tracking-[0.2em] transition-colors ${
                         reflectionMood === option.id
                           ? 'border-wabi-clay/60 text-wabi-clay bg-wabi-clay/10'
-                          : 'border-[var(--border-subtle)] text-[var(--text-secondary)]'
+                          : 'border-[var(--lab-border)] text-[var(--lab-text-secondary)]'
                       }`}
                     >
                       {option.icon}
@@ -1423,7 +1425,7 @@ export default function EducationPage() {
                   ))}
                 </div>
                 {reflectionNotice && (
-                  <p className="text-xs text-[var(--text-tertiary)] mt-2">{reflectionNotice}</p>
+                  <p className="text-xs text-[var(--lab-text-tertiary)] mt-2">{reflectionNotice}</p>
                 )}
               </div>
             </section>
@@ -1435,7 +1437,7 @@ export default function EducationPage() {
                 Explore the System
               </h2>
               <details className="mb-4">
-                <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--text-secondary)]">
+                <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--lab-text-secondary)]">
                   Interactive Causal Graph
                 </summary>
                 <div className="mt-4">
@@ -1463,7 +1465,7 @@ export default function EducationPage() {
               <div className="edu-divider my-4" />
 
               <details>
-                <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--text-secondary)]">
+                <summary className="cursor-pointer font-mono uppercase tracking-[0.2em] text-[10px] text-[var(--lab-text-secondary)]">
                   What‑If Simulator
                 </summary>
                 <div className="mt-4">
@@ -1536,7 +1538,7 @@ export default function EducationPage() {
           <div className="text-center py-12">
             <AlertTriangle className="w-12 h-12 text-wabi-rust mx-auto mb-4" />
             <h2 className="font-serif text-xl mb-2">Analysis Failed</h2>
-            <p className="text-[var(--text-secondary)] mb-6">{error}</p>
+            <p className="text-[var(--lab-text-secondary)] mb-6">{error}</p>
             <button
               onClick={handleReset}
               className="lab-button-secondary"
@@ -1558,54 +1560,54 @@ export default function EducationPage() {
 function InterventionCard({ result, rank }: { result: InterventionResult; rank: number }) {
   const tone = gateTone(result.interventionGate?.allowedOutputClass);
   return (
-    <details className="p-4 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)]">
+    <details className="py-3 border-b border-[var(--lab-border)] last:border-0">
       <summary className="cursor-pointer list-none">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center font-mono text-xs">
+            <span className="w-5 h-5 rounded-full bg-[var(--lab-bg-elevated)] border border-[var(--lab-border)] flex items-center justify-center font-mono text-[10px] text-[var(--lab-text-tertiary)]">
               {rank}
             </span>
             <div>
-              <h4 className="font-mono text-sm">{result.intervention.name}</h4>
-              <p className="text-xs text-[var(--text-tertiary)]">
-                Targets: {result.intervention.target}
+              <h4 className="font-mono text-xs text-[var(--lab-text-primary)]">{result.intervention.name}</h4>
+              <p className="text-[10px] text-[var(--lab-text-tertiary)] font-mono mt-0.5">
+                → {result.intervention.target}
               </p>
             </div>
           </div>
           <div className="text-right">
-            <div className="font-mono text-lg text-wabi-moss">+{result.expectedGain}</div>
-            <div className="text-xs text-[var(--text-tertiary)]">
-              Utility: {result.utility}
+            <div className="font-mono text-sm text-[var(--lab-accent-moss)]">+{result.expectedGain}</div>
+            <div className="text-[10px] font-mono text-[var(--lab-text-tertiary)]">
+              u: {result.utility}
             </div>
           </div>
         </div>
       </summary>
-      <div className="mt-3 text-xs text-[var(--text-secondary)] leading-relaxed">
+      <div className="mt-3 pl-9 text-xs text-[var(--lab-text-secondary)] leading-relaxed">
         {result.intervention.mechanism}
       </div>
       {result.interventionGate && (
         <div className={`mt-3 rounded-md border p-2.5 ${tone.shell}`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-secondary)]">
+            <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--lab-text-secondary)]">
               Intervention Gate
             </span>
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-[0.14em] ${tone.chip}`}>
               {formatAllowedOutputClass(result.interventionGate.allowedOutputClass)}
             </span>
           </div>
-          <p className="mt-1.5 text-xs text-[var(--text-secondary)]">
+          <p className="mt-1.5 text-xs text-[var(--lab-text-secondary)]">
             {result.interventionGate.rationale}
           </p>
           {result.interventionGate.counterfactualTrace && (
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-[var(--lab-text-tertiary)]">
                 {result.interventionGate.counterfactualTrace.method}
               </span>
               <a
                 href={result.interventionGate.counterfactualTrace.retrievalPath}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full border border-[var(--border-subtle)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
+                className="rounded-full border border-[var(--lab-border)] bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-secondary)]"
               >
                 Trace {result.interventionGate.counterfactualTrace.traceId.slice(0, 8)}
               </a>
@@ -1614,7 +1616,7 @@ function InterventionCard({ result, rank }: { result: InterventionResult; rank: 
         </div>
       )}
       <div className="mt-3 flex items-center justify-between">
-        <span className="text-xs text-[var(--text-tertiary)]">
+        <span className="text-xs text-[var(--lab-text-tertiary)]">
           Confidence: {Math.round(result.confidence * 100)}%
         </span>
         <a

@@ -391,22 +391,24 @@ export default function LabPage() {
             <FadeIn className="w-full h-full flex overflow-hidden">
                 <div className="flex-1 flex flex-col p-4 gap-4 min-w-0">
                     <div className="flex justify-between items-center px-2">
-                        <h2 className="text-lg font-semibold flex items-center gap-2">
-                            <Atom className="w-5 h-5 text-cyan-400" />
-                            Structure: {state.currentStructure.pdbId}
-                        </h2>
-                        <button 
+                        <div className="flex items-center gap-2">
+                            <Atom className="w-3.5 h-3.5 text-[var(--lab-accent-clay)]" />
+                            <span className="text-xs font-mono tracking-widest uppercase text-[var(--lab-text-secondary)]">
+                                Structure · {state.currentStructure.pdbId}
+                            </span>
+                        </div>
+                        <button
                             onClick={() => dispatch({ type: 'LOAD_STRUCTURE', payload: null as any })}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                            className="text-xs font-mono text-[var(--lab-text-tertiary)] hover:text-[var(--lab-text-primary)] transition-colors"
                         >
-                            Close Viewer
+                            ← Close
                         </button>
                     </div>
                     <motion.div 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, ease: EASE_OUT_EXPO }}
-                        className="flex-1 min-h-0 lab-panel overflow-hidden relative"
+                        className="flex-1 min-h-0 overflow-hidden relative rounded-[8px] border border-[var(--lab-border)] bg-[var(--lab-bg-elevated)]"
                     >
                         <ProteinViewer 
                             pdbData={state.currentStructure.content} 

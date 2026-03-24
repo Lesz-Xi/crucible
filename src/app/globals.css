@@ -77,26 +77,26 @@
   --oxide-500: #fb923c;
   --mist-400: #a1a1aa;     /* Zinc 400 */
 
-  /* Legacy overrides */
-  --background: #09090b;
-  --foreground: #fafafa;
-  --bg-primary: #09090b;
-  --bg-secondary: #18181b;
-  --bg-card: rgba(24, 24, 27, 0.6); /* Zinc 900 alpha */
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --text-tertiary: #71717a; /* Zinc 500 */
-  --text-muted: #52525b;    /* Zinc 600 */
-  --border-subtle: #27272a;
+  /* Legacy overrides — aligned to MASA dark palette */
+  --background: #09080A;
+  --foreground: #F0EDE8;
+  --bg-primary: #09080A;
+  --bg-secondary: #111010;
+  --bg-card: rgba(17, 16, 16, 0.88);
+  --text-primary: #F0EDE8;
+  --text-secondary: rgba(240, 237, 232, 0.50);
+  --text-tertiary: rgba(240, 237, 232, 0.28);
+  --text-muted: rgba(240, 237, 232, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.06);
 
-  /* Backward-compat tokens with readable contrast in dark */
-  --wabi-washi: #09090b;
-  --wabi-sumi: #fafafa;
-  --wabi-patina: #a1a1aa;
-  --wabi-clay: #fb923c;
-  --wabi-moss: #4ade80;
-  --wabi-rust: #f87171;
-  --wabi-stone: #52525b;
+  /* Backward-compat tokens — aligned to MASA cinematic accent palette */
+  --wabi-washi: #09080A;
+  --wabi-sumi: #F0EDE8;
+  --wabi-patina: rgba(240, 237, 232, 0.50);
+  --wabi-clay: #C8965A;
+  --wabi-moss: #7B9E7E;
+  --wabi-rust: #C07060;
+  --wabi-stone: rgba(240, 237, 232, 0.28);
 
   --shadow-grey: #000000;
   --lab-accent-moss: #7d9c80;
@@ -783,22 +783,22 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--lab-border);
-  border-radius: 999px;
-  padding: 10px 14px;
-  background: color-mix(in srgb, var(--lab-panel) 82%, transparent);
-  box-shadow: var(--lab-shadow-soft);
+  border-bottom: 1px solid var(--lab-border);
+  padding: 8px 0;
+  background: transparent;
+  font-family: var(--font-geist-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
 }
 
 .edu-card {
-  border-radius: 18px;
+  border-radius: 8px;
   border: 1px solid var(--lab-border);
-  background: color-mix(in srgb, var(--lab-panel) 88%, transparent);
-  box-shadow: var(--lab-shadow-soft);
+  background: transparent;
 }
 
 .edu-page .edu-card {
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+  background: var(--lab-bg-elevated);
 }
 
 .edu-card-soft {
