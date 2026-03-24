@@ -1,0 +1,235 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-02-06T00:00:00Z",
+  "claims": [
+    {
+      "claim_id": "CLM-001",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "M6 health check must fail hard when benchmark path is unhealthy.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["m6", "governance", "ci"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Fail if health check failed",
+          "required": true,
+          "contradiction": [
+            {
+              "matcher_type": "regex",
+              "matcher": "/if:\\s*false\\s*$/m",
+              "reason": "Fail step is explicitly disabled."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-002",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Plan_v2.md",
+      "claim_text": "M6 health parsing must surface no-op and degraded-mode protection fields.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["m6", "ci", "signal-quality"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Parse health check results",
+          "required": true
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "regex",
+          "matcher": "/no_op=\\$no_op/",
+          "required": true
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-health-check.yml",
+          "matcher_type": "regex",
+          "matcher": "/degraded_mode=\\$degraded_mode/",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-003",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/docs/m6-closeout-checklist.md",
+      "claim_text": "M6 closeout tracker must remain blocking until the sustained pass window is satisfied.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["m6", "closeout"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/.github/workflows/m6-closeout-tracker.yml",
+          "matcher_type": "ast_workflow_step",
+          "matcher": "Fail until closeout window is satisfied",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-004",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Plan_v2.md",
+      "claim_text": "Promotion script must emit machine-readable promotion result JSON marker.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["promotion", "ci"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "ast_function_call",
+          "matcher": "emitResult",
+          "required": true
+        },
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "regex",
+          "matcher": "/PROMOTE_RESULT_JSON::/",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-005",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Plan_v2.md",
+      "claim_text": "Promotion flow must evaluate SCM promotion governance before approval.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["promotion", "governance"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/scripts/promote-scm-model.ts",
+          "matcher_type": "ast_function_call",
+          "matcher": "evaluateSCMPromotionGate",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-006",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "Canonical SCM registry service is implemented and exported.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["registry", "scm"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scm-registry.ts",
+          "matcher_type": "ast_export",
+          "matcher": "SCMRegistryService",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-007",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "Causal disagreement engine is implemented and exported.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["scm", "disagreement"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/causal-disagreement-engine.ts",
+          "matcher_type": "ast_export",
+          "matcher": "CausalDisagreementEngine",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-008",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "SCM promotion governance evaluation function is exported.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["scm", "promotion"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scm-promotion-governance.ts",
+          "matcher_type": "ast_export",
+          "matcher": "evaluateSCMPromotionGate",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-009",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "Scientific integrity evaluator function is exported.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["integrity", "benchmarks"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scientific-integrity-service.ts",
+          "matcher_type": "ast_export",
+          "matcher": "evaluateScientificIntegrity",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-010",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Automated-Scientist-Audit-2026-02-05.md",
+      "claim_text": "Scientific integrity service class is exported.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["integrity", "service"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/lib/services/scientific-integrity-service.ts",
+          "matcher_type": "ast_export",
+          "matcher": "ScientificIntegrityService",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-011",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Plan_v2.md",
+      "claim_text": "SCM promotion gate contract type is exported in SCM types.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["types", "scm"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/types/scm.ts",
+          "matcher_type": "ast_export",
+          "matcher": "SCMPromotionGate",
+          "required": true
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-012",
+      "source_doc": "/Users/lesz/Documents/Synthetic-Mind/Codex-Audit/Plan_v2.md",
+      "claim_text": "Scientific integrity status contract type is exported in SCM types.",
+      "declared_status": "implemented",
+      "severity": "critical",
+      "owner": "@Lesz-Xi",
+      "tags": ["types", "integrity"],
+      "evidence": [
+        {
+          "path": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine/src/types/scm.ts",
+          "matcher_type": "ast_export",
+          "matcher": "ScientificIntegrityStatus",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

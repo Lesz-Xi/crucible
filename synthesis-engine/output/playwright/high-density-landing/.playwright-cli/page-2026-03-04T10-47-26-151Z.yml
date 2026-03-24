@@ -1,0 +1,107 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - generic [ref=e7]:
+            - img [ref=e8]
+            - paragraph [ref=e10]: Bio-Lab Notebook
+          - generic [ref=e11]:
+            - button "Search" [ref=e12] [cursor=pointer]:
+              - img [ref=e13]
+            - button "Toggle sidebar" [ref=e16] [cursor=pointer]:
+              - img [ref=e17]
+        - navigation [ref=e20]:
+          - link "Chat" [ref=e21] [cursor=pointer]:
+            - /url: /chat
+            - img [ref=e22]
+            - generic [ref=e24]: Chat
+          - link "Hybrid" [ref=e25] [cursor=pointer]:
+            - /url: /hybrid
+            - img [ref=e26]
+            - generic [ref=e29]: Hybrid
+          - button "Relics" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - generic [ref=e33]: Relics
+            - img [ref=e34]
+        - generic [ref=e36]:
+          - button "Dark mode" [ref=e37] [cursor=pointer]:
+            - img [ref=e38]
+            - generic [ref=e40]: Dark mode
+          - link "Documentation" [ref=e41] [cursor=pointer]:
+            - /url: https://docs.openclaw.ai
+            - img [ref=e42]
+            - generic [ref=e44]: Documentation
+          - button "Model Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+            - generic [ref=e50]: Model Settings
+          - button "WW Account" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: WW
+            - generic [ref=e54]: Account
+            - img [ref=e55]
+    - generic [ref=e58]:
+      - generic [ref=e60]:
+        - generic [ref=e62]:
+          - generic [ref=e63]: Legal Causation Console
+          - paragraph [ref=e64]: Intent → Action → Harm with intervention gates
+        - generic [ref=e66]: "Output class: gate-aware liability analysis"
+      - generic [ref=e68]:
+        - complementary [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - paragraph [ref=e72]: Case Intake
+              - paragraph [ref=e73]: Document parsing and legal context setup
+            - generic [ref=e75]:
+              - generic [ref=e76]:
+                - generic [ref=e77]:
+                  - img [ref=e78]
+                  - paragraph [ref=e82]: Legal Documents
+                - button "Upload evidence files" [ref=e83] [cursor=pointer]:
+                  - img [ref=e84]
+                  - text: Upload evidence files
+                - generic [ref=e89]: No documents loaded
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - img [ref=e92]
+                  - paragraph [ref=e96]: Case Details
+                - generic [ref=e97]:
+                  - textbox "Case title" [ref=e98]
+                  - textbox "Jurisdiction" [ref=e99]
+                  - combobox [ref=e100]:
+                    - option "Tort" [selected]
+                    - option "Criminal"
+                    - option "Contract"
+                    - option "Administrative"
+                - generic [ref=e101]:
+                  - button "Analyze causation" [disabled] [ref=e102]
+                  - button "Clear" [ref=e103] [cursor=pointer]
+        - main [ref=e104]:
+          - generic [ref=e107]:
+            - paragraph [ref=e108]: Legal Causal Reasoner
+            - paragraph [ref=e109]: Upload case records to evaluate intent, action, harm, and legal liability chains.
+            - paragraph [ref=e110]: Upload legal documents to begin analysis.
+        - complementary [ref=e111]:
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - paragraph [ref=e114]: Evidence Rail
+              - paragraph [ref=e115]: Precedents, confidence, and history quick load
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - generic [ref=e119]:
+                  - paragraph [ref=e120]: Intervention Gate
+                  - generic [ref=e121]: "Transport: pending"
+                - paragraph [ref=e122]: Pending gate evaluation.
+              - generic [ref=e123]:
+                - paragraph [ref=e124]: Diagnostics
+                - paragraph [ref=e125]: No diagnostics yet.
+              - generic [ref=e126]:
+                - paragraph [ref=e127]: Historical Analyses
+                - paragraph [ref=e128]: No saved analyses.
+              - generic [ref=e129]:
+                - generic [ref=e130]:
+                  - img [ref=e131]
+                  - paragraph [ref=e133]: Chain Metrics
+                - paragraph [ref=e134]: No active verdict metrics.
+  - button "Open Next.js Dev Tools" [ref=e140] [cursor=pointer]:
+    - img [ref=e141]
+  - alert [ref=e144]

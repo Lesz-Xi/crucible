@@ -1,0 +1,65 @@
+"use client";
+
+import { EpistemicCards } from "@/components/landing/EpistemicCards";
+
+export function Hero() {
+  return (
+    <section className="relative h-screen min-h-[900px] flex flex-col items-center justify-center overflow-hidden bg-[var(--bg-primary)] transition-colors duration-500">
+      
+      
+      {/* Living Washi Background - CSS Fog/Noise */}
+      <div className="absolute inset-0 z-0 pointer-events-none transition-colors duration-[3000ms]">
+          
+          {/* Base Texture Overlay */}
+           <div className="absolute inset-0 opacity-[0.05] dark:opacity-[0.08] noise-overlay-light pointer-events-none mix-blend-multiply dark:mix-blend-normal"></div>
+
+          {/* Base Grain */}
+          <div className="absolute inset-0 noise-overlay-subtle mix-blend-multiply opacity-50"></div>
+      </div>
+
+      {/* Main Typography Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
+        
+        {/* Spacer for Cinematic "Ma" (Negative Space) */}
+        <div className="h-[10vh]"></div>
+
+        {/* Epistemic Cards - Sequential Reveal */}
+        <div className="relative z-20 mb-16">
+           <EpistemicCards />
+        </div>
+
+        {/* The Title - Single Line, Cinematic Scale */}
+        <h1 className="font-serif text-6xl md:text-8xl lg:text-[10rem] text-[var(--text-primary)] leading-[0.9] tracking-tight mb-8 whitespace-nowrap">
+          Causal <span className="italic font-light text-[var(--text-primary)]">Architect</span>
+        </h1>
+
+        {/* The Description - Haiku of Function */}
+        <p className="font-sans text-sm md:text-base text-wabi-stone leading-relaxed max-w-lg mx-auto mb-10 opacity-0 animate-[fadeIn_1s_ease-out_1.2s_forwards]">
+          Traversing the rungs of Judea Pearl’s Ladder. <br className="hidden md:block"/>
+          From observation to intervention—distilling truth from the flux.
+        </p>
+
+        {/* MASA White Paper Call to Action */}
+        <div className="mb-16 opacity-0 animate-[fadeIn_1s_ease-out_1.4s_forwards]">
+          <a 
+            href="/masa-white-paper.html" 
+            target="_blank"
+            className="group relative inline-flex items-center gap-2 px-6 py-3 border border-[var(--text-primary)]/20 rounded-full 
+                     hover:bg-[var(--text-primary)]/5 transition-all duration-300
+                     text-[var(--text-primary)] font-mono text-xs tracking-widest uppercase hover:tracking-[0.15em]"
+          >
+            <span>Read MASA White Paper</span>
+            <span className="opacity-50 group-hover:opacity-100 transition-opacity">→</span>
+          </a>
+        </div>
+
+        {/* Subtle Scroll Indicator */}
+        <div className="absolute bottom-[-150px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce duration-[3s]">
+           <div className="w-[1px] h-12 bg-wabi-ink-light/20"></div>
+           <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-wabi-ink-light">Explore</span>
+        </div>
+
+      </div>
+    </section>
+  );
+}

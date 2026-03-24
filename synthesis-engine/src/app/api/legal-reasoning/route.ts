@@ -1,0 +1,1087 @@
+/**
+ * Legal Reasoning API Route
+ * 
+ * Performs autonomous legal causation analysis on provided documents.
+ * Implements the Intent → Action → Harm causal chain with but-for analysis.
+ * 
+ * Endpoint: POST /api/legal-reasoning
+ * 
+ * Phase 28.Legal: Pearl's Causal Blueprint for Legal Reasoning
+ * 
+ * SECURITY v2: Added request limits and input validation
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { LegalDocumentExtractor } from '@/lib/extractors/legal-extractor';
+import { ButForAnalyzer } from '@/lib/services/but-for-analyzer';
+import { PrecedentMatcher } from '@/lib/services/precedent-matcher';
+import { LegalSCMTemplate } from '@/lib/ai/legal-scm-template';
+import { evaluateInterventionGate } from '@/lib/services/identifiability-gate';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import {
+  buildCounterfactualTrace,
+  buildCounterfactualTraceRef,
+  persistCounterfactualTrace,
+} from '@/lib/services/counterfactual-trace';
+import {
+  LegalCase,
+  LegalCausalChain,
+  LegalAction,
+  LegalReasoningResponse,
+  LegalVerdict,
+  LegalStreamEvent,
+  Harm,
+  HarmSeverity,
+  LegalDiagnostics,
+  ButForAnalysis,
+} from '@/types/legal';
+import { ClaimLedgerService } from '@/lib/services/claim-ledger-service';
+
+// Severity ranking for deduplication (higher = more severe)
+const SEVERITY_RANK: Record<HarmSeverity, number> = {
+  minor: 1,
+  moderate: 2,
+  severe: 3,
+  catastrophic: 4,
+};
+
+interface LegalGateSummary {
+  allowed: boolean;
+  allowedOutputClass: 'association_only' | 'intervention_inferred' | 'intervention_supported';
+  allowedChains: LegalCausalChain[];
+  blockedChains: number;
+  missingConfounders: string[];
+  rationale: string;
+}
+
+function harmSeverityToScore(severity: HarmSeverity): number {
+  switch (severity) {
+    case 'catastrophic':
+      return 1;
+    case 'severe':
+      return 0.8;
+    case 'moderate':
+      return 0.6;
+    default:
+      return 0.4;
+  }
+}
+
+function buildLegalAdjustmentSet(chain: LegalCausalChain): string[] {
+  return [
+    ...(chain.action.intent ? ['Intent'] : []),
+    ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : []),
+  ];
+}
+
+async function getAuthenticatedUserId(): Promise<string | undefined> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id;
+  } catch {
+    return undefined;
+  }
+}
+
+async function attachCounterfactualTracesToLegalChains(
+  chains: LegalCausalChain[],
+  legalSCM: LegalSCMTemplate,
+  userId?: string
+): Promise<{ chains: LegalCausalChain[]; traceIds: string[] }> {
+  const traceIds: string[] = [];
+  const tracedChains: LegalCausalChain[] = [];
+
+  for (const chain of chains) {
+    const adjustmentSet = buildLegalAdjustmentSet(chain);
+    // typedScm not passed: legalSCM is a hardcoded LegalSCMTemplate, not a DB model.
+    // No scm_model_versions row exists for intent-action-harm. Stays on heuristic BFS path.
+    // v1.1 scope: author typed StructuralEquation[] for the legal DAG and load via loadTypedSCM().
+    const trace = buildCounterfactualTrace(legalSCM, {
+      modelRef: {
+        modelKey: 'legal_intent_action_harm',
+        version: 'legal-template-v1',
+      },
+      intervention: {
+        variable: 'Action',
+        value: 0,
+      },
+      outcome: 'Harm',
+      observedWorld: {
+        Intent: chain.intent?.confidence ?? 0.5,
+        Action: 1,
+        Harm: harmSeverityToScore(chain.harm.severity),
+        InterveningCause: chain.interveningCauses && chain.interveningCauses.length > 0 ? 1 : 0,
+        Foreseeability: chain.foreseeability ?? 0.5,
+      },
+      assumptions: [
+        chain.butForAnalysis.reasoning || 'But-for analysis rationale unavailable.',
+        'Counterfactual trace uses deterministic legal SCM graph propagation.',
+      ],
+      adjustmentSet,
+      method: 'heuristic_bfs_propagation',
+      uncertainty: 'low',
+    });
+
+    const persisted = await persistCounterfactualTrace({
+      trace,
+      sourceFeature: 'legal',
+      userId,
+    });
+    traceIds.push(trace.traceId);
+    tracedChains.push({
+      ...chain,
+      butForAnalysis: {
+        ...chain.butForAnalysis,
+        counterfactualTrace: buildCounterfactualTraceRef(trace, persisted.persisted),
+      },
+    });
+  }
+
+  return { chains: tracedChains, traceIds };
+}
+
+/**
+ * Deduplicate causal chains by grouping on Action ID
+ * 
+ * Problem: The A×H cartesian product creates many chains with same Intent+Action
+ * but different Harms. This creates redundant chains like:
+ *   Chain 1: Action A → Harm H1
+ *   Chain 2: Action A → Harm H2
+ *   Chain 3: Action A → Harm H3
+ * 
+ * Solution: Group by Action, keep highest-severity harm chain, track related harms
+ * 
+ * @param chains - Raw chains from A×H cartesian product
+ * @returns Deduplicated chains (one per unique action)
+ */
+function deduplicateCausalChains(chains: LegalCausalChain[]): LegalCausalChain[] {
+  // Group chains by action ID
+  const actionGroups = new Map<string, LegalCausalChain[]>();
+  
+  for (const chain of chains) {
+    const actionId = chain.action.id;
+    if (!actionGroups.has(actionId)) {
+      actionGroups.set(actionId, []);
+    }
+    actionGroups.get(actionId)!.push(chain);
+  }
+  
+  // For each action group, select the best representative chain
+  const deduplicatedChains: LegalCausalChain[] = [];
+  
+  for (const [actionId, group] of actionGroups) {
+    if (group.length === 0) continue;
+    
+    // Sort by: 1) Harm severity (descending), 2) Causal strength (descending)
+    group.sort((a, b) => {
+      const severityDiff = SEVERITY_RANK[b.harm.severity] - SEVERITY_RANK[a.harm.severity];
+      if (severityDiff !== 0) return severityDiff;
+      return b.causalStrength - a.causalStrength;
+    });
+    
+    // Take the highest-severity chain as representative
+    const representative = group[0];
+    
+    // If there are multiple harms for this action, note them
+    // Store related harms in evidence quality field for UI awareness
+    if (group.length > 1) {
+      representative.evidenceQuality = representative.evidenceQuality || 'moderate';
+      // Note: The UI can show "and X other related harms" based on group size
+      console.log(`[Dedup] Action ${actionId}: kept 1 chain, merged ${group.length - 1} related harms`);
+    }
+    
+    deduplicatedChains.push(representative);
+  }
+  
+  console.log(`[Dedup] Reduced ${chains.length} chains to ${deduplicatedChains.length} unique action chains`);
+  
+  return deduplicatedChains;
+}
+
+function evaluateLegalCausalGate(
+  chains: LegalCausalChain[],
+  legalSCM: LegalSCMTemplate
+): LegalGateSummary {
+  if (chains.length === 0) {
+    return {
+      allowed: false,
+      allowedOutputClass: 'association_only',
+      allowedChains: [],
+      blockedChains: 0,
+      missingConfounders: [],
+      rationale: 'No legal causal chains passed baseline but-for/proximate checks.',
+    };
+  }
+
+  const allowedChains: LegalCausalChain[] = [];
+  const blockedGates: Array<{
+    allowedOutputClass: 'association_only' | 'intervention_inferred' | 'intervention_supported';
+    missingConfounders: string[];
+  }> = [];
+
+  for (const chain of chains) {
+    const adjustmentSet = [
+      ...(chain.action.intent ? ['Intent'] : []),
+      ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : []),
+    ];
+    const knownConfounders = ['Intent', ...(chain.interveningCauses && chain.interveningCauses.length > 0 ? ['InterveningCause'] : [])];
+
+    const gate = evaluateInterventionGate(legalSCM, {
+      treatment: 'Action',
+      outcome: 'Harm',
+      adjustmentSet,
+      knownConfounders,
+    });
+
+    if (gate.allowed) {
+      allowedChains.push(chain);
+    } else {
+      blockedGates.push({
+        allowedOutputClass: gate.allowedOutputClass,
+        missingConfounders: gate.identifiability.missingConfounders,
+      });
+    }
+  }
+
+  const missingConfounders = Array.from(
+    new Set(blockedGates.flatMap((gate) => gate.missingConfounders))
+  );
+  const allowedOutputClass =
+    allowedChains.length > 0
+      ? 'intervention_supported'
+      : blockedGates.some((gate) => gate.allowedOutputClass === 'intervention_inferred')
+        ? 'intervention_inferred'
+        : 'association_only';
+
+  const blockedChains = blockedGates.length;
+  const rationale =
+    blockedChains === 0
+      ? 'Legal causal chains satisfy identifiability assumptions for intervention-level claims.'
+      : `Downgraded ${blockedChains} chain(s) due to missing confounder controls (${missingConfounders.join(', ') || 'unspecified'}).`;
+
+  return {
+    allowed: allowedChains.length > 0,
+    allowedOutputClass,
+    allowedChains,
+    blockedChains,
+    missingConfounders,
+    rationale,
+  };
+}
+
+function buildLegalDiagnostics(params: {
+  documentCount: number;
+  extraction: { entities: unknown[]; timeline: unknown[]; harms: unknown[]; warnings?: string[] };
+  butForResults: Map<string, ButForAnalysis>;
+  rawChainCount: number;
+  dedupedChainCount: number;
+  gate: LegalGateSummary;
+}): LegalDiagnostics {
+  let butForNecessaryOrBoth = 0;
+  let butForSufficientOnly = 0;
+  let butForNeither = 0;
+  let butForLowConfidence = 0;
+  let llmFailureSignals = 0;
+
+  for (const analysis of params.butForResults.values()) {
+    if (analysis.result === 'necessary' || analysis.result === 'both') {
+      butForNecessaryOrBoth++;
+    } else if (analysis.result === 'sufficient') {
+      butForSufficientOnly++;
+    } else {
+      butForNeither++;
+    }
+
+    if (analysis.confidence < 0.5) {
+      butForLowConfidence++;
+    }
+
+    const reason = (analysis.reasoning || '').toLowerCase();
+    if (
+      reason.includes('failed') ||
+      reason.includes('timeout') ||
+      reason.includes('error') ||
+      reason.includes('fallback')
+    ) {
+      llmFailureSignals++;
+    }
+  }
+
+  return {
+    documentCount: params.documentCount,
+    extractedEntities: params.extraction.entities.length,
+    extractedActions: params.extraction.timeline.length,
+    extractedHarms: params.extraction.harms.length,
+    actionHarmPairsAnalyzed: params.butForResults.size,
+    butForNecessaryOrBoth,
+    butForSufficientOnly,
+    butForNeither,
+    butForLowConfidence,
+    llmFailureSignals,
+    causalChainsBeforeDedup: params.rawChainCount,
+    causalChainsAfterDedup: params.dedupedChainCount,
+    gateAllowedChains: params.gate.allowedChains.length,
+    gateBlockedChains: params.gate.blockedChains,
+    extractionWarnings: params.extraction.warnings || [],
+  };
+}
+
+function detectAnthropicBillingIssue(extractionWarnings?: string[]): boolean {
+  const combined = (extractionWarnings || []).join(' | ').toLowerCase();
+  return (
+    combined.includes('credit balance is too low') ||
+    combined.includes('plans & billing') ||
+    combined.includes('invalid_request_error')
+  );
+}
+
+function anthropicBillingMessage(): string {
+  return 'Anthropic credits depleted. Please top up your Anthropic balance in Plans & Billing, then re-run legal analysis.';
+}
+
+// Max execution time for complex legal analysis
+export const maxDuration = 120;
+
+// SECURITY: Request limits to prevent DoS
+const REQUEST_LIMITS = {
+  MAX_DOCUMENTS: 10,          // Maximum documents per request
+  MAX_DOCUMENT_SIZE: 150000,  // 150KB per document
+  MAX_TOTAL_SIZE: 500000,     // 500KB total
+  MAX_CASE_TITLE_LENGTH: 200, // Max title length
+};
+
+type LegalCaseType = 'tort' | 'criminal' | 'contract' | 'other';
+
+interface LegalReasoningRequestBody {
+  documents: string[];
+  caseTitle?: string;
+  jurisdiction?: string;
+  caseType?: LegalCaseType;
+}
+
+function isLegalReasoningRequestBody(value: unknown): value is LegalReasoningRequestBody {
+  if (typeof value !== "object" || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return Array.isArray(candidate.documents);
+}
+
+/**
+ * Validate and sanitize request body
+ */
+function validateRequest(body: unknown): { valid: boolean; error?: string; sanitized?: LegalReasoningRequestBody } {
+  if (!isLegalReasoningRequestBody(body)) {
+    return { valid: false, error: 'Invalid request: documents must be an array' };
+  }
+
+  const sanitized: LegalReasoningRequestBody = {
+    documents: body.documents,
+    caseTitle: typeof body.caseTitle === "string" ? body.caseTitle : undefined,
+    jurisdiction: typeof body.jurisdiction === "string" ? body.jurisdiction : undefined,
+    caseType: typeof body.caseType === "string" ? (body.caseType as LegalCaseType) : undefined,
+  };
+
+  // Check documents array
+  if (sanitized.documents.length === 0) {
+    return { valid: false, error: 'No documents provided' };
+  }
+
+  if (sanitized.documents.length > REQUEST_LIMITS.MAX_DOCUMENTS) {
+    return { 
+      valid: false, 
+      error: `Too many documents: maximum ${REQUEST_LIMITS.MAX_DOCUMENTS} allowed, got ${sanitized.documents.length}` 
+    };
+  }
+
+  // Check individual document sizes
+  let totalSize = 0;
+  for (let i = 0; i < sanitized.documents.length; i++) {
+    const doc = sanitized.documents[i];
+    if (typeof doc !== 'string') {
+      return { valid: false, error: `Document ${i + 1} is not a string` };
+    }
+    
+    const docSize = new Blob([doc]).size;
+    if (docSize > REQUEST_LIMITS.MAX_DOCUMENT_SIZE) {
+      return { 
+        valid: false, 
+        error: `Document ${i + 1} too large: ${Math.round(docSize / 1024)}KB exceeds ${Math.round(REQUEST_LIMITS.MAX_DOCUMENT_SIZE / 1024)}KB limit` 
+      };
+    }
+    totalSize += docSize;
+  }
+
+  if (totalSize > REQUEST_LIMITS.MAX_TOTAL_SIZE) {
+    return { 
+      valid: false, 
+      error: `Total request too large: ${Math.round(totalSize / 1024)}KB exceeds ${Math.round(REQUEST_LIMITS.MAX_TOTAL_SIZE / 1024)}KB limit` 
+    };
+  }
+
+  // Sanitize optional fields
+  if (sanitized.caseTitle && sanitized.caseTitle.length > REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH) {
+    sanitized.caseTitle = sanitized.caseTitle.slice(0, REQUEST_LIMITS.MAX_CASE_TITLE_LENGTH);
+  }
+
+  // Validate case type
+  const validCaseTypes = ['tort', 'criminal', 'contract', 'other'];
+  if (sanitized.caseType && !validCaseTypes.includes(sanitized.caseType)) {
+    sanitized.caseType = 'tort'; // Default to tort
+  }
+
+  return { valid: true, sanitized };
+}
+
+export async function POST(req: NextRequest) {
+  const encoder = new TextEncoder();
+  
+  // Check for streaming request
+  const acceptHeader = req.headers.get('accept') || '';
+  const isStreaming = acceptHeader.includes('text/event-stream');
+
+  if (isStreaming) {
+    return handleStreamingRequest(req, encoder);
+  } else {
+    return handleStandardRequest(req);
+  }
+}
+
+/**
+ * Handle standard (non-streaming) request
+ */
+async function handleStandardRequest(req: NextRequest): Promise<NextResponse> {
+  try {
+    const body = await req.json();
+    
+    // SECURITY: Validate request body
+    const validation = validateRequest(body);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { success: false, error: validation.error } as LegalReasoningResponse,
+        { status: 400 }
+      );
+    }
+    
+    const { documents, caseTitle, jurisdiction, caseType } = validation.sanitized as LegalReasoningRequestBody;
+
+    const startTime = performance.now();
+
+    // Initialize services
+    const extractor = new LegalDocumentExtractor();
+    const butForAnalyzer = new ButForAnalyzer();
+    const precedentMatcher = new PrecedentMatcher();
+    const legalSCM = new LegalSCMTemplate();
+
+    // Step 1: Extract legal entities, actions, and harms from all documents
+    console.log('[LegalReasoning] Extracting from', documents.length, 'documents');
+    const extraction = await extractor.extractMultiple(documents);
+
+    if (detectAnthropicBillingIssue(extraction.warnings)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: anthropicBillingMessage(),
+          diagnostics: {
+            documentCount: documents.length,
+            extractedEntities: extraction.entities.length,
+            extractedActions: extraction.timeline.length,
+            extractedHarms: extraction.harms.length,
+            actionHarmPairsAnalyzed: 0,
+            butForNecessaryOrBoth: 0,
+            butForSufficientOnly: 0,
+            butForNeither: 0,
+            butForLowConfidence: 0,
+            llmFailureSignals: 1,
+            causalChainsBeforeDedup: 0,
+            causalChainsAfterDedup: 0,
+            gateAllowedChains: 0,
+            gateBlockedChains: 0,
+            extractionWarnings: extraction.warnings || [],
+          },
+        } as LegalReasoningResponse,
+        { status: 402 }
+      );
+    }
+
+    if (extraction.entities.length === 0) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'No entities could be extracted from documents. Please provide clearer legal documents.' 
+        } as LegalReasoningResponse,
+        { status: 400 }
+      );
+    }
+
+    // Step 2: Build causal chains (Intent → Action → Harm)
+    console.log('[LegalReasoning] Building causal chains');
+    const butForResults = await analyzeLegalPairsWithFallback(
+      butForAnalyzer,
+      extraction.timeline,
+      extraction.harms,
+    );
+    const rawChains: LegalCausalChain[] = [];
+
+    for (const action of extraction.timeline) {
+      for (const harm of extraction.harms) {
+        const key = `${action.id}->${harm.id}`;
+        const butForAnalysis = butForResults.get(key);
+        if (!butForAnalysis) continue;
+
+        if (butForAnalysis.result === 'necessary' || butForAnalysis.result === 'both') {
+          const scmValidation = await legalSCM.validateLegalCausation(
+            action.intent?.description || 'unknown intent',
+            action.description,
+            harm.description
+          );
+
+          if (scmValidation.valid || scmValidation.violations.filter((v) => v.severity === 'fatal').length === 0) {
+            rawChains.push({
+              intent: action.intent || {
+                type: 'negligent',
+                description: 'Unknown',
+                evidenceSnippets: [],
+                confidence: 0.3,
+              },
+              action,
+              harm,
+              causalStrength: butForAnalysis.confidence,
+              butForAnalysis,
+              interveningCauses: [],
+              proximateCauseEstablished: scmValidation.proximateCausePassed,
+              foreseeability: scmValidation.proximateCausePassed ? 0.8 : 0.3,
+            });
+          }
+        }
+      }
+    }
+
+    // Step 2b: Deduplicate chains (eliminate A×H redundancy)
+    const deduplicatedChains = deduplicateCausalChains(rawChains);
+    const legalGate = evaluateLegalCausalGate(deduplicatedChains, legalSCM);
+    const diagnostics = buildLegalDiagnostics({
+      documentCount: documents.length,
+      extraction,
+      butForResults,
+      rawChainCount: rawChains.length,
+      dedupedChainCount: deduplicatedChains.length,
+      gate: legalGate,
+    });
+
+    const userId = await getAuthenticatedUserId();
+    const traced = await attachCounterfactualTracesToLegalChains(legalGate.allowedChains, legalSCM, userId);
+    const causalChains = traced.chains;
+
+    // Step 3: Construct legal case
+    const legalCase: LegalCase = {
+      id: `case-${Date.now()}`,
+      title: caseTitle || 'Legal Analysis',
+      parties: extraction.entities,
+      timeline: extraction.timeline,
+      harms: extraction.harms,
+      causalChains,
+      precedents: [],
+      jurisdiction: jurisdiction,
+      caseType: caseType || 'tort',
+    };
+
+    // Step 4: Find relevant precedents
+    console.log('[LegalReasoning] Finding precedents');
+    const precedents = await precedentMatcher.findPrecedents(legalCase);
+    legalCase.precedents = precedents;
+
+    // Step 5: Generate verdict
+    console.log('[LegalReasoning] Generating verdict');
+    const verdict = generateVerdict(causalChains, extraction);
+    if (legalGate.blockedChains > 0) {
+      verdict.caveats = [
+        ...(verdict.caveats || []),
+        legalGate.rationale,
+      ];
+    }
+    legalCase.verdict = verdict;
+
+    // Step 6: Persist to database (if authenticated)
+    await persistCase(legalCase);
+
+    const processingTime = performance.now() - startTime;
+
+    return NextResponse.json({
+      success: true,
+      case: legalCase,
+      allowedOutputClass: legalGate.allowedOutputClass,
+      counterfactualTraceIds: traced.traceIds,
+      interventionGate: {
+        allowed: legalGate.allowed,
+        allowedChains: legalGate.allowedChains.length,
+        blockedChains: legalGate.blockedChains,
+        missingConfounders: legalGate.missingConfounders,
+        rationale: legalGate.rationale,
+      },
+      diagnostics,
+      processingTimeMs: Math.round(processingTime),
+    } as LegalReasoningResponse);
+
+  } catch (error: unknown) {
+    console.error('[LegalReasoning API] Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Legal reasoning failed';
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: errorMessage
+      } as LegalReasoningResponse,
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Handle streaming request with SSE
+ */
+function handleStreamingRequest(req: NextRequest, encoder: TextEncoder): Response {
+  const stream = new ReadableStream({
+    async start(controller) {
+      // Track if stream is still open to prevent "Controller is already closed" errors
+      let isStreamOpen = true;
+      
+      const sendEvent = (event: LegalStreamEvent) => {
+        if (!isStreamOpen) {
+          // Stream closed by client, silently skip
+          return;
+        }
+        try {
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify(event)}\n\n`)
+          );
+        } catch (err: unknown) {
+          // If controller is closed, mark stream as closed
+          if (err instanceof Error && err.message.includes('closed')) {
+            isStreamOpen = false;
+            console.log('[LegalReasoning] Client disconnected, continuing processing silently');
+          } else {
+            console.error('[LegalReasoning] Failed to send event:', err);
+          }
+        }
+      };
+      
+      // Helper to safely close the stream
+      const safeClose = () => {
+        if (isStreamOpen) {
+          isStreamOpen = false;
+          try {
+            controller.close();
+          } catch {
+            // Already closed, ignore
+          }
+        }
+      };
+
+      try {
+        const body = await req.json();
+        
+        // SECURITY: Validate request body
+        const validation = validateRequest(body);
+        if (!validation.valid) {
+          sendEvent({ event: 'legal_error', message: validation.error || 'Invalid request' });
+          safeClose();
+          return;
+        }
+        
+        const { documents, caseTitle, jurisdiction, caseType } = validation.sanitized as LegalReasoningRequestBody;
+
+        // Initialize services
+        const extractor = new LegalDocumentExtractor();
+        const butForAnalyzer = new ButForAnalyzer();
+        const precedentMatcher = new PrecedentMatcher();
+        const legalSCM = new LegalSCMTemplate();
+
+        // Step 1: Extract
+        sendEvent({ event: 'legal_extraction_start', documentCount: documents.length });
+        const extraction = await extractor.extractMultiple(documents);
+
+        if (detectAnthropicBillingIssue(extraction.warnings)) {
+          sendEvent({
+            event: 'legal_diagnostics',
+            diagnostics: {
+              documentCount: documents.length,
+              extractedEntities: extraction.entities.length,
+              extractedActions: extraction.timeline.length,
+              extractedHarms: extraction.harms.length,
+              actionHarmPairsAnalyzed: 0,
+              butForNecessaryOrBoth: 0,
+              butForSufficientOnly: 0,
+              butForNeither: 0,
+              butForLowConfidence: 0,
+              llmFailureSignals: 1,
+              causalChainsBeforeDedup: 0,
+              causalChainsAfterDedup: 0,
+              gateAllowedChains: 0,
+              gateBlockedChains: 0,
+              extractionWarnings: extraction.warnings || [],
+            },
+          });
+          sendEvent({ event: 'legal_error', message: anthropicBillingMessage() });
+          safeClose();
+          return;
+        }
+
+        // Emit found entities
+        for (const entity of extraction.entities) {
+          sendEvent({ event: 'legal_entity_found', entity });
+        }
+
+        // Emit found actions
+        for (const action of extraction.timeline) {
+          sendEvent({ event: 'legal_action_found', action });
+        }
+
+        // Emit found harms
+        for (const harm of extraction.harms) {
+          sendEvent({ event: 'legal_harm_identified', harm });
+        }
+
+        // Step 2: Build causal chains with OPTIMIZED batched analysis
+        sendEvent({ 
+          event: 'but_for_analysis_start', 
+          actionId: 'batch', 
+          harmId: 'batch' 
+        });
+        
+        // OPTIMIZED: Use batched analysis (single LLM call for all pairs)
+        const butForResults = await analyzeLegalPairsWithFallback(
+          butForAnalyzer,
+          extraction.timeline,
+          extraction.harms,
+        );
+        
+        const causalChains: LegalCausalChain[] = [];
+        
+        // Process results and build chains
+        for (const action of extraction.timeline) {
+          for (const harm of extraction.harms) {
+            const key = `${action.id}->${harm.id}`;
+            const butForAnalysis = butForResults.get(key);
+            
+            if (!butForAnalysis) continue;
+
+            sendEvent({
+              event: 'but_for_result',
+              actionId: action.id,
+              harmId: harm.id,
+              result: butForAnalysis.result,
+            });
+
+            if (butForAnalysis.result === 'necessary' || butForAnalysis.result === 'both') {
+              // Use heuristic validation (no LLM call needed)
+              const scmValidation = await legalSCM.validateLegalCausation(
+                action.intent?.description || 'unknown intent',
+                action.description,
+                harm.description
+              );
+
+              if (scmValidation.valid || scmValidation.violations.filter(v => v.severity === 'fatal').length === 0) {
+                const chain: LegalCausalChain = {
+                  intent: action.intent || {
+                    type: 'negligent',
+                    description: 'Unknown',
+                    evidenceSnippets: [],
+                    confidence: 0.3,
+                  },
+                  action,
+                  harm,
+                  causalStrength: butForAnalysis.confidence,
+                  butForAnalysis,
+                  interveningCauses: [],
+                  proximateCauseEstablished: scmValidation.proximateCausePassed,
+                  foreseeability: scmValidation.proximateCausePassed ? 0.8 : 0.3,
+                };
+
+                causalChains.push(chain);
+                sendEvent({ event: 'causal_chain_established', chain });
+              }
+            }
+          }
+        }
+
+        // DEDUPLICATION: Group chains by action to eliminate A×H cartesian product redundancy
+        // This reduces chains like [A1→H1, A1→H2, A1→H3] to just [A1→H_highest_severity]
+        const deduplicatedChains = deduplicateCausalChains(causalChains);
+        const legalGate = evaluateLegalCausalGate(deduplicatedChains, legalSCM);
+        const diagnostics = buildLegalDiagnostics({
+          documentCount: documents.length,
+          extraction,
+          butForResults,
+          rawChainCount: causalChains.length,
+          dedupedChainCount: deduplicatedChains.length,
+          gate: legalGate,
+        });
+        const userId = await getAuthenticatedUserId();
+        const traced = await attachCounterfactualTracesToLegalChains(legalGate.allowedChains, legalSCM, userId);
+        sendEvent({
+          event: 'intervention_gate',
+          allowed: legalGate.allowed,
+          allowedOutputClass: legalGate.allowedOutputClass,
+          allowedChains: traced.chains.length,
+          blockedChains: legalGate.blockedChains,
+          missingConfounders: legalGate.missingConfounders,
+          rationale: legalGate.rationale,
+          counterfactualTraceIds: traced.traceIds,
+        });
+        sendEvent({ event: 'legal_diagnostics', diagnostics });
+
+        // Construct legal case with deduplicated chains
+        const legalCase: LegalCase = {
+          id: `case-${Date.now()}`,
+          title: caseTitle || 'Legal Analysis',
+          parties: extraction.entities,
+          timeline: extraction.timeline,
+          harms: extraction.harms,
+          causalChains: traced.chains,
+          precedents: [],
+          jurisdiction,
+          caseType: caseType || 'tort',
+        };
+
+        // Step 3: Find precedents
+        sendEvent({ event: 'legal_masa_audit_start', agentCount: 3 });
+        const precedents = await precedentMatcher.findPrecedents(legalCase);
+        legalCase.precedents = precedents;
+
+        for (const precedent of precedents) {
+          sendEvent({ event: 'precedent_found', precedent });
+        }
+
+        // Step 4: Generate verdict (use gate-allowed chains only)
+        const verdict = generateVerdict(traced.chains, extraction);
+        if (legalGate.blockedChains > 0) {
+          verdict.caveats = [
+            ...(verdict.caveats || []),
+            legalGate.rationale,
+          ];
+        }
+        legalCase.verdict = verdict;
+        sendEvent({ event: 'legal_verdict_ready', verdict });
+
+        // Persist
+        await persistCase(legalCase);
+
+        // Claim ledger emission
+        if (userId) {
+          try {
+            const supabase = await createServerSupabaseClient();
+            const claimLedger = new ClaimLedgerService(supabase);
+            const claimText = verdict.reasoning || `Legal verdict for ${legalCase.title}`;
+
+            const claimId = await claimLedger.recordClaim({
+              userId,
+              sourceFeature: 'legal',
+              claimText,
+              claimKind: 'verdict',
+              confidenceScore: verdict.confidence,
+              uncertaintyLabel: verdict.confidence >= 0.75 ? 'low' : verdict.confidence >= 0.5 ? 'medium' : 'high',
+              modelKey: 'legal_intent_action_harm',
+              modelVersion: 'legal-template-v1',
+              evidenceLinks: [
+                ...legalCase.precedents.slice(0, 8).map((precedent) => ({
+                  evidenceType: 'source' as const,
+                  evidenceRef: precedent.caseName || precedent.citation || 'precedent',
+                  snippet: precedent.holdingText,
+                  metadata: {
+                    jurisdiction: precedent.jurisdiction,
+                    similarity: precedent.similarity,
+                  },
+                })),
+                ...traced.traceIds.map((traceId) => ({
+                  evidenceType: 'counterfactual_trace' as const,
+                  evidenceRef: traceId,
+                  metadata: { feature: 'legal' },
+                })),
+              ],
+              gateDecisions: [
+                {
+                  gateName: 'legal_causal_gate',
+                  decision: legalGate.allowed ? 'pass' : 'fail',
+                  rationale: legalGate.rationale,
+                  metadata: {
+                    allowedOutputClass: legalGate.allowedOutputClass,
+                    blockedChains: legalGate.blockedChains,
+                    missingConfounders: legalGate.missingConfounders,
+                  },
+                },
+              ],
+              counterfactualTests: traced.chains.map((chain, idx) => ({
+                counterfactualTraceId: traced.traceIds[idx],
+                necessitySupported:
+                  chain.butForAnalysis.result === 'necessary' || chain.butForAnalysis.result === 'both',
+                sufficiencySupported: chain.butForAnalysis.result === 'sufficient' || chain.butForAnalysis.result === 'both',
+                method: 'heuristic_bfs_propagation',
+                assumptionsJson: [chain.butForAnalysis.reasoning],
+                resultLabel:
+                  chain.butForAnalysis.result === 'neither'
+                    ? 'rejected'
+                    : chain.proximateCauseEstablished
+                      ? 'supported'
+                      : 'inconclusive',
+              })),
+              receipts: [
+                {
+                  receiptType: 'emission',
+                  actor: 'legal-reasoning-api',
+                  receiptJson: {
+                    caseId: legalCase.id,
+                    title: legalCase.title,
+                    liable: verdict.liable,
+                  },
+                },
+              ],
+            });
+
+            console.log('[LegalReasoning] Claim recorded:', claimId);
+            if (claimId) {
+              sendEvent({ event: 'claim_recorded', claimId });
+            }
+          } catch (claimError) {
+            console.warn('[LegalReasoning] Failed to record claim ledger entry:', claimError);
+            sendEvent({
+              event: 'claim_record_failed',
+              message: claimError instanceof Error ? claimError.message : 'unknown_error',
+            });
+          }
+        }
+
+        // Final event
+        sendEvent({ event: 'legal_analysis_complete', case: legalCase });
+        safeClose();
+
+      } catch (error: unknown) {
+        console.error('[LegalReasoning Streaming] Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+        sendEvent({ event: 'legal_error', message: errorMessage });
+        safeClose();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
+/**
+ * Generate verdict from causal chains
+ */
+function generateVerdict(
+  chains: LegalCausalChain[],
+  extraction: { entities: LegalCase['parties']; warnings?: string[] }
+): LegalVerdict {
+  const hasEstablishedCausation = chains.length > 0;
+  const butForSatisfied = chains.some(c => 
+    c.butForAnalysis.result === 'necessary' || c.butForAnalysis.result === 'both'
+  );
+  const proximateCauseSatisfied = chains.some(c => c.proximateCauseEstablished);
+
+  // Calculate average confidence
+  const avgConfidence = chains.length > 0
+    ? chains.reduce((sum, c) => sum + c.causalStrength, 0) / chains.length
+    : 0;
+
+  // Build reasoning
+  const reasoningParts: string[] = [];
+
+  if (hasEstablishedCausation) {
+    reasoningParts.push(
+      `Established ${chains.length} causal chain(s) linking defendant action(s) to identified harm(s).`
+    );
+  } else {
+    reasoningParts.push(
+      'No causal chains could be established. The but-for test was not satisfied for any action-harm pair.'
+    );
+  }
+
+  if (butForSatisfied) {
+    reasoningParts.push(
+      'The but-for test is satisfied: harm would not have occurred but for defendant\'s action.'
+    );
+  }
+
+  if (proximateCauseSatisfied) {
+    reasoningParts.push(
+      'Proximate causation is established: harm was a foreseeable consequence of defendant\'s action.'
+    );
+  } else if (hasEstablishedCausation) {
+    reasoningParts.push(
+      'Warning: Proximate causation may be disputed based on foreseeability analysis.'
+    );
+  }
+
+  // Include extraction warnings as caveats
+  const caveats: string[] = extraction.warnings || [];
+  if (!hasEstablishedCausation) {
+    caveats.push('The valley receives all streams, but only some streams carved the valley - mere correlation was detected but causation could not be established.');
+  }
+
+  return {
+    liable: hasEstablishedCausation && butForSatisfied && proximateCauseSatisfied,
+    causationEstablished: hasEstablishedCausation,
+    reasoning: reasoningParts.join(' '),
+    butForSatisfied,
+    proximateCauseSatisfied,
+    confidence: avgConfidence,
+    caveats: caveats.length > 0 ? caveats : undefined,
+  };
+}
+
+async function analyzeLegalPairsWithFallback(
+  butForAnalyzer: ButForAnalyzer,
+  actions: LegalAction[],
+  harms: Harm[],
+): Promise<Map<string, ButForAnalysis>> {
+  const batched = await butForAnalyzer.analyzeMultiple(actions, harms);
+  if (batched.size > 0 || actions.length === 0 || harms.length === 0) {
+    return batched;
+  }
+
+  const fallback = new Map<string, ButForAnalysis>();
+  for (const action of actions) {
+    for (const harm of harms) {
+      fallback.set(`${action.id}->${harm.id}`, await butForAnalyzer.analyze(action, harm));
+    }
+  }
+
+  return fallback;
+}
+
+/**
+ * Persist case to database if user is authenticated
+ */
+async function persistCase(legalCase: LegalCase): Promise<void> {
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (userData.user) {
+      const { error } = await supabase.from('legal_cases').insert({
+        user_id: userData.user.id,
+        title: legalCase.title,
+        case_data: legalCase,
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        // Table might not exist yet - log but don't fail
+        console.warn('[LegalReasoning] Failed to persist case:', error.message);
+      } else {
+        console.log('[LegalReasoning] Case persisted:', legalCase.id);
+      }
+    }
+  } catch (error) {
+    // Persistence is optional - don't fail the request
+    console.warn('[LegalReasoning] Persistence skipped:', error);
+  }
+}

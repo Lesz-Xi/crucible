@@ -1,0 +1,431 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e5]:
+        - link "Wu-Weism mark Wu-Weism Thinking Instrument" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - img "Wu-Weism mark" [ref=e8]
+          - generic [ref=e9]:
+            - paragraph [ref=e10]: Wu-Weism
+            - paragraph [ref=e11]: Thinking Instrument
+        - navigation [ref=e12]:
+          - link "Features" [ref=e13] [cursor=pointer]:
+            - /url: "#features"
+            - text: Features
+            - img [ref=e14]
+          - link "Process" [ref=e18] [cursor=pointer]:
+            - /url: "#process"
+            - text: Process
+            - img [ref=e19]
+          - link "Pricing" [ref=e23] [cursor=pointer]:
+            - /url: "#pricing"
+            - text: Pricing
+            - img [ref=e24]
+          - link "Inquiry" [ref=e28] [cursor=pointer]:
+            - /url: "#contact"
+            - text: Inquiry
+            - img [ref=e29]
+        - generic [ref=e33]:
+          - link "Contact Sales" [ref=e34] [cursor=pointer]:
+            - /url: "#contact"
+            - generic [ref=e35]: Contact Sales
+            - img [ref=e36]
+          - generic [ref=e40]:
+            - button "Loading" [disabled] [ref=e41]:
+              - img [ref=e42]
+              - generic [ref=e44]: Loading
+            - img [ref=e46]
+    - generic [ref=e51]:
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e56]:
+            - generic [ref=e57]: L1
+            - img [ref=e58]
+          - generic [ref=e61]:
+            - heading "Association" [level=3] [ref=e62]
+            - paragraph [ref=e63]: Observation
+        - generic [ref=e64]:
+          - generic [ref=e66]:
+            - generic [ref=e67]: L2
+            - img [ref=e68]
+          - generic [ref=e73]:
+            - heading "Intervention" [level=3] [ref=e74]
+            - paragraph [ref=e75]: do(x) Operator
+        - generic [ref=e76]:
+          - generic [ref=e78]:
+            - generic [ref=e79]: L3
+            - img [ref=e80]
+          - generic [ref=e84]:
+            - heading "Counterfactual" [level=3] [ref=e85]
+            - paragraph [ref=e86]: Imagination
+      - generic [ref=e89]: Thinking Instrument
+      - heading "Causal Architect" [level=1] [ref=e90]
+      - paragraph [ref=e91]:
+        - text: Traversing the rungs of Judea Pearl's Ladder.
+        - text: From observation to intervention, distilling truth from the flux.
+      - link "Read MASA White Paper →" [ref=e93] [cursor=pointer]:
+        - /url: /masa-white-paper.html
+        - generic [ref=e94]: Read MASA White Paper
+        - generic [ref=e95]: →
+      - generic [ref=e98]: Explore
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]: Process Layer
+        - heading "The Synthesis Prism" [level=2] [ref=e104]:
+          - text: The Synthesis
+          - emphasis [ref=e105]: Prism
+        - paragraph [ref=e106]: Raw ambiguity enters. Causal clarity exits. A refraction engine that splits complex data streams into distinct, verifiable truth vectors.
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - paragraph [ref=e109]: Prism Integrity
+            - generic [ref=e110]:
+              - generic [ref=e111]: "0.94"
+              - generic [ref=e112]: Stable
+          - generic [ref=e114]:
+            - paragraph [ref=e115]: Observation Note
+            - paragraph [ref=e116]: Causality sharpens when noise is treated as evidence rather than discarded.
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - paragraph [ref=e120]: Geometric Instrument
+            - paragraph [ref=e121]: Refraction Field
+          - paragraph [ref=e122]: Verified State
+        - generic [ref=e128]: Calibration window
+        - generic [ref=e129]: 1.00 / active
+    - region "Primary product features" [ref=e130]:
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - paragraph [ref=e134]: Liquid Segmented
+          - tablist "Segmented control" [ref=e135]:
+            - tab "For You" [selected] [ref=e136] [cursor=pointer]
+            - tab "Library" [ref=e137] [cursor=pointer]
+        - generic [ref=e138]:
+          - paragraph [ref=e139]: Glass Intensity
+          - generic [ref=e140]:
+            - generic [ref=e141]: Liquid slider
+            - slider "Liquid slider" [ref=e142]: "58"
+      - generic [ref=e143]:
+        - article [ref=e144]:
+          - generic [ref=e146]:
+            - img [ref=e147]
+            - generic [ref=e149]: Chat
+          - paragraph [ref=e150]: Quiet Precision
+          - paragraph [ref=e152]: Run causal dialogue with focused intervention logic and controlled evidence scope.
+        - article [ref=e153]:
+          - generic [ref=e155]:
+            - img [ref=e156]
+            - generic [ref=e160]: Legal
+          - paragraph [ref=e161]: Ritual Flow
+          - paragraph [ref=e163]: Trace intent to action to harm with legal causation and explicit validation boundaries.
+        - article [ref=e164]:
+          - generic [ref=e166]:
+            - img [ref=e167]
+            - generic [ref=e170]: Learn
+          - paragraph [ref=e171]: Warm Intelligence
+          - paragraph [ref=e173]: Personalize learning paths through adaptive causal models and interpretable interventions.
+    - generic [ref=e174]:
+      - generic [ref=e175]:
+        - generic [ref=e178]: Core Capabilities
+        - heading "Organic Intelligence" [level=2] [ref=e179]
+        - paragraph [ref=e180]: Beyond mere calculation. A synthesis engine designed to understand the nuance, context, and contradictions inherent in human knowledge.
+      - generic [ref=e181]:
+        - generic [ref=e182]:
+          - img [ref=e184]
+          - heading "Fukinsei (Asymmetry)" [level=3] [ref=e188]
+          - paragraph [ref=e189]: Detecting value in irregular data patterns that conventional models discard.
+          - paragraph [ref=e191]: Signal irregularities // retained
+        - generic [ref=e192]:
+          - img [ref=e194]
+          - heading "Shibumi (Subtlety)" [level=3] [ref=e197]
+          - paragraph [ref=e198]: Generating insights that are quiet but profound, prioritizing depth over noise.
+          - paragraph [ref=e200]: Compression bias // reduced
+        - generic [ref=e201]:
+          - img [ref=e203]
+          - heading "Datsuzoku (Transcendence)" [level=3] [ref=e205]
+          - paragraph [ref=e206]: Breaking free from habituated thinking to discover genuinely novel connections.
+          - paragraph [ref=e208]: Novel linkages // admissible
+    - generic [ref=e210]:
+      - generic [ref=e211]:
+        - generic [ref=e212]: Protocol
+        - heading "The Synthesis Pipeline." [level=2] [ref=e214]:
+          - text: The Synthesis
+          - emphasis [ref=e215]: Pipeline.
+        - paragraph [ref=e216]: We do not simply retrieve information. We transmute it. Our pipeline mimics the cognitive leap of a disciplined mind, moving from observation to insight.
+      - generic [ref=e217]:
+        - generic [ref=e222]:
+          - paragraph [ref=e223]: Step 01
+          - heading "Ingestion" [level=3] [ref=e224]
+          - paragraph [ref=e225]: Raw unstructured data (PDFs, text, logs) is absorbed into the substrate.
+        - generic [ref=e228]:
+          - paragraph [ref=e229]: Step 02
+          - heading "Deconstruction" [level=3] [ref=e230]
+          - paragraph [ref=e231]: Information is broken down into atomic concepts, discarding noise.
+        - generic [ref=e234]:
+          - paragraph [ref=e235]: Step 03
+          - heading "Synthesis" [level=3] [ref=e236]
+          - paragraph [ref=e237]: Atomic concepts are reassembled into novel configurations using causal logic.
+        - generic [ref=e240]:
+          - paragraph [ref=e241]: Step 04
+          - heading "Crystallization" [level=3] [ref=e242]
+          - paragraph [ref=e243]: The final output is calibrated for truth and novelty, then rendered.
+    - generic [ref=e244]:
+      - generic [ref=e245]:
+        - generic [ref=e248]: Operating Modes
+        - heading "Choose the epistemic posture." [level=2] [ref=e249]
+        - paragraph [ref=e250]: "Two deployment attitudes, both grounded in the same causal substrate: solitary synthesis for deep work, or shared verification for institutional truth-making."
+      - generic [ref=e251]:
+        - article [ref=e254]:
+          - generic [ref=e255]:
+            - generic [ref=e256]:
+              - img [ref=e258]
+              - generic [ref=e261]: "01"
+            - generic [ref=e262]:
+              - paragraph [ref=e263]: Mode 01
+              - paragraph [ref=e264]: Private graph construction
+            - heading "Autonomous Synthesis" [level=3] [ref=e265]:
+              - text: Autonomous
+              - text: Synthesis
+            - paragraph [ref=e266]: For the researcher operating in deep isolation. A private, high-density environment to synthesize complex graphs without noise.
+            - generic [ref=e267]:
+              - generic [ref=e268]:
+                - img [ref=e270]
+                - generic [ref=e273]: Encrypted session
+              - generic [ref=e277]: Unfiltered inference
+          - link "Enter Deep Work" [ref=e278] [cursor=pointer]:
+            - /url: /chat
+            - button "Enter Deep Work" [ref=e279]
+        - article [ref=e282]:
+          - generic [ref=e283]:
+            - generic [ref=e284]:
+              - img [ref=e286]
+              - generic [ref=e291]: "02"
+            - generic [ref=e292]:
+              - paragraph [ref=e293]: Mode 02
+              - paragraph [ref=e294]: Shared audit environment
+            - heading "Epistemic Verification" [level=3] [ref=e295]:
+              - text: Epistemic
+              - text: Verification
+            - paragraph [ref=e296]: For the institute requiring verified consensus. A shared epistemic layer where every causal inference is logged, audited, and peer-reviewed.
+            - generic [ref=e297]:
+              - generic [ref=e298]:
+                - img [ref=e300]
+                - generic [ref=e306]: Epistemic validation
+              - generic [ref=e310]: Audit trail
+          - link "Start Joint Audit" [ref=e311] [cursor=pointer]:
+            - /url: /epistemic
+            - button "Start Joint Audit" [ref=e312]
+    - generic [ref=e314]:
+      - generic [ref=e315]:
+        - paragraph [ref=e316]: Causal Artifact
+        - heading "A scientific model built for disciplined uncertainty." [level=2] [ref=e318]
+        - paragraph [ref=e319]: "The ladder of causation is rendered as a structured field: association at the base, intervention at the center, and counterfactual breadth at the top."
+        - generic [ref=e320]:
+          - generic [ref=e321]:
+            - paragraph [ref=e322]: Association
+            - paragraph [ref=e323]: Observation floor
+          - generic [ref=e324]:
+            - paragraph [ref=e325]: Intervention
+            - paragraph [ref=e326]: Action plane
+          - generic [ref=e327]:
+            - paragraph [ref=e328]: Counterfactual
+            - paragraph [ref=e329]: Imagination expanse
+      - generic [ref=e331]:
+        - generic [ref=e332]:
+          - paragraph [ref=e333]: Causal topology
+          - paragraph [ref=e334]: Layered inference model
+        - paragraph [ref=e335]: Continuous scan
+    - generic [ref=e341]:
+      - generic [ref=e342]:
+        - paragraph [ref=e343]: System Architecture
+        - heading "The high-dense causal blueprint." [level=2] [ref=e345]
+        - paragraph [ref=e346]: A measured lattice of inference modules, rendered as a navigable blueprint rather than a decorative network diagram.
+      - generic [ref=e347]:
+        - generic [ref=e348]:
+          - paragraph [ref=e349]: Architectural lattice
+          - paragraph [ref=e350]: Verified blueprint
+        - generic [ref=e351]:
+          - generic [ref=e352]:
+            - generic [ref=e353]:
+              - generic [ref=e354]:
+                - paragraph [ref=e355]: Inference Engine
+                - generic [ref=e356]: "01"
+              - heading "Causal Discovery" [level=3] [ref=e357]
+              - paragraph [ref=e358]: Infers directional cause-effect relationships from observational data using disciplined graph search.
+              - generic [ref=e359]: "Nodes: 14k // Depth: 12"
+            - generic [ref=e360]:
+              - generic [ref=e361]:
+                - paragraph [ref=e362]: Time Series
+                - generic [ref=e363]: "02"
+              - heading "Temporal Dynamics" [level=3] [ref=e364]
+              - paragraph [ref=e365]: Models time-lagged effects to distinguish instantaneous correlation from true causation.
+              - generic [ref=e366]: "Lag order: t-4 // Resolution: High"
+            - generic [ref=e367]:
+              - generic [ref=e368]:
+                - paragraph [ref=e369]: Simulation Core
+                - generic [ref=e370]: "03"
+              - heading "Counterfactual Engine" [level=3] [ref=e371]
+              - paragraph [ref=e372]: Simulates what-if scenarios by detaching parents and injecting explicit interventions.
+              - generic [ref=e373]: "Do-calculus: Active // Branches: ∞"
+            - generic [ref=e374]:
+              - generic [ref=e375]:
+                - paragraph [ref=e376]: Logic Gate
+                - generic [ref=e377]: "04"
+              - heading "Axiom Validator" [level=3] [ref=e378]
+              - paragraph [ref=e379]: Enforces hard physical and logical constraints so synthesis remains admissible.
+              - generic [ref=e380]: "Safety: Hard // Latency: <1ms"
+          - generic [ref=e381]:
+            - generic:
+              - paragraph: Architectural lattice
+              - paragraph: Verified blueprint
+            - generic:
+              - generic: Causal blueprint
+              - generic: 04 modules / stable
+            - img [ref=e382]:
+              - generic [ref=e400]: DISCOVERY
+              - generic [ref=e401]: TEMPORAL
+              - generic [ref=e402]: COUNTERFACTUAL
+              - generic [ref=e403]: AXIOM
+              - generic [ref=e404]: VERIFY
+    - generic [ref=e408]:
+      - generic [ref=e410]:
+        - generic [ref=e411]:
+          - paragraph [ref=e412]: Storage Layer
+          - generic [ref=e413]: Audit-ready
+        - heading "The Obsidian Vault" [level=2] [ref=e414]:
+          - text: The Obsidian
+          - emphasis [ref=e415]: Vault
+        - paragraph [ref=e416]: Hardened truth. Axioms that withstood the audit. Stored in an immutable lattice of high-density causal graphs.
+        - generic [ref=e417]:
+          - generic [ref=e418]:
+            - generic [ref=e419]: Integrity state
+            - generic [ref=e420]: Immutable
+          - generic [ref=e421]:
+            - generic [ref=e422]: Graph density
+            - generic [ref=e423]: "0.91"
+          - generic [ref=e424]:
+            - generic [ref=e425]: Retention mode
+            - generic [ref=e426]: Persistent
+      - generic [ref=e428]:
+        - generic:
+          - generic:
+            - paragraph: Immutable core
+            - paragraph: Dense storage lattice
+          - paragraph: 01 / sealed
+        - generic:
+          - generic: Refractive density
+          - generic: Stable / 0.91
+        - generic [ref=e429]:
+          - generic [ref=e437]:
+            - generic [ref=e440]: Reflectance
+            - generic [ref=e443]: Parity
+            - generic [ref=e446]: Archive
+          - generic [ref=e447]:
+            - paragraph [ref=e448]: Specular mirror
+            - paragraph [ref=e449]: "0.91"
+          - generic [ref=e450]:
+            - generic [ref=e451]:
+              - paragraph [ref=e452]: Reflection state
+              - paragraph [ref=e453]: Technological mirror
+            - generic [ref=e454]:
+              - paragraph [ref=e455]: Scan discipline
+              - paragraph [ref=e456]: Refracts verified truth back into the interface without visual noise.
+    - generic [ref=e458]:
+      - generic [ref=e459]:
+        - paragraph [ref=e460]: Rendered Outputs
+        - heading "Evidence of truth." [level=2] [ref=e462]
+        - paragraph [ref=e463]: We do not sell features. We provide instruments that generate verified artifacts.
+      - generic [ref=e464]:
+        - generic [ref=e465]:
+          - article [ref=e466]:
+            - generic [ref=e467]:
+              - img [ref=e469]
+              - paragraph [ref=e471]: "Format: .json / .svg"
+            - heading "The Causal Graph" [level=3] [ref=e472]
+            - paragraph [ref=e473]: A directed acyclic graph representing confirmed dependencies and intervention points.
+            - button "View sample" [ref=e474] [cursor=pointer]:
+              - generic [ref=e475]: View sample
+              - img [ref=e476]
+          - article [ref=e478]:
+            - generic [ref=e479]:
+              - img [ref=e481]
+              - paragraph [ref=e484]: "Format: .tex / .pdf"
+            - heading "The LaTeX Manuscript" [level=3] [ref=e485]
+            - paragraph [ref=e486]: Publication-ready academic prose with citation structure and calibrated uncertainty notes.
+            - button "View sample" [ref=e487] [cursor=pointer]:
+              - generic [ref=e488]: View sample
+              - img [ref=e489]
+          - article [ref=e491]:
+            - generic [ref=e492]:
+              - img [ref=e494]
+              - paragraph [ref=e496]: "Format: .log / .md"
+            - heading "The Epistemic Audit" [level=3] [ref=e497]
+            - paragraph [ref=e498]: A step-by-step verification log for every logical inference admitted into the result.
+            - button "View sample" [ref=e499] [cursor=pointer]:
+              - generic [ref=e500]: View sample
+              - img [ref=e501]
+        - complementary [ref=e503]:
+          - paragraph [ref=e504]: Research note
+          - paragraph [ref=e505]: Verified artifacts are the visible edge of a much deeper audit discipline.
+          - generic [ref=e506]: Archive / Evidence / Causality
+    - generic [ref=e508]:
+      - generic [ref=e509]:
+        - paragraph [ref=e510]: Access
+        - heading "Select your instrument." [level=2] [ref=e512]
+        - paragraph [ref=e513]: Tools for the solitary researcher or the collaborative institute. Calibrated for depth, traceability, and disciplined synthesis.
+      - generic [ref=e514]:
+        - generic [ref=e515]:
+          - generic [ref=e516]:
+            - paragraph [ref=e517]: Scholar
+            - paragraph [ref=e518]: Individual access
+          - generic [ref=e519]:
+            - paragraph [ref=e520]: $24
+            - paragraph [ref=e521]: Per month
+        - generic [ref=e522]:
+          - generic [ref=e523]:
+            - img [ref=e525]
+            - generic [ref=e527]: Unlimited synthesis queries
+          - generic [ref=e528]:
+            - img [ref=e530]
+            - generic [ref=e532]: PDF and context analysis
+          - generic [ref=e533]:
+            - img [ref=e535]
+            - generic [ref=e537]: Novelty calibration metrics
+          - generic [ref=e538]:
+            - img [ref=e540]
+            - generic [ref=e542]: Export to LaTeX and Markdown
+        - button "Begin Research" [ref=e543] [cursor=pointer]
+    - generic [ref=e545]:
+      - generic [ref=e546]:
+        - paragraph [ref=e547]: Inquiries
+        - heading "Clarify the substrate." [level=2] [ref=e549]
+      - generic [ref=e550]:
+        - button "How does the engine handle data privacy?" [ref=e552] [cursor=pointer]:
+          - generic [ref=e553]: How does the engine handle data privacy?
+          - img [ref=e554]
+        - button "Can I export the synthesis results?" [ref=e556] [cursor=pointer]:
+          - generic [ref=e557]: Can I export the synthesis results?
+          - img [ref=e558]
+        - button "What is Causal Flux?" [ref=e560] [cursor=pointer]:
+          - generic [ref=e561]: What is Causal Flux?
+          - img [ref=e562]
+        - button "Is there an API available?" [ref=e564] [cursor=pointer]:
+          - generic [ref=e565]: Is there an API available?
+          - img [ref=e566]
+    - generic [ref=e568]:
+      - generic [ref=e569]:
+        - paragraph [ref=e570]: Access Request
+        - heading "Join the synthesis." [level=2] [ref=e572]
+        - paragraph [ref=e573]: Request access to the beta program or schedule a demo.
+      - generic [ref=e574]:
+        - generic [ref=e575]:
+          - generic [ref=e576]:
+            - text: Name
+            - textbox "Your name" [ref=e577]
+          - generic [ref=e578]:
+            - text: Email
+            - textbox "name@institute.org" [ref=e579]
+        - generic [ref=e580]:
+          - text: Inquiry
+          - textbox "Describe the environment, team, or evidence workflow you want to support." [ref=e581]
+        - button "Send Request" [ref=e582] [cursor=pointer]
+  - alert [ref=e583]

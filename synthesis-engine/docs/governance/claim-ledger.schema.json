@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masa.synthetic-mind.local/schemas/claim-ledger.schema.json",
+  "title": "Claim Ledger",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "claims"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/ClaimRecord"
+      }
+    }
+  },
+  "$defs": {
+    "ContradictionSpec": {
+      "type": "object",
+      "required": ["matcher_type", "matcher", "reason"],
+      "properties": {
+        "matcher_type": {
+          "type": "string",
+          "enum": [
+            "ast_export",
+            "ast_function_call",
+            "ast_route_handler",
+            "ast_workflow_step",
+            "regex",
+            "marker_tag"
+          ]
+        },
+        "matcher": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "EvidenceSpec": {
+      "type": "object",
+      "required": ["path", "matcher_type", "matcher", "required"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "matcher_type": {
+          "type": "string",
+          "enum": [
+            "ast_export",
+            "ast_function_call",
+            "ast_route_handler",
+            "ast_workflow_step",
+            "regex",
+            "marker_tag"
+          ]
+        },
+        "matcher": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "contradiction": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ContradictionSpec" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ClaimRecord": {
+      "type": "object",
+      "required": [
+        "claim_id",
+        "source_doc",
+        "claim_text",
+        "declared_status",
+        "severity",
+        "evidence"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "pattern": "^CLM-[0-9]{3}$"
+        },
+        "source_doc": { "type": "string", "minLength": 1 },
+        "claim_text": { "type": "string", "minLength": 1 },
+        "declared_status": {
+          "type": "string",
+          "enum": ["implemented", "partial", "planned", "deprecated"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "owner": { "type": "string" },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/EvidenceSpec" }
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

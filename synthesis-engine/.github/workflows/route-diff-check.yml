@@ -1,0 +1,75 @@
+name: Route Diff Check
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/app/**/page.tsx'
+      - 'src/app/**/route.ts'
+      - 'docs/route-registry.md'
+
+jobs:
+  route-diff-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Need full history for diff
+      
+      - name: Detect route changes
+        id: detect_changes
+        run: |
+          # Find all route files in the diff
+          ROUTE_CHANGES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep -E "src/app/.*/page\.tsx|src/app/.*/route\.ts" || true)
+          
+          if [ -n "$ROUTE_CHANGES" ]; then
+            echo "routes_changed=true" >> $GITHUB_OUTPUT
+            echo "Changed routes:"
+            echo "$ROUTE_CHANGES"
+          else
+            echo "routes_changed=false" >> $GITHUB_OUTPUT
+            echo "No route changes detected"
+          fi
+      
+      - name: Check registry updated
+        if: steps.detect_changes.outputs.routes_changed == 'true'
+        run: |
+          # Check if route-registry.md was updated in this PR
+          REGISTRY_UPDATED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | grep "docs/route-registry.md" || true)
+          
+          if [ -z "$REGISTRY_UPDATED" ]; then
+            echo "❌ ERROR: Routes were changed but docs/route-registry.md was not updated!"
+            echo ""
+            echo "Please update the Route Registry with:"
+            echo "  - New/modified/deleted route information"
+            echo "  - Updated 'Last Verified' date"
+            echo "  - Commit SHA and author"
+            echo ""
+            echo "See docs/route-provenance-policy.md for details."
+            exit 1
+          else
+            echo "✅ Route registry was updated"
+          fi
+      
+      - name: Validate registry format
+        if: steps.detect_changes.outputs.routes_changed == 'true'
+        run: |
+          # Basic validation that registry contains required sections
+          if ! grep -q "## Active Routes" docs/route-registry.md; then
+            echo "❌ ERROR: Route registry is missing '## Active Routes' section"
+            exit 1
+          fi
+          
+          if ! grep -q "## Audit Trail" docs/route-registry.md; then
+            echo "❌ ERROR: Route registry is missing '## Audit Trail' section"
+            exit 1
+          fi
+          
+          echo "✅ Route registry format is valid"
+      
+      - name: Success
+        if: steps.detect_changes.outputs.routes_changed == 'false'
+        run: |
+          echo "✅ No route changes detected, skipping registry check"

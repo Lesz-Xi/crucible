@@ -1,0 +1,84 @@
+name: Persistent Memory Sentinel
+
+on:
+  pull_request:
+  push:
+    branches: ["main"]
+  schedule:
+    - cron: "45 2 * * *"
+  workflow_dispatch:
+
+env:
+  ROLLOUT_STAGE: week1
+
+jobs:
+  memory-integrity:
+    name: Persistent Memory Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve mode
+        id: rollout
+        run: |
+          stage="${ROLLOUT_STAGE}"
+          mode="report"
+          if [ "$stage" = "week3" ]; then
+            mode="enforce"
+          fi
+          echo "stage=$stage" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+
+      - name: Run persistent memory evaluator
+        id: scan
+        run: |
+          set +e
+          npm run governance:persistent-memory-integrity -- \
+            --scenarioPack docs/governance/persistent-memory.scenarios.v1.json \
+            --mode "${{ steps.rollout.outputs.mode }}" \
+            --format json,md,csv \
+            --outputDir artifacts/governance/persistent-memory
+          exit_code=$?
+          set -e
+          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
+          if [ "$exit_code" -ne 0 ]; then
+            exit "$exit_code"
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: persistent-memory-${{ github.run_number }}
+          path: |
+            artifacts/governance/persistent-memory/report.json
+            artifacts/governance/persistent-memory/report.md
+            artifacts/governance/persistent-memory/trend.csv
+          retention-days: 30
+
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Persistent Memory Sentinel" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Rollout stage: ${{ steps.rollout.outputs.stage }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Effective mode: ${{ steps.rollout.outputs.mode }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Evaluator exit code: ${{ steps.scan.outputs.exit_code }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.scan.outputs.exit_code }}" = "0" ]; then
+            echo "✅ No blocking persistent-memory regressions for current mode." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ Persistent-memory evaluator reported blocking issues." >> "$GITHUB_STEP_SUMMARY"
+          fi

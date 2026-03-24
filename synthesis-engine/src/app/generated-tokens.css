@@ -1,0 +1,211 @@
+/* Generated runtime token bridge for MASA shell on current main. */
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jetbrains-mono, 'JetBrains Mono', ui-monospace, monospace);
+  --font-serif: var(--font-instrument-serif, 'Instrument Serif', Georgia, serif);
+  --font-instrument-serif: var(--font-instrument-serif);
+  --font-jetbrains-mono: var(--font-jetbrains-mono);
+  --font-geist-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-geist-mono: var(--font-jetbrains-mono, 'JetBrains Mono', ui-monospace, monospace);
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-crimson: 'Crimson Text', Georgia, serif;
+  --font-newsreader: 'Newsreader', Georgia, serif;
+
+  --sidebar-w: 224px;
+  --rail-w: 296px;
+  --topbar-h: 42px;
+
+  --radius-sm: 5px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+html.dark,
+html.dark body {
+  color-scheme: dark;
+}
+
+html.dark {
+  --bg: #0E0D0C;
+  --bg-2: #131210;
+  --bg-3: #1A1816;
+  --bg-4: #211F1C;
+  --bg-5: #282523;
+  --bg-hover: rgba(255,255,255,0.04);
+  --bg-active: rgba(200,150,90,0.10);
+  --bg-primary: #0E0D0C;
+  --bg-secondary: #131210;
+  --bg-card: #131210;
+  --bg-elevated: #1A1816;
+
+  --border: rgba(255,255,255,0.07);
+  --border-2: rgba(255,255,255,0.12);
+  --border-3: rgba(255,255,255,0.18);
+  --border-strong: rgba(255,255,255,0.18);
+  --border-subtle: rgba(255,255,255,0.04);
+
+  --text-1: #F2EFE9;
+  --text-2: rgba(242,239,233,0.55);
+  --text-3: rgba(242,239,233,0.30);
+  --text-4: rgba(242,239,233,0.16);
+  --text-primary: #F2EFE9;
+  --text-secondary: rgba(242,239,233,0.55);
+  --text-tertiary: rgba(242,239,233,0.30);
+  --text-muted: rgba(242,239,233,0.16);
+
+  --accent: #C8965A;
+  --accent-2: #B87D42;
+  --accent-dark: #B87D42;
+  --accent-dim: rgba(200,150,90,0.10);
+  --accent-dim-2: rgba(200,150,90,0.06);
+  --accent-border: rgba(200,150,90,0.28);
+  --accent-border-2: rgba(200,150,90,0.18);
+  --accent-glow: 0 0 24px rgba(200,150,90,0.12);
+
+  --green: #4E9E7A;
+  --green-dim: rgba(78,158,122,0.10);
+  --green-border: rgba(78,158,122,0.22);
+  --red: #C45C5C;
+  --red-dim: rgba(196,92,92,0.10);
+  --red-border: rgba(196,92,92,0.22);
+  --blue: #5B8DB8;
+  --blue-dim: rgba(91,141,184,0.10);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
+  --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.3);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.35);
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.35);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.3);
+
+  --card-bg: #131210;
+  --input-bg: #1A1816;
+  --sidebar-bg: #0B0A09;
+  --rail-bg: #0F0E0D;
+
+  --lab-bg: #0E0D0C;
+  --lab-bg-primary: #0E0D0C;
+  --lab-bg-secondary: #131210;
+  --lab-bg-tertiary: #1A1816;
+  --lab-bg-elevated: #211F1C;
+  --lab-panel: #131210;
+  --lab-panel-soft: #1A1816;
+  --lab-shell-main: #0E0D0C;
+  --lab-shell-sidebar: #0B0A09;
+  --lab-hover-bg: rgba(255,255,255,0.04);
+  --lab-active-bg: rgba(200,150,90,0.10);
+  --lab-input-bg: #1A1816;
+  --lab-input-border: rgba(255,255,255,0.12);
+  --lab-border: rgba(255,255,255,0.07);
+  --lab-border-strong: rgba(255,255,255,0.18);
+  --lab-text-primary: #F2EFE9;
+  --lab-text-secondary: rgba(242,239,233,0.55);
+  --lab-text-tertiary: rgba(242,239,233,0.30);
+  --lab-accent-earth: #C8965A;
+  --lab-accent-clay: #B87D42;
+  --lab-accent-rust: #B87D42;
+  --lab-accent-moss: #4E9E7A;
+  --lab-accent-slate: #5B8DB8;
+  --lab-accent-violet: #7858b8;
+  --lab-error: #C45C5C;
+  --lab-shadow-soft: 0 1px 2px rgba(0,0,0,0.35);
+  --lab-shadow-lift: 0 4px 8px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.35);
+
+  --background: #0E0D0C;
+  --foreground: #F2EFE9;
+}
+
+html:not(.dark),
+html:not(.dark) body {
+  color-scheme: light;
+}
+
+html:not(.dark) {
+  --bg: #FAFAF8;
+  --bg-2: #F4F2EE;
+  --bg-3: #EDEAE4;
+  --bg-4: #E5E2DB;
+  --bg-5: #DAD6CE;
+  --bg-hover: rgba(0,0,0,0.03);
+  --bg-active: rgba(160,105,58,0.08);
+  --bg-primary: #FAFAF8;
+  --bg-secondary: #F4F2EE;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+
+  --border: rgba(0,0,0,0.08);
+  --border-2: rgba(0,0,0,0.13);
+  --border-3: rgba(0,0,0,0.20);
+  --border-strong: rgba(0,0,0,0.20);
+  --border-subtle: rgba(0,0,0,0.04);
+
+  --text-1: #1A1917;
+  --text-2: rgba(26,25,23,0.55);
+  --text-3: rgba(26,25,23,0.35);
+  --text-4: rgba(26,25,23,0.18);
+  --text-primary: #1A1917;
+  --text-secondary: rgba(26,25,23,0.55);
+  --text-tertiary: rgba(26,25,23,0.35);
+  --text-muted: rgba(26,25,23,0.18);
+
+  --accent: #A0693A;
+  --accent-2: #8A5520;
+  --accent-dark: #8A5520;
+  --accent-dim: rgba(160,105,58,0.09);
+  --accent-dim-2: rgba(160,105,58,0.05);
+  --accent-border: rgba(160,105,58,0.22);
+  --accent-border-2: rgba(160,105,58,0.14);
+  --accent-glow: 0 0 24px rgba(160,105,58,0.08);
+
+  --green: #3A7D5E;
+  --green-dim: rgba(58,125,94,0.08);
+  --green-border: rgba(58,125,94,0.20);
+  --red: #9B3E3E;
+  --red-dim: rgba(155,62,62,0.08);
+  --red-border: rgba(155,62,62,0.20);
+  --blue: #3A6B9A;
+  --blue-dim: rgba(58,107,154,0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.07);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.07);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+
+  --card-bg: #FFFFFF;
+  --input-bg: #FFFFFF;
+  --sidebar-bg: #F2F0EB;
+  --rail-bg: #F6F4F0;
+
+  --lab-bg: #FAFAF8;
+  --lab-bg-primary: #FAFAF8;
+  --lab-bg-secondary: #F4F2EE;
+  --lab-bg-tertiary: #EDEAE4;
+  --lab-bg-elevated: #FFFFFF;
+  --lab-panel: #FFFFFF;
+  --lab-panel-soft: #F4F2EE;
+  --lab-shell-main: #FAFAF8;
+  --lab-shell-sidebar: #F2F0EB;
+  --lab-hover-bg: rgba(0,0,0,0.03);
+  --lab-active-bg: rgba(160,105,58,0.08);
+  --lab-input-bg: #FFFFFF;
+  --lab-input-border: rgba(0,0,0,0.13);
+  --lab-border: rgba(0,0,0,0.08);
+  --lab-border-strong: rgba(0,0,0,0.20);
+  --lab-text-primary: #1A1917;
+  --lab-text-secondary: rgba(26,25,23,0.55);
+  --lab-text-tertiary: rgba(26,25,23,0.35);
+  --lab-accent-earth: #A0693A;
+  --lab-accent-clay: #8A5520;
+  --lab-accent-rust: #8A5520;
+  --lab-accent-moss: #3A7D5E;
+  --lab-accent-slate: #3A6B9A;
+  --lab-accent-violet: #7858b8;
+  --lab-error: #9B3E3E;
+  --lab-shadow-soft: 0 1px 2px rgba(0,0,0,0.07);
+  --lab-shadow-lift: 0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+
+  --background: #FAFAF8;
+  --foreground: #1A1917;
+}

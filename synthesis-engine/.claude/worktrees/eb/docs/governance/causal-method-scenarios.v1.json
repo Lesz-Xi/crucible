@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "scenarioId": "CM-S001",
+      "label": "Large-sample interventional — do-calculus eligible",
+      "dataRegime": {
+        "sampleSize": 5000,
+        "dimensionality": 8,
+        "hasInterventions": true,
+        "hasTemporalOrder": false,
+        "knownConfounders": ["age", "treatment_history"],
+        "noiseLevel": "low"
+      },
+      "expectedHardGates": [],
+      "expectedDecision": "do_calculus"
+    },
+    {
+      "scenarioId": "CM-S002",
+      "label": "Small observational temporal — Granger eligible",
+      "dataRegime": {
+        "sampleSize": 120,
+        "dimensionality": 4,
+        "hasInterventions": false,
+        "hasTemporalOrder": true,
+        "knownConfounders": [],
+        "noiseLevel": "medium"
+      },
+      "expectedHardGates": [],
+      "expectedDecision": "granger"
+    },
+    {
+      "scenarioId": "CM-S003",
+      "label": "Tiny sample high-noise — hard gate on minimum observations",
+      "dataRegime": {
+        "sampleSize": 15,
+        "dimensionality": 12,
+        "hasInterventions": false,
+        "hasTemporalOrder": false,
+        "knownConfounders": ["unknown_latent"],
+        "noiseLevel": "high"
+      },
+      "expectedHardGates": ["min_sample_size"],
+      "expectedDecision": "pc_algorithm"
+    }
+  ]
+}

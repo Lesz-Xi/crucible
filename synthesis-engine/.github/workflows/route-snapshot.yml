@@ -1,0 +1,104 @@
+name: Nightly Route Snapshot
+
+on:
+  schedule:
+    # Run every night at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  route-snapshot:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Scan routes
+        id: scan_routes
+        run: |
+          # Create snapshot directory if it doesn't exist
+          mkdir -p docs/route-snapshots
+          
+          # Generate route snapshot
+          SNAPSHOT_DATE=$(date +%Y-%m-%d)
+          SNAPSHOT_FILE="docs/route-snapshots/${SNAPSHOT_DATE}.json"
+          
+          # Find all page.tsx and route.ts files
+          echo "{" > $SNAPSHOT_FILE
+          echo "  \"date\": \"$SNAPSHOT_DATE\"," >> $SNAPSHOT_FILE
+          echo "  \"commit\": \"$(git rev-parse HEAD)\"," >> $SNAPSHOT_FILE
+          echo "  \"routes\": [" >> $SNAPSHOT_FILE
+          
+          ROUTES=$(find src/app -name "page.tsx" -o -name "route.ts" | sort)
+          FIRST=true
+          
+          for route in $ROUTES; do
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              echo "," >> $SNAPSHOT_FILE
+            fi
+            
+            # Extract route path from file path
+            ROUTE_PATH=$(echo $route | sed 's|src/app||' | sed 's|/page\.tsx||' | sed 's|/route\.ts||' || echo "/")
+            if [ -z "$ROUTE_PATH" ]; then
+              ROUTE_PATH="/"
+            fi
+            
+            # Get file hash
+            FILE_HASH=$(git hash-object $route)
+            
+            echo -n "    {\"path\": \"$ROUTE_PATH\", \"file\": \"$route\", \"hash\": \"$FILE_HASH\"}" >> $SNAPSHOT_FILE
+          done
+          
+          echo "" >> $SNAPSHOT_FILE
+          echo "  ]" >> $SNAPSHOT_FILE
+          echo "}" >> $SNAPSHOT_FILE
+          
+          echo "✅ Snapshot saved to $SNAPSHOT_FILE"
+          cat $SNAPSHOT_FILE
+      
+      - name: Compare with previous snapshot
+        run: |
+          SNAPSHOT_DATE=$(date +%Y-%m-%d)
+          PREVIOUS_DATE=$(date -d "yesterday" +%Y-%m-%d 2>/dev/null || date -v-1d +%Y-%m-%d)
+          
+          CURRENT_SNAPSHOT="docs/route-snapshots/${SNAPSHOT_DATE}.json"
+          PREVIOUS_SNAPSHOT="docs/route-snapshots/${PREVIOUS_DATE}.json"
+          
+          if [ -f "$PREVIOUS_SNAPSHOT" ]; then
+            echo "Comparing with previous snapshot: $PREVIOUS_SNAPSHOT"
+            
+            # Simple diff (can be enhanced with jq for better comparison)
+            if ! diff -q "$CURRENT_SNAPSHOT" "$PREVIOUS_SNAPSHOT" > /dev/null; then
+              echo "⚠️ Route changes detected!"
+              diff "$PREVIOUS_SNAPSHOT" "$CURRENT_SNAPSHOT" || true
+            else
+              echo "✅ No route changes since yesterday"
+            fi
+          else
+            echo "ℹ️ No previous snapshot found (first run or yesterday's snapshot missing)"
+          fi
+      
+      - name: Commit snapshot
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          SNAPSHOT_DATE=$(date +%Y-%m-%d)
+          git add docs/route-snapshots/
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(routes): nightly snapshot $SNAPSHOT_DATE"
+            git push origin main || echo "⚠️ Failed to push (likely no changes or permission issue)"
+          fi

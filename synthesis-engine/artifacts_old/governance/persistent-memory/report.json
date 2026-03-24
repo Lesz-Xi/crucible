@@ -1,0 +1,22 @@
+[
+  {
+    "scenarioId": "PM-001",
+    "timestamp": "2026-02-13T10:23:38.673Z",
+    "mode": "report",
+    "retainedCount": 4,
+    "prunedCount": 1,
+    "retainedL3Count": 2,
+    "topResultScore": 0.7595,
+    "hardGateFailures": []
+  },
+  {
+    "scenarioId": "PM-002",
+    "timestamp": "2026-02-13T10:23:38.673Z",
+    "mode": "report",
+    "retainedCount": 2,
+    "prunedCount": 0,
+    "retainedL3Count": 0,
+    "topResultScore": 0.645,
+    "hardGateFailures": []
+  }
+]

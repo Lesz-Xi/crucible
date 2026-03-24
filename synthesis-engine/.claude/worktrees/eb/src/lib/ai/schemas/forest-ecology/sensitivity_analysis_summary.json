@@ -1,0 +1,45 @@
+{
+  "analysis": "sensitivity_analysis",
+  "parameters": {
+    "N": 20,
+    "n_gamma_points": 25,
+    "gamma_range": [
+      0.0,
+      0.5
+    ],
+    "topologies": [
+      "random",
+      "small_world",
+      "scale_free"
+    ]
+  },
+  "results": {
+    "total_simulations": 75,
+    "convergence_rate": 100.0,
+    "topology_comparison": {
+      "random": {
+        "mean_stability": 0.9719674071750578,
+        "stability_std": 2.3274765409744782e-05,
+        "mean_equalization": 99.63799665282805,
+        "convergence_rate": 100.0
+      },
+      "small_world": {
+        "mean_stability": 0.9715816686721523,
+        "stability_std": 3.514970890305484e-05,
+        "mean_equalization": 99.6779487150265,
+        "convergence_rate": 100.0
+      },
+      "scale_free": {
+        "mean_stability": 0.9716135425703452,
+        "stability_std": 2.305512060599754e-05,
+        "mean_equalization": 99.58975214748482,
+        "convergence_rate": 100.0
+      }
+    }
+  },
+  "findings": {
+    "stability_increases_with_gamma": true,
+    "best_topology": "random",
+    "highest_equalization_topology": "small_world"
+  }
+}

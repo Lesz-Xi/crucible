@@ -1,0 +1,368 @@
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { SessionManager } from "@/lib/epistemic/session-manager";
+import { KDenseSession, VirtualFile } from "@/lib/epistemic/types";
+import { Loader2, ArrowLeft, Aperture, Settings, Terminal, MessageSquare, Network, EyeOff, User, Bot, Copy, Share2, Bookmark, Share, BarChart2, GitBranch, Paperclip, Send, Info, BookOpen } from "lucide-react";
+import Link from "next/link";
+
+export default function EpistemicPage() {
+  const [session, setSession] = useState<KDenseSession | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<VirtualFile | null>(null);
+  const [inputMessage, setInputMessage] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Session
+  useEffect(() => {
+    const initSession = async () => {
+      try {
+        const newSession = await SessionManager.createSession("Causal Divergence Investigation");
+        setSession(newSession);
+      } catch (e) {
+        console.error("Failed to init session", e);
+      }
+    };
+    initSession();
+  }, []);
+
+  // Polling for updates (Agent thoughts, file changes)
+  useEffect(() => {
+    if (!session?.id) return;
+
+    const interval = setInterval(async () => {
+      const updated = await SessionManager.refreshSession(session.id);
+      if (updated) {
+          setSession(prev => {
+              if (prev && updated.updatedAt > prev.updatedAt) return updated;
+              return prev; 
+          });
+      }
+    }, 2000); // 2s polling
+
+    return () => clearInterval(interval);
+  }, [session?.id]);
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [session?.messages]);
+
+  const handleSendMessage = async () => {
+    if (!session || !inputMessage.trim()) return;
+    
+    setIsTyping(true);
+    const text = inputMessage.trim();
+    setInputMessage("");
+    try {
+        await SessionManager.addMessage(session.id, text, "user");
+        const updated = await SessionManager.refreshSession(session.id);
+        if(updated) setSession(updated);
+    } catch(e) {
+        console.error("Failed to send message", e);
+    } finally {
+        setIsTyping(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+  if (!session) {
+    return (
+      <div className="dark min-h-screen bg-background-dark flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary/40 animate-spin" />
+      </div>
+    );
+  }
+
+  // Calculate some mock confidence for the UI from session state or define standard
+  const planProgress = session.plan.length > 0 ? (session.currentStepIndex / session.plan.length) * 100 : 0;
+
+  return (
+    <div className="dark flex h-screen w-full flex-col overflow-hidden bg-background-dark text-primary font-display antialiased leading-relaxed paper-grain selection:bg-primary/30">
+      
+      {/* Header */}
+      <header className="flex items-center justify-between border-b border-primary/5 px-8 py-4 bg-obsidian/80 backdrop-blur-md z-20">
+        <div className="flex items-center gap-10">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="mr-2 hover:bg-white/5 p-1 rounded transition-colors text-primary/50 hover:text-primary">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <Aperture className="text-primary w-6 h-6" />
+            <h1 className="text-lg font-medium tracking-tight uppercase">Causal Engine <span className="opacity-40 font-light">v3.0</span></h1>
+          </div>
+          <nav className="hidden md:flex items-center gap-8">
+            <span className="text-primary/90 text-xs tracking-widest uppercase hover:text-white transition-colors cursor-pointer">Epistemic Honesty</span>
+            <span className="text-primary/40 text-xs tracking-widest uppercase hover:text-white transition-colors cursor-pointer">Active Negotiation</span>
+            <span className="text-primary/40 text-xs tracking-widest uppercase hover:text-white transition-colors cursor-pointer">Source Trace</span>
+          </nav>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-primary/5 border border-primary/10">
+            <div className={`size-2 rounded-full ${isTyping ? 'bg-amber-500/80 animate-pulse' : 'bg-emerald-500/60'}`}></div>
+            <span className="text-[10px] uppercase tracking-tighter text-primary/60 font-mono">
+              {isTyping ? 'Synthesis Active' : 'Fog-Neutral State'}
+            </span>
+          </div>
+          <button className="flex size-9 items-center justify-center rounded hover:bg-white/5 transition-colors text-primary/50 hover:text-primary">
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
+      </header>
+
+      <main className="flex flex-1 overflow-hidden">
+        
+        {/* Left Sidebar */}
+        <aside className="w-20 lg:w-64 hidden md:flex flex-col border-r border-primary/5 bg-obsidian/40 p-6 gap-8 z-10">
+          <div className="flex flex-col gap-6">
+            <div className="space-y-1">
+              <h3 className="text-[10px] uppercase tracking-[0.2em] text-primary/40 font-bold">Research Path</h3>
+              <p className="text-sm italic text-primary/80 truncate">{session.title}</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-primary/5 text-primary/50 hover:text-primary transition-all cursor-pointer">
+                <Terminal className="w-5 h-5" />
+                <span className="text-xs uppercase tracking-wider font-mono hidden lg:inline">Input Logs</span>
+              </div>
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary border border-primary/10 shadow-sm">
+                <MessageSquare className="w-5 h-5" />
+                <span className="text-xs uppercase tracking-wider font-mono hidden lg:inline">Negotiation</span>
+              </div>
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-primary/5 text-primary/50 hover:text-primary transition-all cursor-pointer">
+                <Network className="w-5 h-5" />
+                <span className="text-xs uppercase tracking-wider font-mono hidden lg:inline">Causal Map</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-auto space-y-4">
+            <div className="p-4 rounded bg-primary/5 border border-primary/5">
+              <p className="text-[9px] text-primary/30 uppercase tracking-[0.2em] mb-3 hidden lg:block">Epistemic Limit</p>
+              <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-primary/40 transition-all duration-500" style={{ width: `${Math.max(20, planProgress)}%` }}></div>
+              </div>
+              <p className="mt-2 text-[10px] text-primary/50 font-mono hidden lg:block">
+                {(planProgress / 100).toFixed(2)} Confidence
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        {/* Central Chat Interface */}
+        <section className="flex-1 flex flex-col relative overflow-hidden bg-background-dark">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 lg:p-12 space-y-12 max-w-4xl mx-auto w-full pb-32">
+            
+            {session.messages.length === 0 && !isTyping && (
+              <div className="relative p-8 rounded-xl bg-charcoal/30 border border-primary/10 glass-blur cinematic-shadow overflow-hidden group mt-10">
+                <div className="absolute top-0 right-0 p-4 flex gap-2">
+                  <span className="text-[10px] font-mono text-primary/30 uppercase">Notice: Epistemic Gap</span>
+                </div>
+                <div className="flex flex-col gap-6 text-center py-8">
+                  <div className="flex justify-center">
+                    <div className="size-16 rounded-full border border-primary/20 flex items-center justify-center bg-primary/5">
+                      <EyeOff className="w-8 h-8 text-primary/30" />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <h2 className="text-3xl font-light tracking-tight italic">Insufficient Evidence</h2>
+                    <p className="text-primary/60 max-w-md mx-auto leading-relaxed">
+                      The logic framework identifies a resolution paradox. State your hypothesis or provide a document to begin synthesis.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {session.messages.map((message) => {
+              const isUser = message.role === "user";
+
+              if (isUser) {
+                return (
+                  <div key={message.id} className="group relative flex gap-6 items-start">
+                    <div className="size-10 rounded bg-primary/10 border border-primary/10 flex items-center justify-center shrink-0">
+                      <User className="w-5 h-5 text-primary/60" />
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-widest text-primary/40 font-bold">Scientist (Principal)</span>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button className="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><Copy className="w-4 h-4" /></button>
+                          <button className="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><Share2 className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                      <div className="font-mono text-sm leading-relaxed text-primary/80 bg-charcoal/40 p-5 rounded-lg border border-primary/5 whitespace-pre-wrap">
+                        {message.content}
+                      </div>
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div key={message.id} className="group relative flex gap-6 items-start">
+                    <div className="size-10 rounded bg-primary flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(230,233,238,0.3)]">
+                      <Bot className="w-5 h-5 text-background-dark" />
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Causal Engine <span className="italic font-normal opacity-60">/ Epistemic Tier 3</span></span>
+                        <div className="flex gap-1">
+                          <button className="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><Bookmark className="w-4 h-4" /></button>
+                          <button className="p-1.5 hover:bg-primary/10 rounded text-primary/40 transition-colors"><Share className="w-4 h-4" /></button>
+                        </div>
+                      </div>
+                      <div className="font-mono text-sm leading-relaxed text-primary bg-primary/5 p-6 rounded-lg border border-primary/15 shadow-xl">
+                        <div className="whitespace-pre-wrap">{message.content}</div>
+                        
+                        {/* Example context chips that might be rendered with an AI message */}
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/10 bg-black/20 text-[10px] uppercase tracking-tighter text-primary/50">
+                            <BarChart2 className="w-3 h-3" /> Synthesis Log
+                          </div>
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/10 bg-black/20 text-[10px] uppercase tracking-tighter text-primary/50">
+                            <GitBranch className="w-3 h-3" /> Probabilistic Tree
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+            })}
+
+            {isTyping && (
+              <div className="group relative flex gap-6 items-start">
+                <div className="size-10 rounded bg-primary/60 animate-pulse flex items-center justify-center shrink-0">
+                  <Bot className="w-5 h-5 text-background-dark opacity-50" />
+                </div>
+                <div className="flex-1 flex flex-col gap-2 justify-center h-10">
+                   <span className="text-[10px] font-mono text-primary/40 animate-pulse">Computing Causal Inference...</span>
+                </div>
+              </div>
+            )}
+            
+          </div>
+
+          {/* Input Area */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-dark via-background-dark/95 to-transparent z-20">
+            <div className="max-w-4xl mx-auto relative group">
+              <input 
+                className="w-full bg-charcoal/80 border border-primary/20 rounded-xl px-6 py-4 font-mono text-sm focus:ring-1 focus:ring-primary/40 focus:border-primary/50 transition-all placeholder:text-primary/30 text-primary outline-none shadow-lg" 
+                placeholder="Negotiate causal parameters or pose anomaly..." 
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isTyping}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+                <button className="p-2 text-primary/40 hover:text-primary transition-colors">
+                  <Paperclip className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim() || isTyping}
+                  className="size-10 bg-primary text-background-dark rounded-lg flex items-center justify-center hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  <Send className="w-5 h-5 ml-[-2px]" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Right Sidebar - File System / Evidence Rail */}
+        <aside className="w-80 hidden xl:flex flex-col border-l border-primary/5 bg-obsidian/60 p-8 gap-10 z-10">
+          <div className="flex items-center justify-between">
+            <h3 className="text-[10px] uppercase tracking-[0.2em] text-primary/40 font-bold">Evidence Rail</h3>
+            <Info className="w-5 h-5 text-primary/20" />
+          </div>
+          
+          <div className="space-y-8 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            
+            {/* Visual Indicators */}
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex justify-between items-end">
+                  <span className="text-xs text-primary/60 font-medium">Empirical Weight</span>
+                  <span className="text-[10px] font-mono text-primary/40 italic">Incomplete</span>
+                </div>
+                <div className="relative h-1 w-full bg-primary/5 overflow-hidden">
+                  <div className="absolute h-full bg-primary/40 w-[35%] transition-all duration-1000"></div>
+                  <div className="absolute h-full bg-primary/10 w-[45%]"></div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-end">
+                  <span className="text-xs text-primary/60 font-medium">Logical Coherence</span>
+                  <span className="text-[10px] font-mono text-primary/80 italic">Verified</span>
+                </div>
+                <div className="relative h-1 w-full bg-primary/5 overflow-hidden">
+                  <div className="absolute h-full bg-primary w-[88%] transition-all duration-1000 shadow-[0_0_10px_rgba(230,233,238,0.4)]"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Simulated Source Truth */}
+            <div className="p-5 rounded bg-primary/5 border border-primary/5 space-y-4 evidence-gradient relative overflow-hidden group">
+               <div className="flex items-center gap-2 mb-2 relative z-10">
+                  <BookOpen className="w-4 h-4 text-primary/40" />
+                  <span className="text-[9px] uppercase tracking-widest text-primary/60">Selected VFS File</span>
+               </div>
+               
+               {/* Display chosen file logically */}
+               {selectedFile ? (
+                 <div className="space-y-2 relative z-10">
+                   <p className="text-xs font-mono font-bold text-primary/80">{selectedFile.name}</p>
+                   <p className="text-[10px] font-mono text-primary/50 leading-relaxed max-h-[150px] overflow-y-auto">
+                     {selectedFile.content ? selectedFile.content.substring(0, 150) + "..." : "(Binary Content)"}
+                   </p>
+                 </div>
+               ) : (
+                 <p className="text-xs italic leading-relaxed text-primary/40 relative z-10">
+                   "No entity selected from the Virtual FS array. The manifold remains unbiased."
+                 </p>
+               )}
+            </div>
+
+            {/* Virtual File System Representation */}
+            <div className="space-y-4 border-t border-primary/5 pt-6">
+              <h4 className="text-[9px] uppercase tracking-[0.2em] text-primary/30 font-bold">Virtual FS Objects</h4>
+              <div className="space-y-2">
+                {session.fileSystem.map((file) => (
+                  <div 
+                    key={file.path} 
+                    onClick={() => setSelectedFile(file)}
+                    className={`flex flex-col text-[10px] font-mono p-3 cursor-pointer rounded border transition-all ${selectedFile?.path === file.path ? 'bg-primary/10 border-primary/20' : 'hover:bg-white/5 border-transparent hover:border-primary/5'}`}
+                  >
+                    <div className="flex justify-between items-center w-full">
+                       <span className={selectedFile?.path === file.path ? 'text-primary' : 'text-primary/60'}>
+                         {file.name}
+                       </span>
+                       <span className="text-primary/30 text-[9px]">{file.type}</span>
+                    </div>
+                  </div>
+                ))}
+                {session.fileSystem.length === 0 && (
+                   <div className="text-[10px] font-mono text-primary/30 italic px-2">No documents mapped yet</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-auto pt-6 border-t border-primary/5 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="size-2 rounded-full bg-primary/20 animate-pulse"></div>
+              <span className="text-[10px] font-mono text-primary/30">Thinking Instrument — Variant 3</span>
+            </div>
+          </div>
+        </aside>
+
+      </main>
+    </div>
+  );
+}

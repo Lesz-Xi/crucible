@@ -1,0 +1,8 @@
+[     386ms] [WARNING] GoTrueClient@sb-qrghckvxtglpmvpvtdwp-auth-token:1 (2.90.1) 2026-03-04T10:47:24.170Z Multiple GoTrueClient instances detected in the same browser context. It is not an error, but this should be avoided as it may produce undefined behavior when used concurrently under the same storage key. @ http://localhost:3008/_next/static/chunks/node_modules_%40supabase_auth-js_dist_module_6ccbf858._.js:5792
+[ 4177769ms] [WARNING] [HMR] Invalid message: {"isTrusted":true}
+TypeError: Cannot convert undefined or null to object
+    at Object.keys (<anonymous>)
+    at extractModulesFromTurbopackMessage (http://localhost:3008/_next/static/chunks/node_modules_next_dist_client_20b209c9._.js:5717:39)
+    at TurbopackHmr.onTurbopackMessage (http://localhost:3008/_next/static/chunks/node_modules_next_dist_client_20b209c9._.js:5622:32)
+    at processMessage (http://localhost:3008/_next/static/chunks/node_modules_next_dist_client_20b209c9._.js:6020:30)
+    at WebSocket.handler (http://localhost:3008/_next/static/chunks/node_modules_next_dist_client_20b209c9._.js:6154:17) @ http://localhost:3008/_next/static/chunks/node_modules_next_dist_client_20b209c9._.js:5344

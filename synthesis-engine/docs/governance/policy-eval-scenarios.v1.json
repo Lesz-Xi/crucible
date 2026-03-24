@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "scenarios": [
+    {
+      "scenarioId": "PE-S001",
+      "label": "Low-dimensional linear — EIG dominates",
+      "policies": ["eig", "bo_ucb", "bo_ts", "efe"],
+      "input": {
+        "dimensionality": 3,
+        "sampleBudget": 50,
+        "noiseLevel": "low",
+        "priorStrength": "informative",
+        "objectiveType": "parameter_estimation"
+      },
+      "expectedHardGates": [],
+      "expectedDecision": "eig"
+    },
+    {
+      "scenarioId": "PE-S002",
+      "label": "High-dimensional noisy — BO-UCB preferred",
+      "policies": ["eig", "bo_ucb", "bo_ts", "efe"],
+      "input": {
+        "dimensionality": 20,
+        "sampleBudget": 200,
+        "noiseLevel": "high",
+        "priorStrength": "weak",
+        "objectiveType": "optimization"
+      },
+      "expectedHardGates": [],
+      "expectedDecision": "bo_ucb"
+    },
+    {
+      "scenarioId": "PE-S003",
+      "label": "Budget-constrained active learning — hard gate on sample count",
+      "policies": ["eig", "bo_ucb", "bo_ts", "efe"],
+      "input": {
+        "dimensionality": 5,
+        "sampleBudget": 5,
+        "noiseLevel": "medium",
+        "priorStrength": "none",
+        "objectiveType": "model_selection"
+      },
+      "expectedHardGates": ["min_sample_budget"],
+      "expectedDecision": "eig"
+    }
+  ]
+}

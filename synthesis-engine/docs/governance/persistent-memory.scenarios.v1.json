@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-02-13T00:00:00.000Z",
+  "scenarios": [
+    {
+      "scenarioId": "PM-001",
+      "description": "Token pressure should retain high-causal rung context.",
+      "messages": [
+        { "id": "m1", "role": "user", "content": "Summarize paper A", "causalDensity": { "score": 1, "confidence": 0.6 } },
+        { "id": "m2", "role": "assistant", "content": "Association summary", "causalDensity": { "score": 1, "confidence": 0.7 } },
+        { "id": "m3", "role": "user", "content": "What if mechanism breaks?", "causalDensity": { "score": 3, "confidence": 0.91 }, "isInterventionTrace": true },
+        { "id": "m4", "role": "assistant", "content": "Counterfactual outcome", "causalDensity": { "score": 3, "confidence": 0.9 }, "hasToolEvidence": true },
+        { "id": "m5", "role": "user", "content": "Check confounders", "causalDensity": { "score": 2, "confidence": 0.82 } }
+      ],
+      "maxMessages": 3,
+      "cacheTtlState": "cache_ttl_expired",
+      "query": "counterfactual confounder mechanism",
+      "expected": {
+        "minRetainedL3": 1,
+        "maxPruned": 2,
+        "topResultMinFinalScore": 0.4
+      }
+    },
+    {
+      "scenarioId": "PM-002",
+      "description": "Fresh cache and small window should avoid pruning churn.",
+      "messages": [
+        { "id": "m10", "role": "user", "content": "Short question", "causalDensity": { "score": 1, "confidence": 0.6 } },
+        { "id": "m11", "role": "assistant", "content": "Short answer", "causalDensity": { "score": 1, "confidence": 0.6 } }
+      ],
+      "maxMessages": 6,
+      "cacheTtlState": "cache_ttl_fresh",
+      "query": "short answer",
+      "expected": {
+        "minRetainedL3": 0,
+        "maxPruned": 0,
+        "topResultMinFinalScore": 0.2
+      }
+    }
+  ]
+}

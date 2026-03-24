@@ -1,0 +1,17 @@
+{
+  "date": "2026-02-07",
+  "commit": "a389724b56504d93b8e75f89b5f68c108cfb504e",
+  "routes": [
+    {"path": "/api/epistemic/chat", "file": "src/app/api/epistemic/chat/route.ts", "hash": "dbb3dd459b30350c3d5e64e99579a0fdedd8dcea"},
+    {"path": "/api/epistemic/session/[id]", "file": "src/app/api/epistemic/session/[id]/route.ts", "hash": "62e29b2e92a9dd5a1b3ca54729c439d7883ef1f1"},
+    {"path": "/api/epistemic/session", "file": "src/app/api/epistemic/session/route.ts", "hash": "c2597be45ad91277524bfa781f94b296e62393d3"},
+    {"path": "/api/hybrid-synthesize", "file": "src/app/api/hybrid-synthesize/route.ts", "hash": "5ba3c677024ebe2a919313115aa4a9290a6fcc60"},
+    {"path": "/api/synthesis-history", "file": "src/app/api/synthesis-history/route.ts", "hash": "f172d00927383f12ef7c60613ac8f9a4ed622664"},
+    {"path": "/api/synthesize", "file": "src/app/api/synthesize/route.ts", "hash": "f1b9aa778593469953298a71cf0e1317aa3e645b"},
+    {"path": "/api/validate-protocol", "file": "src/app/api/validate-protocol/route.ts", "hash": "be1c32ac16cbebd895f092457feea39727084663"},
+    {"path": "/epistemic", "file": "src/app/epistemic/page.tsx", "hash": "05540c1a81218c76aef0688bb76ca4e4dcd00001"},
+    {"path": "/hybrid", "file": "src/app/hybrid/page.tsx", "hash": "b27aa34f31870b2426e3080ee1234709bab1991c"},
+    {"path": "/", "file": "src/app/page.tsx", "hash": "fb0b049f721d7a83d30d180139acde5031068bc9"},
+    {"path": "/pdf-synthesis", "file": "src/app/pdf-synthesis/page.tsx", "hash": "9620df4a49042f9dfae8fc3953d6d846dba1abd1"}
+  ]
+}
