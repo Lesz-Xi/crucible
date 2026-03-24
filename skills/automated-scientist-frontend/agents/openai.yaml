@@ -1,0 +1,4 @@
+interface:
+  display_name: "Automated Scientist Frontend"
+  short_description: "High-density workbench UI for Automated Scientist"
+  default_prompt: "Use $automated-scientist-frontend to redesign this Automated Scientist surface with dense evidence-aware layout, trust-first states, and MASA visual language."

@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthetic Mind — Orbital Consciousness Interface / Concept Board</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ─── MASA TOKEN SYSTEM ─────────────────────────────────────── */
+  :root {
+    --bg:         #0E0D0C;
+    --bg-2:       #131210;
+    --bg-3:       #1A1816;
+    --bg-4:       #211F1C;
+    --bg-5:       #282523;
+    --sidebar-bg: #0B0A09;
+    --border:     rgba(255,255,255,0.07);
+    --border-2:   rgba(255,255,255,0.12);
+    --text-1:     rgba(255,248,235,0.95);
+    --text-2:     rgba(255,248,235,0.65);
+    --text-3:     rgba(255,248,235,0.38);
+    --text-4:     rgba(255,248,235,0.22);
+    --accent:     #C8965A;
+    --accent-dim: rgba(200,150,90,0.22);
+    --accent-glow:rgba(200,150,90,0.055);
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-sans:  'Inter', system-ui, sans-serif;
+    --font-mono:  'JetBrains Mono', monospace;
+    --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Mode palette */
+    --mode-chat:        #7AB3E0;
+    --mode-chat-glow:   rgba(122,179,224,0.18);
+    --mode-hybrid:      #C8965A;
+    --mode-hybrid-glow: rgba(200,150,90,0.22);
+    --mode-legal:       #C46A6A;
+    --mode-legal-glow:  rgba(196,106,106,0.18);
+    --mode-edu:         #5AAE8A;
+    --mode-edu-glow:    rgba(90,174,138,0.18);
+    --mode-labs:        #9B72CF;
+    --mode-labs-glow:   rgba(155,114,207,0.22);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── CONCEPT BOARD LAYOUT ────────────────────────────────── */
+  .board {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 64px 40px;
+  }
+
+  /* ─── MASTHEAD ─────────────────────────────────────────────── */
+  .masthead {
+    margin-bottom: 80px;
+  }
+  .masthead-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .masthead h1 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 52px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--text-1);
+    margin-bottom: 20px;
+  }
+  .masthead h1 span { color: var(--accent); }
+  .masthead-sub {
+    font-size: 15px;
+    color: var(--text-2);
+    max-width: 640px;
+    line-height: 1.7;
+  }
+  .masthead-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .meta-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .meta-value {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  /* ─── SECTION HEADER ─────────────────────────────────────── */
+  .section {
+    margin-bottom: 72px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    min-width: 24px;
+  }
+  .section-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 28px;
+    color: var(--text-1);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── GRID UTILS ──────────────────────────────────────────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+
+  /* ─── CARD ────────────────────────────────────────────────── */
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .card-sm { padding: 16px; border-radius: 8px; }
+  .card-title {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 12px;
+  }
+
+  /* ─── CONCEPT STATEMENT ──────────────────────────────────── */
+  .concept-statement {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  .concept-statement p {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--text-1);
+  }
+  .concept-statement strong { color: var(--accent); font-weight: 500; }
+
+  /* ─── LAYOUT WIREFRAME ────────────────────────────────────── */
+  .wireframe-shell {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    height: 540px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .wf-topbar {
+    height: 40px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .wf-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-2); }
+  .wf-topbar-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-left: auto;
+  }
+  .wf-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  .wf-sidebar {
+    width: 180px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 16px 12px;
+    flex-shrink: 0;
+  }
+  .wf-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .wf-rail {
+    width: 200px;
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    padding: 16px 12px;
+    flex-shrink: 0;
+  }
+
+  /* Zones inside main */
+  .wf-zone-orb {
+    flex: 0 0 48%;
+    background: radial-gradient(ellipse at 50% 60%, rgba(122,179,224,0.06) 0%, transparent 70%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 12px;
+  }
+  .wf-zone-dialogue {
+    flex: 1;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .wf-zone-input {
+    height: 64px;
+    background: var(--bg);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Orb visualization */
+  .wf-orb-ring {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 1px solid rgba(122,179,224,0.15);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wf-orb-core {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+      rgba(122,179,224,0.6),
+      rgba(200,150,90,0.4),
+      rgba(155,114,207,0.5),
+      rgba(122,179,224,0.6)
+    );
+    position: relative;
+    animation: orb-spin 8s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 24px rgba(122,179,224,0.25), 0 0 48px rgba(122,179,224,0.1);
+  }
+  .wf-orb-core::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--bg-3);
+  }
+  .wf-orb-core::after {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,179,224,0.4), rgba(122,179,224,0.05));
+    animation: orb-pulse 3s ease-in-out infinite;
+  }
+  @keyframes orb-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes orb-pulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  /* Orbital nodes */
+  .wf-orbital-nodes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: orbit-rotate 20s linear infinite;
+    border-radius: 50%;
+  }
+  @keyframes orbit-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .wf-node {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: counter-rotate 20s linear infinite;
+  }
+  @keyframes counter-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+  }
+  .wf-node.active {
+    background: var(--bg-4);
+    border-color: var(--mode-chat);
+    box-shadow: 0 0 10px var(--mode-chat-glow);
+  }
+  .wf-node span {
+    font-family: var(--font-mono);
+    font-size: 7px;
+    color: var(--text-3);
+    letter-spacing: 0.05em;
+  }
+  .wf-node.active span { color: var(--mode-chat); }
+
+  /* Positioning the 5 nodes on the ring */
+  .wf-node:nth-child(1) { top: -14px; left: calc(50% - 14px); }
+  .wf-node:nth-child(2) { top: calc(50% * 0.19); right: -14px; }
+  .wf-node:nth-child(3) { bottom: calc(50% * 0.19); right: -2px; }
+  .wf-node:nth-child(4) { bottom: calc(50% * 0.19); left: -2px; }
+  .wf-node:nth-child(5) { top: calc(50% * 0.19); left: -14px; }
+
+  /* Message stubs in dialogue zone */
+  .wf-msg {
+    height: 16px;
+    border-radius: 4px;
+    background: var(--bg-3);
+    opacity: 0.6;
+  }
+  .wf-msg-ai {
+    width: 85%;
+    border-left: 2px solid var(--mode-chat);
+  }
+  .wf-msg-user {
+    width: 55%;
+    margin-left: auto;
+    background: var(--bg-4);
+  }
+  .wf-msg-ai-2 {
+    width: 70%;
+    border-left: 2px solid var(--mode-chat);
+  }
+
+  /* Input stub */
+  .wf-input-field {
+    flex: 1;
+    height: 34px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .wf-input-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--mode-chat);
+    opacity: 0.7;
+  }
+
+  /* Sidebar stubs */
+  .wf-nav-item {
+    height: 24px;
+    background: var(--bg-2);
+    border-radius: 4px;
+    margin-bottom: 4px;
+    opacity: 0.4;
+  }
+  .wf-nav-item.active {
+    opacity: 1;
+    border-left: 2px solid var(--accent);
+    background: var(--bg-3);
+  }
+  .wf-sidebar-label {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin: 12px 0 6px;
+  }
+
+  /* Zone labels */
+  .wf-zone-label {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-4);
+  }
+  .wf-zone-measure {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: var(--text-4);
+  }
+
+  /* ─── MODE CARDS ──────────────────────────────────────────── */
+  .mode-card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s var(--ease);
+    cursor: default;
+  }
+  .mode-orb-preview {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .mode-orb-lines {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .mode-orb-inner {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+  }
+  .mode-name {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .mode-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .mode-shader-hint {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Mode-specific colors */
+  .mode-chat-card    { --m: var(--mode-chat); --mg: var(--mode-chat-glow); }
+  .mode-hybrid-card  { --m: var(--mode-hybrid); --mg: var(--mode-hybrid-glow); }
+  .mode-legal-card   { --m: var(--mode-legal); --mg: var(--mode-legal-glow); }
+  .mode-edu-card     { --m: var(--mode-edu); --mg: var(--mode-edu-glow); }
+  .mode-labs-card    { --m: var(--mode-labs); --mg: var(--mode-labs-glow); }
+
+  .mode-card:hover { border-color: var(--m, var(--border-2)); }
+
+  /* Shader line simulation via CSS */
+  .shader-sim {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-3);
+  }
+  .shader-col {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: shader-flicker 2s ease-in-out infinite;
+  }
+  @keyframes shader-flicker {
+    0%, 100% { opacity: 0; height: 30%; top: 35%; }
+    40% { opacity: 0.9; height: 90%; top: 5%; }
+    60% { opacity: 0.6; height: 70%; top: 15%; }
+    80% { opacity: 0.3; height: 40%; top: 30%; }
+  }
+
+  /* ─── INTERACTION FLOW ────────────────────────────────────── */
+  .flow-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .flow-step:last-child { border-bottom: none; }
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .flow-content h4 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+    margin-bottom: 4px;
+  }
+  .flow-content p {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .flow-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 6px;
+  }
+
+  /* ─── ORB STATE DIAGRAM ───────────────────────────────────── */
+  .orb-state-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .orb-state-row:last-child { border-bottom: none; }
+  .orb-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .orb-state-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    min-width: 90px;
+    color: var(--text-2);
+  }
+  .orb-state-desc {
+    font-size: 12px;
+    color: var(--text-3);
+  }
+  .orb-state-spec {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-4);
+  }
+
+  /* ─── TOKEN TABLE ─────────────────────────────────────────── */
+  .token-row {
+    display: grid;
+    grid-template-columns: 180px 120px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .token-row:last-child { border-bottom: none; }
+  .token-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+  }
+  .token-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  .token-value { color: var(--text-3); }
+
+  /* ─── COMPONENT INVENTORY ─────────────────────────────────── */
+  .comp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-item:last-child { border-bottom: none; }
+  .comp-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+  .comp-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+    margin-bottom: 2px;
+  }
+  .comp-desc { font-size: 11px; color: var(--text-3); }
+  .comp-src {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--text-4);
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ─── DIFFERENTIATION TABLE ──────────────────────────────── */
+  .diff-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .diff-row:last-child { border-bottom: none; }
+  .diff-cell {
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .diff-cell:first-child {
+    border-right: 1px solid var(--border);
+    color: var(--text-3);
+    text-decoration: line-through;
+  }
+  .diff-cell.new { color: var(--text-1); }
+  .diff-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border-2);
+  }
+  .diff-header-cell {
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .diff-header-cell:first-child {
+    border-right: 1px solid var(--border);
+  }
+  .diff-header-cell.highlight { color: var(--accent); }
+
+  /* ─── MESSAGE ANATOMY ─────────────────────────────────────── */
+  .anatomy-container {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .anatomy-header {
+    padding: 12px 16px;
+    background: var(--bg-3);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .anatomy-header span {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .anatomy-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mode-chat);
+    box-shadow: 0 0 6px var(--mode-chat-glow);
+  }
+  .anatomy-msgs {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .msg-bubble {
+    position: relative;
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .msg-bubble-ai {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--mode-chat);
+    color: var(--text-1);
+  }
+  .msg-bubble-user {
+    background: var(--bg-4);
+    border: 1px solid var(--border-2);
+    color: var(--text-2);
+    align-self: flex-end;
+  }
+  .msg-meta {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    margin-bottom: 4px;
+    margin-left: 2px;
+  }
+  .msg-annotation {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+  .msg-connector {
+    width: 1px;
+    height: 12px;
+    background: var(--border-2);
+    margin: 0 12px;
+    align-self: center;
+  }
+
+  /* ─── ORBIT VISUAL (full concept) ────────────────────────── */
+  .orbit-concept {
+    position: relative;
+    height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .orbit-ring-outer {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .orbit-ring-inner {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.04);
+  }
+  .orbit-center {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    z-index: 10;
+    overflow: hidden;
+  }
+  .orbit-center-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,179,224,0.08) 0%, transparent 70%);
+  }
+  .orbit-shader-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #0A0A0F;
+  }
+  .orbit-shader-col {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 2px;
+    animation: shader-flicker 2.5s ease-in-out infinite;
+  }
+  .orbit-inner-glow {
+    position: absolute;
+    inset: 15px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122,179,224,0.5), rgba(122,179,224,0.05));
+    animation: orb-pulse 3s ease-in-out infinite;
+  }
+
+  .orbit-node {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--border-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+    z-index: 5;
+  }
+  .orbit-node.active {
+    background: var(--bg-4);
+    width: 52px;
+    height: 52px;
+    box-shadow: 0 0 20px var(--mg);
+    border-color: var(--m);
+  }
+  .orbit-node-icon { font-size: 14px; }
+  .orbit-node-label {
+    font-family: var(--font-mono);
+    font-size: 7px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .orbit-node.active .orbit-node-label { color: var(--m); }
+  .orbit-connector {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--mode-chat), transparent);
+    transform-origin: right center;
+    opacity: 0.3;
+    z-index: 4;
+  }
+
+  /* Position orbital nodes */
+  #n-chat   { top: -26px; left: calc(50% - 22px); }
+  #n-hybrid { top: calc(50% - 10%); right: -26px; --m: var(--mode-hybrid); --mg: var(--mode-hybrid-glow); }
+  #n-legal  { bottom: calc(50% - 30%); right: -10px; --m: var(--mode-legal); --mg: var(--mode-legal-glow); }
+  #n-edu    { bottom: calc(50% - 30%); left: -10px; --m: var(--mode-edu); --mg: var(--mode-edu-glow); }
+  #n-labs   { top: calc(50% - 10%); left: -26px; --m: var(--mode-labs); --mg: var(--mode-labs-glow); }
+
+  /* ─── CALLOUT BOX ─────────────────────────────────────────── */
+  .callout {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .callout p {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--text-1); }
+
+  /* ─── RESPONSIVE SPEC ─────────────────────────────────────── */
+  .spec-row {
+    display: grid;
+    grid-template-columns: 100px 80px 1fr;
+    gap: 16px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); }
+  .spec-val { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+  .spec-desc { color: var(--text-3); }
+
+  /* ─── IMPLEMENTATION NOTES ─────────────────────────────────── */
+  .impl-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .impl-item:last-child { border-bottom: none; }
+  .impl-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+  }
+  .impl-badge.core { background: var(--accent-dim); color: var(--accent); }
+  .impl-badge.new { background: rgba(90,174,138,0.15); color: var(--mode-edu); }
+  .impl-badge.adapted { background: rgba(155,114,207,0.15); color: var(--mode-labs); }
+  .impl-title { font-size: 13px; font-weight: 500; color: var(--text-1); margin-bottom: 3px; }
+  .impl-desc { font-size: 12px; color: var(--text-3); line-height: 1.5; }
+
+  /* ─── FOOTER ──────────────────────────────────────────────── */
+  .concept-footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .concept-footer-brand {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--text-2);
+  }
+  .concept-footer-brand span { color: var(--accent); }
+  .concept-footer-meta {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-4);
+    text-align: right;
+  }
+
+  /* utility */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-3);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .pill-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .separator { height: 1px; background: var(--border); margin: 40px 0; }
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-20 { margin-top: 20px; }
+  .mb-12 { margin-bottom: 12px; }
+
+  /* ─── AMBIENT GLOW ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(200,150,90,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .board { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="board">
+
+  <!-- ─── MASTHEAD ──────────────────────────────────────────── -->
+  <div class="masthead">
+    <div class="masthead-eyebrow">Synthetic Mind · Concept Board · March 2026</div>
+    <h1>Orbital <span>Consciousness</span><br>Interface</h1>
+    <p class="masthead-sub">
+      A radical departure from the document-metaphor chat paradigm. The AI doesn't live in a sidebar — it exists as a <em>living prismatic presence</em> at the center of the screen, with five orbital modes of reasoning rotating around it like a personal solar system.
+    </p>
+    <div class="masthead-meta">
+      <div class="meta-item">
+        <span class="meta-label">Project</span>
+        <span class="meta-value">Synthetic Mind / wuweism.com</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Design System</span>
+        <span class="meta-value">MASA v2 · Warm Cinematic Dark</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Stack</span>
+        <span class="meta-value">Next.js 15 · shadcn · Three.js</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Status</span>
+        <span class="meta-value">Concept / Pre-Implementation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 01. NORTH STAR ───────────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">The North Star Concept</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="concept-statement">
+      <p>
+        Every current chat interface is a <strong>document metaphor</strong> — a list of messages stacked in a vertical feed, topped by a header, bottomed by an input. It's a text editor pretending to be a mind. <strong>We break this completely.</strong> The Synthetic Mind is organized around a central <strong>Shader Orb</strong> — a living, breathing Three.js shader animation that serves as the visual locus of intelligence. Five reasoning modes — Chat, Hybrid, Legal, Educational, Labs — orbit the orb in a slow, continuous ellipse. You don't click tabs. You intercept a mode as it passes.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">The Metaphor Shift</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.65">
+          From <em>chat box</em> to <em>orbital brain</em>. The interface communicates that this is an intelligence with presence, not a text relay. The orb breathes, pulses, and shifts color based on what it's doing.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">The Spatial Grammar</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.65">
+          Three vertical zones: <strong style="color:var(--text-1)">Consciousness</strong> (the orb, 45%), <strong style="color:var(--text-1)">Dialogue</strong> (thread, 35%), <strong style="color:var(--text-1)">Command</strong> (input, 20%). Each zone has its own visual register and interaction logic.
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">The MASA Lineage</div>
+        <p style="font-size:13px;color:var(--text-2);line-height:1.65">
+          Inherits the warm cinematic dark lab soul — charcoal <code style="font-family:var(--font-mono);font-size:11px;color:var(--accent)">#0E0D0C</code>, amber accent, Instrument Serif headings, JetBrains Mono labels. The shader orb adds spectral energy within that warm container.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 02. LAYOUT WIREFRAME ─────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Layout Architecture</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div>
+        <div class="wireframe-shell">
+          <div class="wf-topbar">
+            <div class="wf-dot"></div>
+            <div class="wf-dot"></div>
+            <div class="wf-dot"></div>
+            <span class="wf-topbar-label" style="font-size:8px">Synthetic Mind · Causal Workbench</span>
+          </div>
+          <div class="wf-body">
+            <!-- Sidebar -->
+            <div class="wf-sidebar">
+              <div class="wf-sidebar-label">History</div>
+              <div class="wf-nav-item active" style="margin-bottom:4px"></div>
+              <div class="wf-nav-item"></div>
+              <div class="wf-nav-item"></div>
+              <div class="wf-nav-item"></div>
+              <div class="wf-nav-item"></div>
+              <div class="wf-sidebar-label" style="margin-top:16px">Protocols</div>
+              <div class="wf-nav-item"></div>
+              <div class="wf-nav-item"></div>
+            </div>
+            <!-- Main content -->
+            <div class="wf-main">
+              <!-- Zone 1: Orb -->
+              <div class="wf-zone-orb">
+                <span class="wf-zone-label">Consciousness Zone</span>
+                <span class="wf-zone-measure">~45%</span>
+                <div class="wf-orb-ring">
+                  <div class="wf-orbital-nodes">
+                    <div class="wf-node active"><span>Chat</span></div>
+                    <div class="wf-node"><span>Hyb</span></div>
+                    <div class="wf-node"><span>Leg</span></div>
+                    <div class="wf-node"><span>Edu</span></div>
+                    <div class="wf-node"><span>Lab</span></div>
+                  </div>
+                  <div class="wf-orb-core"></div>
+                </div>
+              </div>
+              <!-- Zone 2: Dialogue -->
+              <div class="wf-zone-dialogue" style="position:relative">
+                <span class="wf-zone-label">Dialogue Zone</span>
+                <span class="wf-zone-measure">~35%</span>
+                <div style="height:12px"></div>
+                <div class="wf-msg wf-msg-ai"></div>
+                <div class="wf-msg wf-msg-user"></div>
+                <div class="wf-msg wf-msg-ai-2"></div>
+              </div>
+              <!-- Zone 3: Input -->
+              <div class="wf-zone-input">
+                <div class="wf-input-field"></div>
+                <div class="wf-input-btn"></div>
+              </div>
+            </div>
+            <!-- Evidence Rail -->
+            <div class="wf-rail">
+              <div class="wf-sidebar-label">Evidence Rail</div>
+              <div class="wf-nav-item" style="height:32px;margin-bottom:8px;opacity:0.3"></div>
+              <div class="wf-nav-item" style="height:32px;margin-bottom:8px;opacity:0.25"></div>
+              <div class="wf-nav-item" style="height:32px;opacity:0.2"></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text-4);margin-top:8px;text-align:center;font-family:var(--font-mono);letter-spacing:0.08em">Annotated wireframe · animated · not to pixel scale</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-title">Zone 1 · Consciousness (45%)</div>
+          <p style="font-size:12px;color:var(--text-2);line-height:1.6">The Shader Orb lives here — a 280–320px circular mask containing the Three.js shader-lines animation. Five orbital mode nodes circle the orb continuously. The orb's shader tints according to active mode. Radial glow bleeds into the surrounding space.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Zone 2 · Dialogue (35%)</div>
+          <p style="font-size:12px;color:var(--text-2);line-height:1.6">Chat thread rendered as thought-cards that materialize from the orb via scale+fade entrance. A thin vertical connector line runs through the thread. User messages right-align. AI responses have a left accent border in mode color. Scrolls independently.</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Zone 3 · Command (20%)</div>
+          <p style="font-size:12px;color:var(--text-2);line-height:1.6">Minimal strip. Input field with amber MASA focus ring. Circular send button (orbital echo). A tiny active-mode pill shows current context without requiring a mode-selector in this zone.</p>
+        </div>
+        <div class="callout">
+          <span class="callout-icon">◆</span>
+          <p><strong>MASA Shell Preserved:</strong> The three-zone sidebar/main/rail shell from the existing synthesis-engine is maintained. The Consciousness Zone replaces the top of the chat area; the Evidence Rail persists for confidence + causal telemetry.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 03. FIVE MODES ────────────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Five Orbital Modes</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:24px;line-height:1.65;max-width:700px">Each mode is a distinct reasoning context. When a mode node is selected, the Shader Orb's color temperature shifts, the active mode's accent bleeds into the dialogue zone's left border, and the Evidence Rail updates its telemetry accordingly.</p>
+
+    <div class="grid-5">
+      <!-- Chat -->
+      <div class="mode-card mode-chat-card">
+        <div class="mode-orb-preview">
+          <div class="shader-sim">
+            <div class="shader-col" style="left:20%;background:var(--mode-chat);animation-delay:0s"></div>
+            <div class="shader-col" style="left:38%;background:var(--mode-chat);animation-delay:0.4s"></div>
+            <div class="shader-col" style="left:55%;background:#fff;animation-delay:0.8s"></div>
+            <div class="shader-col" style="left:72%;background:var(--mode-chat);animation-delay:1.2s"></div>
+          </div>
+          <div class="mode-orb-inner" style="background:radial-gradient(circle, rgba(122,179,224,0.6), rgba(122,179,224,0.05));"></div>
+        </div>
+        <div>
+          <div class="mode-name" style="color:var(--mode-chat)">Chat</div>
+          <div class="mode-desc">Open causal dialogue. The default state. Blue-white prismatic columns, moderate pulse frequency.</div>
+        </div>
+        <div class="mode-shader-hint">Shader Tint: Steel Blue<br>Orbit Position: 12 o'clock</div>
+      </div>
+
+      <!-- Hybrid -->
+      <div class="mode-card mode-hybrid-card">
+        <div class="mode-orb-preview">
+          <div class="shader-sim">
+            <div class="shader-col" style="left:15%;background:var(--mode-hybrid);animation-delay:0.2s"></div>
+            <div class="shader-col" style="left:40%;background:#E8B87A;animation-delay:0.7s"></div>
+            <div class="shader-col" style="left:60%;background:var(--mode-hybrid);animation-delay:0.3s"></div>
+            <div class="shader-col" style="left:78%;background:#fff;animation-delay:1.1s"></div>
+          </div>
+          <div class="mode-orb-inner" style="background:radial-gradient(circle, rgba(200,150,90,0.7), rgba(200,150,90,0.05));"></div>
+        </div>
+        <div>
+          <div class="mode-name" style="color:var(--mode-hybrid)">Hybrid</div>
+          <div class="mode-desc">Contradiction synthesis + novelty proofing. Warm amber prismatic — matches MASA's core accent.</div>
+        </div>
+        <div class="mode-shader-hint">Shader Tint: Amber Gold<br>Orbit Position: ~2 o'clock</div>
+      </div>
+
+      <!-- Legal -->
+      <div class="mode-card mode-legal-card">
+        <div class="mode-orb-preview">
+          <div class="shader-sim">
+            <div class="shader-col" style="left:25%;background:var(--mode-legal);animation-delay:0.1s"></div>
+            <div class="shader-col" style="left:45%;background:#E08080;animation-delay:0.6s"></div>
+            <div class="shader-col" style="left:65%;background:var(--mode-legal);animation-delay:1.0s"></div>
+            <div class="shader-col" style="left:80%;background:#fff;animation-delay:0.5s"></div>
+          </div>
+          <div class="mode-orb-inner" style="background:radial-gradient(circle, rgba(196,106,106,0.6), rgba(196,106,106,0.05));"></div>
+        </div>
+        <div>
+          <div class="mode-name" style="color:var(--mode-legal)">Legal</div>
+          <div class="mode-desc">But-for / proximate causation analysis. Deep crimson columns — formal, high-precision energy.</div>
+        </div>
+        <div class="mode-shader-hint">Shader Tint: Crimson<br>Orbit Position: ~5 o'clock</div>
+      </div>
+
+      <!-- Educational -->
+      <div class="mode-card mode-edu-card">
+        <div class="mode-orb-preview">
+          <div class="shader-sim">
+            <div class="shader-col" style="left:18%;background:var(--mode-edu);animation-delay:0.3s"></div>
+            <div class="shader-col" style="left:42%;background:#7ACFA8;animation-delay:0.9s"></div>
+            <div class="shader-col" style="left:62%;background:var(--mode-edu);animation-delay:0.1s"></div>
+            <div class="shader-col" style="left:76%;background:#fff;animation-delay:0.7s"></div>
+          </div>
+          <div class="mode-orb-inner" style="background:radial-gradient(circle, rgba(90,174,138,0.6), rgba(90,174,138,0.05));"></div>
+        </div>
+        <div>
+          <div class="mode-name" style="color:var(--mode-edu)">Educational</div>
+          <div class="mode-desc">Socratic reasoning and step-by-step unfolding. Emerald teal — growth, illumination, patient depth.</div>
+        </div>
+        <div class="mode-shader-hint">Shader Tint: Emerald<br>Orbit Position: ~7 o'clock</div>
+      </div>
+
+      <!-- Labs -->
+      <div class="mode-card mode-labs-card">
+        <div class="mode-orb-preview">
+          <div class="shader-sim">
+            <div class="shader-col" style="left:12%;background:var(--mode-labs);animation-delay:0.5s"></div>
+            <div class="shader-col" style="left:35%;background:#B894E8;animation-delay:0.0s"></div>
+            <div class="shader-col" style="left:58%;background:var(--mode-labs);animation-delay:1.3s"></div>
+            <div class="shader-col" style="left:80%;background:#CF9BFF;animation-delay:0.8s"></div>
+          </div>
+          <div class="mode-orb-inner" style="background:radial-gradient(circle, rgba(155,114,207,0.7), rgba(155,114,207,0.05));"></div>
+        </div>
+        <div>
+          <div class="mode-name" style="color:var(--mode-labs)">Labs</div>
+          <div class="mode-desc">Experimental reasoning, hypothesis generation, speculative exploration. Violet — the furthest from the known.</div>
+        </div>
+        <div class="mode-shader-hint">Shader Tint: Deep Violet<br>Orbit Position: ~10 o'clock</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 04. ORB AS SYSTEM STATE ──────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">The Orb as System State Display</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <!-- Left: orbit concept visual -->
+      <div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="orbit-concept">
+            <div class="orbit-ring-outer"></div>
+            <div class="orbit-ring-inner"></div>
+            <div class="orbit-center-glow"></div>
+
+            <!-- Central Orb -->
+            <div class="orbit-center">
+              <div class="orbit-shader-bg">
+                <div class="orbit-shader-col" style="left:10%;background:var(--mode-chat);animation-delay:0s;opacity:0"></div>
+                <div class="orbit-shader-col" style="left:25%;background:#fff;animation-delay:0.5s;opacity:0"></div>
+                <div class="orbit-shader-col" style="left:40%;background:var(--mode-chat);animation-delay:1.0s;opacity:0"></div>
+                <div class="orbit-shader-col" style="left:55%;background:#7AC7FF;animation-delay:0.3s;opacity:0"></div>
+                <div class="orbit-shader-col" style="left:70%;background:#fff;animation-delay:0.8s;opacity:0"></div>
+                <div class="orbit-shader-col" style="left:82%;background:var(--mode-chat);animation-delay:1.4s;opacity:0"></div>
+              </div>
+              <div class="orbit-inner-glow"></div>
+            </div>
+
+            <!-- Mode nodes -->
+            <div style="position:absolute;width:280px;height:280px;border-radius:50%">
+              <div class="orbit-node active" id="n-chat" style="--m:var(--mode-chat);--mg:var(--mode-chat-glow)">
+                <span class="orbit-node-icon">💬</span>
+                <span class="orbit-node-label">Chat</span>
+              </div>
+              <div class="orbit-node" id="n-hybrid">
+                <span class="orbit-node-icon">⚡</span>
+                <span class="orbit-node-label">Hybrid</span>
+              </div>
+              <div class="orbit-node" id="n-legal">
+                <span class="orbit-node-icon">⚖️</span>
+                <span class="orbit-node-label">Legal</span>
+              </div>
+              <div class="orbit-node" id="n-edu">
+                <span class="orbit-node-icon">🎓</span>
+                <span class="orbit-node-label">Edu</span>
+              </div>
+              <div class="orbit-node" id="n-labs">
+                <span class="orbit-node-icon">🔬</span>
+                <span class="orbit-node-label">Labs</span>
+              </div>
+            </div>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid var(--border)">
+            <p style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-4)">Orbital mode selector · Chat active · Auto-rotating</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: state table -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-title">Orb State Vocabulary</div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:conic-gradient(rgba(122,179,224,0.4),rgba(122,179,224,0.1));box-shadow:0 0 12px rgba(122,179,224,0.15)"><div style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(122,179,224,0.8),rgba(122,179,224,0.1));animation:orb-pulse 3s ease-in-out infinite"></div></div>
+            <span class="orb-state-label">Idle · Chat</span>
+            <span class="orb-state-desc">Slow glow pulse, low shader velocity, blue-white columns</span>
+            <span class="orb-state-spec">v: 0.02</span>
+          </div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:conic-gradient(rgba(122,179,224,0.7),rgba(200,150,90,0.3));box-shadow:0 0 18px rgba(122,179,224,0.3);animation:orb-pulse 0.8s ease-in-out infinite"></div>
+            <span class="orb-state-label">Generating</span>
+            <span class="orb-state-desc">Rapid pulse, high shader velocity, columns intensify and shift</span>
+            <span class="orb-state-spec">v: 0.12</span>
+          </div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:rgba(200,150,90,0.2);border:1px solid rgba(200,150,90,0.4);box-shadow:0 0 12px rgba(200,150,90,0.2)"><div style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(200,150,90,0.8),rgba(200,150,90,0.1));animation:orb-pulse 2s ease-in-out infinite"></div></div>
+            <span class="orb-state-label">Hybrid Mode</span>
+            <span class="orb-state-desc">Amber tint — signals contradiction synthesis is active</span>
+            <span class="orb-state-spec">v: 0.04</span>
+          </div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:rgba(196,106,106,0.2);border:1px solid rgba(196,106,106,0.4)"><div style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(196,106,106,0.8),rgba(196,106,106,0.1));animation:orb-pulse 4s ease-in-out infinite"></div></div>
+            <span class="orb-state-label">Legal Mode</span>
+            <span class="orb-state-desc">Deep crimson, slow solemn pulse — precision, formality</span>
+            <span class="orb-state-spec">v: 0.015</span>
+          </div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:rgba(155,114,207,0.2);border:1px solid rgba(155,114,207,0.4)"><div style="width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgba(155,114,207,0.9),rgba(155,114,207,0.1));animation:orb-pulse 1.5s ease-in-out infinite"></div></div>
+            <span class="orb-state-label">Labs Mode</span>
+            <span class="orb-state-desc">Violet — frenetic, unpredictable column patterns</span>
+            <span class="orb-state-spec">v: 0.09</span>
+          </div>
+          <div class="orb-state-row">
+            <div class="orb-mini" style="background:var(--bg-3);border:1px solid var(--border)"><div style="width:14px;height:14px;border-radius:50%;background:var(--bg-4)"></div></div>
+            <span class="orb-state-label">Paused</span>
+            <span class="orb-state-desc">Shader halts, orb dims — awaiting user input</span>
+            <span class="orb-state-spec">v: 0.0</span>
+          </div>
+        </div>
+        <div class="callout">
+          <span class="callout-icon">◈</span>
+          <p><strong>Implementation note:</strong> The shader's <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">uniforms.time</code> increment rate becomes the primary "emotional register" of the orb. Slow = calm/formal. Fast = active/generating. A GLSL color tint uniform will shift the shader's RGB output toward each mode's palette.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 05. INTERACTION CHOREOGRAPHY ─────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Interaction Choreography</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title">Mode Selection Flow</div>
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-content">
+            <h4>Orbital nodes auto-rotate</h4>
+            <p>All five mode nodes circle the orb continuously at ~20s/revolution. The user observes the system in motion — no idle state.</p>
+            <span class="flow-tag">autoRotate: true</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-content">
+            <h4>User clicks a mode node</h4>
+            <p>Rotation pauses. The clicked node transitions to its "12 o'clock" position via a smooth 700ms ease-spring arc. The other nodes coast to their relative positions.</p>
+            <span class="flow-tag">autoRotate: false</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-content">
+            <h4>Orb reacts</h4>
+            <p>The shader's color tint transitions over 600ms. The active node expands 1.3×, gains a glowing border in its mode color. A hairline connector threads from the node to the orb center.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-content">
+            <h4>Dialogue zone updates</h4>
+            <p>The AI-message left-border color transitions to the new mode accent. A tiny mode pill in the Command Zone updates. New messages inherit the new mode's context.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">5</div>
+          <div class="flow-content">
+            <h4>Return to orbit</h4>
+            <p>Clicking the background or the active node again resumes auto-rotation. The orb slowly returns to its default blue-white state if no mode is locked.</p>
+            <span class="flow-tag">autoRotate: true</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Message Generation Flow</div>
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div class="flow-content">
+            <h4>User submits message</h4>
+            <p>User message materializes in the Dialogue Zone with a scale-up + fade-in entrance (origin: bottom center). Input field briefly dims.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div class="flow-content">
+            <h4>Orb enters "generating" state</h4>
+            <p>Shader velocity spikes. Pulse frequency doubles. The orb's glow radius expands subtly. A thin progress ring appears around the orb exterior.</p>
+            <span class="flow-tag">velocity: 0.12</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div class="flow-content">
+            <h4>Response streams in</h4>
+            <p>AI response card appears in Dialogue Zone with a cursor-style stream. The left accent border in mode color is present from first token. Cards have subtle `bg-3` frosted-glass surface.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">4</div>
+          <div class="flow-content">
+            <h4>Orb returns to idle</h4>
+            <p>Velocity eases back to idle over 1.5s. Progress ring fades. The orb settles into its resting pulse.</p>
+            <span class="flow-tag">velocity: 0.02</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">5</div>
+          <div class="flow-content">
+            <h4>Evidence Rail updates</h4>
+            <p>Confidence telemetry, causal citations, and provenance data update in the right rail — the existing MASA Evidence Rail pattern, unchanged.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 06. MESSAGE ANATOMY ───────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">Message Anatomy</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div class="anatomy-container">
+        <div class="anatomy-header">
+          <div class="anatomy-dot"></div>
+          <span>Dialogue Zone Preview · Chat Mode Active</span>
+        </div>
+        <div class="anatomy-msgs">
+          <div>
+            <div class="msg-meta">User · 14:32</div>
+            <div class="msg-bubble msg-bubble-user">What is the causal mechanism behind working memory limitations in the prefrontal cortex?</div>
+          </div>
+          <div class="msg-connector"></div>
+          <div>
+            <div class="msg-meta">Synthetic Mind · Chat · 14:32</div>
+            <div class="msg-bubble msg-bubble-ai">Working memory limitations in the PFC arise from the dynamic balance between excitatory and inhibitory microcircuit activity. The key causal chain runs: sustained D1 receptor stimulation → recurrent excitation in layer III pyramidal cells → increased metabolic demand → fatigue-induced inhibitory suppression.
+              <div class="msg-annotation">↳ 3 causal nodes · confidence: 0.87 · 2 citations</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card card-sm">
+          <div class="card-title">AI Message Card</div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Surface</span>
+            <div><div class="token-swatch" style="background:var(--bg-3)"></div><span class="token-value">--bg-3</span></div>
+            <span style="color:var(--text-3);font-size:11px">Frosted dark panel</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Left border</span>
+            <div><div class="token-swatch" style="background:var(--mode-chat)"></div><span class="token-value">mode accent</span></div>
+            <span style="color:var(--text-3);font-size:11px">2px, shifts with mode</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Typography</span>
+            <div style="color:var(--text-2);font-size:10px">Inter 12px</div>
+            <span style="color:var(--text-3);font-size:11px">--text-1 body, --text-4 meta</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Entrance</span>
+            <div style="color:var(--text-2);font-size:10px">scale(0.96)→1</div>
+            <span style="color:var(--text-3);font-size:11px">300ms ease-spring</span>
+          </div>
+        </div>
+        <div class="card card-sm">
+          <div class="card-title">User Message Card</div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Surface</span>
+            <div><div class="token-swatch" style="background:var(--bg-4)"></div><span class="token-value">--bg-4</span></div>
+            <span style="color:var(--text-3);font-size:11px">Slightly elevated</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Border</span>
+            <div><div class="token-swatch" style="background:var(--border-2)"></div><span class="token-value">--border-2</span></div>
+            <span style="color:var(--text-3);font-size:11px">Subtle, no accent</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Alignment</span>
+            <div style="color:var(--text-2);font-size:10px">Right-aligned</div>
+            <span style="color:var(--text-3);font-size:11px">Max-width: 70%</span>
+          </div>
+          <div class="token-row" style="font-size:11px">
+            <span class="token-name">Typography</span>
+            <div style="color:var(--text-2);font-size:10px">Inter 12px</div>
+            <span style="color:var(--text-3);font-size:11px">--text-2</span>
+          </div>
+        </div>
+        <div class="callout">
+          <span class="callout-icon">◎</span>
+          <p>The <strong>causal annotation line</strong> (↳ 3 causal nodes · confidence · citations) appears below AI responses as a JetBrains Mono 9px line in the mode accent color. It's the bridge to the Evidence Rail — clickable to expand in the right panel.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 07. DIFFERENTIATION ──────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">Differentiation Matrix</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="diff-header">
+        <div class="diff-header-cell">Conventional Chat UI (Claude, GPT, etc.)</div>
+        <div class="diff-header-cell highlight">Synthetic Mind Orbital Interface</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">Header → message feed → input. Linear document scroll.</div>
+        <div class="diff-cell new">Orb consciousness zone → dialogue thread → command strip. Spatial and orbital.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">Mode switching via tabs, dropdowns, or sidebar links.</div>
+        <div class="diff-cell new">Mode nodes orbit the AI's presence — you intercept a mode node as it passes your attention.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">The AI has no visual presence. It's a text relay.</div>
+        <div class="diff-cell new">The Shader Orb is the AI's face. It breathes, pulses, and shifts color based on cognitive state.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">Messages are flat bubbles — no visual distinction between reasoning types.</div>
+        <div class="diff-cell new">Messages carry mode color on their left accent border, making context immediately legible.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">The background is decorative or empty. It communicates nothing.</div>
+        <div class="diff-cell new">The orb's shader velocity, color temperature, and pulse rhythm communicate AI cognitive state in real time.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">Switching modes/contexts breaks the visual flow.</div>
+        <div class="diff-cell new">Mode transitions are a 700ms choreographed handoff — the orb recolors, nodes reposition, the dialogue zone re-accents. Seamless.</div>
+      </div>
+      <div class="diff-row">
+        <div class="diff-cell">Evidence, citations, and telemetry hidden in expandable sections or footnotes.</div>
+        <div class="diff-cell new">Evidence Rail persists at the right — live causal telemetry is always visible, never buried.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 08. TOKEN MAPPING ─────────────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">Design Token Mapping</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title">MASA Tokens Applied to New Components</div>
+        <div class="token-row">
+          <span class="token-name">--bg</span>
+          <div><div class="token-swatch" style="background:#0E0D0C"></div><span class="token-value">#0E0D0C</span></div>
+          <span style="color:var(--text-3);font-size:12px">Shell background, Command Zone</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--bg-3</span>
+          <div><div class="token-swatch" style="background:#1A1816"></div><span class="token-value">#1A1816</span></div>
+          <span style="color:var(--text-3);font-size:12px">AI message cards, orb inner mask</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--accent</span>
+          <div><div class="token-swatch" style="background:#C8965A"></div><span class="token-value">#C8965A</span></div>
+          <span style="color:var(--text-3);font-size:12px">Focus rings, causal annotations, active node for Hybrid</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--font-serif</span>
+          <div style="font-family:var(--font-serif);font-style:italic;font-size:13px;color:var(--text-2)">Instrument</div>
+          <span style="color:var(--text-3);font-size:12px">Orb state labels, hero section labels</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--font-mono</span>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-2)">JetBrains</div>
+          <span style="color:var(--text-3);font-size:12px">Mode labels, node text, causal annotations, eyebrows</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--ease-spring</span>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-2)">spring</div>
+          <span style="color:var(--text-3);font-size:12px">Node selection, message card entrance</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">New Tokens to Add for Orbital System</div>
+        <div class="token-row">
+          <span class="token-name">--mode-chat</span>
+          <div><div class="token-swatch" style="background:#7AB3E0"></div><span class="token-value">#7AB3E0</span></div>
+          <span style="color:var(--text-3);font-size:12px">Chat mode accent, message border, node glow</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--mode-legal</span>
+          <div><div class="token-swatch" style="background:#C46A6A"></div><span class="token-value">#C46A6A</span></div>
+          <span style="color:var(--text-3);font-size:12px">Legal mode accent. Semantic red already in MASA.</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--mode-edu</span>
+          <div><div class="token-swatch" style="background:#5AAE8A"></div><span class="token-value">#5AAE8A</span></div>
+          <span style="color:var(--text-3);font-size:12px">Educational mode. Uses MASA's causal-confirm green family.</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--mode-labs</span>
+          <div><div class="token-swatch" style="background:#9B72CF"></div><span class="token-value">#9B72CF</span></div>
+          <span style="color:var(--text-3);font-size:12px">Labs mode. Only net-new color in the system.</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--orb-size</span>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-2)">300px</div>
+          <span style="color:var(--text-3);font-size:12px">Diameter of the shader orb circle mask</span>
+        </div>
+        <div class="token-row">
+          <span class="token-name">--orbit-r</span>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-2)">210px</div>
+          <span style="color:var(--text-3);font-size:12px">Radius of the orbital mode node track</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 09. COMPONENT INVENTORY ──────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2 class="section-title">Component Inventory</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title">New Components (to build)</div>
+        <div class="comp-item">
+          <div class="comp-icon">⬤</div>
+          <div>
+            <div class="comp-name">ShaderOrb</div>
+            <div class="comp-desc">Three.js ShaderMaterial inside a circular clip-mask. Accepts color tint uniform + velocity uniform. Wraps the existing shader-lines component inside a rounded container.</div>
+          </div>
+          <div class="comp-src">components/ui/<br>shader-orb.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">◎</div>
+          <div>
+            <div class="comp-name">OrbitalModeSelector</div>
+            <div class="comp-desc">Adapts RadialOrbitalTimeline. Props: modes[], activeMode, onModeChange. 5 nodes orbit the ShaderOrb. Exports setVelocity to parent for orb state control.</div>
+          </div>
+          <div class="comp-src">components/ui/<br>orbital-mode-selector.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">▬</div>
+          <div>
+            <div class="comp-name">ConsciousnessZone</div>
+            <div class="comp-desc">Container for ShaderOrb + OrbitalModeSelector. Manages orb state (idle / generating / mode-active). Height: 45% of main area.</div>
+          </div>
+          <div class="comp-src">components/<br>consciousness-zone.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">◧</div>
+          <div>
+            <div class="comp-name">DialogueThread</div>
+            <div class="comp-desc">Chat message list with entrance animations. Renders MessageCard components. Connected to active mode for accent color. Scrolls independently.</div>
+          </div>
+          <div class="comp-src">components/<br>dialogue-thread.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">◫</div>
+          <div>
+            <div class="comp-name">MessageCard</div>
+            <div class="comp-desc">Two variants: user (right-aligned, bg-4) and ai (left-accent-border in mode color, bg-3). Renders causal annotation footer on AI messages.</div>
+          </div>
+          <div class="comp-src">components/ui/<br>message-card.tsx</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Existing Components (adapted or reused)</div>
+        <div class="comp-item">
+          <div class="comp-icon">≋</div>
+          <div>
+            <div class="comp-name">ShaderAnimation (existing)</div>
+            <div class="comp-desc">The provided shader-lines.tsx component. Used as the inner canvas for ShaderOrb — wrapped in a circular mask. Add tintColor + velocity uniforms to the fragment shader.</div>
+          </div>
+          <div class="comp-src">Adapt from<br>shader-lines.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">◯</div>
+          <div>
+            <div class="comp-name">RadialOrbitalTimeline (existing)</div>
+            <div class="comp-desc">Used as the orbital architecture. Strip the black bg, resize nodes, swap TimelineItem interface for ModeItem. Keep rotation + pulse logic intact.</div>
+          </div>
+          <div class="comp-src">Adapt from<br>radial-orbital-timeline.tsx</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">⬡</div>
+          <div>
+            <div class="comp-name">MASA Topbar (existing)</div>
+            <div class="comp-desc">Unchanged. 42px charcoal bar. May add a mode indicator pill in the center showing active mode in JetBrains Mono.</div>
+          </div>
+          <div class="comp-src">synthesis-engine<br>existing</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">⊞</div>
+          <div>
+            <div class="comp-name">Evidence Rail (existing)</div>
+            <div class="comp-desc">Fully preserved from current MASA implementation. Live causal telemetry, confidence levels, citations. Right rail 296px unchanged.</div>
+          </div>
+          <div class="comp-src">synthesis-engine<br>existing</div>
+        </div>
+        <div class="comp-item">
+          <div class="comp-icon">⌨</div>
+          <div>
+            <div class="comp-name">Chat Input (existing)</div>
+            <div class="comp-desc">MASA-styled textarea with amber focus ring. Add an OrbStatusPill showing active mode beside the send button. No other changes needed.</div>
+          </div>
+          <div class="comp-src">synthesis-engine<br>existing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 10. IMPLEMENTATION NOTES ─────────────────────────── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2 class="section-title">Implementation Notes</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="grid-2" style="align-items:start">
+      <div class="card">
+        <div class="card-title">Technical Considerations</div>
+        <div class="impl-item">
+          <span class="impl-badge core">Core</span>
+          <div>
+            <div class="impl-title">Shader Tinting via Uniform</div>
+            <div class="impl-desc">Add a <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">tintColor: vec3</code> uniform to the fragment shader. Mix the final <code style="font-family:var(--font-mono);font-size:10px">gl_FragColor</code> output with the tint using <code style="font-family:var(--font-mono);font-size:10px">mix()</code> at ~30% weight. Transition the tint using React state + lerp over ~600ms frames.</div>
+          </div>
+        </div>
+        <div class="impl-item">
+          <span class="impl-badge core">Core</span>
+          <div>
+            <div class="impl-title">Circular Clip Mask</div>
+            <div class="impl-desc">The ShaderOrb renders inside a <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">border-radius: 50%</code> container with <code style="font-family:var(--font-mono);font-size:10px">overflow: hidden</code>. The Three.js canvas fills this container. No extra clip-path needed — WebGL respects CSS overflow on the canvas parent.</div>
+          </div>
+        </div>
+        <div class="impl-item">
+          <span class="impl-badge new">New</span>
+          <div>
+            <div class="impl-title">Velocity Control</div>
+            <div class="impl-desc">Use a <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">useRef</code> for the target velocity and lerp the actual <code style="font-family:var(--font-mono);font-size:10px">uniforms.time</code> increment toward it each frame. This creates smooth acceleration/deceleration rather than jarring velocity jumps.</div>
+          </div>
+        </div>
+        <div class="impl-item">
+          <span class="impl-badge adapted">Adapted</span>
+          <div>
+            <div class="impl-title">Orbital Node Positioning</div>
+            <div class="impl-desc">The existing <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">calculateNodePosition()</code> function from RadialOrbitalTimeline is used directly. The container needs absolute positioning relative to the ConsciousnessZone center, not the entire viewport.</div>
+          </div>
+        </div>
+        <div class="impl-item">
+          <span class="impl-badge new">New</span>
+          <div>
+            <div class="impl-title">Mode State via Context</div>
+            <div class="impl-desc">A <code style="font-family:var(--font-mono);font-size:10px;color:var(--accent)">ModeContext</code> React context provides <code style="font-family:var(--font-mono);font-size:10px">activeMode, setMode, orbState, setOrbState</code> to all three zones. This avoids prop-drilling between the ConsciousnessZone and DialogueThread.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="card">
+          <div class="card-title">Sizing Specifications</div>
+          <div class="spec-row">
+            <span class="spec-label">Orb diameter</span>
+            <span class="spec-val">300px</span>
+            <span class="spec-desc">Scales to 220px on ≤1024px viewport</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Orbit radius</span>
+            <span class="spec-val">210px</span>
+            <span class="spec-desc">Center of node track from orb center</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Node diameter</span>
+            <span class="spec-val">44px</span>
+            <span class="spec-desc">52px when active (1.18× scale)</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Zone 1 height</span>
+            <span class="spec-val">45vh</span>
+            <span class="spec-desc">Min 380px, max 520px</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Zone 2 height</span>
+            <span class="spec-val">flex: 1</span>
+            <span class="spec-desc">Takes remaining space, scrolls</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Zone 3 height</span>
+            <span class="spec-val">68px</span>
+            <span class="spec-desc">Fixed, contains input + send button</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">Orbit period</span>
+            <span class="spec-val">20s</span>
+            <span class="spec-desc">Full revolution in idle state</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">What We Preserve from MASA</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> Three-zone shell (sidebar + main + rail)
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> Surface elevation ladder (#0E0D0C → #282523)
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> Amber accent #C8965A (Hybrid mode inherits this)
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> Instrument Serif + Inter + JetBrains Mono
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> Evidence Rail with causal telemetry
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> 42px topbar, sidebar history, existing routes
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+              <span style="color:var(--mode-edu);font-size:10px">✓</span> tokens.json → Style Dictionary → CSS vars pipeline
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="separator"></div>
+
+  <!-- ─── CONCEPT FOOTER ─────────────────────────────────────── -->
+  <div class="concept-footer">
+    <div class="concept-footer-brand">Synthetic <span>Mind</span></div>
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="pill"><div class="pill-dot" style="background:var(--mode-chat)"></div>Chat</div>
+      <div class="pill"><div class="pill-dot" style="background:var(--mode-hybrid)"></div>Hybrid</div>
+      <div class="pill"><div class="pill-dot" style="background:var(--mode-legal)"></div>Legal</div>
+      <div class="pill"><div class="pill-dot" style="background:var(--mode-edu)"></div>Educational</div>
+      <div class="pill"><div class="pill-dot" style="background:var(--mode-labs)"></div>Labs</div>
+    </div>
+    <div class="concept-footer-meta">
+      Concept Board · March 2026<br>
+      Pre-Implementation · MASA Design System v2
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

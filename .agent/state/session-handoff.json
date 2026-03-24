@@ -1,20 +1,55 @@
 {
   "schema_version": "1.1.0",
   "version": "1.1.0",
-  "run_id": "20260307T065712Z-463c814-3fde7cda",
-  "generated_at": "2026-03-07T06:57:12Z",
+  "run_id": "20260324T170412Z-28f33cc-fb7b4464",
+  "generated_at": "2026-03-24T17:04:12Z",
   "workspace_root": "/Users/lesz/Documents/Synthetic-Mind",
-  "cwd_detected": "/Users/lesz/Documents/Synthetic-Mind/synthesis-engine",
-  "npm_script_available_here": true,
+  "cwd_detected": "/Users/lesz/Documents/Synthetic-Mind",
+  "npm_script_available_here": false,
   "git": {
     "root": "/Users/lesz/Documents/Synthetic-Mind",
-    "branch": "master",
+    "branch": "codex/refine-sidebar-into-terminal-rail",
     "dirty_summary": {
-      "modified": 4,
-      "untracked": 12,
+      "modified": 10,
+      "untracked": 31,
       "staged": 0
     },
     "recent_commits": [
+      {
+        "hash": "28f33cc0ef0db1f68d2ae9931f868bc6c4132d0a",
+        "date": "2026-03-22T22:54:42+08:00",
+        "message": "docs(white-paper): mobile-responsive pass + sync submodules"
+      },
+      {
+        "hash": "f5d59269672d6e230d8c28e0a54cbcdc9a89a244",
+        "date": "2026-03-14T13:09:40+08:00",
+        "message": "docs(white-paper): align MASA claims with causal-engine reality"
+      },
+      {
+        "hash": "81edeab1fdccb5852d6d9f082e8e8650647603b4",
+        "date": "2026-03-13T12:47:18+08:00",
+        "message": "chore(submodule): promote synthesis-engine chat workbench"
+      },
+      {
+        "hash": "15e216e139e68e4a17e7d089b3ff7d62f0d881ac",
+        "date": "2026-03-11T00:26:14+08:00",
+        "message": "chore(submodule): pin crucible to 5f3fb0a (revert to 043e7a1)"
+      },
+      {
+        "hash": "0a7daafa1c02d73d9f8dce4ec9706e42aa10a85b",
+        "date": "2026-03-11T00:19:51+08:00",
+        "message": "chore: update crucible submodule pointer for chat performance fixes"
+      },
+      {
+        "hash": "ad3952ef72dbd1d68e14fd8a891852654b3a2e6f",
+        "date": "2026-03-11T00:09:29+08:00",
+        "message": "chore(submodule): pin crucible to 51327b0"
+      },
+      {
+        "hash": "a172fb3b1c9dc1627d426940284a1b730467bfac",
+        "date": "2026-03-10T23:53:11+08:00",
+        "message": "chore(submodule): pin crucible to bbe1043 \u2014 sidebar toggle polish"
+      },
       {
         "hash": "463c814e1111d0bfa63379bf92190eb144e3db8d",
         "date": "2026-02-24T12:18:46+08:00",
@@ -29,38 +64,13 @@
         "hash": "3303fe416aa8d25a02ced10fdf3e4b936a0dd4e3",
         "date": "2026-02-17T22:26:59+08:00",
         "message": "chore: update synthesis-engine submodule and agent state"
-      },
-      {
-        "hash": "fec2c972a09845ccb61fd146d5b16e17d6a5f082",
-        "date": "2026-02-17T16:44:49+08:00",
-        "message": "chore: synchronize submodules and update implementation plans"
-      },
-      {
-        "hash": "56d1a51f14cc830f8a4f9cabed8c210c05e14f51",
-        "date": "2026-02-17T06:37:05+08:00",
-        "message": "docs: add bio-lab production audit and implementation plan"
-      },
-      {
-        "hash": "66074d83b49b5f4cab8598640d947f0cd399f02c",
-        "date": "2026-02-15T17:15:54+08:00",
-        "message": "style(landing): align feature card description hover colors"
-      },
-      {
-        "hash": "57b4a8fa922bc57d18e5f5bc405d2906fc630f4f",
-        "date": "2026-02-13T23:55:06+08:00",
-        "message": "Plan MASA OpenClaw memory"
-      },
-      {
-        "hash": "e85bf261e8cdc825c0fba09b1e67eda07e8902df",
-        "date": "2026-02-13T10:28:27+08:00",
-        "message": "Create MASA session bootstrap plan"
       }
     ]
   },
   "scan_confidence": {
-    "user_action_required": "high",
+    "user_action_required": "low",
     "pending_migrations": "low",
-    "required_env_keys": "high"
+    "required_env_keys": "low"
   },
   "architecture_state": {
     "workflows_present": [
@@ -91,6 +101,15 @@
       },
       {
         "path": "synthesis-engine/src/app/api/benchmark-runs/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/bridge/README.md"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/bridge/chat-verified/__tests__/route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/bridge/chat-verified/route.ts"
       },
       {
         "path": "synthesis-engine/src/app/api/causal-chat/adopt-legacy/route.ts"
@@ -189,6 +208,21 @@
         "path": "synthesis-engine/src/app/api/openclaw/test/route.ts"
       },
       {
+        "path": "synthesis-engine/src/app/api/reports/[reportId]/export/__tests__/route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/reports/[reportId]/export/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/reports/[reportId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/reports/__tests__/analyze.route.test.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/reports/analyze/route.ts"
+      },
+      {
         "path": "synthesis-engine/src/app/api/scm/alignment-audit/latest/route.ts"
       },
       {
@@ -228,6 +262,15 @@
         "path": "synthesis-engine/src/app/api/scm/models/route.ts"
       },
       {
+        "path": "synthesis-engine/src/app/api/scm/reports/[reportId]/export/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/reports/[reportId]/route.ts"
+      },
+      {
+        "path": "synthesis-engine/src/app/api/scm/reports/analyze/route.ts"
+      },
+      {
         "path": "synthesis-engine/src/app/api/synthesis-history/route.ts"
       },
       {
@@ -249,9 +292,9 @@
       },
       {
         "area": "MASA-Theoretical-Foundation/",
-        "hash": "cd62260d8bb81ff13e6df0f7fbe563fc265a8137",
-        "date": "2026-02-20T23:40:37+08:00",
-        "message": "fix(ai): map MASA fictional model IDs to actual API identifiers"
+        "hash": "a172fb3b1c9dc1627d426940284a1b730467bfac",
+        "date": "2026-03-10T23:53:11+08:00",
+        "message": "chore(submodule): pin crucible to bbe1043 \u2014 sidebar toggle polish"
       },
       {
         "area": "Codex-Audit/",
@@ -275,6 +318,11 @@
     "latest_docs": [
       {
         "group": "MASA-Theoretical-Foundation",
+        "mtime_epoch": 1772957490,
+        "path": "MASA-Theoretical-Foundation/ADR-001-MASA-Architecture.md"
+      },
+      {
+        "group": "MASA-Theoretical-Foundation",
         "mtime_epoch": 1771569723,
         "path": "MASA-Theoretical-Foundation/DOMAIN_PROFILE_SCHEMA_WITH_CLASSIFIER_MAPPING.md"
       },
@@ -292,11 +340,6 @@
         "group": "MASA-Theoretical-Foundation",
         "mtime_epoch": 1770804913,
         "path": "MASA-Theoretical-Foundation/GOVERNANCE_SPEC_INDEX.md"
-      },
-      {
-        "group": "MASA-Theoretical-Foundation",
-        "mtime_epoch": 1770804911,
-        "path": "MASA-Theoretical-Foundation/LAW_DISCOVERY_FALSIFICATION_PROTOCOL.md"
       },
       {
         "group": "Codex-Audit",
@@ -366,14 +409,208 @@
       "synthesis-engine/supabase/migrations/20260220_add_session_domain.sql",
       "synthesis-engine/supabase/migrations/20260221_add_chat_folders.sql",
       "synthesis-engine/supabase/migrations/20260221_add_scientific_analysis_to_chat.sql",
+      "synthesis-engine/supabase/migrations/20260305_bridge_verification_log.sql",
       "synthesis-engine/supabase/migrations/20260305_scm_reports.sql",
+      "synthesis-engine/supabase/migrations/20260308_sentinel_audit_log.sql",
+      "synthesis-engine/supabase/migrations/20260313150000_counterfactual_trace_method_alignment.sql",
       "synthesis-engine/supabase/migrations/seed_causal_models.sql"
     ],
-    "required_env_keys": [],
-    "user_action_required": [],
-    "classified_user_actions": []
+    "required_env_keys": [
+      "AI_DEBUG",
+      "AI_PROVIDER_ADVANCED",
+      "AI_PROVIDER_DEFAULT",
+      "ANTHROPIC_API_KEY",
+      "AUTOPSY_MODE_ENABLED",
+      "BENCHMARK_CI_GATE",
+      "BENCHMARK_MAX_COST",
+      "BRAVE_API_KEY",
+      "BRIDGE_VERIFICATION_TOKEN",
+      "CAUSAL_LITERACY_ENABLED",
+      "CHAT_WEB_GROUNDING_V1",
+      "DISAGREEMENT_ENGINE_ENABLED",
+      "DOCKING_SERVICE_API_KEY",
+      "DOCKING_SERVICE_URL",
+      "ENABLE_STATISTICAL_VALIDATION",
+      "FORCE_PROVIDER",
+      "GIT_COMMIT",
+      "GOOGLE_GENERATIVE_AI_API_KEY",
+      "HYBRID_NOVELTY_PROOF_V1",
+      "MASA_CAUSAL_LATTICE_V1",
+      "MASA_CAUSAL_PRUNING_V1",
+      "MASA_COMPACTION_AXIOM_V1",
+      "MASA_MEMORY_FUSION_V1",
+      "MASA_MEMORY_RRF_V1",
+      "NEXT_PUBLIC_APP_URL",
+      "NEXT_PUBLIC_AUTOSCI_LAYOUT_V2",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "NEXT_PUBLIC_SUPABASE_URL",
+      "NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA",
+      "NODE_ENV",
+      "OPENAI_API_KEY",
+      "OPENCLAW_WS_URL",
+      "PHENOMENAL_LAYER_ENABLED",
+      "PROMOTION_ACTOR_USER_ID",
+      "PUBLICATION_YEAR_FALLBACK",
+      "SCIENTIFIC_INTEGRITY_GATE_ENABLED",
+      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_COVERAGE",
+      "SCIENTIFIC_INTEGRITY_MIN_DETERMINISTIC_TRACES",
+      "SCIENTIFIC_INTEGRITY_REQUIRED_FULL_SUITE_RUNS",
+      "SCIENTIFIC_INTEGRITY_WINDOW_DAYS",
+      "SCM_HYPOTHESIS_ENABLED",
+      "SCM_PROMOTION_GUARD_ENABLED",
+      "SCM_REGISTRY_ENABLED",
+      "SCM_REPORT_ANALYSIS_ENABLED",
+      "SEMANTIC_SCHOLAR_API_KEY",
+      "SERPER_API_KEY",
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "TMPDIR",
+      "TRACE_SIGN_KEY",
+      "VERCEL_GIT_COMMIT_SHA",
+      "VERCEL_URL"
+    ],
+    "user_action_required": [
+      ".agent/workflows/Demis-Workflow.md:143",
+      ".agent/workflows/Workflow-Demis-v3-Compact.md:109",
+      "synthesis-engine/docs/audits/LANDING_IMPLEMENTATION_AND_DEPLOYMENT_SUMMARY_2026-03-12.md:411",
+      "synthesis-engine/docs/audits/PHASE_4_VERIFICATION_SIGNOFF.md:51",
+      "synthesis-engine/docs/audits/PHASE_5_SIGNOFF.md:27",
+      "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md:44",
+      "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md:49",
+      "synthesis-engine/docs/audits/PHASE_MARKETING_DARK_SIGNOFF.md:117",
+      "synthesis-engine/docs/audits/PHASE_MARKETING_DARK_SIGNOFF.md:60",
+      "synthesis-engine/docs/audits/PHASE_SIDEBAR_TERMINAL_RAIL_SIGNOFF.md:37"
+    ],
+    "classified_user_actions": [
+      {
+        "path": ".agent/workflows/Demis-Workflow.md",
+        "line": 143,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "Mark **HUMAN FOLLOW-UP REQUIRED** when any of the below exist:",
+        "match_hash": "ed564bc103b5ff95f78644dc67566c384ee50c7923d70f99710c736b5884d75f"
+      },
+      {
+        "path": ".agent/workflows/Workflow-Demis-v3-Compact.md",
+        "line": 109,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## Critical Gaps \u2014 Mark HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "8413613388517cf46f74d3b49ef96e2cdfcb82d6a909d00acdf5d4aa535b0172"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/LANDING_IMPLEMENTATION_AND_DEPLOYMENT_SUMMARY_2026-03-12.md",
+        "line": 411,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "- multiple audit files contain `HUMAN FOLLOW-UP REQUIRED`",
+        "match_hash": "22833f46f2903918236592759f0ab6d7b20f576e62e3c815a4c7808ca091d6a2"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_4_VERIFICATION_SIGNOFF.md",
+        "line": 51,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "d51795efbd016edc92d9387c17575f59cb0dab9be3663a0e276d27e8f9f8980a"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_5_SIGNOFF.md",
+        "line": 27,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "2507d56bad53d46bf20fcd0c4d799f63f40417186a8cbff3fcedaff4d8cf5b88"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md",
+        "line": 44,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "- Existing repo-level `HUMAN FOLLOW-UP REQUIRED` markers remain unchanged.",
+        "match_hash": "d4f7f1348d6e6abac7629c857c58e1215ce975782f1990a61355f8e11b5a78af"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md",
+        "line": 49,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "ae6e82b4424d93bb87285b2edf1e5e145ac9211a66fb5bd36d29b6c23e4e2177"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_MARKETING_DARK_SIGNOFF.md",
+        "line": 117,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "decae9695ef5b441c25875946caa30cdf2f49762f2dbf271ba7f15c2ff0d223d"
+      },
+      {
+        "path": "synthesis-engine/docs/audits/PHASE_SIDEBAR_TERMINAL_RAIL_SIGNOFF.md",
+        "line": 37,
+        "severity": "blocking",
+        "reason": "Explicit HUMAN FOLLOW-UP REQUIRED marker",
+        "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+        "match_hash": "07c9be2aa06d91855b35e99c2961663607f8495b5d38fd5414f7ae6d683eb1b6"
+      }
+    ]
   },
-  "reference_evidence": [],
+  "reference_evidence": [
+    {
+      "path": ".agent/workflows/Demis-Workflow.md",
+      "line": 143,
+      "matched_text_excerpt": "Mark **HUMAN FOLLOW-UP REQUIRED** when any of the below exist:",
+      "match_hash": "ed564bc103b5ff95f78644dc67566c384ee50c7923d70f99710c736b5884d75f"
+    },
+    {
+      "path": ".agent/workflows/Workflow-Demis-v3-Compact.md",
+      "line": 109,
+      "matched_text_excerpt": "## Critical Gaps \u2014 Mark HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "8413613388517cf46f74d3b49ef96e2cdfcb82d6a909d00acdf5d4aa535b0172"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/LANDING_IMPLEMENTATION_AND_DEPLOYMENT_SUMMARY_2026-03-12.md",
+      "line": 411,
+      "matched_text_excerpt": "- multiple audit files contain `HUMAN FOLLOW-UP REQUIRED`",
+      "match_hash": "22833f46f2903918236592759f0ab6d7b20f576e62e3c815a4c7808ca091d6a2"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_4_VERIFICATION_SIGNOFF.md",
+      "line": 51,
+      "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "d51795efbd016edc92d9387c17575f59cb0dab9be3663a0e276d27e8f9f8980a"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_5_SIGNOFF.md",
+      "line": 27,
+      "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "2507d56bad53d46bf20fcd0c4d799f63f40417186a8cbff3fcedaff4d8cf5b88"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md",
+      "line": 44,
+      "matched_text_excerpt": "- Existing repo-level `HUMAN FOLLOW-UP REQUIRED` markers remain unchanged.",
+      "match_hash": "d4f7f1348d6e6abac7629c857c58e1215ce975782f1990a61355f8e11b5a78af"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_FOCUS_LEDGER_SIGNOFF_2026-03-13.md",
+      "line": 49,
+      "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "ae6e82b4424d93bb87285b2edf1e5e145ac9211a66fb5bd36d29b6c23e4e2177"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_MARKETING_DARK_SIGNOFF.md",
+      "line": 117,
+      "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "decae9695ef5b441c25875946caa30cdf2f49762f2dbf271ba7f15c2ff0d223d"
+    },
+    {
+      "path": "synthesis-engine/docs/audits/PHASE_SIDEBAR_TERMINAL_RAIL_SIGNOFF.md",
+      "line": 37,
+      "matched_text_excerpt": "## HUMAN FOLLOW-UP REQUIRED",
+      "match_hash": "07c9be2aa06d91855b35e99c2961663607f8495b5d38fd5414f7ae6d683eb1b6"
+    }
+  ],
   "provenance": {
     "commands": [
       {
@@ -409,7 +646,7 @@
       {
         "label": "feature_surfaces",
         "status": "ok",
-        "command": "find synthesis-engine/src/app/api"
+        "command": "rg --files synthesis-engine/src/app/api"
       },
       {
         "label": "pending_migrations",
@@ -418,13 +655,13 @@
       },
       {
         "label": "required_env_keys",
-        "status": "error",
-        "command": "rg missing"
+        "status": "ok",
+        "command": "rg process.env.*"
       },
       {
         "label": "critical_markers",
-        "status": "error",
-        "command": "rg missing"
+        "status": "ok",
+        "command": "rg marker scan"
       },
       {
         "label": "latest_docs",
@@ -435,10 +672,22 @@
   },
   "next_tasks": [
     {
+      "id": "N1",
+      "task": "Resolve explicit blocking markers before execution.",
+      "reason": "10 blocking marker(s) detected.",
+      "priority": "high"
+    },
+    {
       "id": "N2",
       "task": "Confirm migration application status in Supabase for latest SQL files.",
-      "reason": "41 migration file(s) found; runtime apply status is manual.",
+      "reason": "44 migration file(s) found; runtime apply status is manual.",
       "priority": "high"
+    },
+    {
+      "id": "N3",
+      "task": "Verify required environment keys exist in deployment and local envs.",
+      "reason": "51 unique process.env key(s) detected.",
+      "priority": "medium"
     }
   ],
   "assumptions": [
@@ -446,8 +695,5 @@
     "Environment key presence is inferred from code references, not secret value inspection.",
     "Marker references are stabilized with excerpt hash and line for operator convenience."
   ],
-  "errors": [
-    "required_env_keys: rg is unavailable",
-    "critical_markers: rg is unavailable"
-  ]
+  "errors": []
 }

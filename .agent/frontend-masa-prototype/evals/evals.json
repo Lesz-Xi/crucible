@@ -1,0 +1,23 @@
+{
+  "skill_name": "masa-prototype",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I'm working on MASA_Prototype.html. I need to add a new 'Methods' nav item to the sidebar. It should have the amber left-bar active indicator and a badge showing '3'. Give me the exact HTML snippet to add, following the prototype's patterns.",
+      "expected_output": "HTML .nav-item with correct classes, .nav-item::before left-bar pattern acknowledged, .nav-badge with amber styling, JetBrains Mono font spec, correct CSS variables (--bg-active, --accent, etc.)",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "The synthesis-engine app uses --accent for focus rings but I'm not sure what value that resolves to in dark mode vs light mode. Also, what selector does the Style Dictionary output for dark mode — is it .dark or [data-theme='dark']? And how do I rebuild the CSS after editing tokens.json?",
+      "expected_output": "Dark: #C8965A, Light: #A0693A. Selector is .dark (not data-theme). Rebuild command: npm run tokens:build or npm run prebuild.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to add a confidence meter to the evidence rail. It should be a horizontal fill-bar with three levels: green for high, amber for medium, red for low. Show me a complete self-contained HTML + CSS snippet I can drop into the rail section.",
+      "expected_output": "HTML with .rung-bar + .rung-fill, pill border-radius: 999px, correct MASA CSS variables (--green, --accent, --red, --bg-3 for track), 4px height, MASA aesthetic patterns",
+      "files": []
+    }
+  ]
+}

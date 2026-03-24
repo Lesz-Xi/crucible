@@ -1,0 +1,195 @@
+{
+  "version": 2,
+  "tasks": [
+    {
+      "taskId": "UI-SIDEBAR-5S-AUDIT",
+      "taskType": "Integration",
+      "currentStatus": "completed",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "completed",
+          "agent": "gpt",
+          "timestamp": "2026-03-21T18:11:16.575Z",
+          "notes": "Audit completed. Root issue is a branch regression in sidebar height/overflow ownership after history bootstrap populates recentThreads; current branch diverged from main's restored shell-height contract."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-SIDEBAR-5S-FIX",
+      "taskType": "Integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-21T18:19:23.928Z",
+          "notes": "Reverting sidebar shell height/overflow ownership to stable main contract while preserving ledger alignment fixes."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-SESSION-LEDGER-AUDIT",
+      "taskType": "unspecified",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-21T19:00:16.436Z",
+          "notes": "Bootstrap refreshed. Auditing chat workbench shell, session ledger activation path, message rendering, and CSS ownership before planning a production fix."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-HISTORY-REVIEW-REFRACTOR",
+      "taskType": "integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-21T19:09:58.306Z",
+          "notes": "Implementing production historical session rendering fix: hydrate structured assistant artifacts from persisted session history, move loaded-session rendering onto canonical workbench markdown/artifact components, and keep CSS ownership in workbench-shell.css to avoid regression from globals.css."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-HISTORY-RENDER-PROD-AUDIT",
+      "taskType": "integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-21T19:55:00.207Z",
+          "notes": "Audit in progress. Branch/source-of-truth check, active /chat entrypoint inspection, and historical-session rendering ownership review across ChatWorkbenchV2, workbench-shell.css, and any legacy chat surfaces."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-CLAUDE-SHELL-REFACTOR-PLAN",
+      "taskType": "integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-22T03:48:57.791Z",
+          "notes": "Audit in progress for main workbench shell. Verified /chat is already single-owner, AppDashboardShell owns sidebar and ledger, and current shell still mixes card-based transcript with partial review-mode CSS and global prose/rail selectors. Planning a Claude-like split-scroll workbench with separate sidebar/main scrolling and non-card assistant transcript."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-CLAUDE-SHELL-REFACTOR-IMPLEMENT",
+      "taskType": "integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-22T04:22:57.502Z",
+          "notes": "Implementing single-owner Claude-inspired shell refactor: split-scroll sidebar, flat document transcript, restrained evidence rail."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-WORKBENCH-SCROLL-FONT-FIX",
+      "taskType": "integration",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-22T05:53:39.507Z",
+          "notes": "Auditing center-pane scroll chain and transcript typography after split-scroll shell refactor. C1 non-causal UI fix; no C2/C3 changes."
+        }
+      ]
+    },
+    {
+      "taskId": "UI-EMPTY-CHAT-CENTER-ROOTCAUSE",
+      "taskType": "unspecified",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-22T10:11:27.670Z",
+          "notes": "C1 frontend shell audit: empty-state centering failure is caused by chat-message-scroll sizing to content (flex: 0 0 auto), preventing chat-empty-shell from filling the main pane."
+        }
+      ]
+    },
+    {
+      "taskId": "SIDEBAR-MINIMAL-RAIL",
+      "taskType": "Implementation",
+      "currentStatus": "in_progress",
+      "currentAgent": "gpt",
+      "history": [
+        {
+          "status": "in_progress",
+          "agent": "gpt",
+          "timestamp": "2026-03-22T12:34:43.238Z",
+          "notes": "Implementing compact minimal redesign for sidebar nav and command tray; removing instrument detail text."
+        }
+      ]
+    }
+  ],
+  "benchmarkSnapshot": {
+    "passing": 6,
+    "failing": 0,
+    "notImplemented": 0,
+    "benchmarks": {
+      "B1": {
+        "status": "passing",
+        "expectedValue": 1,
+        "actualValue": 1,
+        "lastRun": "2026-03-24T16:20:58.163Z"
+      },
+      "B2": {
+        "status": "passing",
+        "expectedValue": 1,
+        "actualValue": 1,
+        "lastRun": "2026-03-24T16:20:58.166Z"
+      },
+      "B3": {
+        "status": "passing",
+        "expectedValue": 0.48,
+        "actualValue": 0.48,
+        "lastRun": "2026-03-24T16:20:58.166Z"
+      },
+      "B4": {
+        "status": "passing",
+        "expectedValue": 1,
+        "actualValue": 1,
+        "lastRun": "2026-03-24T16:20:58.166Z"
+      },
+      "B5": {
+        "status": "passing",
+        "expectedValue": 2.6,
+        "actualValue": 2.6,
+        "lastRun": "2026-03-24T16:20:58.166Z"
+      },
+      "B6": {
+        "status": "passing",
+        "expectedValue": 0.4,
+        "actualValue": 0.4,
+        "lastRun": "2026-03-24T16:20:58.166Z"
+      }
+    },
+    "llmIndependence": "verified",
+    "notationCompliance": "violation",
+    "honestCapabilityStatement": "WARNING: All benchmarks pass but compliance gates are not fully satisfied. Not consolidation-ready.",
+    "consolidationEligible": false,
+    "updatedAt": "2026-03-24T16:20:58.166Z"
+  },
+  "blockers": [],
+  "activityLog": []
+}

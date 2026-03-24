@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "masa-prototype", "runs": [{"id": "eval-sidebar-nav-item-with_skill", "prompt": "I'm working on MASA_Prototype.html. I need to add a new 'Methods' nav item to the sidebar. It should have the amber left-bar active indicator and a badge showing '3'. Give me the exact HTML snippet to add, following the prototype's patterns.", "eval_id": 0, "outputs": [{"name": "response.md", "type": "text", "content": "# MASA Methods Nav Item \u2014 HTML Snippet\n\n## Summary\n\nHere is the exact HTML snippet to add a 'Methods' nav item to the MASA_Prototype.html sidebar with the amber left-bar active indicator and a badge showing '3'.\n\n## HTML Snippet\n\n```html\n<div class=\"nav-item active\" onclick=\"switchView('methods')\" id=\"nav-methods\">\n  <svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n    <path d=\"M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z\"/>\n    <path d=\"M5 5h6M5 8h6M5 11h4\" stroke-linecap=\"round\"/>\n  </svg>\n  Methods\n  <span class=\"nav-badge\">3</span>\n</div>\n```\n\n## Pattern Explanation\n\nThe HTML follows the existing sidebar nav pattern in MASA_Prototype.html:\n\n### Structure\n- **Container**: `<div class=\"nav-item active\">` \u2014 The `active` class triggers the amber left-bar indicator (18px height via the `.nav-item.active::before` pseudo-element).\n- **Icon**: `<svg>` \u2014 13x13px icon with `stroke-currentColor` to inherit the accent color when active.\n- **Text**: Plain text \"Methods\" inherits color from `.nav-item.active` \u2192 `var(--text-1)`.\n- **Badge**: `<span class=\"nav-badge\">3</span>` \u2014 Uses the mono amber badge styling already defined in the prototype.\n\n### CSS Classes Used\nAll classes and styling are already defined in MASA_Prototype.html:\n\n| Class | Purpose |\n|---|---|\n| `.nav-item` | Base flexbox container with 8px gap between icon and text |\n| `.nav-item.active` | Applies `background: var(--bg-active)` (amber-tinted) and reveals the 18px amber left-bar via `::before` |\n| `.nav-item active svg` | Icon inherits `color: var(--accent)` and `opacity: 1` |\n| `.nav-badge` | Mono amber badge chip: `background: var(--accent-dim)`, `color: var(--accent)`, `border: 1px solid var(--accent-border-2)`, auto-margins left to push it to the right |\n\n### Placement\nInsert this `<div>` into the `<nav class=\"sidebar-nav\">` block, in the desired position. Example placement (after Hybrid):\n\n```html\n<nav class=\"sidebar-nav\">\n  <div class=\"nav-item active\" onclick=\"switchView('chat')\" id=\"nav-chat\">\n    <!-- Chat item -->\n  </div>\n  <div class=\"nav-item\" onclick=\"switchView('hybrid')\" id=\"nav-hybrid\">\n    <!-- Hybrid item -->\n  </div>\n  <div class=\"nav-item active\" onclick=\"switchView('methods')\" id=\"nav-methods\">\n    <svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n      <path d=\"M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z\"/>\n      <path d=\"M5 5h6M5 8h6M5 11h4\" stroke-linecap=\"round\"/>\n    </svg>\n    Methods\n    <span class=\"nav-badge\">3</span>\n  </div>\n  <!-- Rest of nav -->\n</nav>\n```\n\n### Icon Explanation\nThe icon is a list/document with horizontal lines, representing \"Methods\". It uses:\n- `viewBox=\"0 0 16 16\"` \u2014 16x16 logical grid (rendered at 13x13px by `.nav-item svg { width: 13px; height: 13px; }`)\n- `stroke-width=\"1.5\"` \u2014 Matches other nav icons in the prototype\n- `stroke-linecap=\"round\"` \u2014 Rounded line ends for a refined look\n\n### Styling Notes\n- The **amber left-bar** appears automatically because the `active` class is set. The bar is created by `.nav-item::before`, which shows a 2px-wide rounded accent line at the left edge.\n- The **badge displays inline** thanks to `margin-left: auto` in the `.nav-badge` CSS, which pushes it to the right edge.\n- The **hover and active colors** are already defined: `.nav-item.active { background: var(--bg-active); color: var(--text-1); }` \u2014 the bg-active is a subtle amber tint (`rgba(200,150,90,0.10)`).\n\nNo additional CSS is needed \u2014 all styling comes from existing MASA design tokens and component classes.\n"}], "grading": {"run_id": "eval-0-with_skill", "expectations": [{"text": "uses-nav-item-class", "passed": true, "evidence": "<div class=\"nav-item active\"> \u2014 uses standard nav-item class"}, {"text": "uses-active-class", "passed": true, "evidence": "class=\"nav-item active\" on line 10 \u2014 active class included"}, {"text": "uses-nav-badge-class", "passed": true, "evidence": "<span class=\"nav-badge\">3</span> on line 16"}, {"text": "badge-shows-3", "passed": true, "evidence": "Badge displays '3' in <span class=\"nav-badge\">3</span>"}, {"text": "uses-masa-css-vars", "passed": true, "evidence": "References var(--bg-active), var(--accent), var(--accent-dim), var(--accent-border-2) in pattern explanation"}, {"text": "explains-left-bar-mechanism", "passed": true, "evidence": "Explains: '.nav-item.active::before pseudo-element reveals the 18px amber left-bar via ::before'"}]}}, {"id": "eval-sidebar-nav-item-without_skill", "prompt": "I'm working on MASA_Prototype.html. I need to add a new 'Methods' nav item to the sidebar. It should have the amber left-bar active indicator and a badge showing '3'. Give me the exact HTML snippet to add, following the prototype's patterns.", "eval_id": 0, "outputs": [{"name": "response.md", "type": "text", "content": "# MASA Prototype - Methods Nav Item HTML Snippet\n\n## Overview\nBased on the MASA_Prototype.html sidebar navigation patterns, here is the exact HTML snippet to add a new 'Methods' nav item with an amber left-bar active indicator and a badge showing '3'.\n\n## HTML Snippet\n\n```html\n<div class=\"nav-item\" onclick=\"switchView('methods')\" id=\"nav-methods\">\n  <svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n    <path d=\"M2 4h12M2 8h12M2 12h12\" stroke-linecap=\"round\"/>\n  </svg>\n  Methods\n  <span class=\"nav-badge\">3</span>\n</div>\n```\n\n## Pattern Analysis\n\n### Structure\n- **Container**: `<div class=\"nav-item\">` - standard nav item container\n- **Icon**: SVG with 13x13px rendering (inherited via CSS)\n- **Label**: Plain text \"Methods\"\n- **Badge**: `<span class=\"nav-badge\">3</span>` - displays numeric badge with amber styling\n\n### Key Features\n1. **Active Indicator**: The amber left-bar appears automatically via the `.active` class and pseudo-element `::before` (height: 18px, background: var(--accent))\n2. **Badge Styling**: Inherits from `.nav-badge` CSS class:\n   - Font: Monospace, 9px, weight 500\n   - Padding: 1px 5px with 3px border-radius\n   - Color: Amber accent (var(--accent))\n   - Background: Dim accent with border\n   - Positioned: Right-aligned via `margin-left: auto`\n\n3. **Interactivity**:\n   - `onclick=\"switchView('methods')\"` connects to existing JS switcher function\n   - `id=\"nav-methods\"` allows the JS to add/remove `.active` class\n   - Hover state: Automatic via `.nav-item:hover` CSS\n\n### SVG Icon\nThe icon provided is a horizontal lines pattern (\u2261) representing \"Methods\". You can replace with any alternative icon while maintaining the 16x16 viewBox and stroke styling.\n\n## Integration Instructions\n\nInsert this snippet in the `<nav class=\"sidebar-nav\">` section of MASA_Prototype.html, typically after the \"Hybrid\" nav item and before (or instead of) the nav-divider.\n\n**No additional CSS is required** - the existing design tokens handle all styling.\n\n## Related CSS Classes (Already Defined)\n- `.nav-item` - base container\n- `.nav-item.active` - amber highlight background + taller ::before bar\n- `.nav-item::before` - left amber bar indicator (animated on active state)\n- `.nav-badge` - badge styling with amber accent\n\n## Notes\n- The badge \"3\" can be easily changed to any number or text by modifying the span content\n- If you want the Methods item to be initially active, add the `active` class: `<div class=\"nav-item active\"...>`\n- The `switchView()` JavaScript function will need corresponding view HTML and logic to switch to the Methods view when clicked\n"}], "grading": {"run_id": "eval-0-without_skill", "expectations": [{"text": "uses-nav-item-class", "passed": true, "evidence": "<div class=\"nav-item\" on line 9 \u2014 uses nav-item class"}, {"text": "uses-active-class", "passed": false, "evidence": "Line 9: <div class=\"nav-item\"> does NOT include .active class on the element itself"}, {"text": "uses-nav-badge-class", "passed": true, "evidence": "<span class=\"nav-badge\">3</span> on line 14"}, {"text": "badge-shows-3", "passed": true, "evidence": "Badge displays '3' in the span"}, {"text": "uses-masa-css-vars", "passed": true, "evidence": "Explains .nav-badge styling with var(--accent), var(--accent-dim), references design tokens"}, {"text": "explains-left-bar-mechanism", "passed": true, "evidence": "Line 27 & 52: 'amber left-bar via the .active class and pseudo-element ::before'"}]}}, {"id": "eval-token-resolution-with_skill", "prompt": "The synthesis-engine app uses --accent for focus rings but I'm not sure what value that resolves to in dark mode vs light mode. Also, what selector does the Style Dictionary output for dark mode \u2014 is it .dark or [data-theme='dark']? And how do I rebuild the CSS after editing tokens.json?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# MASA Token Resolution Analysis\n\n## Question 1: What value does `--accent` resolve to in dark mode vs light mode?\n\n### Dark Mode\nIn dark mode, `--accent` resolves to **`#C8965A`** (warm amber/clay color).\n\n**CSS Output** (from `.dark` selector at line 169 of `generated-tokens.css`):\n```css\n.dark {\n  --accent: #C8965A;\n  /* ... */\n}\n```\n\n### Light Mode\nIn light mode, `--accent` resolves to **`#A0693A`** (darker warm brown).\n\n**CSS Output** (from `:root, .light` selector at line 82 of `generated-tokens.css`):\n```css\n:root, .light {\n  --accent: #A0693A;\n  /* ... */\n}\n```\n\n### Source in tokens.json\nThese values are defined in the core amber palette:\n- **Dark (dark set)**: `color.accent.default` = `#C8965A` (amber-500)\n- **Light (light set)**: `color.accent.default` = `#A0693A` (amber-700)\n\nBoth colors come from the unified amber palette (amber-400 through amber-800) defined in the `core` token set at lines 100-106 of `tokens.json`.\n\n---\n\n## Question 2: What selector does the Style Dictionary output for dark mode?\n\nThe Style Dictionary outputs the selector **`.dark`** for dark mode.\n\n**CSS Output Structure:**\n```css\n:root {\n  /* Core (theme-agnostic) tokens */\n}\n\n:root, .light {\n  /* Light theme overrides */\n}\n\n.dark {\n  /* Dark theme overrides */\n}\n```\n\n**NOT** `[data-theme='dark']`. The `.dark` class selector is used because the synthesis-engine uses Tailwind's `darkMode: \"class\"` configuration, which applies the `.dark` class to the `<html>` element to trigger dark mode.\n\n**Style Dictionary Config Details** (from `style-dictionary.config.js` line 223):\nThe custom format `css/theme-custom-properties-with-aliases` renders the dark section with:\n```javascript\nrenderBlock('.dark', sections.dark)\n```\n\nThis explicitly outputs `.dark { ... }` as the CSS block selector.\n\n**Note on the HTML Prototype**: The standalone HTML prototype (`MASA_Prototype.html`) uses `[data-theme=\"dark\"]` on the `<html>` element instead\u2014this is intentional for the prototype-only. The synthesis-engine Next.js app uses `.dark` exclusively.\n\n---\n\n## Question 3: How do I rebuild the CSS after editing tokens.json?\n\nAfter editing `design-system/tokens.json`, run:\n\n```bash\ncd synthesis-engine && npm run tokens:build\n```\n\n**Alternative (automatic):**\n```bash\ncd synthesis-engine && npm run prebuild\n```\n\nThe `prebuild` script runs the token build automatically before every full build, so editing tokens and running `npm run build` will also regenerate the CSS.\n\n### How the Rebuild Works\n\n1. **Entry point**: `style-dictionary.config.js` (in the synthesis-engine root)\n2. **Input**: Reads `tokens.json` from:\n   - `$TOKENS_JSON_PATH` environment variable (if set), OR\n   - `../design-system/tokens.json` (relative to synthesis-engine), OR\n   - `./design-system/tokens.json` (if in synthesis-engine root)\n3. **Processing**:\n   - Parses all three token sets: `core`, `dark`, `light`\n   - Applies transformations (kebab-case naming, px unit normalization)\n   - Registers custom format `css/theme-custom-properties-with-aliases`\n4. **Output**: Writes to `src/app/generated-tokens.css`\n   - Three CSS blocks: `:root`, `:root, .light`, `.dark`\n   - Canonical names (e.g., `--color-accent-default`) + aliases (e.g., `--accent`)\n\n### Example Workflow\n\nIf you edit `tokens.json` to change the dark accent from `#C8965A` to a new color:\n\n```bash\n# Edit: design-system/tokens.json\n# Change: \"dark\" > \"color\" > \"accent\" > \"default\" > \"value\"\n\n# Then rebuild:\ncd synthesis-engine\nnpm run tokens:build\n\n# Result: src/app/generated-tokens.css is regenerated with the new value in the .dark block\n```\n\n---\n\n## Key Files Reference\n\n| File | Purpose |\n|------|---------|\n| `design-system/tokens.json` | Source of truth for all design tokens |\n| `synthesis-engine/style-dictionary.config.js` | Build pipeline configuration |\n| `synthesis-engine/src/app/generated-tokens.css` | Generated CSS variables output |\n| `synthesis-engine/src/app/globals.css` | Global styles (imports generated tokens) |\n\n---\n\n## Summary Table\n\n| Question | Answer |\n|----------|--------|\n| **`--accent` in dark mode** | `#C8965A` (warm amber) |\n| **`--accent` in light mode** | `#A0693A` (warm brown) |\n| **Dark mode CSS selector** | `.dark` (not `[data-theme='dark']`) |\n| **Rebuild command** | `cd synthesis-engine && npm run tokens:build` |\n| **Auto-rebuild** | Yes, via `prebuild` before `npm run build` |\n\n"}], "grading": {"run_id": "eval-1-with_skill", "expectations": [{"text": "dark-accent-correct", "passed": true, "evidence": "Line 6: '--accent resolves to #C8965A (warm amber/clay color)'"}, {"text": "light-accent-correct", "passed": true, "evidence": "Line 16: '--accent resolves to #A0693A (darker warm brown)'"}, {"text": "selector-is-dot-dark", "passed": true, "evidence": "Line 38: 'outputs the selector .dark for dark mode'"}, {"text": "rebuild-command-correct", "passed": true, "evidence": "Line 74: 'cd synthesis-engine && npm run tokens:build'"}, {"text": "no-wrong-selector", "passed": true, "evidence": "Line 55: 'NOT [data-theme='dark']. The .dark class selector is used'"}]}}, {"id": "eval-token-resolution-without_skill", "prompt": "The synthesis-engine app uses --accent for focus rings but I'm not sure what value that resolves to in dark mode vs light mode. Also, what selector does the Style Dictionary output for dark mode \u2014 is it .dark or [data-theme='dark']? And how do I rebuild the CSS after editing tokens.json?", "eval_id": 1, "outputs": [{"name": "response.md", "type": "text", "content": "# synthesis-engine Token Resolution Analysis\n\n## 1. --accent Token Value Resolution\n\nThe `--accent` token resolves to **different values** depending on the theme mode:\n\n### Dark Mode\n- **Value**: `#C8965A` (warm amber/rust color)\n- **CSS Variable**: `--accent: #C8965A;` (line 169 in generated-tokens.css)\n- **Selector**: `.dark`\n\n### Light Mode\n- **Value**: `#A0693A` (darker warm brown)\n- **CSS Variable**: `--accent: #A0693A;` (line 82 in generated-tokens.css)\n- **Selector**: `:root, .light`\n\nBoth values are part of the core amber color palette defined in `tokens.json`:\n- Dark mode uses `color.amber.500` (#C8965A)\n- Light mode uses `color.amber.700` (#A0693A)\n\nThe CSS also generates these aliases for backward compatibility:\n- `--lab-accent-clay`\n- `--lab-accent-rust`\n- `--lab-accent-earth`\n\n---\n\n## 2. Style Dictionary Dark Mode Selector\n\nThe Style Dictionary configuration in `style-dictionary.config.js` outputs **`.dark`** as the selector for dark mode tokens.\n\n**Reference from the config (lines 221-223)**:\n```javascript\nrenderBlock(':root, .light', sections.light),\n'',\nrenderBlock('.dark', sections.dark),\n```\n\nThe output structure is:\n- `:root` - Core tokens shared across all themes\n- `:root, .light` - Light mode specific tokens (applied to root and `.light` class)\n- `.dark` - Dark mode specific tokens (applied to `.dark` class)\n\n**Not** `[data-theme='dark']` \u2014 this project uses a class-based approach for theme switching.\n\n---\n\n## 3. How to Rebuild CSS After Editing tokens.json\n\n### Quick Build\nRun the following npm script:\n```bash\nnpm run tokens:build\n```\n\nThis executes `node style-dictionary.config.js`, which:\n1. Reads `../design-system/tokens.json` (or environment-specified path)\n2. Processes core, dark, and light token sets\n3. Generates `/src/app/generated-tokens.css` with all theme variants\n\n### Watch Mode (Recommended for Development)\n```bash\nnpm run tokens:watch\n```\n\nThis uses `nodemon` to automatically rebuild CSS whenever `tokens.json` changes. The nodemon config watches for `.json` file changes in the `design-system` directory.\n\n### Automatic Prebuild\nThe `tokens:build` script also runs automatically before production builds:\n- The `prebuild` hook in `package.json` (line 35) executes `node style-dictionary.config.js`\n- When you run `npm run build`, it triggers the prebuild automatically\n\n### Implementation Details\nThe Style Dictionary config:\n- **Input**: `../design-system/tokens.json`\n- **Output**: `src/app/generated-tokens.css`\n- **Custom Format**: Uses `css/theme-custom-properties-with-aliases` to generate CSS custom properties\n- **Alias Support**: Automatically generates secondary variable names from token descriptions (e.g., `--lab-accent-clay` for `--accent`)\n\nThe generated CSS file includes a header stating it's auto-generated and should not be edited directly:\n```css\n/*\n * This file is generated from ../design-system/tokens.json.\n * Do not edit this file directly.\n */\n```\n\n---\n\n## Summary Table\n\n| Question | Answer |\n|----------|--------|\n| Dark mode `--accent` value | `#C8965A` |\n| Light mode `--accent` value | `#A0693A` |\n| Dark mode CSS selector | `.dark` |\n| Light mode CSS selector | `:root, .light` |\n| Rebuild command | `npm run tokens:build` |\n| Watch mode command | `npm run tokens:watch` |\n| Output file path | `src/app/generated-tokens.css` |\n| Theme approach | Class-based (`.dark`, `.light`) not attribute-based |\n"}], "grading": {"run_id": "eval-1-without_skill", "expectations": [{"text": "dark-accent-correct", "passed": true, "evidence": "Line 8: '--accent: #C8965A;' in dark mode"}, {"text": "light-accent-correct", "passed": true, "evidence": "Line 14: '--accent: #A0693A;' in light mode"}, {"text": "selector-is-dot-dark", "passed": true, "evidence": "Line 30: 'outputs .dark as the selector for dark mode tokens'"}, {"text": "rebuild-command-correct", "passed": true, "evidence": "Line 53: 'npm run tokens:build' (correct rebuild command)"}, {"text": "no-wrong-selector", "passed": true, "evidence": "Line 44: 'Not [data-theme='dark'] \u2014 this project uses a class-based approach'"}]}}, {"id": "eval-confidence-meter-with_skill", "prompt": "I want to add a confidence meter to the evidence rail. It should be a horizontal fill-bar with three levels: green for high, amber for medium, red for low. Show me a complete self-contained HTML + CSS snippet I can drop into the rail section.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# MASA Confidence Meter Component\n\nSelf-contained HTML + CSS snippet for the evidence rail. Drop this into your rail section.\n\n---\n\n## Complete HTML + CSS Snippet\n\n```html\n<!-- Confidence Meter Component -->\n<div class=\"confidence-meter\">\n  <!-- Header -->\n  <div class=\"confidence-header\">\n    <span class=\"confidence-label\">CONFIDENCE</span>\n    <span class=\"confidence-value\">84%</span>\n  </div>\n\n  <!-- Horizontal Fill Bar with Three Levels -->\n  <div class=\"confidence-bar\">\n    <div class=\"confidence-fill\" style=\"width: 84%;\">\n      <div class=\"confidence-fill-inner\"></div>\n    </div>\n  </div>\n\n  <!-- Status Indicator -->\n  <div class=\"confidence-status high\">\n    <span class=\"confidence-dot\"></span>\n    <span class=\"confidence-text\">High Confidence</span>\n  </div>\n</div>\n\n<style>\n/* ============================================\n   CONFIDENCE METER \u2014 MASA DESIGN SYSTEM\n   ============================================ */\n\n:root {\n  /* Core Design Tokens (ensure these are available globally) */\n  --font-mono: 'JetBrains Mono', monospace;\n  --font-sans: 'Inter', -apple-system, sans-serif;\n  --bg-3: #1A1816;\n  --text-1: #F2EFE9;\n  --text-4: rgba(242, 239, 233, 0.16);\n  --green: #4E9E7A;\n  --green-dim: rgba(78, 158, 122, 0.10);\n  --accent: #C8965A;\n  --red: #C45C5C;\n  --ease: cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n.confidence-meter {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  padding: 0;\n  font-family: var(--font-sans);\n}\n\n/* Header Row: Label + Value */\n.confidence-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: baseline;\n  gap: 8px;\n}\n\n.confidence-label {\n  font-family: var(--font-mono);\n  font-size: 9px;\n  font-weight: 500;\n  letter-spacing: 0.14em;\n  text-transform: uppercase;\n  color: var(--text-4);\n}\n\n.confidence-value {\n  font-family: var(--font-mono);\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 0.05em;\n  color: var(--text-1);\n}\n\n/* Horizontal Fill Bar */\n.confidence-bar {\n  height: 4px;\n  border-radius: 999px;\n  background: var(--bg-3);\n  overflow: hidden;\n  position: relative;\n}\n\n.confidence-fill {\n  height: 100%;\n  border-radius: 999px;\n  background: var(--green);\n  transition: width 0.4s var(--ease), background-color 0.3s var(--ease);\n  position: relative;\n}\n\n/* Optional subtle gradient overlay for depth */\n.confidence-fill-inner {\n  position: absolute;\n  inset: 0;\n  border-radius: 999px;\n  background: linear-gradient(\n    90deg,\n    rgba(255, 255, 255, 0.15) 0%,\n    transparent 100%\n  );\n}\n\n/* Color Variants Based on Confidence Level */\n.confidence-fill.high {\n  background: var(--green);\n}\n\n.confidence-fill.medium {\n  background: var(--accent);\n}\n\n.confidence-fill.low {\n  background: var(--red);\n}\n\n/* Status Indicator (below the bar) */\n.confidence-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-size: 11px;\n  color: var(--text-1);\n  transition: color 0.3s var(--ease);\n}\n\n.confidence-status.high {\n  color: var(--green);\n}\n\n.confidence-status.medium {\n  color: var(--accent);\n}\n\n.confidence-status.low {\n  color: var(--red);\n}\n\n/* Status Dot (pulsing indicator) */\n.confidence-dot {\n  width: 5px;\n  height: 5px;\n  border-radius: 50%;\n  background: currentColor;\n  animation: pulse 2s ease-in-out infinite;\n  flex-shrink: 0;\n}\n\n.confidence-status.low .confidence-dot {\n  animation: pulse-urgent 1.5s ease-in-out infinite;\n}\n\n@keyframes pulse {\n  0%, 100% {\n    opacity: 1;\n    transform: scale(1);\n  }\n  50% {\n    opacity: 0.5;\n    transform: scale(1.1);\n  }\n}\n\n@keyframes pulse-urgent {\n  0%, 100% {\n    opacity: 1;\n    transform: scale(1);\n  }\n  50% {\n    opacity: 0.3;\n    transform: scale(1.15);\n  }\n}\n\n.confidence-text {\n  font-family: var(--font-sans);\n  font-size: 11px;\n  font-weight: 400;\n  letter-spacing: 0.01em;\n}\n</style>\n```\n\n---\n\n## Usage & Customization\n\n### Setting Different Confidence Levels\n\nUpdate the `confidence-fill` class and `confidence-status` class to match your confidence level:\n\n```html\n<!-- HIGH Confidence (Green) -->\n<div class=\"confidence-meter\">\n  <div class=\"confidence-header\">\n    <span class=\"confidence-label\">CONFIDENCE</span>\n    <span class=\"confidence-value\">84%</span>\n  </div>\n  <div class=\"confidence-bar\">\n    <div class=\"confidence-fill high\" style=\"width: 84%;\">\n      <div class=\"confidence-fill-inner\"></div>\n    </div>\n  </div>\n  <div class=\"confidence-status high\">\n    <span class=\"confidence-dot\"></span>\n    <span class=\"confidence-text\">High Confidence</span>\n  </div>\n</div>\n\n<!-- MEDIUM Confidence (Amber) -->\n<div class=\"confidence-meter\">\n  <div class=\"confidence-header\">\n    <span class=\"confidence-label\">CONFIDENCE</span>\n    <span class=\"confidence-value\">56%</span>\n  </div>\n  <div class=\"confidence-bar\">\n    <div class=\"confidence-fill medium\" style=\"width: 56%;\">\n      <div class=\"confidence-fill-inner\"></div>\n    </div>\n  </div>\n  <div class=\"confidence-status medium\">\n    <span class=\"confidence-dot\"></span>\n    <span class=\"confidence-text\">Medium Confidence</span>\n  </div>\n</div>\n\n<!-- LOW Confidence (Red) -->\n<div class=\"confidence-meter\">\n  <div class=\"confidence-header\">\n    <span class=\"confidence-label\">CONFIDENCE</span>\n    <span class=\"confidence-value\">28%</span>\n  </div>\n  <div class=\"confidence-bar\">\n    <div class=\"confidence-fill low\" style=\"width: 28%;\">\n      <div class=\"confidence-fill-inner\"></div>\n    </div>\n  </div>\n  <div class=\"confidence-status low\">\n    <span class=\"confidence-dot\"></span>\n    <span class=\"confidence-text\">Low Confidence</span>\n  </div>\n</div>\n```\n\n### Dynamic Width Updates (JavaScript)\n\nTo update the confidence level dynamically:\n\n```javascript\nfunction setConfidence(percentage, level) {\n  const meter = document.querySelector('.confidence-meter');\n  const fill = meter.querySelector('.confidence-fill');\n  const value = meter.querySelector('.confidence-value');\n  const status = meter.querySelector('.confidence-status');\n  const dot = meter.querySelector('.confidence-dot');\n  const text = meter.querySelector('.confidence-text');\n\n  // Update width\n  fill.style.width = percentage + '%';\n\n  // Update percentage display\n  value.textContent = percentage + '%';\n\n  // Update color classes (high, medium, low)\n  fill.className = 'confidence-fill ' + level;\n  status.className = 'confidence-status ' + level;\n\n  // Update status text\n  const levelLabels = {\n    high: 'High Confidence',\n    medium: 'Medium Confidence',\n    low: 'Low Confidence'\n  };\n  text.textContent = levelLabels[level];\n}\n\n// Example: Set to 72% with high confidence\nsetConfidence(72, 'high');\n```\n\n---\n\n## Design System Alignment\n\nThis component honors all MASA design principles:\n\n- **Color Palette**: Green (`#4E9E7A`) for high, Amber (`#C8965A`) for medium, Red (`#C45C5C`) for low\n- **Typography**: JetBrains Mono for labels (9px, all-caps, 0.14em letter-spacing), Inter for body\n- **Surface**: Uses `--bg-3` (#1A1816) track background\n- **Easing**: Smooth 0.4s transitions using MASA's primary spring curve (`cubic-bezier(0.16, 1, 0.3, 1)`)\n- **Animation**: Pulsing dot provides live indicator feedback; urgent pulse for low confidence\n- **Spacing**: 12px gap between header and bar, 6px gap between bar and status\n\n---\n\n## Responsive & Theme-Safe\n\n- All colors use CSS variables (compatible with both dark and light themes)\n- Width set inline via `style=\"width: X%\"` for flexible runtime updates\n- Pill-shaped borders (`border-radius: 999px`) match MASA rail components\n- No external dependencies\u2014pure HTML, CSS, and optional vanilla JavaScript\n\n---\n\n## Notes\n\n- **Rail Context**: Place this component in the evidence rail (296px wide zone). The 4px bar height and padding maintain visual consistency with other rail elements.\n- **Integration**: If using in the Next.js synthesis-engine, ensure `generated-tokens.css` is loaded so CSS variables resolve correctly.\n- **Prototype**: For standalone use in MASA_Prototype.html, the CSS variables are hardcoded in the `<style>` block and will work immediately.\n"}], "grading": {"run_id": "eval-2-with_skill", "expectations": [{"text": "uses-masa-green", "passed": true, "evidence": "Line 44: '--green: #4E9E7A;' (MASA green, not generic)"}, {"text": "uses-masa-accent-amber", "passed": true, "evidence": "Line 46: '--accent: #C8965A;' (MASA amber for medium level)"}, {"text": "uses-masa-red", "passed": true, "evidence": "Line 47: '--red: #C45C5C;' (MASA red, not generic)"}, {"text": "pill-border-radius", "passed": true, "evidence": "Line 87: 'border-radius: 999px;' on .confidence-bar creates full pill rounding"}, {"text": "uses-masa-bg-3", "passed": true, "evidence": "Line 41: '--bg-3: #1A1816;' and line 88: 'background: var(--bg-3);' for empty track"}, {"text": "uses-masa-font-mono", "passed": true, "evidence": "Line 39: '--font-mono: 'JetBrains Mono', monospace;' used on lines 68 & 77 for labels"}, {"text": "self-contained-snippet", "passed": true, "evidence": "Lines 9-190 contain complete HTML + CSS with all styling inline, fully self-contained"}]}}, {"id": "eval-confidence-meter-without_skill", "prompt": "I want to add a confidence meter to the evidence rail. It should be a horizontal fill-bar with three levels: green for high, amber for medium, red for low. Show me a complete self-contained HTML + CSS snippet I can drop into the rail section.", "eval_id": 2, "outputs": [{"name": "response.md", "type": "text", "content": "# Confidence Meter for Evidence Rail\n\n## Complete Self-Contained HTML + CSS Snippet\n\nThis is a production-ready confidence meter component with a horizontal fill-bar, three confidence levels (high/medium/low), and color-coded indicators (green/amber/red).\n\n### HTML\n\n```html\n<div class=\"confidence-meter-container\">\n  <div class=\"confidence-meter-header\">\n    <span class=\"confidence-meter-label\">Confidence Level</span>\n    <span class=\"confidence-meter-value\">High</span>\n  </div>\n  <div class=\"confidence-meter-bar\">\n    <div class=\"confidence-meter-fill confidence-level-high\" style=\"width: 85%\"></div>\n  </div>\n  <div class=\"confidence-meter-legend\">\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-low\"></span>\n      <span class=\"confidence-meter-legend-text\">Low</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-medium\"></span>\n      <span class=\"confidence-meter-legend-text\">Medium</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-high\"></span>\n      <span class=\"confidence-meter-legend-text\">High</span>\n    </div>\n  </div>\n</div>\n```\n\n### CSS\n\n```css\n/* Confidence Meter Container */\n.confidence-meter-container {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  padding: 16px;\n  background-color: #f9f9f9;\n  border-radius: 8px;\n  border: 1px solid #e0e0e0;\n  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;\n}\n\n/* Header Section */\n.confidence-meter-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 4px;\n}\n\n.confidence-meter-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: #333;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n\n.confidence-meter-value {\n  font-size: 13px;\n  font-weight: 500;\n  color: #666;\n  padding: 4px 8px;\n  background-color: #fff;\n  border-radius: 4px;\n}\n\n/* Fill Bar */\n.confidence-meter-bar {\n  position: relative;\n  width: 100%;\n  height: 8px;\n  background-color: #e8e8e8;\n  border-radius: 4px;\n  overflow: hidden;\n  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);\n}\n\n.confidence-meter-fill {\n  height: 100%;\n  border-radius: 4px;\n  transition: width 0.3s ease, background-color 0.2s ease;\n  position: relative;\n}\n\n/* Color Levels */\n.confidence-level-high {\n  background-color: #10b981; /* Green */\n}\n\n.confidence-level-medium {\n  background-color: #f59e0b; /* Amber */\n}\n\n.confidence-level-low {\n  background-color: #ef4444; /* Red */\n}\n\n/* Legend Section */\n.confidence-meter-legend {\n  display: flex;\n  gap: 16px;\n  margin-top: 4px;\n  padding-top: 8px;\n  border-top: 1px solid #e0e0e0;\n}\n\n.confidence-meter-legend-item {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-size: 12px;\n  color: #666;\n}\n\n.confidence-meter-legend-box {\n  display: inline-block;\n  width: 12px;\n  height: 12px;\n  border-radius: 3px;\n  flex-shrink: 0;\n}\n```\n\n## Usage Examples\n\n### Example 1: High Confidence (85%)\n\n```html\n<div class=\"confidence-meter-container\">\n  <div class=\"confidence-meter-header\">\n    <span class=\"confidence-meter-label\">Confidence Level</span>\n    <span class=\"confidence-meter-value\">High</span>\n  </div>\n  <div class=\"confidence-meter-bar\">\n    <div class=\"confidence-meter-fill confidence-level-high\" style=\"width: 85%\"></div>\n  </div>\n  <div class=\"confidence-meter-legend\">\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-low\"></span>\n      <span class=\"confidence-meter-legend-text\">Low</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-medium\"></span>\n      <span class=\"confidence-meter-legend-text\">Medium</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-high\"></span>\n      <span class=\"confidence-meter-legend-text\">High</span>\n    </div>\n  </div>\n</div>\n```\n\n### Example 2: Medium Confidence (50%)\n\n```html\n<div class=\"confidence-meter-container\">\n  <div class=\"confidence-meter-header\">\n    <span class=\"confidence-meter-label\">Confidence Level</span>\n    <span class=\"confidence-meter-value\">Medium</span>\n  </div>\n  <div class=\"confidence-meter-bar\">\n    <div class=\"confidence-meter-fill confidence-level-medium\" style=\"width: 50%\"></div>\n  </div>\n  <div class=\"confidence-meter-legend\">\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-low\"></span>\n      <span class=\"confidence-meter-legend-text\">Low</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-medium\"></span>\n      <span class=\"confidence-meter-legend-text\">Medium</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-high\"></span>\n      <span class=\"confidence-meter-legend-text\">High</span>\n    </div>\n  </div>\n</div>\n```\n\n### Example 3: Low Confidence (25%)\n\n```html\n<div class=\"confidence-meter-container\">\n  <div class=\"confidence-meter-header\">\n    <span class=\"confidence-meter-label\">Confidence Level</span>\n    <span class=\"confidence-meter-value\">Low</span>\n  </div>\n  <div class=\"confidence-meter-bar\">\n    <div class=\"confidence-meter-fill confidence-level-low\" style=\"width: 25%\"></div>\n  </div>\n  <div class=\"confidence-meter-legend\">\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-low\"></span>\n      <span class=\"confidence-meter-legend-text\">Low</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-medium\"></span>\n      <span class=\"confidence-meter-legend-text\">Medium</span>\n    </div>\n    <div class=\"confidence-meter-legend-item\">\n      <span class=\"confidence-meter-legend-box confidence-level-high\"></span>\n      <span class=\"confidence-meter-legend-text\">High</span>\n    </div>\n  </div>\n</div>\n```\n\n## Features\n\n- **Three Confidence Levels**: Color-coded (green for high, amber for medium, red for low)\n- **Horizontal Fill Bar**: Visual percentage indicator with smooth animations\n- **Legend**: Always displays the color scale for reference\n- **Responsive**: Adapts to container width\n- **Self-Contained**: No external dependencies, works with vanilla HTML/CSS\n- **Accessible**: Clear labels and semantic structure\n- **Professional Styling**: Suitable for scientific analysis UI\n- **Smooth Transitions**: 0.3s animation for width changes\n- **Customizable**: Easily adjust padding, colors, and dimensions by modifying CSS variables\n\n## Customization\n\nTo adjust colors, modify these CSS variables in the color level classes:\n\n- `.confidence-level-high`: Change `#10b981` (green)\n- `.confidence-level-medium`: Change `#f59e0b` (amber)\n- `.confidence-level-low`: Change `#ef4444` (red)\n\nTo change spacing, modify the `gap` and `padding` values in `.confidence-meter-container`.\n\nTo change bar height, adjust the `height` value in `.confidence-meter-bar`.\n\n## Integration\n\nSimply copy the HTML structure and CSS into your evidence rail section. Update the `width` style on the `.confidence-meter-fill` div to dynamically reflect your confidence percentage (0-100%), and update the confidence level class and display text as needed.\n"}], "grading": {"run_id": "eval-2-without_skill", "expectations": [{"text": "Uses MASA green color #4E9E7A (not generic green like #10b981)", "passed": false, "evidence": "Uses #10b981 (Tailwind green), not MASA's #4E9E7A"}, {"text": "Uses MASA amber #C8965A for medium (not generic amber like #f59e0b)", "passed": false, "evidence": "Uses #f59e0b (Tailwind amber), not MASA's #C8965A"}, {"text": "Uses MASA red #C45C5C (not generic red like #ef4444)", "passed": false, "evidence": "Uses #ef4444 (Tailwind red), not MASA's #C45C5C"}, {"text": "Fill bar uses pill/rounded border-radius (999px or similar full rounding)", "passed": false, "evidence": "border-radius: 4px used \u2014 not pill-shaped"}, {"text": "Uses --bg-3 or #1A1816 for the empty track background", "passed": false, "evidence": "Uses #e5e7eb (Tailwind gray) for track, not MASA's --bg-3"}, {"text": "Uses JetBrains Mono for the label text", "passed": false, "evidence": "No mention of JetBrains Mono; generic sans-serif assumed"}, {"text": "Provides a complete, self-contained HTML + CSS snippet", "passed": true, "evidence": "Complete HTML + CSS snippet provided, self-contained and droppable"}]}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "masa-prototype", "skill_path": "<path/to/skill>", "executor_model": "<model-name>", "analyzer_model": "<model-name>", "timestamp": "2026-03-09T06:40:41Z", "evals_run": [0, 1, 2], "runs_per_configuration": 3}, "runs": [{"eval_id": 2, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 29.1, "tokens": 54387, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "uses-masa-green", "passed": true, "evidence": "Line 44: '--green: #4E9E7A;' (MASA green, not generic)"}, {"text": "uses-masa-accent-amber", "passed": true, "evidence": "Line 46: '--accent: #C8965A;' (MASA amber for medium level)"}, {"text": "uses-masa-red", "passed": true, "evidence": "Line 47: '--red: #C45C5C;' (MASA red, not generic)"}, {"text": "pill-border-radius", "passed": true, "evidence": "Line 87: 'border-radius: 999px;' on .confidence-bar creates full pill rounding"}, {"text": "uses-masa-bg-3", "passed": true, "evidence": "Line 41: '--bg-3: #1A1816;' and line 88: 'background: var(--bg-3);' for empty track"}, {"text": "uses-masa-font-mono", "passed": true, "evidence": "Line 39: '--font-mono: 'JetBrains Mono', monospace;' used on lines 68 & 77 for labels"}, {"text": "self-contained-snippet", "passed": true, "evidence": "Lines 9-190 contain complete HTML + CSS with all styling inline, fully self-contained"}], "notes": []}, {"eval_id": 0, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 95.9, "tokens": 57089, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "uses-nav-item-class", "passed": true, "evidence": "<div class=\"nav-item active\"> \u2014 uses standard nav-item class"}, {"text": "uses-active-class", "passed": true, "evidence": "class=\"nav-item active\" on line 10 \u2014 active class included"}, {"text": "uses-nav-badge-class", "passed": true, "evidence": "<span class=\"nav-badge\">3</span> on line 16"}, {"text": "badge-shows-3", "passed": true, "evidence": "Badge displays '3' in <span class=\"nav-badge\">3</span>"}, {"text": "uses-masa-css-vars", "passed": true, "evidence": "References var(--bg-active), var(--accent), var(--accent-dim), var(--accent-border-2) in pattern explanation"}, {"text": "explains-left-bar-mechanism", "passed": true, "evidence": "Explains: '.nav-item.active::before pseudo-element reveals the 18px amber left-bar via ::before'"}], "notes": []}, {"eval_id": 1, "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 77.6, "tokens": 62429, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "dark-accent-correct", "passed": true, "evidence": "Line 6: '--accent resolves to #C8965A (warm amber/clay color)'"}, {"text": "light-accent-correct", "passed": true, "evidence": "Line 16: '--accent resolves to #A0693A (darker warm brown)'"}, {"text": "selector-is-dot-dark", "passed": true, "evidence": "Line 38: 'outputs the selector .dark for dark mode'"}, {"text": "rebuild-command-correct", "passed": true, "evidence": "Line 74: 'cd synthesis-engine && npm run tokens:build'"}, {"text": "no-wrong-selector", "passed": true, "evidence": "Line 55: 'NOT [data-theme='dark']. The .dark class selector is used'"}], "notes": []}, {"eval_id": 2, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.1429, "passed": 1, "failed": 6, "total": 7, "time_seconds": 18.9, "tokens": 43546, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "Uses MASA green color #4E9E7A (not generic green like #10b981)", "passed": false, "evidence": "Uses #10b981 (Tailwind green), not MASA's #4E9E7A"}, {"text": "Uses MASA amber #C8965A for medium (not generic amber like #f59e0b)", "passed": false, "evidence": "Uses #f59e0b (Tailwind amber), not MASA's #C8965A"}, {"text": "Uses MASA red #C45C5C (not generic red like #ef4444)", "passed": false, "evidence": "Uses #ef4444 (Tailwind red), not MASA's #C45C5C"}, {"text": "Fill bar uses pill/rounded border-radius (999px or similar full rounding)", "passed": false, "evidence": "border-radius: 4px used \u2014 not pill-shaped"}, {"text": "Uses --bg-3 or #1A1816 for the empty track background", "passed": false, "evidence": "Uses #e5e7eb (Tailwind gray) for track, not MASA's --bg-3"}, {"text": "Uses JetBrains Mono for the label text", "passed": false, "evidence": "No mention of JetBrains Mono; generic sans-serif assumed"}, {"text": "Provides a complete, self-contained HTML + CSS snippet", "passed": true, "evidence": "Complete HTML + CSS snippet provided, self-contained and droppable"}], "notes": []}, {"eval_id": 0, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.8333, "passed": 5, "failed": 1, "total": 6, "time_seconds": 65.9, "tokens": 44423, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "uses-nav-item-class", "passed": true, "evidence": "<div class=\"nav-item\" on line 9 \u2014 uses nav-item class"}, {"text": "uses-active-class", "passed": false, "evidence": "Line 9: <div class=\"nav-item\"> does NOT include .active class on the element itself"}, {"text": "uses-nav-badge-class", "passed": true, "evidence": "<span class=\"nav-badge\">3</span> on line 14"}, {"text": "badge-shows-3", "passed": true, "evidence": "Badge displays '3' in the span"}, {"text": "uses-masa-css-vars", "passed": true, "evidence": "Explains .nav-badge styling with var(--accent), var(--accent-dim), references design tokens"}, {"text": "explains-left-bar-mechanism", "passed": true, "evidence": "Line 27 & 52: 'amber left-bar via the .active class and pseudo-element ::before'"}], "notes": []}, {"eval_id": 1, "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 5, "failed": 0, "total": 5, "time_seconds": 89.8, "tokens": 59881, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "dark-accent-correct", "passed": true, "evidence": "Line 8: '--accent: #C8965A;' in dark mode"}, {"text": "light-accent-correct", "passed": true, "evidence": "Line 14: '--accent: #A0693A;' in light mode"}, {"text": "selector-is-dot-dark", "passed": true, "evidence": "Line 30: 'outputs .dark as the selector for dark mode tokens'"}, {"text": "rebuild-command-correct", "passed": true, "evidence": "Line 53: 'npm run tokens:build' (correct rebuild command)"}, {"text": "no-wrong-selector", "passed": true, "evidence": "Line 44: 'Not [data-theme='dark'] \u2014 this project uses a class-based approach'"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 1.0, "stddev": 0.0, "min": 1.0, "max": 1.0}, "time_seconds": {"mean": 67.5333, "stddev": 34.519, "min": 29.1, "max": 95.9}, "tokens": {"mean": 57968.3333, "stddev": 4092.4762, "min": 54387, "max": 62429}}, "without_skill": {"pass_rate": {"mean": 0.6587, "stddev": 0.4544, "min": 0.1429, "max": 1.0}, "time_seconds": {"mean": 58.2, "stddev": 36.0717, "min": 18.9, "max": 89.8}, "tokens": {"mean": 49283.3333, "stddev": 9188.3179, "min": 43546, "max": 59881}}, "delta": {"pass_rate": "+0.34", "time_seconds": "+9.3", "tokens": "+8685"}}, "notes": []}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + (summary.passed || 0) + ' passed, ' + (summary.failed || 0) + ' failed of ' + (summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += metadata.timestamp + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + metadata.evals_run.join(", ") + " &mdash; ";
+      html += (metadata.runs_per_configuration || "?") + " runs per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th><th>" + escapeHtml(labelB) + "</th><th>Delta</th></tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += "<td>" + fmtStat(b.pass_rate, true) + "</td>";
+      html += '<td class="' + deltaClass(delta.pass_rate) + '">' + (delta.pass_rate || "—") + "</td></tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += "<td>" + fmtStat(b.time_seconds, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.time_seconds) + '">' + (delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td></tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += "<td>" + fmtStat(b.tokens, false) + "</td>";
+        html += '<td class="' + deltaClass(delta.tokens) + '">' + (delta.tokens || "—") + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) => a - b);
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + run.run_number + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + (r.passed || 0) + "/" + (r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + (r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + run.run_number + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

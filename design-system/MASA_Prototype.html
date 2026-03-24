@@ -9,75 +9,128 @@
 <style>
 
 /* ═══════════════════════════════════════════════════════════════
-   TOKENS
+   DESIGN TOKENS
 ═══════════════════════════════════════════════════════════════ */
 :root {
-  --sidebar-w: 240px;
-  --rail-w: 300px;
-  --topbar-h: 44px;
+  --sidebar-w: 224px;
+  --rail-w: 296px;
+  --topbar-h: 42px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* type */
-  --font-sans: 'Inter', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans:  'Inter', -apple-system, sans-serif;
+  --font-mono:  'JetBrains Mono', monospace;
   --font-serif: 'Instrument Serif', Georgia, serif;
+
+  --radius-sm:  5px;
+  --radius:     8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
 }
 
 [data-theme="dark"] {
-  --bg:           #0E0D0C;
-  --bg-2:         #151412;
-  --bg-3:         #1C1A18;
-  --bg-4:         #232120;
-  --bg-hover:     rgba(255,255,255,0.04);
-  --bg-active:    rgba(255,255,255,0.07);
-  --border:       rgba(255,255,255,0.07);
-  --border-2:     rgba(255,255,255,0.12);
-  --text-1:       #F2EFE9;
-  --text-2:       rgba(242,239,233,0.55);
-  --text-3:       rgba(242,239,233,0.30);
-  --accent:       #C8965A;
-  --accent-dim:   rgba(200,150,90,0.12);
-  --accent-border:rgba(200,150,90,0.25);
-  --green:        #4E9E7A;
-  --green-dim:    rgba(78,158,122,0.12);
-  --red:          #C45C5C;
-  --red-dim:      rgba(196,92,92,0.12);
-  --card-bg:      #151412;
-  --card-border:  rgba(255,255,255,0.07);
-  --input-bg:     #1C1A18;
-  --shadow:       0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.25);
-  --shadow-sm:    0 1px 2px rgba(0,0,0,0.3);
+  /* Surfaces */
+  --bg:             #0E0D0C;
+  --bg-2:           #131210;
+  --bg-3:           #1A1816;
+  --bg-4:           #211F1C;
+  --bg-5:           #282523;
+
+  /* Interactive states */
+  --bg-hover:       rgba(255,255,255,0.04);
+  --bg-active:      rgba(200,150,90,0.10);
+
+  /* Borders */
+  --border:         rgba(255,255,255,0.07);
+  --border-2:       rgba(255,255,255,0.12);
+  --border-3:       rgba(255,255,255,0.18);
+
+  /* Text */
+  --text-1:         #F2EFE9;
+  --text-2:         rgba(242,239,233,0.55);
+  --text-3:         rgba(242,239,233,0.30);
+  --text-4:         rgba(242,239,233,0.16);
+
+  /* Accent amber */
+  --accent:         #C8965A;
+  --accent-2:       #B87D42;
+  --accent-dim:     rgba(200,150,90,0.10);
+  --accent-dim-2:   rgba(200,150,90,0.06);
+  --accent-border:  rgba(200,150,90,0.28);
+  --accent-border-2:rgba(200,150,90,0.18);
+  --accent-glow:    0 0 24px rgba(200,150,90,0.12);
+
+  /* Semantic */
+  --green:          #4E9E7A;
+  --green-dim:      rgba(78,158,122,0.10);
+  --green-border:   rgba(78,158,122,0.22);
+  --red:            #C45C5C;
+  --red-dim:        rgba(196,92,92,0.10);
+  --red-border:     rgba(196,92,92,0.22);
+  --blue:           #5B8DB8;
+  --blue-dim:       rgba(91,141,184,0.10);
+
+  /* Shadows */
+  --shadow-sm:      0 1px 2px rgba(0,0,0,0.35);
+  --shadow:         0 1px 3px rgba(0,0,0,0.4), 0 6px 20px rgba(0,0,0,0.3);
+  --shadow-lg:      0 4px 8px rgba(0,0,0,0.4), 0 16px 48px rgba(0,0,0,0.35);
+
+  /* Special */
+  --card-bg:        #131210;
+  --input-bg:       #1A1816;
+  --sidebar-bg:     #0B0A09;
+  --rail-bg:        #0F0E0D;
 }
 
 [data-theme="light"] {
-  --bg:           #FAFAF8;
-  --bg-2:         #F4F2EE;
-  --bg-3:         #EDEAE4;
-  --bg-4:         #E5E2DB;
-  --bg-hover:     rgba(0,0,0,0.03);
-  --bg-active:    rgba(0,0,0,0.055);
-  --border:       rgba(0,0,0,0.08);
-  --border-2:     rgba(0,0,0,0.14);
-  --text-1:       #1A1917;
-  --text-2:       rgba(26,25,23,0.55);
-  --text-3:       rgba(26,25,23,0.32);
-  --accent:       #A0693A;
-  --accent-dim:   rgba(160,105,58,0.10);
-  --accent-border:rgba(160,105,58,0.22);
-  --green:        #3A7D5E;
-  --green-dim:    rgba(58,125,94,0.10);
-  --red:          #9B3E3E;
-  --red-dim:      rgba(155,62,62,0.10);
-  --card-bg:      #FFFFFF;
-  --card-border:  rgba(0,0,0,0.08);
-  --input-bg:     #FFFFFF;
-  --shadow:       0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-sm:    0 1px 2px rgba(0,0,0,0.06);
+  --bg:             #FAFAF8;
+  --bg-2:           #F4F2EE;
+  --bg-3:           #EDEAE4;
+  --bg-4:           #E5E2DB;
+  --bg-5:           #DAD6CE;
+
+  --bg-hover:       rgba(0,0,0,0.03);
+  --bg-active:      rgba(160,105,58,0.08);
+
+  --border:         rgba(0,0,0,0.08);
+  --border-2:       rgba(0,0,0,0.13);
+  --border-3:       rgba(0,0,0,0.20);
+
+  --text-1:         #1A1917;
+  --text-2:         rgba(26,25,23,0.55);
+  --text-3:         rgba(26,25,23,0.35);
+  --text-4:         rgba(26,25,23,0.18);
+
+  --accent:         #A0693A;
+  --accent-2:       #8A5520;
+  --accent-dim:     rgba(160,105,58,0.09);
+  --accent-dim-2:   rgba(160,105,58,0.05);
+  --accent-border:  rgba(160,105,58,0.22);
+  --accent-border-2:rgba(160,105,58,0.14);
+  --accent-glow:    0 0 24px rgba(160,105,58,0.08);
+
+  --green:          #3A7D5E;
+  --green-dim:      rgba(58,125,94,0.08);
+  --green-border:   rgba(58,125,94,0.20);
+  --red:            #9B3E3E;
+  --red-dim:        rgba(155,62,62,0.08);
+  --red-border:     rgba(155,62,62,0.20);
+  --blue:           #3A6B9A;
+  --blue-dim:       rgba(58,107,154,0.08);
+
+  --shadow-sm:      0 1px 2px rgba(0,0,0,0.07);
+  --shadow:         0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+  --shadow-lg:      0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+
+  --card-bg:        #FFFFFF;
+  --input-bg:       #FFFFFF;
+  --sidebar-bg:     #F2F0EB;
+  --rail-bg:        #F6F4F0;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   RESET + BASE
+   RESET
 ═══════════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -87,6 +140,7 @@ html, body {
   background: var(--bg);
   color: var(--text-1);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   font-size: 13px;
   line-height: 1.5;
 }
@@ -97,15 +151,17 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
-* { transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease), color 0.15s var(--ease); }
+::-webkit-scrollbar-thumb:hover { background: var(--border-3); }
+
+/* Selective transitions — not on everything */
+.transitional { transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.15s var(--ease); }
 
 /* ═══════════════════════════════════════════════════════════════
-   LAYOUT SHELL
+   SHELL LAYOUT
 ═══════════════════════════════════════════════════════════════ */
 .shell {
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr var(--rail-w);
-  grid-template-rows: 1fr;
   height: 100vh;
   overflow: hidden;
 }
@@ -116,150 +172,188 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
 .sidebar {
   display: flex;
   flex-direction: column;
-  background: var(--bg-2);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
   overflow: hidden;
+  position: relative;
 }
 
-/* ── Wordmark ── */
+/* Wordmark */
 .sidebar-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 9px;
+  padding: 0 14px;
   height: var(--topbar-h);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 .wordmark-icon {
-  width: 22px; height: 22px;
+  width: 24px; height: 24px;
   display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-border-2);
   color: var(--accent);
+  flex-shrink: 0;
 }
-.wordmark-icon svg { width: 16px; height: 16px; }
+.wordmark-icon svg { width: 13px; height: 13px; }
 .wordmark-text {
-  font-family: var(--font-mono);
-  font-size: 10.5px; font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-family: var(--font-serif);
+  font-size: 14px; font-weight: 400;
   color: var(--text-1);
+  letter-spacing: 0.01em;
+  flex: 1;
 }
 .sidebar-header-actions {
-  margin-left: auto;
   display: flex; gap: 2px;
 }
 .icon-btn {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   display: flex; align-items: center; justify-content: center;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   color: var(--text-3);
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
 }
 .icon-btn:hover { background: var(--bg-hover); color: var(--text-2); }
-.icon-btn svg { width: 14px; height: 14px; }
+.icon-btn svg { width: 13px; height: 13px; }
 
-/* ── Nav Items ── */
+/* Nav */
 .sidebar-nav {
-  padding: 8px 8px 0;
+  padding: 6px 8px 0;
   flex-shrink: 0;
 }
 .nav-item {
-  display: flex; align-items: center; gap: 9px;
+  display: flex; align-items: center; gap: 8px;
   padding: 7px 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 13px; font-weight: 400;
   color: var(--text-2);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
   user-select: none;
+  position: relative;
+}
+.nav-item::before {
+  content: '';
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 2px; height: 0;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+  transition: height 0.2s var(--ease);
 }
 .nav-item:hover { background: var(--bg-hover); color: var(--text-1); }
 .nav-item.active {
   background: var(--bg-active);
   color: var(--text-1);
-  font-weight: 500;
 }
-.nav-item svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.7; }
-.nav-item.active svg { opacity: 1; }
-.nav-item .chevron { margin-left: auto; opacity: 0.4; font-size: 10px; transition: transform 0.2s var(--ease); }
+.nav-item.active::before { height: 18px; }
+.nav-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.65; }
+.nav-item.active svg { opacity: 1; color: var(--accent); }
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  padding: 1px 5px; border-radius: 3px;
+  background: var(--accent-dim); color: var(--accent);
+  border: 1px solid var(--accent-border-2);
+}
+.nav-chevron {
+  margin-left: auto;
+  color: var(--text-4); font-size: 9px;
+}
+.nav-divider {
+  height: 1px; background: var(--border);
+  margin: 8px 10px;
+}
 
-/* ── Section Labels ── */
+/* Section labels */
 .sidebar-section-label {
   font-family: var(--font-mono);
-  font-size: 9.5px; font-weight: 500;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-3);
-  padding: 18px 18px 6px;
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-4);
+  padding: 14px 18px 5px;
 }
 
-/* ── History Items ── */
-.history-list { overflow-y: auto; flex: 1; padding: 0 8px; }
+/* History */
+.history-list { overflow-y: auto; flex: 1; padding: 0 8px 8px; }
 .history-item {
-  display: block;
-  padding: 6px 10px;
-  border-radius: 5px;
-  font-size: 12.5px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
   color: var(--text-2);
   cursor: pointer;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  transition: background 0.12s, color 0.12s;
+  overflow: hidden;
+  transition: background 0.1s var(--ease), color 0.1s var(--ease);
 }
 .history-item:hover { background: var(--bg-hover); color: var(--text-1); }
+.history-item-text {
+  flex: 1; font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.history-item-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--text-4); flex-shrink: 0;
+}
+.history-item:hover .history-item-dot { background: var(--accent); }
 
-/* ── New Buttons ── */
-.sidebar-actions {
-  padding: 10px 8px;
-  display: flex; gap: 6px;
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 6px 8px 0;
   flex-shrink: 0;
   border-top: 1px solid var(--border);
 }
-.action-btn {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  gap: 5px; padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  font-size: 11.5px; font-weight: 500; color: var(--text-2);
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-}
-.action-btn:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-2); }
-.action-btn svg { width: 12px; height: 12px; }
-
-/* ── Bottom ── */
-.sidebar-footer {
-  padding: 6px 8px;
-  flex-shrink: 0;
-  display: flex; flex-direction: column; gap: 1px;
-}
 .footer-item {
   display: flex; align-items: center; gap: 9px;
-  padding: 7px 10px;
-  border-radius: 6px;
-  font-size: 12.5px; color: var(--text-2);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text-2);
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
 .footer-item:hover { background: var(--bg-hover); color: var(--text-1); }
-.footer-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.6; }
+.footer-item svg { width: 12px; height: 12px; opacity: 0.55; }
+
+/* Actions */
+.sidebar-actions {
+  padding: 8px 8px 8px;
+  display: flex; gap: 5px;
+  flex-shrink: 0;
+}
+.action-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  gap: 5px; padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-size: 11.5px; color: var(--text-2);
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.action-btn:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-2); }
+.action-btn svg { width: 11px; height: 11px; }
+
+/* User row */
 .user-row {
   display: flex; align-items: center; gap: 9px;
-  padding: 9px 10px 11px;
+  padding: 8px 10px 10px;
   border-top: 1px solid var(--border);
-  margin-top: 4px;
   cursor: pointer;
+  margin-top: 2px;
 }
+.user-row:hover .user-email { color: var(--text-1); }
 .user-avatar {
   width: 22px; height: 22px; border-radius: 50%;
   background: var(--accent-dim);
   border: 1px solid var(--accent-border);
   display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  font-family: var(--font-mono); font-size: 8.5px; font-weight: 500;
   color: var(--accent); flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
-.user-email { font-size: 12px; color: var(--text-2); }
-.user-row .chevron { margin-left: auto; color: var(--text-3); font-size: 10px; }
+.user-email { font-size: 11.5px; color: var(--text-2); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.12s; }
+.user-chevron { color: var(--text-4); font-size: 9px; flex-shrink: 0; }
 
 /* ═══════════════════════════════════════════════════════════════
-   MAIN VIEW
+   MAIN AREA
 ═══════════════════════════════════════════════════════════════ */
 .main {
   display: flex;
@@ -269,128 +363,287 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
   position: relative;
 }
 
-/* ── Top Bar (main) ── */
-.main-topbar {
-  display: none; /* hidden in chat mode, shown in hybrid */
-  align-items: center;
-  gap: 0;
-  height: var(--topbar-h);
-  border-bottom: 1px solid var(--border);
-  padding: 0 20px;
-  flex-shrink: 0;
-  font-family: var(--font-mono);
+/* Ambient glow layer — subtle warm vignette top-center */
+.main::before {
+  content: '';
+  position: absolute;
+  inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(200,150,90,0.055) 0%, transparent 70%);
 }
-.main-topbar.visible { display: flex; }
-.topbar-tag {
-  font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--accent); border: 1px solid var(--accent-border);
-  background: var(--accent-dim); padding: 3px 9px; border-radius: 4px;
-  margin-right: 16px;
-}
-.topbar-pipeline {
-  font-size: 11px; color: var(--text-2);
-  display: flex; align-items: center; gap: 8px;
-}
-.topbar-pipeline .step { color: var(--text-3); }
-.topbar-pipeline .step.done { color: var(--text-2); }
-.topbar-pipeline .arrow { color: var(--text-3); font-size: 10px; }
-.topbar-phase {
-  margin-left: auto;
-  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--accent); font-weight: 500;
+[data-theme="light"] .main::before {
+  background: radial-gradient(ellipse 90% 55% at 50% -5%, rgba(160,105,58,0.04) 0%, transparent 70%);
 }
 
-/* ── Chat View ── */
+.view { display: none; flex: 1; flex-direction: column; overflow: hidden; position: relative; z-index: 1; }
+.view.active { display: flex; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHAT VIEW — WORKBENCH HERO
+═══════════════════════════════════════════════════════════════ */
 .chat-view {
   flex: 1; overflow-y: auto;
   display: flex; flex-direction: column;
-  padding: 0;
 }
 
-/* Workbench Hero */
 .workbench {
   flex: 1;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 64px 48px;
-  gap: 48px;
+  padding: 56px 52px 40px;
+  gap: 44px;
+  position: relative;
 }
-.workbench-headline {
-  text-align: center;
+
+.workbench-headline { text-align: center; }
+
+.workbench-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 18px;
+  opacity: 0.85;
 }
+
 .workbench-headline h1 {
   font-family: var(--font-serif);
-  font-size: 34px; font-weight: 400;
-  letter-spacing: -0.01em;
+  font-size: 42px; font-weight: 400;
+  letter-spacing: -0.02em;
   color: var(--text-1);
-  margin-bottom: 10px;
-  line-height: 1.2;
+  margin-bottom: 14px;
+  line-height: 1.15;
 }
+
+.workbench-headline h1 em {
+  font-style: italic;
+  color: var(--text-2);
+}
+
 .workbench-headline p {
   font-size: 14px; color: var(--text-2);
-  font-weight: 400; line-height: 1.6;
+  font-weight: 400; line-height: 1.65;
+  max-width: 380px; margin: 0 auto;
+  letter-spacing: 0.005em;
 }
 
 /* Protocol Cards */
 .protocol-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  width: 100%; max-width: 780px;
+  gap: 12px;
+  width: 100%; max-width: 820px;
 }
+
 .protocol-card {
   background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
-  padding: 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 26px 22px 22px;
   cursor: pointer;
-  transition: background 0.2s var(--ease), border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition: border-color 0.22s var(--ease), transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
   position: relative;
   overflow: hidden;
 }
+
+/* Gradient shimmer overlay */
+.protocol-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg, rgba(255,255,255,0.025) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.22s var(--ease);
+  pointer-events: none;
+}
+
+/* Top accent line */
 .protocol-card::after {
   content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
-  opacity: 0; transition: opacity 0.2s;
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+  opacity: 0;
+  transition: opacity 0.22s var(--ease);
+  pointer-events: none;
 }
+
 .protocol-card:hover {
   border-color: var(--border-2);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
+.protocol-card:hover::before { opacity: 1; }
 .protocol-card:hover::after { opacity: 1; }
-.protocol-card:active { transform: translateY(0); }
+.protocol-card:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
+
 .protocol-card.selected {
   border-color: var(--accent-border);
-  background: var(--accent-dim);
+  background: var(--accent-dim-2);
+  box-shadow: var(--accent-glow);
 }
+.protocol-card.selected::after { opacity: 1; }
+
 .card-icon {
-  width: 36px; height: 36px; border-radius: 8px;
+  width: 34px; height: 34px; border-radius: var(--radius);
   background: var(--bg-3);
   border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  color: var(--text-3);
+  transition: background 0.18s, border-color 0.18s, color 0.18s, box-shadow 0.18s;
+}
+.protocol-card:hover .card-icon {
+  background: var(--bg-4);
   color: var(--text-2);
 }
-[data-theme="dark"] .protocol-card:hover .card-icon { background: var(--bg-4); }
-.card-icon svg { width: 16px; height: 16px; }
+.protocol-card.selected .card-icon {
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  box-shadow: 0 0 12px rgba(200,150,90,0.15);
+}
+.card-icon svg { width: 15px; height: 15px; }
+
+.card-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-4);
+  margin-bottom: 7px;
+  transition: color 0.15s;
+}
+.protocol-card.selected .card-tag { color: var(--accent); }
+
 .protocol-card h3 {
-  font-size: 13.5px; font-weight: 600;
+  font-size: 13px; font-weight: 600;
   color: var(--text-1); margin-bottom: 8px;
   letter-spacing: -0.01em;
+  line-height: 1.3;
 }
 .protocol-card p {
-  font-size: 12.5px; color: var(--text-2);
-  line-height: 1.6;
+  font-size: 12px; color: var(--text-2);
+  line-height: 1.65; margin-bottom: 20px;
 }
 
-/* ── Hybrid View ── */
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-arrow {
+  font-size: 14px; color: var(--text-4);
+  transition: color 0.15s, transform 0.18s var(--ease));
+}
+.protocol-card:hover .card-arrow { color: var(--accent); transform: translateX(2px); }
+
+/* ═══════════════════════════════════════════════════════════════
+   INPUT AREA
+═══════════════════════════════════════════════════════════════ */
+.input-area {
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+  position: relative; z-index: 2;
+}
+
+.input-composer {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px 12px;
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.input-composer:focus-within {
+  border-color: var(--border-2);
+  box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-sm);
+}
+
+.input-composer textarea {
+  width: 100%; font-size: 13px;
+  color: var(--text-1); line-height: 1.55;
+  min-height: 40px; max-height: 160px;
+  background: transparent; display: block;
+}
+
+.input-toolbar {
+  display: flex; align-items: center;
+  gap: 5px; margin-top: 11px;
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+}
+
+.input-chip {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 11px; color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.input-chip:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-2); }
+.input-chip svg { width: 10px; height: 10px; }
+.input-chip .chip-chevron { font-size: 8px; opacity: 0.45; }
+
+.input-spacer { flex: 1; }
+
+.enter-hint { font-size: 10.5px; color: var(--text-4); font-family: var(--font-mono); margin-right: 6px; }
+
+.send-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-4); border: 1px solid var(--border-2);
+  border-radius: var(--radius-sm); font-size: 12px; font-weight: 500;
+  color: var(--text-1);
+  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+.send-btn:hover {
+  background: var(--bg-5); border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.send-btn svg { width: 11px; height: 11px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   HYBRID VIEW
+═══════════════════════════════════════════════════════════════ */
+.main-topbar {
+  display: none;
+  align-items: center;
+  height: var(--topbar-h);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  flex-shrink: 0;
+  gap: 12px;
+  position: relative; z-index: 2;
+}
+.main-topbar.visible { display: flex; }
+
+.topbar-tag {
+  font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); border: 1px solid var(--accent-border);
+  background: var(--accent-dim); padding: 3px 9px; border-radius: 4px;
+}
+.topbar-pipeline {
+  font-family: var(--font-mono);
+  font-size: 10.5px; color: var(--text-3);
+  display: flex; align-items: center; gap: 7px;
+}
+.topbar-pipeline .step { color: var(--text-3); }
+.topbar-pipeline .step.done { color: var(--text-2); }
+.topbar-pipeline .arrow { color: var(--text-4); font-size: 9px; }
+.topbar-phase {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); font-weight: 500; opacity: 0.85;
+}
+
 .hybrid-view {
   flex: 1; overflow: hidden;
   display: none;
-  grid-template-columns: 280px 1fr;
-  gap: 0;
+  grid-template-columns: 272px 1fr;
 }
 .hybrid-view.visible { display: grid; }
 
@@ -398,391 +651,477 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   overflow-y: auto;
-  padding: 24px;
-  gap: 28px;
+  padding: 22px;
+  gap: 24px;
 }
 .hybrid-section-head {
   font-family: var(--font-mono);
-  font-size: 9.5px; font-weight: 500;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 12px;
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 10px;
 }
 .hybrid-sub {
-  font-size: 11.5px; color: var(--text-3);
-  margin-top: 2px;
+  font-size: 11.5px; color: var(--text-3); margin-top: 1px; line-height: 1.5;
 }
 
 .upload-zone {
   border: 1px dashed var(--border-2);
-  border-radius: 8px; padding: 18px;
+  border-radius: var(--radius); padding: 16px;
   text-align: center; cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
-  color: var(--text-2); font-size: 12.5px;
+  color: var(--text-2); font-size: 12px;
 }
 .upload-zone:hover { background: var(--bg-hover); border-color: var(--accent-border); color: var(--text-1); }
+.upload-zone svg { margin: 0 auto 6px; display: block; }
 
+.field-empty {
+  padding: 10px 12px;
+  background: var(--bg-3); border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 11.5px;
+  color: var(--text-3); text-align: center;
+}
+
+.hybrid-row { display: flex; gap: 5px; }
 .hybrid-input {
-  border: 1px solid var(--border);
-  border-radius: 7px; padding: 10px 12px;
-  font-size: 12.5px; color: var(--text-1);
-  background: var(--input-bg); width: 100%;
+  flex: 1;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px 10px; font-size: 12.5px;
+  color: var(--text-1); background: var(--input-bg);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .hybrid-input:focus { border-color: var(--border-2); box-shadow: 0 0 0 3px var(--accent-dim); }
+.add-btn {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--bg-3); color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; transition: background 0.12s, border-color 0.12s;
+}
+.add-btn:hover { background: var(--bg-4); border-color: var(--border-2); }
+
+.hybrid-textarea {
+  width: 100%;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 9px 11px; font-size: 12px;
+  color: var(--text-1); background: var(--input-bg);
+  resize: vertical; min-height: 72px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hybrid-textarea:focus { border-color: var(--border-2); box-shadow: 0 0 0 3px var(--accent-dim); }
 
 .start-btn {
-  width: 100%; padding: 11px;
+  width: 100%; padding: 10px;
   background: var(--bg-3); border: 1px solid var(--border-2);
-  border-radius: 8px; font-size: 13px; font-weight: 500;
-  color: var(--text-1); cursor: pointer;
+  border-radius: var(--radius); font-size: 13px; font-weight: 500;
+  color: var(--text-1);
   transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
-  letter-spacing: -0.01em;
 }
 .start-btn:hover { background: var(--bg-4); border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-dim); }
 
+/* Canvas */
 .hybrid-canvas {
-  display: flex; flex-direction: column;
-  overflow: hidden;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .canvas-stats {
   display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 10px; padding: 20px 24px;
+  gap: 10px; padding: 18px 22px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 .stat-card {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 8px; padding: 14px 16px;
+  border-radius: var(--radius);
+  padding: 13px 15px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--border); border-radius: 0 0 var(--radius) var(--radius);
+}
+.stat-card.has-value::before {
+  background: var(--accent);
+  opacity: 0.5;
 }
 .stat-label {
   font-family: var(--font-mono);
-  font-size: 9px; font-weight: 500;
+  font-size: 8.5px; font-weight: 500;
   letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text-3); margin-bottom: 8px;
-  line-height: 1.4;
+  color: var(--text-3); margin-bottom: 7px; line-height: 1.4;
 }
 .stat-value {
   font-family: var(--font-mono);
-  font-size: 26px; font-weight: 400;
+  font-size: 28px; font-weight: 400;
   color: var(--text-1); line-height: 1;
 }
 .stat-value.amber { color: var(--accent); }
+.stat-trend {
+  margin-top: 4px;
+  font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--text-4);
+}
+
 .canvas-body {
   flex: 1; overflow-y: auto;
   display: flex; align-items: center; justify-content: center;
   padding: 48px;
 }
-.canvas-empty {
-  text-align: center; max-width: 360px;
-}
+.canvas-empty { text-align: center; max-width: 360px; }
 .canvas-empty h2 {
   font-family: var(--font-serif);
   font-size: 22px; font-weight: 400;
   color: var(--text-1); margin-bottom: 10px;
-  letter-spacing: -0.01em;
 }
-.canvas-empty p { font-size: 13px; color: var(--text-2); line-height: 1.6; }
-
-/* ── Input Area ── */
-.input-area {
-  padding: 16px 20px 18px;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-  background: var(--bg);
-}
-.input-box {
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.input-box:focus-within {
-  border-color: var(--border-2);
-  box-shadow: 0 0 0 3px var(--accent-dim);
-}
-.input-box textarea {
-  width: 100%; font-size: 13.5px;
-  color: var(--text-1); line-height: 1.5;
-  min-height: 44px; max-height: 160px;
-  background: transparent;
-}
-.input-toolbar {
-  display: flex; align-items: center;
-  gap: 6px; margin-top: 12px;
-}
-.input-chip {
-  display: flex; align-items: center; gap: 5px;
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  border-radius: 5px; font-size: 11.5px;
-  color: var(--text-2); cursor: pointer;
-  font-family: var(--font-mono);
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-}
-.input-chip:hover { background: var(--bg-hover); color: var(--text-1); border-color: var(--border-2); }
-.input-chip svg { width: 11px; height: 11px; }
-.input-chip .chevron { font-size: 9px; opacity: 0.5; }
-.send-btn {
-  margin-left: auto;
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px;
-  background: var(--bg-3); border: 1px solid var(--border-2);
-  border-radius: 6px; font-size: 12px; font-weight: 500;
-  color: var(--text-1); cursor: pointer;
-  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
-}
-.send-btn:hover { background: var(--bg-4); border-color: var(--accent-border); box-shadow: 0 0 0 3px var(--accent-dim); }
-.send-btn svg { width: 12px; height: 12px; }
-.enter-hint { font-size: 11px; color: var(--text-3); margin-right: 4px; font-family: var(--font-mono); }
+.canvas-empty p { font-size: 13px; color: var(--text-2); line-height: 1.65; }
 
 /* ═══════════════════════════════════════════════════════════════
    EVIDENCE RAIL
 ═══════════════════════════════════════════════════════════════ */
 .rail {
-  background: var(--bg-2);
+  background: var(--rail-bg);
   border-left: 1px solid var(--border);
   display: flex; flex-direction: column;
   overflow: hidden;
 }
+
 .rail-header {
   display: flex; align-items: center;
   height: var(--topbar-h);
-  padding: 0 18px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  gap: 8px;
+  gap: 10px;
 }
-.rail-title {
-  font-family: var(--font-mono);
-  font-size: 10px; font-weight: 500;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-2);
-}
-.rail-sub { font-size: 11px; color: var(--text-3); }
+
 .rail-indicator {
   width: 6px; height: 6px; border-radius: 50%;
-  background: var(--text-3);
-  flex-shrink: 0;
-  animation: pulse 3s ease-in-out infinite;
+  background: var(--text-4); flex-shrink: 0;
 }
-.rail-indicator.live { background: var(--green); }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.rail-indicator.live {
+  background: var(--green);
+  box-shadow: 0 0 8px rgba(78,158,122,0.5);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(78,158,122,0.5); }
+  50% { opacity: 0.5; box-shadow: 0 0 4px rgba(78,158,122,0.2); }
 }
 
-.rail-body { flex: 1; overflow-y: auto; padding: 6px 0 16px; }
+.rail-head-text { flex: 1; }
+.rail-title {
+  font-family: var(--font-mono);
+  font-size: 9.5px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-2); line-height: 1;
+}
+.rail-sub { font-size: 10.5px; color: var(--text-4); margin-top: 2px; }
 
-/* Rail Sections */
+.rail-body { flex: 1; overflow-y: auto; }
+
+/* Rail sections */
 .rail-section {
-  padding: 14px 18px;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
 }
 .rail-section:last-child { border-bottom: none; }
+
 .rail-section-head {
   display: flex; align-items: center; gap: 7px;
   font-family: var(--font-mono);
-  font-size: 9.5px; font-weight: 500;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--text-3); margin-bottom: 12px;
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 14px;
 }
-.rail-section-head svg { width: 11px; height: 11px; }
-.rail-section-head .dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--green); flex-shrink: 0;
+.rail-section-head svg { width: 10px; height: 10px; flex-shrink: 0; }
+.status-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
 }
-.rail-section-head .dot.amber { background: var(--accent); }
-.rail-section-head .dot.red { background: var(--red); }
+.status-dot.green { background: var(--green); }
+.status-dot.amber { background: var(--accent); }
+.status-dot.red { background: var(--red); }
+.status-dot.idle { background: var(--text-4); }
 
-/* Causal Density Rungs */
-.rung-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.rung {
-  border: 1px solid var(--border);
-  border-radius: 7px; padding: 10px 10px 8px;
+/* Causal density — horizontal bar rungs */
+.rung-bars { display: flex; flex-direction: column; gap: 10px; }
+.rung-bar-row {
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; padding: 2px 0;
+}
+.rung-bar-row:hover .rung-fill { opacity: 1; }
+.rung-label {
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); width: 22px; flex-shrink: 0;
+  transition: color 0.15s;
+}
+.rung-bar-row.active .rung-label { color: var(--accent); }
+.rung-track {
+  flex: 1; height: 5px; border-radius: 99px;
   background: var(--bg-3);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-  text-align: center;
+  position: relative; overflow: hidden;
 }
-.rung:hover { background: var(--bg-4); border-color: var(--border-2); }
-.rung.active { border-color: var(--accent-border); background: var(--accent-dim); }
-.rung-level {
-  font-family: var(--font-mono); font-size: 18px; font-weight: 400;
-  color: var(--text-1); line-height: 1; margin-bottom: 5px;
+.rung-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  border-radius: 99px;
+  background: var(--border-2);
+  opacity: 0.6;
+  transition: width 0.5s var(--ease), opacity 0.2s, background 0.2s;
 }
-.rung.active .rung-level { color: var(--accent); }
-.rung-label { font-size: 10px; color: var(--text-3); }
+.rung-bar-row.active .rung-fill { background: var(--accent); opacity: 1; }
+.rung-name {
+  font-size: 10.5px; color: var(--text-3);
+  width: 92px; flex-shrink: 0; transition: color 0.15s;
+}
+.rung-bar-row.active .rung-name { color: var(--text-2); }
 
-.rung-status {
-  font-size: 11.5px; color: var(--text-3);
-  margin-top: 10px; line-height: 1.4;
+.rung-status-line {
+  font-size: 11px; color: var(--text-3);
+  margin-top: 12px; line-height: 1.5;
+  padding: 10px 12px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
 }
-.rung-status strong { color: var(--text-2); font-weight: 500; }
+.rung-status-line strong { color: var(--text-2); font-weight: 500; }
 
-/* Rail Posture / Info Cards */
+/* Info card */
 .rail-info-card {
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: 7px; padding: 12px 14px;
-  font-size: 12px; color: var(--text-2);
-  line-height: 1.55;
+  border-radius: var(--radius);
+  padding: 11px 13px;
+  font-size: 11.5px;
+  line-height: 1.6;
+  border: 1px solid;
 }
-.rail-info-card.green { border-color: rgba(78,158,122,0.2); background: var(--green-dim); }
-.rail-info-card.amber { border-color: var(--accent-border); background: var(--accent-dim); }
-.rail-info-card.red { border-color: rgba(196,92,92,0.2); background: var(--red-dim); }
+.rail-info-card.green { border-color: var(--green-border); background: var(--green-dim); color: var(--text-2); }
+.rail-info-card.amber { border-color: var(--accent-border); background: var(--accent-dim); color: var(--text-2); }
+.rail-info-card.red   { border-color: var(--red-border);   background: var(--red-dim);   color: var(--text-2); }
 
-.unavailable {
-  font-family: var(--font-mono); font-size: 12px;
-  color: var(--text-3); line-height: 1.5;
+/* Unavailable state */
+.unavail {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--text-3); line-height: 1.55;
 }
-.unavailable strong { color: var(--text-2); font-size: 11px; display: block; margin-bottom: 2px; }
+.unavail strong {
+  display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text-4); margin-bottom: 4px;
+}
 
-/* Evidence Files */
+/* Confidence meter */
+.confidence-meter { margin-top: 10px; }
+.confidence-label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 5px;
+}
+.confidence-label span {
+  font-family: var(--font-mono);
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-3);
+}
+.confidence-label strong {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-2);
+}
+.meter-track {
+  height: 3px; background: var(--bg-3);
+  border-radius: 99px; overflow: hidden;
+}
+.meter-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), rgba(78,158,122,0.6));
+  transition: width 0.6s var(--ease);
+}
+.meter-fill.amber { background: linear-gradient(90deg, var(--accent), rgba(200,150,90,0.6)); }
+
+/* Evidence files */
 .evidence-file {
   display: flex; align-items: flex-start;
-  gap: 10px; padding: 10px 0;
+  gap: 9px; padding: 9px 0;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.12s;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.1s;
+  margin: 0 -4px;
+  padding-left: 4px; padding-right: 4px;
 }
 .evidence-file:last-child { border-bottom: none; }
 .evidence-file:hover { background: var(--bg-hover); }
 .file-icon {
-  width: 28px; height: 28px; border-radius: 5px;
+  width: 26px; height: 26px; border-radius: var(--radius-sm);
   background: var(--bg-3); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  color: var(--text-3);
+  flex-shrink: 0; color: var(--text-3);
+  transition: border-color 0.12s, color 0.12s;
 }
-.file-icon svg { width: 12px; height: 12px; }
+.evidence-file:hover .file-icon { border-color: var(--border-2); color: var(--text-2); }
+.file-icon svg { width: 11px; height: 11px; }
 .file-info { flex: 1; min-width: 0; }
-.file-name { font-size: 12px; font-weight: 500; color: var(--text-1); truncate; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-name { font-size: 11.5px; font-weight: 500; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .file-meta {
   display: flex; align-items: center; gap: 8px;
   margin-top: 3px; font-family: var(--font-mono);
-  font-size: 10px; color: var(--text-3);
+  font-size: 9.5px; color: var(--text-3);
 }
-.file-meta span { display: flex; align-items: center; gap: 3px; }
-
-/* ═══════════════════════════════════════════════════════════════
-   THEME TOGGLE + INTERACTIONS
-═══════════════════════════════════════════════════════════════ */
-.theme-btn {
-  display: flex; align-items: center; gap: 9px;
-  padding: 7px 10px; border-radius: 6px;
-  font-size: 12.5px; color: var(--text-2);
-  cursor: pointer; width: 100%;
-  transition: background 0.12s, color 0.12s;
-}
-.theme-btn:hover { background: var(--bg-hover); color: var(--text-1); }
-.theme-btn svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.6; }
 
 /* ═══════════════════════════════════════════════════════════════
    MICRO-ANIMATIONS
 ═══════════════════════════════════════════════════════════════ */
-.fade-in {
-  animation: fadeIn 0.35s var(--ease) forwards;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.fade-in { animation: fadeUp 0.4s var(--ease) forwards; }
 
 .stagger > * {
   opacity: 0;
-  animation: fadeIn 0.4s var(--ease) forwards;
+  animation: fadeUp 0.45s var(--ease) forwards;
 }
-.stagger > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger > *:nth-child(2) { animation-delay: 0.12s; }
-.stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.stagger > *:nth-child(1) { animation-delay: 0.06s; }
+.stagger > *:nth-child(2) { animation-delay: 0.14s; }
+.stagger > *:nth-child(3) { animation-delay: 0.22s; }
 
 /* ═══════════════════════════════════════════════════════════════
-   VIEW SWITCHING
+   THEME TOGGLE
 ═══════════════════════════════════════════════════════════════ */
-.view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-.view.active { display: flex; }
+.theme-btn {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 10px; border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--text-2);
+  cursor: pointer; width: 100%;
+  transition: background 0.12s, color 0.12s;
+}
+.theme-btn:hover { background: var(--bg-hover); color: var(--text-1); }
+.theme-btn svg { width: 12px; height: 12px; opacity: 0.55; }
 
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <!-- ══════════════════════════════ SIDEBAR -->
+  <!-- ════════════════════════════ SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="wordmark-icon">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M2 4h12M2 8h8M2 12h10" stroke-linecap="round"/>
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 2.5C4 2.5 3 5 5 7c2 2 1 4.5 1 4.5" stroke-linecap="round"/>
+          <path d="M7.5 2.5C7.5 2.5 6.5 5 8.5 7c2 2 1 4.5 1 4.5" stroke-linecap="round"/>
         </svg>
       </div>
       <span class="wordmark-text">Bio-Lab Notebook</span>
       <div class="sidebar-header-actions">
         <button class="icon-btn" title="Search">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><path d="M11 11l2.5 2.5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="6.5" cy="6.5" r="4"/>
+            <path d="M11 11l2.5 2.5" stroke-linecap="round"/>
+          </svg>
         </button>
-        <button class="icon-btn" title="Toggle layout">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="12" rx="1"/><rect x="9" y="2" width="5" height="7" rx="1"/><rect x="9" y="11" width="5" height="3" rx="1"/></svg>
+        <button class="icon-btn" title="New">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M8 3v10M3 8h10" stroke-linecap="round"/>
+          </svg>
         </button>
       </div>
     </div>
 
     <nav class="sidebar-nav">
       <div class="nav-item active" onclick="switchView('chat')" id="nav-chat">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3a1 1 0 011-1h10a1 1 0 011 1v7a1 1 0 01-1 1H9l-3 2v-2H3a1 1 0 01-1-1V3z"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5v6A1.5 1.5 0 0112.5 11H9l-3 2v-2H3.5A1.5 1.5 0 012 9.5v-6z"/>
+        </svg>
         Chat
       </div>
       <div class="nav-item" onclick="switchView('hybrid')" id="nav-hybrid">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8a6 6 0 0112 0M5 11l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 8a6 6 0 0112 0" stroke-linecap="round"/>
+          <path d="M5 11.5l3 3 3-3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8" cy="5" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
         Hybrid
+        <span class="nav-badge">New</span>
       </div>
+      <div class="nav-divider"></div>
       <div class="nav-item">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M5 6h6M5 9h4" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+          <path d="M5.5 6h5M5.5 9h3.5" stroke-linecap="round"/>
+        </svg>
         Relics
-        <span class="chevron">▾</span>
+        <span class="nav-chevron">▾</span>
       </div>
     </nav>
 
     <div class="sidebar-actions">
       <button class="action-btn">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2v8M2 6h8" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M6 2v8M2 6h8" stroke-linecap="round"/>
+        </svg>
         New chat
       </button>
       <button class="action-btn">
-        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 9V4l4-2 4 2v5l-4 2-4-2z"/></svg>
-        New folder
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M2 9V4l4-2 4 2v5l-4 2-4-2z"/>
+        </svg>
+        Folder
       </button>
     </div>
 
-    <div class="sidebar-section-label">Folders</div>
-    <div class="sidebar-section-label" style="padding-top: 10px;">History</div>
-
+    <div class="sidebar-section-label">History</div>
     <div class="history-list">
-      <div class="history-item"># From Persia to the Modern M…</div>
-      <div class="history-item">Why do you think your system …</div>
-      <div class="history-item">Prompt (Nuanced, evidence-fir…</div>
-      <div class="history-item">Prompt (Nuanced, evidence-fir…</div>
-      <div class="history-item">Prompt (Nuanced, evidence-fir…</div>
-      <div class="history-item">Do a web search on what is Op…</div>
-      <div class="history-item">Do you have Causal architecture?</div>
-      <div class="history-item">What would happen if AGI wer…</div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">From Persia to the Modern Mind</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Why do you think your system works?</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Nuanced, evidence-first reasoning</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Web search on OpenClaw protocol</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Do you have Causal architecture?</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">What would happen if AGI were…</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Anomaly detection in longitudinal…</span>
+      </div>
+      <div class="history-item">
+        <div class="history-item-dot"></div>
+        <span class="history-item-text">Structural causal models review</span>
+      </div>
     </div>
 
     <div class="sidebar-footer">
       <button class="theme-btn" onclick="toggleTheme()">
-        <svg id="theme-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" stroke-linecap="round"/></svg>
+        <svg id="theme-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="3"/>
+          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" stroke-linecap="round"/>
+        </svg>
         <span id="theme-label">Light mode</span>
       </button>
       <div class="footer-item">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M6 6h4M6 9h2" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="2" width="12" height="12" rx="2"/>
+          <path d="M5.5 6h5M5.5 9h3" stroke-linecap="round"/>
+        </svg>
         Documentation
       </div>
       <div class="footer-item">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5v.5" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="6"/>
+          <path d="M8 7v4M8 5.5v.1" stroke-linecap="round"/>
+        </svg>
         Model Settings
       </div>
     </div>
@@ -790,11 +1129,11 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
     <div class="user-row">
       <div class="user-avatar">CO</div>
       <span class="user-email">codewithafar@gmail.com</span>
-      <span class="chevron">▾</span>
+      <span class="user-chevron">▾</span>
     </div>
   </aside>
 
-  <!-- ══════════════════════════════ MAIN -->
+  <!-- ════════════════════════════ MAIN -->
   <main class="main">
 
     <!-- Chat View -->
@@ -802,60 +1141,95 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
       <div class="chat-view">
         <div class="workbench fade-in">
           <div class="workbench-headline">
-            <h1>Scientific Workbench</h1>
-            <p>Select a research protocol to begin your inquiry.</p>
+            <div class="workbench-eyebrow">Sovereign Synthesis Engine</div>
+            <h1>Scientific<br><em>Workbench</em></h1>
+            <p>Select a research protocol to begin your inquiry into the causal structure of the world.</p>
           </div>
+
           <div class="protocol-grid stagger">
+            <!-- Card 1 -->
             <div class="protocol-card" onclick="selectCard(this)">
               <div class="card-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M3 3l2.5 2.5M10.5 10.5L13 13M3 13l2.5-2.5M10.5 5.5L13 3" stroke-linecap="round"/></svg>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="8" cy="8" r="2.5"/>
+                  <path d="M3 3l2.8 2.8M10.2 10.2L13 13M3 13l2.8-2.8M10.2 5.8L13 3" stroke-linecap="round"/>
+                </svg>
               </div>
+              <div class="card-tag">Protocol 01</div>
               <h3>Causal Discovery</h3>
-              <p>Ingest observational data or papers to extract Structural Causal Models (SCM).</p>
+              <p>Ingest observational data or papers to extract Structural Causal Models (SCM) from raw evidence.</p>
+              <div class="card-footer">
+                <span></span>
+                <span class="card-arrow">→</span>
+              </div>
             </div>
+            <!-- Card 2 -->
             <div class="protocol-card" onclick="selectCard(this)">
               <div class="card-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M2 12.5l4-5 3 3.5 5-7" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </div>
+              <div class="card-tag">Protocol 02</div>
               <h3>Intervention Planning</h3>
-              <p>Simulate do-calculus interventions (do(X)=y) to predict system behavior.</p>
+              <p>Simulate do-calculus interventions (do(X)=y) to predict how the system responds to external actions.</p>
+              <div class="card-footer">
+                <span></span>
+                <span class="card-arrow">→</span>
+              </div>
             </div>
+            <!-- Card 3 -->
             <div class="protocol-card" onclick="selectCard(this)">
               <div class="card-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v12M2 8h12" stroke-linecap="round"/><circle cx="8" cy="8" r="3" stroke-dasharray="2 1.5"/></svg>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M8 2v12M2 8h12" stroke-linecap="round"/>
+                  <circle cx="8" cy="8" r="3.5" stroke-dasharray="2.5 2"/>
+                </svg>
               </div>
+              <div class="card-tag">Protocol 03</div>
               <h3>Counterfactual Audit</h3>
-              <p>Verify specific claims against the causal graph logic and evidence.</p>
+              <p>Verify specific claims against the causal graph logic, evidence corpus, and falsification criteria.</p>
+              <div class="card-footer">
+                <span></span>
+                <span class="card-arrow">→</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Input Composer -->
       <div class="input-area">
-        <div class="input-box">
-          <textarea rows="2" placeholder="Describe the real-world situation, what changed, and what outcome you need..."></textarea>
+        <div class="input-composer">
+          <textarea rows="2" placeholder="Describe the real-world situation, what changed, and what outcome you need to understand…"></textarea>
           <div class="input-toolbar">
             <button class="input-chip">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 1v10M1 6h10" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 1v10M1 6h10" stroke-linecap="round"/>
+              </svg>
               Attach
             </button>
             <button class="input-chip">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M6 4v2l1.5 1" stroke-linecap="round"/></svg>
-              DiagnoseActValidate
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="6" cy="6" r="4"/>
+                <path d="M6 4v2l1.5 1" stroke-linecap="round"/>
+              </svg>
+              DAV Mode
             </button>
             <button class="input-chip">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 6a4 4 0 108 0" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 6a4 4 0 108 0" stroke-linecap="round"/>
+                <circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+              </svg>
               Scenarios
-              <span class="chevron">▾</span>
+              <span class="chip-chevron">▾</span>
             </button>
-            <button class="input-chip">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 6h10M6 1v10" stroke-linecap="round"/></svg>
-            </button>
-            <button class="input-chip">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"/></svg>
-            </button>
-            <span class="enter-hint">Enter to send</span>
+            <div class="input-spacer"></div>
+            <span class="enter-hint">↵ to send</span>
             <button class="send-btn">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 10L10 6 2 2v3.5l5 .5-5 .5V10z" fill="currentColor" stroke="none"/></svg>
+              <svg viewBox="0 0 12 12" fill="none" stroke="none">
+                <path d="M1.5 10.5L10.5 6 1.5 1.5v3.75l6 .75-6 .75V10.5z" fill="currentColor"/>
+              </svg>
               Send
             </button>
           </div>
@@ -869,45 +1243,47 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
         <span class="topbar-tag">Hybrid Discovery Engine</span>
         <div class="topbar-pipeline">
           <span class="step done">Ingest</span>
-          <span class="arrow">→</span>
-          <span class="step done">contradict</span>
-          <span class="arrow">→</span>
-          <span class="step done">synthesize</span>
-          <span class="arrow">→</span>
-          <span class="step">prove novelty</span>
+          <span class="arrow">›</span>
+          <span class="step done">Contradict</span>
+          <span class="arrow">›</span>
+          <span class="step done">Synthesize</span>
+          <span class="arrow">›</span>
+          <span class="step">Prove Novelty</span>
         </div>
-        <span class="topbar-phase">Phase: Deterministic Synthesis Routing</span>
+        <span class="topbar-phase">Phase: Deterministic Routing</span>
       </div>
 
       <div class="hybrid-view visible" style="flex:1;overflow:hidden;">
         <div class="hybrid-left">
           <div>
-            <div class="hybrid-section-head">Input Rail</div>
-            <div class="hybrid-sub" style="margin-bottom:16px;">Source inventory, focus constraints, and execution</div>
-
-            <div class="hybrid-section-head" style="margin-top:4px;">Research Sources</div>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+            <div class="hybrid-section-head">Research Sources</div>
+            <div style="display:flex;flex-direction:column;gap:7px;">
               <div class="upload-zone">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 6px;display:block;"><path d="M7 2v8M4 5l3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11h10" stroke-linecap="round"/></svg>
-                Add PDF Files
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M7 2v8M4 5l3-3 3 3" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2 11h10" stroke-linecap="round"/>
+                </svg>
+                Add PDF files
               </div>
-              <div style="padding:10px 12px;background:var(--bg-3);border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text-3);text-align:center;">
-                No PDFs selected
-              </div>
+              <div class="field-empty">No PDFs selected</div>
             </div>
-
-            <div class="hybrid-section-head">Companies</div>
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-              <input class="hybrid-input" placeholder="Add company name" style="flex:1;">
-              <button style="width:34px;height:34px;border:1px solid var(--border);border-radius:7px;background:var(--bg-3);color:var(--text-2);font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s;" onmouseover="this.style.background='var(--bg-4)'" onmouseout="this.style.background='var(--bg-3)'">+</button>
-            </div>
-            <div style="font-size:12px;color:var(--text-3);margin-bottom:16px;">No companies added.</div>
-
-            <div class="hybrid-section-head">Research Focus</div>
-            <textarea class="hybrid-input" rows="4" placeholder="Optional: target a specific mechanism, sector, or causal tension" style="margin-bottom:16px;resize:vertical;"></textarea>
-
-            <button class="start-btn">Start synthesis run</button>
           </div>
+
+          <div>
+            <div class="hybrid-section-head">Companies</div>
+            <div class="hybrid-row" style="margin-bottom:7px;">
+              <input class="hybrid-input" placeholder="Add company name">
+              <button class="add-btn">+</button>
+            </div>
+            <div class="field-empty">No companies added</div>
+          </div>
+
+          <div>
+            <div class="hybrid-section-head">Research Focus</div>
+            <textarea class="hybrid-textarea" placeholder="Optional: target a specific mechanism, sector, or causal tension…"></textarea>
+          </div>
+
+          <button class="start-btn">Start synthesis run</button>
         </div>
 
         <div class="hybrid-canvas">
@@ -915,24 +1291,28 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
             <div class="stat-card">
               <div class="stat-label">Sources</div>
               <div class="stat-value">0</div>
+              <div class="stat-trend">—</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Validated Contradictions</div>
               <div class="stat-value">0</div>
+              <div class="stat-trend">—</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Novelty Pass</div>
               <div class="stat-value">0</div>
+              <div class="stat-trend">—</div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Blocked Candidates</div>
               <div class="stat-value amber">0</div>
+              <div class="stat-trend">—</div>
             </div>
           </div>
           <div class="canvas-body">
             <div class="canvas-empty fade-in">
               <h2>Dialectical Synthesis Canvas</h2>
-              <p>Upload sources and run synthesis to render contradiction matrix, novelty proof, and falsification protocol.</p>
+              <p>Upload sources and run synthesis to render the contradiction matrix, novelty proof, and falsification protocol.</p>
             </div>
           </div>
         </div>
@@ -941,14 +1321,20 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
 
   </main>
 
-  <!-- ══════════════════════════════ EVIDENCE RAIL -->
+  <!-- ════════════════════════════ EVIDENCE RAIL -->
   <aside class="rail">
     <div class="rail-header">
       <div class="rail-indicator live"></div>
-      <div>
+      <div class="rail-head-text">
         <div class="rail-title">Evidence Rail</div>
-        <div class="rail-sub">Live causal posture and provenance</div>
+        <div class="rail-sub">Live causal posture</div>
       </div>
+      <button class="icon-btn" title="Settings">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="8" cy="8" r="2.5"/>
+          <path d="M8 2v1.5M8 12.5V14M2 8h1.5M12.5 8H14M3.9 3.9l1.06 1.06M11.04 11.04l1.06 1.06M3.9 12.1l1.06-1.06M11.04 4.96l1.06-1.06" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
 
     <div class="rail-body">
@@ -956,45 +1342,72 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
       <!-- Causal Density -->
       <div class="rail-section">
         <div class="rail-section-head">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 10L6 2l4 8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3.5 7h5" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 9.5L5.5 2l3 5 1.5-2.5L12 9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           Causal Density
         </div>
-        <div class="rung-grid">
-          <div class="rung">
-            <div class="rung-level">L1</div>
-            <div class="rung-label">Association</div>
+
+        <div class="rung-bars">
+          <div class="rung-bar-row" onclick="selectRung(this)">
+            <span class="rung-label">L1</span>
+            <div class="rung-track">
+              <div class="rung-fill" style="width:0%"></div>
+            </div>
+            <span class="rung-name">Association</span>
           </div>
-          <div class="rung">
-            <div class="rung-level">L2</div>
-            <div class="rung-label">Intervention</div>
+          <div class="rung-bar-row" onclick="selectRung(this)">
+            <span class="rung-label">L2</span>
+            <div class="rung-track">
+              <div class="rung-fill" style="width:0%"></div>
+            </div>
+            <span class="rung-name">Intervention</span>
           </div>
-          <div class="rung">
-            <div class="rung-level">L3</div>
-            <div class="rung-label">Counterfactual</div>
+          <div class="rung-bar-row" onclick="selectRung(this)">
+            <span class="rung-label">L3</span>
+            <div class="rung-track">
+              <div class="rung-fill" style="width:0%"></div>
+            </div>
+            <span class="rung-name">Counterfactual</span>
           </div>
         </div>
-        <div class="rung-status">Active rung: <strong>unavailable</strong><br>Awaiting scored output</div>
+
+        <div class="rung-status-line">
+          Active rung: <strong>unavailable</strong><br>Awaiting scored output.
+        </div>
       </div>
 
       <!-- Alignment Posture -->
       <div class="rail-section">
         <div class="rail-section-head">
-          <div class="dot"></div>
+          <div class="status-dot green"></div>
           Alignment Posture
         </div>
         <div class="rail-info-card green">
           No unaudited intervention claims without identifiability gates.
+        </div>
+        <div class="confidence-meter">
+          <div class="confidence-label">
+            <span>Confidence</span>
+            <strong>—</strong>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill" style="width: 0%"></div>
+          </div>
         </div>
       </div>
 
       <!-- Model Provenance -->
       <div class="rail-section">
         <div class="rail-section-head">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M6 4v2l1.5 1" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="6" cy="6" r="4"/>
+            <path d="M6 4v2l1.5 1" stroke-linecap="round"/>
+          </svg>
           Model Provenance
         </div>
-        <div class="unavailable">
-          <strong>unavailable</strong>
+        <div class="unavail">
+          <strong>Unavailable</strong>
           No verified model provenance was emitted for this run.
         </div>
       </div>
@@ -1002,65 +1415,73 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
       <!-- Active Domain -->
       <div class="rail-section">
         <div class="rail-section-head">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="8" height="8" rx="1"/><path d="M5 5h2M5 7h1" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="2" width="8" height="8" rx="1"/>
+            <path d="M4.5 5.5h3M4.5 7.5h1.5" stroke-linecap="round"/>
+          </svg>
           Active Domain
         </div>
-        <div class="unavailable">unavailable</div>
+        <div class="unavail">unavailable</div>
       </div>
 
       <!-- Scientific Evidence -->
       <div class="rail-section">
         <div class="rail-section-head">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h6a1 1 0 011 1v6a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M4 5h4M4 7h2" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+            <path d="M7 2v3h3"/><path d="M4 6.5h4M4 8.5h2.5" stroke-linecap="round"/>
+          </svg>
           Scientific Evidence
         </div>
-        <div>
-          <div class="evidence-file">
-            <div class="file-icon">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M7 2v3h3"/></svg>
-            </div>
-            <div class="file-info">
-              <div class="file-name">AI-Alignment-Failure.pdf</div>
-              <div class="file-meta">
-                <span>
-                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="7" height="7" rx="1"/></svg>
-                  54
-                </span>
-                <span>14 days ago</span>
-              </div>
-            </div>
+
+        <div class="evidence-file">
+          <div class="file-icon">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+              <path d="M7 2v3h3"/>
+            </svg>
           </div>
-          <div class="evidence-file">
-            <div class="file-icon">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M7 2v3h3"/></svg>
-            </div>
-            <div class="file-info">
-              <div class="file-name">Disagreement-AI-Alignment.pdf</div>
-              <div class="file-meta">
-                <span>
-                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="7" height="7" rx="1"/></svg>
-                  58
-                </span>
-                <span>21 days ago</span>
-              </div>
-            </div>
-          </div>
-          <div class="evidence-file">
-            <div class="file-icon">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/><path d="M7 2v3h3"/></svg>
-            </div>
-            <div class="file-info">
-              <div class="file-name">Anomaly-Detection.pdf</div>
-              <div class="file-meta">
-                <span>
-                  <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="7" height="7" rx="1"/></svg>
-                  151
-                </span>
-                <span>22 days ago</span>
-              </div>
+          <div class="file-info">
+            <div class="file-name">AI-Alignment-Failure.pdf</div>
+            <div class="file-meta">
+              <span>54 pp</span>
+              <span>14 days ago</span>
             </div>
           </div>
         </div>
+
+        <div class="evidence-file">
+          <div class="file-icon">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+              <path d="M7 2v3h3"/>
+            </svg>
+          </div>
+          <div class="file-info">
+            <div class="file-name">Disagreement-AI-Alignment.pdf</div>
+            <div class="file-meta">
+              <span>58 pp</span>
+              <span>21 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="evidence-file">
+          <div class="file-icon">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M3 2h4l3 3v5a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z"/>
+              <path d="M7 2v3h3"/>
+            </svg>
+          </div>
+          <div class="file-info">
+            <div class="file-name">Anomaly-Detection-Study.pdf</div>
+            <div class="file-meta">
+              <span>151 pp</span>
+              <span>22 days ago</span>
+            </div>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -1069,7 +1490,7 @@ input, textarea { font-family: var(--font-sans); color: inherit; background: non
 </div>
 
 <script>
-// ── Theme toggle ──
+// Theme toggle
 function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
@@ -1077,13 +1498,13 @@ function toggleTheme() {
   document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
   const icon = document.getElementById('theme-icon');
   if (isDark) {
-    icon.innerHTML = '<path d="M8 2a6 6 0 100 12A6 6 0 008 2z" fill="currentColor" stroke="none" opacity="0.3"/><path d="M10 8a2 2 0 11-4 0 2 2 0 014 0z" fill="currentColor" stroke="none"/>';
+    icon.innerHTML = '<path d="M11 8A3 3 0 015 8a3 3 0 016 0z" fill="currentColor" stroke="none"/><path d="M8 1C5.24 1 3 3.24 3 6s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" fill="currentColor" stroke="none" opacity="0.25"/>';
   } else {
     icon.innerHTML = '<circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" stroke-linecap="round"/>';
   }
 }
 
-// ── View switch ──
+// View switch
 function switchView(view) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1091,13 +1512,36 @@ function switchView(view) {
   document.getElementById('nav-' + view).classList.add('active');
 }
 
-// ── Card select ──
+// Card select
 function selectCard(el) {
   document.querySelectorAll('.protocol-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
 }
 
-// ── Subtle textarea auto-resize ──
+// Rung select — simulates scored causal density
+function selectRung(el) {
+  document.querySelectorAll('.rung-bar-row').forEach(r => r.classList.remove('active'));
+  el.classList.add('active');
+
+  // Animate bar fills based on selection
+  const fills = document.querySelectorAll('.rung-fill');
+  const idx = Array.from(document.querySelectorAll('.rung-bar-row')).indexOf(el);
+  const widths = [
+    [72, 28, 8],   // L1 selected
+    [72, 65, 22],  // L2 selected
+    [72, 65, 88],  // L3 selected
+  ];
+  fills.forEach((f, i) => {
+    f.style.width = widths[idx][i] + '%';
+  });
+
+  // Update status line
+  const labels = ['L1 — Association', 'L2 — Intervention', 'L3 — Counterfactual'];
+  document.querySelector('.rung-status-line').innerHTML =
+    'Active rung: <strong>' + labels[idx] + '</strong><br>Scored but awaiting peer confirmation.';
+}
+
+// Textarea auto-resize
 document.querySelectorAll('textarea').forEach(ta => {
   ta.addEventListener('input', function() {
     this.style.height = 'auto';
@@ -1105,11 +1549,15 @@ document.querySelectorAll('textarea').forEach(ta => {
   });
 });
 
-// ── Rung selection ──
-document.querySelectorAll('.rung').forEach(r => {
-  r.addEventListener('click', function() {
-    document.querySelectorAll('.rung').forEach(x => x.classList.remove('active'));
-    this.classList.add('active');
+// Keyboard shortcut hint: Enter to send (visual only)
+document.querySelectorAll('textarea').forEach(ta => {
+  ta.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      // In production: submit logic here
+      const btn = this.closest('.view, .main')?.querySelector('.send-btn');
+      if (btn) { btn.style.opacity = '0.6'; setTimeout(() => btn.style.opacity = '', 150); }
+    }
   });
 });
 </script>
