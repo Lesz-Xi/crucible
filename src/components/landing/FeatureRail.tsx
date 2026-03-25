@@ -1,16 +1,20 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import {
   GraduationCap,
-  Menu,
   MessageSquare,
   Microscope,
   Network,
   Scale,
 } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 
-const primaryApps = [
+// ── Data ────────────────────────────────────────────────────────────────────
+
+const allApps = [
+  // Primary row — full width pair
   {
     label: "Chat",
     route: "/chat",
@@ -20,21 +24,20 @@ const primaryApps = [
     meta: ["thread memory", "bounded context", "evidence scope"],
     icon: MessageSquare,
     accent: "text-[var(--accent-moss)]",
+    colSpan: "lg:col-span-3",
   },
   {
     label: "Hybrid",
     route: "/hybrid",
-    subtitle: "Synthesis Relay",
+    subtitle: "Synthesis Relay · Flagship",
     description:
       "Move from retrieval to decomposition to causal synthesis in one controlled, intervention-grade workbench.",
     meta: ["timeline receipt", "source braid", "causal synthesis"],
     icon: Network,
     accent: "text-[var(--accent-slate)]",
-    featured: true,
+    colSpan: "lg:col-span-3",
   },
-];
-
-const relicApps = [
+  // Relics row
   {
     label: "Labs",
     route: "/lab",
@@ -44,6 +47,7 @@ const relicApps = [
     meta: ["report analysis", "structure fetch", "docking jobs"],
     icon: Microscope,
     accent: "text-[var(--accent-slate)]",
+    colSpan: "lg:col-span-2",
   },
   {
     label: "Legal",
@@ -54,6 +58,7 @@ const relicApps = [
     meta: ["evidence dock", "counterfactual review", "audit gates"],
     icon: Scale,
     accent: "text-[var(--accent-rust)]",
+    colSpan: "lg:col-span-2",
   },
   {
     label: "Educational",
@@ -64,142 +69,139 @@ const relicApps = [
     meta: ["adaptive plans", "apprenticeship", "reflection cycles"],
     icon: GraduationCap,
     accent: "text-[var(--accent-moss)]",
+    colSpan: "lg:col-span-2",
   },
 ];
+
+// ── Corner Plus Icons ────────────────────────────────────────────────────────
+
+const PlusIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    width={20}
+    height={20}
+    strokeWidth="1"
+    stroke="currentColor"
+    className={`text-[var(--border-strong)] ${className ?? ""}`}
+    aria-hidden
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
+  </svg>
+);
+
+const CornerPlusIcons = () => (
+  <>
+    <PlusIcon className="absolute -top-2.5 -left-2.5" />
+    <PlusIcon className="absolute -top-2.5 -right-2.5" />
+    <PlusIcon className="absolute -bottom-2.5 -left-2.5" />
+    <PlusIcon className="absolute -bottom-2.5 -right-2.5" />
+  </>
+);
+
+// ── PlusCard ─────────────────────────────────────────────────────────────────
+
+type AppEntry = (typeof allApps)[number];
+
+function PlusCard({ app }: { app: AppEntry }) {
+  const Icon = app.icon;
+  return (
+    <Link
+      href={app.route}
+      className={`relative flex flex-col rounded-2xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-6 transition-colors duration-200 hover:border-[var(--border-glow)] hover:bg-[var(--bg-card)] ${app.colSpan}`}
+      style={{ minHeight: "180px" }}
+    >
+      <CornerPlusIcons />
+
+      {/* Icon + label row */}
+      <div className="flex items-center gap-2.5">
+        <Icon className={`h-4 w-4 shrink-0 ${app.accent}`} strokeWidth={1.5} aria-hidden />
+        <span className="hd-kicker">{app.label}</span>
+        <span className="ml-auto hd-metric-label text-right">{app.subtitle}</span>
+      </div>
+
+      {/* Description */}
+      <p className="mt-5 font-body text-[0.83rem] leading-relaxed text-[var(--text-secondary)]">
+        {app.description}
+      </p>
+
+      {/* Meta tags */}
+      <div className="mt-auto flex flex-wrap gap-2 pt-5">
+        {app.meta.map((tag) => (
+          <span
+            key={tag}
+            className="rounded-full border border-[var(--border-subtle)] px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-[var(--text-muted)]"
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Route */}
+      <div className="mt-3 border-t border-dashed border-[var(--border-subtle)] pt-3">
+        <span className="hd-kicker text-[var(--text-tertiary)]">{app.route}</span>
+      </div>
+    </Link>
+  );
+}
+
+// ── Animated wrapper ─────────────────────────────────────────────────────────
+
+type AnimatedContainerProps = {
+  delay?: number;
+  className?: string;
+  children: React.ReactNode;
+};
+
+function AnimatedContainer({ className, delay = 0.1, children }: AnimatedContainerProps) {
+  const shouldReduceMotion = useReducedMotion();
+  if (shouldReduceMotion) return <div className={className}>{children}</div>;
+  return (
+    <motion.div
+      initial={{ filter: "blur(4px)", translateY: -8, opacity: 0 }}
+      whileInView={{ filter: "blur(0px)", translateY: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.8 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
 
 export function FeatureRail() {
   return (
     <section
       id="surfaces"
       aria-label="Primary product features"
-      className="relative z-10 bg-[var(--bg-secondary)] px-6 pb-32 pt-16 md:px-8 md:pb-40 md:pt-24 lg:px-10 lg:pb-44 lg:pt-28"
+      className="relative z-10 bg-[var(--bg-secondary)] px-4 pb-24 pt-16 md:px-8 md:pb-32 md:pt-20"
     >
-      <div className="mx-auto max-w-[1280px] border-b border-[var(--border-subtle)] pb-5">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            Unified application page
-          </p>
-          <h3 className="mt-3 font-serif text-[2rem] leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[2.5rem]">
-            Every causal surface,
-            <span className="italic font-light text-[var(--accent-rust)]">
-              {" "}inside one instrument.
-            </span>
-          </h3>
-        </div>
-      </div>
+      <div className="mx-auto max-w-5xl space-y-8">
+        {/* Header */}
+        <AnimatedContainer delay={0.1}>
+          <div className="border-b border-[var(--border-subtle)] pb-5">
+            <p className="hd-metric-label mb-3">Unified application page</p>
+            <h3 className="font-serif text-[2rem] leading-none tracking-[-0.04em] text-[var(--text-primary)] md:text-[2.5rem]">
+              Every causal surface,
+              <span className="font-light italic text-[var(--accent-rust)]">
+                {" "}inside one instrument.
+              </span>
+            </h3>
+          </div>
+        </AnimatedContainer>
 
-      <div className="mt-6">
-        <div className="mx-auto grid max-w-[1280px] gap-4 xl:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
-                  {primaryApps.map((app, index) => {
-                    const Icon = app.icon;
-
-                    return (
-                      <Link
-                        key={app.label}
-                        href={app.route}
-                        className="group relative overflow-hidden rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-5 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--border-glow)] hover:bg-[var(--bg-tertiary)]"
-                      >
-                        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-[var(--accent-rust)]/75 via-[var(--border-strong)]/40 to-transparent" />
-
-                        <div className="flex items-start justify-between gap-6">
-                          <div>
-                          <div className="inline-flex items-center gap-2.5">
-                              <Icon className={`h-4 w-4 ${app.accent}`} />
-                              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-primary)]">
-                                {app.label}
-                              </span>
-                            </div>
-                            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-muted)]">
-                              {app.subtitle}
-                            </p>
-                          </div>
-                          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                            {index === 1 ? "flagship surface" : "primary surface"}
-                          </span>
-                        </div>
-
-                        <p className="mt-10 font-serif text-[1.12rem] leading-10 text-[var(--text-secondary)] md:text-[1.18rem]">
-                          {app.description}
-                        </p>
-
-                        <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-[var(--border-subtle)] pt-4">
-                          {app.meta.map((item) => (
-                            <div
-                              key={item}
-                              className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-tertiary)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-secondary)]"
-                            >
-                              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust)]/75" />
-                              {item}
-                            </div>
-                          ))}
-                        </div>
-
-                        <div className="mt-6 border-t border-[var(--border-subtle)] pt-4">
-                          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                            {app.route}
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-        </div>
-      </div>
-
-      <div className="mx-auto mt-5 max-w-[1280px] rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-card-soft)] p-5 md:p-6">
-                  <div className="flex flex-col gap-3 border-b border-[var(--border-subtle)] pb-4 md:flex-row md:items-end md:justify-between">
-                    <div>
-                      <div className="inline-flex items-center gap-3">
-                        <Menu className="h-4 w-4 text-[var(--text-primary)]" />
-                        <span className="hd-kicker">Relics Menu</span>
-                      </div>
-                      <h4 className="mt-3 font-serif text-[1.8rem] tracking-[-0.03em] text-[var(--text-primary)]">
-                        Specialized rooms nested inside the same surface.
-                      </h4>
-                    </div>
-                    <p className="max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
-                      Labs handles experimentation, Legal traces causation and harm,
-                      and Educational adapts learning loops without breaking the main shell.
-                    </p>
-                  </div>
-
-                  <div className="mt-5 grid gap-4 lg:grid-cols-3">
-                    {relicApps.map((app) => {
-                      const Icon = app.icon;
-                      return (
-                        <div
-                          key={app.label}
-                          className="group rounded-[22px] border border-[var(--border-subtle)] bg-[var(--bg-tertiary)] p-5 shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:border-[var(--border-glow)] hover:bg-[var(--bg-elevated)]"
-                        >
-                          <div className="flex items-center justify-between gap-4">
-                            <div className="inline-flex items-center gap-3">
-                              <Icon className={`h-4 w-4 ${app.accent}`} />
-                              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--text-primary)]">
-                                {app.label}
-                              </span>
-                            </div>
-                          </div>
-
-                          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                            {app.subtitle}
-                          </p>
-                          <p className="mt-4 text-sm leading-7 text-[var(--text-secondary)]">
-                            {app.description}
-                          </p>
-
-                          <div className="mt-5 flex flex-wrap gap-2">
-                            {app.meta.map((item) => (
-                              <span
-                                key={item}
-                                className="rounded-full border border-[var(--border-subtle)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-secondary)]"
-                              >
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+        {/* Bento grid — all 5 apps in a 6-col layout */}
+        <AnimatedContainer
+          delay={0.4}
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6"
+        >
+          {allApps.map((app, i) => (
+            <PlusCard key={i} app={app} />
+          ))}
+        </AnimatedContainer>
       </div>
     </section>
   );
