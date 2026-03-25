@@ -14,30 +14,30 @@
   --text-tertiary: rgba(13, 13, 13, 0.34);
   --border-subtle: rgba(0, 0, 0, 0.07);
   --border-strong: rgba(0, 0, 0, 0.16);
-  --border-glow: rgba(1, 105, 204, 0.24);
+  --border-glow: rgba(181, 83, 106, 0.24);
   --shadow-soft: 0 1px 4px rgba(0, 0, 0, 0.06), 0 2px 12px rgba(0, 0, 0, 0.04);
   --shadow-deep: 0 4px 24px rgba(0, 0, 0, 0.08), 0 8px 36px rgba(0, 0, 0, 0.05);
-  --accent-rust: #0169cc;
-  --accent-rust-strong: #0155a8;
-  --accent-rust-soft: rgba(1, 105, 204, 0.08);
+  --accent-rust: #b5536a;
+  --accent-rust-strong: #8f3a50;
+  --accent-rust-soft: rgba(181, 83, 106, 0.08);
   --accent-moss: #00a240;
   --accent-slate: #751ed9;
   --accent-blue: var(--accent-rust);
-  --accent-blue-soft: rgba(1, 105, 204, 0.08);
+  --accent-blue-soft: rgba(181, 83, 106, 0.08);
   --accent-dark: var(--accent-rust);
-  --metric-line: linear-gradient(90deg, rgba(1, 105, 204, 0.9), rgba(1, 105, 204, 0.18));
+  --metric-line: linear-gradient(90deg, rgba(181, 83, 106, 0.9), rgba(181, 83, 106, 0.18));
   --wabi-washi: #ffffff;
   --wabi-patina: rgba(13, 13, 13, 0.44);
-  --wabi-clay: #0169cc;
+  --wabi-clay: #b5536a;
   --wabi-sumi: #0d0d0d;
   --wabi-ink: #0d0d0d;
   --wabi-ink-light: rgba(13, 13, 13, 0.68);
   --wabi-moss: #00a240;
-  --wabi-rust: #0169cc;
+  --wabi-rust: #b5536a;
   --wabi-stone: rgba(0, 0, 0, 0.2);
-  --wabi-sand: rgba(1, 105, 204, 0.08);
+  --wabi-sand: rgba(181, 83, 106, 0.08);
   --wabi-charcoal: #f4f5f7;
-  --wabi-gold: #0169cc;
+  --wabi-gold: #b5536a;
   color-scheme: light;
 }
 
@@ -87,8 +87,8 @@ body:has(.theme-landing) {
   pointer-events: none;
   opacity: 1;
   background:
-    radial-gradient(circle at 14% 10%, rgba(1, 105, 204, 0.05) 0%, transparent 32%),
-    radial-gradient(circle at 82% 12%, rgba(1, 105, 204, 0.03) 0%, transparent 28%);
+    radial-gradient(circle at 14% 10%, rgba(181, 83, 106, 0.05) 0%, transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(181, 83, 106, 0.03) 0%, transparent 28%);
 }
 
 .theme-landing .hd-section {
@@ -125,7 +125,7 @@ body:has(.theme-landing) {
   border: 1px solid color-mix(in srgb, var(--accent-rust) 28%, var(--border-subtle));
   background: linear-gradient(135deg, color-mix(in srgb, var(--bg-emphasis) 92%, var(--accent-rust-soft)) 0%, color-mix(in srgb, var(--bg-elevated) 94%, white) 100%);
   color: var(--text-primary);
-  box-shadow: inset 0 1px 0 rgba(1, 105, 204, 0.04), var(--shadow-soft);
+  box-shadow: inset 0 1px 0 rgba(181, 83, 106, 0.04), var(--shadow-soft);
 }
 
 .theme-landing .hd-kicker {
@@ -187,7 +187,7 @@ body:has(.theme-landing) {
   border: 1px solid var(--border-subtle);
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg-card-soft) 94%, white 6%) 0%, var(--bg-card-soft) 100%);
   padding: 1rem 1.1rem;
-  box-shadow: inset 0 1px 0 rgba(1, 105, 204, 0.03);
+  box-shadow: inset 0 1px 0 rgba(181, 83, 106, 0.03);
 }
 
 .theme-landing .landing-metric-bar {
@@ -201,7 +201,7 @@ body:has(.theme-landing) {
   border: 1px solid var(--border-subtle);
   background: linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 94%, white 6%) 0%, var(--bg-elevated) 100%);
   color: var(--text-primary);
-  box-shadow: inset 0 1px 0 rgba(1, 105, 204, 0.02), var(--shadow-soft);
+  box-shadow: inset 0 1px 0 rgba(181, 83, 106, 0.02), var(--shadow-soft);
 }
 
 .theme-landing .lg-control:hover,
@@ -225,7 +225,7 @@ body:has(.theme-landing) {
 .theme-landing .lg-input:focus {
   outline: none;
   border-color: var(--border-glow);
-  box-shadow: 0 0 0 2px rgba(1, 105, 204, 0.12);
+  box-shadow: 0 0 0 2px rgba(181, 83, 106, 0.12);
 }
 
 .theme-landing .landing-hero-diagram::before,
@@ -251,7 +251,7 @@ body:has(.theme-landing) {
   margin-left: -11px;
   margin-top: -11px;
   border-radius: 999px;
-  border: 1px solid rgba(1, 105, 204, 0.28);
+  border: 1px solid rgba(181, 83, 106, 0.28);
 }
 
 .theme-landing .landing-spinner::before,
@@ -273,28 +273,28 @@ body:has(.theme-landing) {
 }
 
 .theme-landing .auth-panel-surface {
-  border: 1px solid rgba(1, 105, 204, 0.12);
+  border: 1px solid rgba(181, 83, 106, 0.12);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 249, 251, 0.96));
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.06);
 }
 
 .theme-landing .auth-panel-banner {
-  border: 1px solid rgba(1, 105, 204, 0.1);
+  border: 1px solid rgba(181, 83, 106, 0.1);
   background: rgba(248, 249, 251, 0.8);
 }
 
 .theme-landing .auth-panel-chip {
-  border: 1px solid rgba(1, 105, 204, 0.1);
+  border: 1px solid rgba(181, 83, 106, 0.1);
   background: rgba(255, 255, 255, 0.9);
 }
 
 .theme-landing .auth-panel-info {
-  border: 1px solid rgba(1, 105, 204, 0.08);
+  border: 1px solid rgba(181, 83, 106, 0.08);
   background: rgba(255, 255, 255, 0.8);
 }
 
 .theme-landing .auth-mark-chip {
-  border: 1px solid rgba(1, 105, 204, 0.1);
+  border: 1px solid rgba(181, 83, 106, 0.1);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
 }

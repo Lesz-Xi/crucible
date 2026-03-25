@@ -117,14 +117,14 @@ export function CausalLattice() {
                   onFocus={() => setActiveKey(module.key)}
                   className={`group hd-panel-soft relative flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] p-4 text-left transition-all duration-200 md:p-5 ${
                     activeKey === module.key
-                      ? "border-[var(--border-glow)] bg-[var(--bg-elevated)] shadow-[0_0_0_1px_rgba(1,105,204,0.16),0_8px_24px_rgba(0,0,0,0.08)]"
+                      ? "border-[var(--border-glow)] bg-[var(--bg-elevated)] shadow-[0_0_0_1px_rgba(181,83,106,0.16),0_8px_24px_rgba(0,0,0,0.08)]"
                       : ""
                   }`}
                 >
                   <div
                     className={`pointer-events-none absolute inset-0 rounded-[24px] border transition-all duration-200 ${
                       activeKey === module.key
-                        ? "border-[var(--border-glow)] shadow-[inset_0_0_0_1px_rgba(1,105,204,0.08),0_0_0_1px_rgba(1,105,204,0.10)]"
+                        ? "border-[var(--border-glow)] shadow-[inset_0_0_0_1px_rgba(181,83,106,0.08),0_0_0_1px_rgba(181,83,106,0.10)]"
                         : "border-transparent"
                     }`}
                   />
@@ -188,7 +188,7 @@ export function CausalLattice() {
 
             <div className="grid h-full gap-4 lg:grid-rows-2">
               <div className="relative h-full min-h-0 overflow-hidden rounded-[30px] border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(1,105,204,0.06),transparent_34%),radial-gradient(circle_at_78%_72%,rgba(1,105,204,0.03),transparent_32%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(181,83,106,0.06),transparent_34%),radial-gradient(circle_at_78%_72%,rgba(181,83,106,0.03),transparent_32%)]" />
                 <div className="pointer-events-none absolute inset-x-6 top-[72px] flex items-center justify-center pl-16">
                   <div className="rounded-full border border-[var(--border-subtle)] bg-[rgba(248,249,251,0.92)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-secondary)]">
                     Active module: {activeModule.label}
@@ -228,7 +228,7 @@ export function CausalLattice() {
                     <motion.path
                       key={`${from}-${to}`}
                       d={`M ${source.point.x} ${source.point.y} L ${target.point.x} ${target.point.y}`}
-                      stroke={isActive ? "#0169cc" : "rgba(1,105,204,0.3)"}
+                      stroke={isActive ? "#b5536a" : "rgba(181,83,106,0.3)"}
                       strokeWidth={isActive ? 1.9 : 1.35}
                       strokeDasharray={dashed ? "7 7" : "0"}
                       animate={dashed ? { strokeDashoffset: [0, -14] } : undefined}
@@ -253,7 +253,7 @@ export function CausalLattice() {
                         cx={module.point.x}
                         cy={module.point.y}
                         r={isActive ? 10 : 7.5}
-                        fill={isActive ? "#0169cc" : "#94a3b8"}
+                        fill={isActive ? "#b5536a" : "#94a3b8"}
                         animate={{
                           r: isActive ? [8.5, 10.5, 8.5] : [7.5, 8.2, 7.5],
                         }}
@@ -268,7 +268,7 @@ export function CausalLattice() {
                         cy={module.point.y}
                         r={isActive ? 18 : 13}
                         fill="transparent"
-                        stroke="rgba(1,105,204,0.2)"
+                        stroke="rgba(181,83,106,0.2)"
                         animate={{
                           r: isActive ? [12, 20, 12] : [10, 14, 10],
                           opacity: isActive ? [0.22, 0.46, 0.22] : [0.1, 0.18, 0.1],
@@ -313,7 +313,7 @@ export function CausalLattice() {
               </div>
 
               <div className="relative h-full min-h-0 overflow-hidden rounded-[30px] border border-[var(--border-subtle)] bg-[var(--bg-secondary)] shadow-[var(--shadow-soft)]">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(1,105,204,0.04),transparent_30%),radial-gradient(circle_at_78%_72%,rgba(1,105,204,0.02),transparent_28%)]" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(181,83,106,0.04),transparent_30%),radial-gradient(circle_at_78%_72%,rgba(181,83,106,0.02),transparent_28%)]" />
                 <div className="absolute inset-x-6 top-6 flex items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-3">
                   <div className="inline-flex items-center gap-3">
                     <span className="hd-metric-label">Protocol ledger</span>
@@ -333,7 +333,7 @@ export function CausalLattice() {
                       {activeModule.protocol.map((step, index) => {
                         const isFinal = index === activeModule.protocol.length - 1;
                         const stepBackground =
-                          "linear-gradient(135deg, rgba(1,105,204,0.07), rgba(1,105,204,0.02))";
+                          "linear-gradient(135deg, rgba(181,83,106,0.07), rgba(181,83,106,0.02))";
                         const stepState =
                           index === 0
                             ? "Intake"
@@ -345,11 +345,11 @@ export function CausalLattice() {
                         return (
                           <div
                             key={step}
-                            className="group relative flex h-full min-h-[0] flex-col rounded-[18px] border border-[var(--border-color,#e5e7eb)] px-4 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)] transition-all duration-200 hover:border-[var(--border-glow)] hover:shadow-[0_0_0_1px_rgba(1,105,204,0.12),0_6px_20px_rgba(0,0,0,0.07)]"
+                            className="group relative flex h-full min-h-[0] flex-col rounded-[18px] border border-[var(--border-color,#e5e7eb)] px-4 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.05)] transition-all duration-200 hover:border-[var(--border-glow)] hover:shadow-[0_0_0_1px_rgba(181,83,106,0.12),0_6px_20px_rgba(0,0,0,0.07)]"
                             style={{ background: stepBackground }}
                           >
                             {!isFinal ? (
-                              <div className="pointer-events-none absolute -right-2 top-1/2 hidden h-px w-4 -translate-y-1/2 bg-[linear-gradient(90deg,rgba(1,105,204,0.5),rgba(1,105,204,0.08))] md:block" />
+                              <div className="pointer-events-none absolute -right-2 top-1/2 hidden h-px w-4 -translate-y-1/2 bg-[linear-gradient(90deg,rgba(181,83,106,0.5),rgba(181,83,106,0.08))] md:block" />
                             ) : null}
                             <div className="pointer-events-none absolute inset-0 rounded-[18px] border border-transparent transition-all duration-200 group-hover:border-[var(--border-glow)]" />
                             <div className="flex items-center justify-between gap-2">
@@ -362,7 +362,7 @@ export function CausalLattice() {
                             </div>
                         <div className="mt-4 min-h-[2.75rem]">
                               <p className="inline-flex max-w-full items-start gap-2 break-words font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--accent-rust-strong)]">
-                                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust-strong)] shadow-[0_0_8px_rgba(1,105,204,0.35)]" />
+                                <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-rust-strong)] shadow-[0_0_8px_rgba(181,83,106,0.35)]" />
                                 <span className="min-w-0 whitespace-normal break-words">
                                   {activeModule.path}
                                 </span>
@@ -404,7 +404,7 @@ export function CausalLattice() {
                     <span
                       className={`rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.16em] ${
                         module.status === "Primary path"
-                          ? "border-[var(--border-glow)] bg-[linear-gradient(90deg,rgba(1,105,204,0.08),rgba(1,105,204,0.04))] text-[var(--accent-rust-strong)]"
+                          ? "border-[var(--border-glow)] bg-[linear-gradient(90deg,rgba(181,83,106,0.08),rgba(181,83,106,0.04))] text-[var(--accent-rust-strong)]"
                           : "border-[var(--border-subtle)] bg-[var(--bg-tertiary)] text-[var(--text-secondary)]"
                       }`}
                     >
