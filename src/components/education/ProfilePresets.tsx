@@ -39,12 +39,12 @@ export function ProfilePresets({ onSelectProfile, className = '' }: ProfilePrese
         Not sure where to start? Load a gentle baseline and refine it to match your current reality.
       </p>
       
-      <div className="grid gap-3">
+      <div className="grid gap-3 max-h-72 overflow-y-auto pr-1 scrollbar-thin">
         {PRESET_PROFILES.map((profile) => (
           <button
             key={profile.id}
             onClick={() => onSelectProfile(profile)}
-            className="p-4 rounded-xl bg-[var(--bg-card)]/70 border border-[var(--border-subtle)] hover:border-wabi-clay/40 hover:bg-[var(--bg-card)] transition-all text-left group shadow-wabi"
+            className="p-4 rounded-xl bg-[var(--bg-2)] border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--bg-3)] transition-all text-left group"
           >
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/70 flex items-center justify-center flex-shrink-0 group-hover:border-wabi-clay/40 transition-colors">

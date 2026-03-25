@@ -34,7 +34,7 @@
   --wabi-sumi: var(--stone-700);
   --wabi-patina: var(--mist-400);
   --wabi-clay: var(--oxide-500);
-  --wabi-moss: var(--moss-500);
+  --wabi-moss: #5B8DB8;
   --wabi-rust: var(--oxide-500);
   --wabi-stone: var(--ash-200);
   
@@ -60,7 +60,7 @@
   --font-newsreader: "Newsreader", "Iowan Old Style", "Times New Roman", serif;
   --font-jetbrains-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Courier New", monospace;
 
-  --lab-accent-moss: #5F7555;
+  --lab-accent-moss: #5B8DB8;
   --lab-shadow-soft: 0 8px 24px rgba(42, 38, 33, 0.08);
   --lab-shadow-lift: 0 12px 30px rgba(42, 38, 33, 0.12);
 }
@@ -94,12 +94,12 @@
   --wabi-sumi: #fafafa;
   --wabi-patina: #a1a1aa;
   --wabi-clay: #fb923c;
-  --wabi-moss: #4ade80;
+  --wabi-moss: #7EB4D8;
   --wabi-rust: #f87171;
   --wabi-stone: #52525b;
 
   --shadow-grey: #000000;
-  --lab-accent-moss: #7d9c80;
+  --lab-accent-moss: #7EB4D8;
   --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 
@@ -1328,8 +1328,8 @@ body.dark .lab-card-interactive:hover {
 }
 
 .dark .lab-empty-state {
-  background: color-mix(in srgb, var(--lab-bg) 74%, #000 26%);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--lab-bg-elevated) 60%, transparent);
+  border-color: rgba(255, 255, 255, 0.10);
 }
 
 .dark .lab-scroll-region {
@@ -10855,3 +10855,438 @@ body {
   width: 100%;
   max-width: none;
 }
+
+/* ========================================
+   HYBRID INPUT PANEL V2 — hip-* system
+   Cyberpunk-luxury source ingestion UI
+   ======================================== */
+
+.hybrid-input-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 2px 0;
+}
+
+/* ── Header ─────────────────────────────── */
+.hip-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-3));
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.hip-title {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-1);
+  line-height: 1.2;
+}
+
+.hip-sub {
+  font-size: 10.5px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ── Capacity Bar ───────────────────────── */
+.hip-capacity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hip-capacity-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hip-capacity-label {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.hip-capacity-warn {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-3));
+}
+
+.hip-capacity-good {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--blue);
+}
+
+.hip-bar-track {
+  height: 3px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.hip-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 60%, var(--text-3));
+  transition: width 0.4s ease;
+}
+
+.hip-bar-fill--ready {
+  background: var(--accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* ── Sections ───────────────────────────── */
+.hip-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--bg-3) 50%, transparent);
+}
+
+.hip-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.hip-count {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.hip-optional {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--text-4);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+}
+
+/* ── Drop Zone ──────────────────────────── */
+.hip-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 12px;
+  border: 1.5px dashed color-mix(in srgb, var(--border-2) 70%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg) 60%, transparent);
+  color: var(--text-3);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.hip-drop-zone:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  color: var(--text-2);
+}
+
+.hip-drop-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.hip-drop-hint {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* ── File List ──────────────────────────── */
+.hip-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hip-file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg-2);
+  min-width: 0;
+}
+
+.hip-file-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 11.5px;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hip-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  color: var(--text-3);
+  background: transparent;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hip-remove-btn:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+.hip-add-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  font-size: 11px;
+  color: var(--text-3);
+  border-radius: 6px;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+  align-self: flex-start;
+}
+
+.hip-add-more:hover {
+  background: color-mix(in srgb, var(--bg-3) 80%, transparent);
+  color: var(--text-2);
+}
+
+/* ── Company Input ──────────────────────── */
+.hip-company-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.hip-text-input {
+  flex: 1;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  padding: 0 10px;
+  font-size: 12.5px;
+  color: var(--text-1);
+  transition: border-color 0.15s;
+  min-width: 0;
+}
+
+.hip-text-input::placeholder {
+  color: var(--text-4);
+  font-size: 11.5px;
+}
+
+.hip-text-input:focus {
+  outline: none;
+  border-color: var(--border-2);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.hip-text-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hip-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-2);
+  border-radius: 7px;
+  background: var(--bg-3);
+  color: var(--text-2);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.hip-add-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-3));
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.hip-add-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Chip Tags ──────────────────────────── */
+.hip-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hip-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 10px;
+  border: 1px solid var(--border-2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg-3));
+  color: var(--text-1);
+  font-size: 11px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  letter-spacing: 0.04em;
+}
+
+.hip-chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  background: transparent;
+  border-radius: 50%;
+  transition: color 0.15s;
+  width: 14px;
+  height: 14px;
+}
+
+.hip-chip-x:hover {
+  color: var(--accent);
+}
+
+/* ── Textarea ───────────────────────────── */
+.hip-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-1);
+  resize: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.hip-textarea::placeholder {
+  color: var(--text-4);
+  font-size: 11.5px;
+}
+
+.hip-textarea:focus {
+  outline: none;
+  border-color: var(--border-2);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+/* ── Run / Cancel ───────────────────────── */
+.hip-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.hip-run-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: not-allowed;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hip-run-btn--active {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.hip-run-btn--active:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.hip-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hip-cancel-btn:hover {
+  background: color-mix(in srgb, var(--red) 12%, var(--bg-3));
+  border-color: var(--red-border);
+  color: var(--red);
+}
+
+.hip-run-hint {
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+

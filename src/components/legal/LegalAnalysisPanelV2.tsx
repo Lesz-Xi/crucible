@@ -74,7 +74,7 @@ export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, g
 
           <section className="lab-card">
             <div className="mb-3 flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+              <CheckCircle2 className="h-4 w-4 text-[var(--blue)]" />
               <p className="lab-section-title !mb-0">Causal Chains ({result.causalChains.length})</p>
             </div>
             <div className="space-y-2">
@@ -90,7 +90,7 @@ export function LegalAnalysisPanelV2({ statusMessage, progress, stage, result, g
 
           <section className="lab-card">
             <div className="mb-3 flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-[var(--lab-accent-moss)]" />
+              <ShieldCheck className="h-4 w-4 text-[var(--blue)]" />
               <p className="lab-section-title !mb-0">Intervention Gate</p>
             </div>
             {gateState ? (
