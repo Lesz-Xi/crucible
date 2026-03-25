@@ -39,7 +39,7 @@ const pillars = [
 
 export function ThreePillars() {
   return (
-    <section className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
+    <section id="architecture" className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
       <div className="mx-auto max-w-7xl px-6 md:px-8">
         <div className="mb-12 max-w-3xl">
           <div className="mb-4 inline-flex items-center gap-2">

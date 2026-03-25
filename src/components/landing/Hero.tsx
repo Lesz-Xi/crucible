@@ -1,81 +1,87 @@
 "use client";
 
-import { EpistemicCards } from "@/components/landing/EpistemicCards";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth/actions";
 
 export function Hero() {
+  const router = useRouter();
+  const [isLoadingAuthState, setIsLoadingAuthState] = useState(true);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadAuthState = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (isMounted) setIsSignedIn(Boolean(user?.id));
+      } catch {
+        if (isMounted) setIsSignedIn(false);
+      } finally {
+        if (isMounted) setIsLoadingAuthState(false);
+      }
+    };
+    void loadAuthState();
+    return () => { isMounted = false; };
+  }, []);
+
+  const handlePrimaryAction = () => {
+    if (isLoadingAuthState) return;
+    router.push(isSignedIn ? "/chat" : "/auth?next=%2Fchat");
+  };
+
   return (
-    <section className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)] px-6 pb-20 pt-44 transition-colors duration-500 md:min-h-[100svh] md:pb-24 md:pt-52 lg:pt-56">
-      <div className="absolute inset-0 z-0 pointer-events-none">
+    <section className="relative flex min-h-[90vh] items-end overflow-hidden bg-[var(--bg-primary)] px-6 pb-24 pt-44 md:px-10 lg:px-16">
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
         <div className="absolute inset-x-0 top-0 h-px bg-[var(--border-subtle)]" />
       </div>
 
-      <div className="relative z-10 mx-auto grid max-w-7xl gap-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
-        <div className="max-w-[34rem] pt-6 lg:pt-0">
-          <div className="mb-5 inline-flex items-center gap-3">
-            <span className="h-2 w-2 rounded-full bg-[var(--accent-rust)]" />
-            <span className="hd-kicker">Thinking Instrument</span>
-          </div>
+      <div className="relative z-10 w-full max-w-7xl">
+        <p className="font-mono text-[0.68rem] uppercase tracking-[0.22em] text-[var(--text-muted)] mb-6">
+          MASA · Causal Workbench · Pearl do-calculus
+        </p>
 
-          <h1 className="font-serif text-[3.55rem] leading-[0.94] tracking-[-0.055em] text-[var(--text-primary)] md:text-[4.8rem] lg:text-[6.05rem]">
-            Causal <span className="italic font-light text-[var(--accent-rust)]">Architect</span>
-          </h1>
+        <h1
+          className="font-serif text-[var(--text-primary)] leading-[0.92] tracking-[-0.04em]"
+          style={{ fontSize: "clamp(3.2rem, 7vw, 6.5rem)" }}
+        >
+          Causal{" "}
+          <em className="italic font-light text-[var(--accent-rust)]">Architect</em>
+        </h1>
 
-          <p className="mt-8 max-w-[30rem] text-[1rem] leading-8 text-[var(--text-secondary)] md:text-[1.04rem] md:leading-9">
-            Traversing the rungs of Judea Pearl&apos;s Ladder. From observation to
-            intervention, distilling truth from the flux through disciplined
-            causal inquiry.
-          </p>
+        <p className="mt-8 max-w-[30rem] text-[1.05rem] leading-8 text-[var(--text-secondary)]">
+          Traversing Pearl&apos;s ladder from observation to counterfactual.
+          Disciplined causal inquiry — not plausible text generation.
+        </p>
 
-          <div className="mt-10">
-            <a
-              href="/masa-white-paper.html"
-              target="_blank"
-              className="lg-control group inline-flex items-center gap-2 border border-[var(--border-strong)] bg-[var(--bg-elevated)] px-6 py-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] transition-all duration-300 hover:border-[var(--border-glow)] hover:bg-[var(--accent-rust-soft)] hover:text-[var(--accent-rust-strong)]"
-            >
-              <span>Read MASA White Paper</span>
-              <span className="opacity-50 transition-opacity group-hover:opacity-100">→</span>
-            </a>
-          </div>
+        <div className="mt-10 flex flex-wrap items-center gap-4">
+          <button
+            type="button"
+            onClick={handlePrimaryAction}
+            disabled={isLoadingAuthState}
+            className="inline-flex items-center gap-2 bg-[var(--accent-rust)] px-6 py-3 text-sm font-semibold rounded-[10px] transition-opacity hover:opacity-[0.88] disabled:cursor-not-allowed disabled:opacity-70"
+            style={{ color: "#1a0f04" }}
+          >
+            {isLoadingAuthState && <Loader2 className="h-4 w-4 animate-spin" />}
+            <span>
+              {isLoadingAuthState ? "Loading" : isSignedIn ? "Open Instrument" : "Try Wu-Weism"}
+            </span>
+          </button>
 
+          <a
+            href="/masa-white-paper.html"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)] hover:text-[var(--text-primary)] border-b border-[var(--border-subtle)] pb-0.5 transition-colors"
+          >
+            Read white paper →
+          </a>
         </div>
 
-        <div className="relative lg:self-center">
-          <div className="rounded-[30px] border border-[var(--border-subtle)] bg-[var(--bg-card)] p-5 shadow-[var(--shadow-soft)] md:p-6">
-            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-4">
-              <div>
-                <p className="hd-kicker">Epistemic ladder</p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                  Structured reasoning modes
-                </p>
-              </div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                03 layers
-              </p>
-            </div>
-
-            <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_152px]">
-              <EpistemicCards compact className="min-w-0" />
-
-              <div className="rounded-[20px] border border-[var(--border-subtle)] bg-[var(--bg-emphasis)] p-4 shadow-[inset_0_1px_0_rgba(255,244,230,0.03)]">
-                <p className="hd-kicker">Output posture</p>
-                <div className="mt-5 space-y-5">
-                  {[
-                    ["Truth-first", "Hard constraints"],
-                    ["Do(x)", "Intervention ready"],
-                    ["Audit", "Trace preserved"],
-                  ].map(([label, note]) => (
-                    <div key={label} className="border-t border-[var(--border-subtle)] pt-4 first:border-t-0 first:pt-0">
-                      <p className="font-serif text-lg text-[var(--text-primary)]">{label}</p>
-                      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
-                        {note}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <p className="mt-16 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
+          Observation · Intervention · Counterfactual
+        </p>
       </div>
     </section>
   );

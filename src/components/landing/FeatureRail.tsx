@@ -70,6 +70,7 @@ const relicApps = [
 export function FeatureRail() {
   return (
     <section
+      id="surfaces"
       aria-label="Primary product features"
       className="relative z-10 bg-[var(--bg-secondary)] px-6 pb-32 pt-16 md:px-8 md:pb-40 md:pt-24 lg:px-10 lg:pb-44 lg:pt-28"
     >
