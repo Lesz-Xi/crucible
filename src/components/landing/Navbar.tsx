@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/actions";
+import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 
 const navItems = [
   { href: "#architecture", label: "Architecture" },
@@ -34,9 +34,13 @@ export function Navbar() {
     return () => { isMounted = false; };
   }, []);
 
-  const handlePrimaryAction = () => {
+  const handlePrimaryAction = async () => {
     if (isLoadingAuthState) return;
-    router.push(isSignedIn ? "/chat" : "/auth?next=%2Fchat");
+    if (isSignedIn) {
+      router.push("/chat");
+    } else {
+      await signInWithGoogle("/chat");
+    }
   };
 
   return (

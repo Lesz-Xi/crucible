@@ -7,7 +7,7 @@ export function LandingThemeLock() {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    setTheme('dark');
+    setTheme('light');
   }, [setTheme]);
 
   return null;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { getCurrentUser } from "@/lib/auth/actions";
+import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 
 export function Hero() {
   const router = useRouter();
@@ -26,9 +26,13 @@ export function Hero() {
     return () => { isMounted = false; };
   }, []);
 
-  const handlePrimaryAction = () => {
+  const handlePrimaryAction = async () => {
     if (isLoadingAuthState) return;
-    router.push(isSignedIn ? "/chat" : "/auth?next=%2Fchat");
+    if (isSignedIn) {
+      router.push("/chat");
+    } else {
+      await signInWithGoogle("/chat");
+    }
   };
 
   return (
@@ -61,7 +65,7 @@ export function Hero() {
             onClick={handlePrimaryAction}
             disabled={isLoadingAuthState}
             className="inline-flex items-center gap-2 bg-[var(--accent-rust)] px-6 py-3 text-sm font-semibold rounded-[10px] transition-opacity hover:opacity-[0.88] disabled:cursor-not-allowed disabled:opacity-70"
-            style={{ color: "#1a0f04" }}
+            style={{ color: "#ffffff" }}
           >
             {isLoadingAuthState && <Loader2 className="h-4 w-4 animate-spin" />}
             <span>
