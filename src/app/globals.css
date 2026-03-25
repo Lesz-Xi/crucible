@@ -104,11 +104,11 @@
   --lab-shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --lab-shadow-lift: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 
-  /* Codex parity tokens */
-  --codex-main: #ffffff;
-  --codex-surface: #f5f5f5;
-  --codex-surface-hover: rgba(160, 105, 58, 0.08);
-  --codex-border: rgba(0, 0, 0, 0.08);
+  /* Codex parity tokens — dark mode values */
+  --codex-main: #111111;
+  --codex-surface: #1a1a1a;
+  --codex-surface-hover: rgba(200, 150, 90, 0.10);
+  --codex-border: rgba(255, 255, 255, 0.08);
   
   /* Shadow adjustments for dark */
   --shadow-ambient: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -6950,42 +6950,49 @@ body {
 }
 
 .dark .app-feature-shell.__legacy-canonical-workbench-shell {
-  color-scheme: light;
-  --bg:               #ffffff;
-  --bg-2:             #f5f5f5;
-  --bg-3:             #eeeeee;
-  --bg-4:             #e8e8e8;
-  --bg-5:             #dedede;
-  --sidebar-bg:       #f8f8f8;
-  --rail-bg:          #fafafa;
-  --card-bg:          #ffffff;
-  --input-bg:         #ffffff;
-  --border:           rgba(0,0,0,0.08);
-  --border-2:         rgba(0,0,0,0.13);
-  --border-3:         rgba(0,0,0,0.20);
-  --text-1:           #0d0d0d;
-  --text-2:           rgba(13,13,13,0.55);
-  --text-3:           rgba(13,13,13,0.35);
-  --text-4:           rgba(13,13,13,0.28);
-  --accent:           #A0693A;
-  --accent-2:         #8A5520;
-  --accent-dim:       rgba(160,105,58,0.09);
-  --accent-border:    rgba(160,105,58,0.22);
-  --shadow:           0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
-  --shadow-sm:        0 1px 2px rgba(0,0,0,0.07);
-  --lab-bg:           #ffffff;
-  --lab-bg-elevated:  #ffffff;
-  --lab-panel:        #f5f5f5;
-  --lab-panel-soft:   #eeeeee;
-  --lab-border:       rgba(0,0,0,0.08);
-  --lab-border-strong:rgba(0,0,0,0.16);
-  --lab-text-primary: #0d0d0d;
-  --lab-text-secondary: rgba(13,13,13,0.55);
-  --lab-text-tertiary: rgba(13,13,13,0.35);
-  --lab-accent-earth: #A0693A;
-  --lab-accent-clay:  #8A5520;
-  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
-  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+  color-scheme: dark;
+  --bg:               #111111;
+  --bg-2:             #1a1a1a;
+  --bg-3:             #222222;
+  --bg-4:             #2a2a2a;
+  --bg-5:             #333333;
+  --sidebar-bg:       #0d0d0d;
+  --rail-bg:          #161616;
+  --card-bg:          #1a1a1a;
+  --input-bg:         #222222;
+  --border:           rgba(255,255,255,0.08);
+  --border-2:         rgba(255,255,255,0.12);
+  --border-3:         rgba(255,255,255,0.18);
+  --text-1:           #f0f0f0;
+  --text-2:           rgba(240,240,240,0.55);
+  --text-3:           rgba(240,240,240,0.35);
+  --text-4:           rgba(240,240,240,0.18);
+  --accent:           #C8965A;
+  --accent-2:         #A0693A;
+  --accent-dim:       rgba(200,150,90,0.10);
+  --accent-border:    rgba(200,150,90,0.25);
+  --bg-active:        rgba(200,150,90,0.10);
+  --bg-hover:         rgba(255,255,255,0.04);
+  --shadow:           0 1px 3px rgba(0,0,0,0.40), 0 6px 20px rgba(0,0,0,0.30);
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.25);
+  --lab-bg:           #111111;
+  --lab-bg-elevated:  #1a1a1a;
+  --lab-shell-main:   #111111;
+  --lab-panel:        #222222;
+  --lab-panel-soft:   #2a2a2a;
+  --lab-sidebar:      #0d0d0d;
+  --lab-shell-sidebar:#0d0d0d;
+  --lab-border:       rgba(255,255,255,0.08);
+  --lab-border-strong:rgba(255,255,255,0.18);
+  --lab-text-primary: #f0f0f0;
+  --lab-text-secondary: rgba(240,240,240,0.55);
+  --lab-text-tertiary: rgba(240,240,240,0.35);
+  --lab-active-bg:    rgba(200,150,90,0.10);
+  --lab-hover-bg:     rgba(255,255,255,0.04);
+  --lab-accent-earth: #C8965A;
+  --lab-accent-clay:  #A0693A;
+  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.40), 0 6px 20px rgba(0,0,0,0.30);
+  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.40), 0 16px 48px rgba(0,0,0,0.35);
 }
 
 /* Canonical High-Density Workbench */
