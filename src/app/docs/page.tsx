@@ -238,7 +238,7 @@ export default function DocsPage() {
               {
                 term: "Counterfactual",
                 definition:
-                  "A hypothetical: "Would Y have occurred if X had been different?" Used extensively in Legal Causation for but-for analysis.",
+                  "A hypothetical: \u201cWould Y have occurred if X had been different?\u201d Used extensively in Legal Causation for but-for analysis.",
               },
               {
                 term: "Novelty Proof",
