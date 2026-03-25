@@ -1810,12 +1810,12 @@ body.dark .lab-card-interactive:hover {
 
 /* Exact Codex parity for chat route (dark + light) */
 .chat-theme-shell {
-  --codex-main-light: #f5f5f5;
-  --codex-surface-light: #f1f1f1;
-  --codex-border-light: #dadada;
-  --codex-main-dark: #121212;
-  --codex-surface-dark: #232323;
-  --codex-border-dark: #303030;
+  --codex-main-light: #ffffff;
+  --codex-surface-light: #fafafa;
+  --codex-border-light: rgba(0,0,0,0.06);
+  --codex-main-dark: #111111;
+  --codex-surface-dark: #0d0d0d;
+  --codex-border-dark: rgba(255,255,255,0.08);
 }
 
 .chat-theme-shell .glass-sidebar {
@@ -6914,39 +6914,39 @@ body {
   overflow: hidden;
   --bg:               #ffffff;
   --bg-2:             #f5f5f5;
-  --bg-3:             #eeeeee;
+  --bg-3:             #f0f0f0;
   --bg-4:             #e8e8e8;
   --bg-5:             #dedede;
-  --sidebar-bg:       #f8f8f8;
+  --sidebar-bg:       #fafafa;
   --rail-bg:          #fafafa;
   --card-bg:          #ffffff;
-  --input-bg:         #ffffff;
-  --border:           rgba(0,0,0,0.08);
-  --border-2:         rgba(0,0,0,0.13);
-  --border-3:         rgba(0,0,0,0.20);
+  --input-bg:         #f5f5f5;
+  --border:           rgba(0,0,0,0.06);
+  --border-2:         rgba(0,0,0,0.10);
+  --border-3:         rgba(0,0,0,0.18);
   --text-1:           #0d0d0d;
   --text-2:           rgba(13,13,13,0.55);
-  --text-3:           rgba(13,13,13,0.35);
-  --text-4:           rgba(13,13,13,0.18);
+  --text-3:           rgba(13,13,13,0.42);
+  --text-4:           rgba(13,13,13,0.30);
   --accent:           #A0693A;
   --accent-2:         #8A5520;
   --accent-dim:       rgba(160,105,58,0.09);
   --accent-border:    rgba(160,105,58,0.22);
-  --shadow:           0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
-  --shadow-sm:        0 1px 2px rgba(0,0,0,0.07);
+  --shadow:           0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.04);
+  --shadow-sm:        0 1px 2px rgba(0,0,0,0.05);
   --lab-bg:           #ffffff;
   --lab-bg-elevated:  #ffffff;
-  --lab-panel:        #f5f5f5;
-  --lab-panel-soft:   #eeeeee;
-  --lab-border:       rgba(0,0,0,0.08);
-  --lab-border-strong:rgba(0,0,0,0.20);
+  --lab-panel:        #f0f0f0;
+  --lab-panel-soft:   #f5f5f5;
+  --lab-border:       rgba(0,0,0,0.06);
+  --lab-border-strong:rgba(0,0,0,0.18);
   --lab-text-primary: #0d0d0d;
   --lab-text-secondary:rgba(13,13,13,0.55);
-  --lab-text-tertiary: rgba(13,13,13,0.35);
+  --lab-text-tertiary: rgba(13,13,13,0.42);
   --lab-accent-earth: #A0693A;
   --lab-accent-clay:  #8A5520;
-  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
-  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+  --lab-shadow-soft:  0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(0,0,0,0.04);
+  --lab-shadow-lift:  0 4px 8px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.06);
 }
 
 .dark .app-feature-shell.__legacy-canonical-workbench-shell {
