@@ -203,6 +203,9 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
 
     const handlePointerDown = (event: PointerEvent) => {
       if (accountShellRef.current?.contains(event.target as Node)) return;
+      // Model Settings portal renders to document.body (outside accountShellRef) —
+      // don't close the account menu when the user clicks inside the portal
+      if ((event.target as Element).closest?.('.sidebar-model-settings-popover')) return;
       setAccountOpen(false);
     };
 

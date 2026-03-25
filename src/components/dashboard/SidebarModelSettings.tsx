@@ -40,11 +40,9 @@ export function SidebarModelSettings({
       }
       if (isOpen) setIsOpen(false);
     };
-    document.addEventListener("mousedown", listener);
-    document.addEventListener("touchstart", listener);
+    document.addEventListener("pointerdown", listener);
     return () => {
-      document.removeEventListener("mousedown", listener);
-      document.removeEventListener("touchstart", listener);
+      document.removeEventListener("pointerdown", listener);
     };
   }, [ref, isOpen]);
 
@@ -167,7 +165,6 @@ export function SidebarModelSettings({
               "sidebar-model-settings-popover rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] p-5 shadow-[var(--lab-shadow-lift)] lg-dropdown"
             )}
             style={popoverStyle}
-            onMouseDown={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="mb-5 flex items-center justify-between border-b border-[var(--lab-border)] pb-4">
