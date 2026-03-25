@@ -167,6 +167,7 @@ export function SidebarModelSettings({
               "sidebar-model-settings-popover rounded-2xl border border-[var(--lab-border)] bg-[var(--lab-panel)] p-5 shadow-[var(--lab-shadow-lift)] lg-dropdown"
             )}
             style={popoverStyle}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="mb-5 flex items-center justify-between border-b border-[var(--lab-border)] pb-4">

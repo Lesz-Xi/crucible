@@ -693,9 +693,7 @@ export function AppDashboardShell({ children, feature, focusModeActive = false }
                 <span className="account-action-label">{mounted ? (resolvedTheme === 'dark' ? 'Dark' : 'Light') : 'Light'}</span>
               </button>
               <a
-                href="https://docs.openclaw.ai"
-                target="_blank"
-                rel="noreferrer"
+                href="/docs"
                 className="account-action"
                 onClick={() => setAccountOpen(false)}
               >

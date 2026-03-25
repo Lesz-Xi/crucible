@@ -298,8 +298,8 @@
 }
 
 .canonical-workbench-shell .action-btn.is-primary {
-  border-color: color-mix(in srgb, var(--accent-border) 42%, transparent);
-  background: color-mix(in srgb, var(--accent-dim) 26%, transparent);
+  border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 42%, transparent);
 }
 
 .canonical-workbench-shell .action-btn.is-primary:hover {
@@ -574,12 +574,12 @@
 }
 
 .canonical-workbench-shell .mobile-shell-trigger {
-  top: 18px;
+  top: 0;
   left: 18px;
 }
 
 .canonical-workbench-shell .mobile-rail-trigger {
-  top: 18px;
+  top: 0;
   right: 18px;
 }
 
