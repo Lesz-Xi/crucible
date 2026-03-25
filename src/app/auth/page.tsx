@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { AuthAirlock } from '@/components/auth/AuthAirlock';
+import { AuthVintage } from '@/components/auth/AuthVintage';
 
 export const metadata: Metadata = {
-  title: 'Authentication Airlock',
-  description: 'Branded Google authentication entry for the Wu-Weism scientific workspace.',
+  title: 'Sign In',
+  description: 'Sign in or create an account for the Wu-Weism scientific workspace.',
 };
 
 type SearchParams = Promise<{
@@ -31,7 +31,7 @@ export default async function AuthPage({ searchParams }: { searchParams?: Search
   const nextPath = rawNext && rawNext.startsWith('/') ? rawNext : '/chat';
 
   return (
-    <AuthAirlock
+    <AuthVintage
       nextPath={nextPath}
       callbackError={rawError}
       authConfigured={hasAuthEnv()}

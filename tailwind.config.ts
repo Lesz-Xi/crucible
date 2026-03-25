@@ -25,9 +25,10 @@ const config: Config = {
         "wabi-charcoal": "var(--wabi-charcoal)",
       },
       fontFamily: {
-        serif: ["var(--font-crimson)", "var(--font-playfair)", "serif"],
-        display: ["var(--font-playfair)", "serif"],
-        mono: ["var(--font-geist-mono)", "monospace"],
+        serif: ["var(--font-lora)", "var(--font-crimson)", "var(--font-playfair)", "serif"],
+        display: ["var(--font-lora)", "var(--font-playfair)", "serif"],
+        mono: ["var(--font-ibm-plex-mono)", "var(--font-geist-mono)", "monospace"],
+        body: ["var(--font-libre-baskerville)", "serif"],
       },
       animation: {
         breathe: "breathe 8s ease-in-out infinite",

@@ -53,6 +53,73 @@ export async function signInWithGoogle(nextPathOverride?: string): Promise<{ err
   return {};
 }
 
+export async function signInWithEmail(
+  email: string,
+  password: string,
+): Promise<{ error?: string }> {
+  if (!hasPublicSupabaseEnv()) {
+    return { error: "Authentication is not configured for this deployment." };
+  }
+
+  let supabase;
+  try {
+    supabase = createClient();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to initialize Supabase client.";
+    return { error: message };
+  }
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return {};
+}
+
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+  fullName?: string,
+): Promise<{ error?: string; needsConfirmation?: boolean }> {
+  if (!hasPublicSupabaseEnv()) {
+    return { error: "Authentication is not configured for this deployment." };
+  }
+
+  let supabase;
+  try {
+    supabase = createClient();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to initialize Supabase client.";
+    return { error: message };
+  }
+
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName ?? '' },
+    },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  // User already exists (Supabase returns a fake user with no identities)
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    return { error: 'An account with this email already exists. Please sign in.' };
+  }
+
+  // Email confirmation required
+  if (!data.session) {
+    return { needsConfirmation: true };
+  }
+
+  return {};
+}
+
 export async function signOut(): Promise<{ error?: string }> {
   if (!hasPublicSupabaseEnv()) {
     return {};

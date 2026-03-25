@@ -1,9 +1,30 @@
 import type { Metadata } from "next";
+import { Lora, Libre_Baskerville, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import "./workbench-shell.css";
 import "./landing-theme.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LiquidGlassRuntime } from "@/components/liquid-glass/LiquidGlassRuntime";
+
+const lora = Lora({
+  subsets: ["latin"],
+  variable: "--font-lora",
+  display: "swap",
+});
+
+const libreBaskerville = Libre_Baskerville({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-libre-baskerville",
+  display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ibm-plex-mono",
+  display: "swap",
+});
 
 const metadataBase =
   process.env.NEXT_PUBLIC_APP_URL
@@ -49,7 +70,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${lora.variable} ${libreBaskerville.variable} ${ibmPlexMono.variable}`}>
       <body className="antialiased">
         <ThemeProvider
           attribute="class"
