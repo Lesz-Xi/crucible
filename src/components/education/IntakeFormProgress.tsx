@@ -36,18 +36,18 @@ export function IntakeFormProgress({
       {/* Progress Bar */}
       <div className="space-y-3">
         <div className="flex justify-between items-center mb-1">
-          <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-tertiary)]">
+          <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-3)]">
             Intake Status
           </span>
-          <span className="font-mono text-xs text-[#5B8DB8]">
+          <span className="font-mono text-xs text-[var(--accent)]">
             {Math.round(progressPercentage)}%
           </span>
         </div>
         
-        {/* Glowing Visual Progress Bar */}
-        <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5">
+        {/* Visual Progress Bar */}
+        <div className="relative h-1.5 bg-[var(--bg-3)] rounded-full overflow-hidden border border-[var(--border)]">
           <motion.div 
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#5B8DB8]/50 via-[#5B8DB8] to-[#7EB4D8] shadow-[0_0_15px_#5B8DB8]"
+            className="absolute top-0 left-0 h-full bg-[var(--accent)] rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
             transition={{ type: "spring", stiffness: 50, damping: 15 }}
@@ -71,19 +71,19 @@ export function IntakeFormProgress({
               key={step.id}
               className={`flex items-start gap-4 p-4 rounded-xl transition-all duration-500 ${
                 isCurrent 
-                  ? 'bg-[#0A0A0A] border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.6)] ring-1 ring-white/5' 
+                  ? 'bg-[var(--bg-2)] border border-[var(--border-2)] shadow-[var(--shadow)]' 
                   : isCompleted
-                    ? 'bg-black/20 border border-white/5 opacity-70'
-                    : 'bg-black/10 border border-transparent opacity-40 hover:opacity-60'
+                    ? 'bg-[var(--bg-2)] border border-[var(--border)] opacity-70'
+                    : 'bg-[var(--bg)] border border-transparent opacity-40 hover:opacity-60'
               }`}
             >
               {/* Step Icon/Number */}
               <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-sm transition-all duration-500 ${
                 isCurrent
-                  ? 'bg-[#5B8DB8] text-white shadow-[0_0_20px_rgba(91,141,184,0.4)]'
+                  ? 'bg-[var(--accent)] text-white'
                   : isCompleted
-                    ? 'bg-[#5B8DB8]/20 text-[#5B8DB8]'
-                    : 'bg-white/5 text-white/30'
+                    ? 'bg-[var(--accent-dim)] text-[var(--accent)]'
+                    : 'bg-[var(--bg-3)] text-[var(--text-4)]'
               }`}>
                 {isCompleted ? (
                   <CheckCircle className="w-4 h-4" />
@@ -98,19 +98,19 @@ export function IntakeFormProgress({
               <div className="flex-1 min-w-0 pt-0.5">
                 <div className="flex items-center gap-2 mb-1.5">
                   <h3 className={`font-mono text-sm tracking-tight ${
-                    isCurrent ? 'text-white font-medium' : 'text-white/60'
+                    isCurrent ? 'text-[var(--text-1)] font-medium' : 'text-[var(--text-2)]'
                   }`}>
                     {step.title}
                   </h3>
                   {isCurrent && (
                     <span className="relative flex h-2 w-2 ml-1">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5B8DB8] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5B8DB8]"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]"></span>
                     </span>
                   )}
                 </div>
                 <p className={`text-xs leading-relaxed ${
-                  isCurrent ? 'text-white/60' : 'text-white/40'
+                  isCurrent ? 'text-[var(--text-2)]' : 'text-[var(--text-3)]'
                 }`}>
                   {step.description}
                 </p>
@@ -139,19 +139,19 @@ export function CompactProgress({
 }: CompactProgressProps) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+      <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--text-3)]">
         Step {currentStep}/{totalSteps}
       </span>
       <div className="flex gap-1.5">
         {Array.from({ length: totalSteps }).map((_, idx) => (
           <div
             key={idx}
-            className={`h-1w-8 rounded-full transition-all duration-500 ${
+            className={`h-1 w-8 rounded-full transition-all duration-500 ${
               idx < currentStep 
-                ? 'bg-[#5B8DB8] shadow-[0_0_8px_#5B8DB8]' 
+                ? 'bg-[var(--accent)]' 
                 : idx === currentStep 
-                  ? 'bg-[#5B8DB8]/40 animate-pulse'
-                  : 'bg-white/10'
+                  ? 'bg-[var(--accent-dim)] animate-pulse'
+                  : 'bg-[var(--bg-3)]'
             }`}
           />
         ))}
