@@ -9,6 +9,7 @@
 
 import React from 'react';
 import { CheckCircle, Circle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export interface FormStep {
   id: string;
@@ -33,31 +34,24 @@ export function IntakeFormProgress({
   return (
     <div className={`space-y-6 ${className}`}>
       {/* Progress Bar */}
-      <div className="space-y-2">
-        <div className="flex justify-between items-center mb-2">
-          <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-secondary)]">
-            Progress
+      <div className="space-y-3">
+        <div className="flex justify-between items-center mb-1">
+          <span className="font-mono text-xs uppercase tracking-wider text-[var(--text-tertiary)]">
+            Intake Status
           </span>
-          <span className="font-mono text-sm text-[var(--text-primary)]">
-            Step {currentStep} of {steps.length}
+          <span className="font-mono text-xs text-[#5B8DB8]">
+            {Math.round(progressPercentage)}%
           </span>
         </div>
         
-        {/* Visual Progress Bar */}
-        <div className="relative h-2 bg-[var(--bg-tertiary)] rounded-full overflow-hidden">
-          <div 
-            className="absolute top-0 left-0 h-full bg-gradient-to-r from-wabi-clay to-wabi-moss transition-all duration-500 ease-out"
-            style={{ width: `${progressPercentage}%` }}
+        {/* Glowing Visual Progress Bar */}
+        <div className="relative h-1.5 bg-black/20 rounded-full overflow-hidden border border-white/5">
+          <motion.div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#5B8DB8]/50 via-[#5B8DB8] to-[#7EB4D8] shadow-[0_0_15px_#5B8DB8]"
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ type: "spring", stiffness: 50, damping: 15 }}
           />
-        </div>
-        
-        {/* ASCII-style Progress */}
-        <div className="font-mono text-xs text-[var(--text-tertiary)] flex items-center gap-1">
-          {Array.from({ length: steps.length }).map((_, idx) => (
-            <span key={idx} className={idx < currentStep ? 'text-wabi-clay' : 'text-[var(--text-tertiary)]'}>
-              {idx < currentStep ? '▓' : '░'}
-            </span>
-          ))}
         </div>
       </div>
       
@@ -69,54 +63,59 @@ export function IntakeFormProgress({
           const isCurrent = stepNumber === currentStep;
           
           return (
-            <div
+            <motion.div
+              layout
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.05 }}
               key={step.id}
-              className={`flex items-start gap-3 p-3 rounded-lg transition-all duration-300 ${
+              className={`flex items-start gap-4 p-4 rounded-xl transition-all duration-500 ${
                 isCurrent 
-                  ? 'bg-wabi-clay/10 border border-wabi-clay/30' 
+                  ? 'bg-[#0A0A0A] border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.6)] ring-1 ring-white/5' 
                   : isCompleted
-                    ? 'bg-[var(--bg-secondary)] border border-[var(--border-subtle)] opacity-60'
-                    : 'bg-[var(--bg-secondary)] border border-[var(--border-subtle)] opacity-40'
+                    ? 'bg-black/20 border border-white/5 opacity-70'
+                    : 'bg-black/10 border border-transparent opacity-40 hover:opacity-60'
               }`}
             >
               {/* Step Icon/Number */}
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-sm transition-all ${
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-mono text-sm transition-all duration-500 ${
                 isCurrent
-                  ? 'bg-wabi-clay text-[var(--bg-primary)] shadow-lg shadow-wabi-clay/30'
+                  ? 'bg-[#5B8DB8] text-white shadow-[0_0_20px_rgba(91,141,184,0.4)]'
                   : isCompleted
-                    ? 'bg-wabi-clay/20 text-wabi-clay'
-                    : 'bg-[var(--bg-tertiary)] text-[var(--text-tertiary)]'
+                    ? 'bg-[#5B8DB8]/20 text-[#5B8DB8]'
+                    : 'bg-white/5 text-white/30'
               }`}>
                 {isCompleted ? (
-                  <CheckCircle className="w-5 h-5" />
+                  <CheckCircle className="w-4 h-4" />
                 ) : isCurrent ? (
-                  <span className="animate-pulse">{step.icon || stepNumber}</span>
+                  <span className="animate-pulse flex items-center justify-center scale-110">{step.icon || stepNumber}</span>
                 ) : (
-                  <Circle className="w-5 h-5" />
+                  <span className="text-xs">{stepNumber}</span>
                 )}
               </div>
               
               {/* Step Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className={`font-mono text-sm ${
-                    isCurrent ? 'text-wabi-clay font-semibold' : 'text-[var(--text-secondary)]'
+              <div className="flex-1 min-w-0 pt-0.5">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <h3 className={`font-mono text-sm tracking-tight ${
+                    isCurrent ? 'text-white font-medium' : 'text-white/60'
                   }`}>
                     {step.title}
                   </h3>
                   {isCurrent && (
-                    <span className="px-2 py-0.5 rounded-full bg-wabi-clay/20 text-wabi-clay text-[10px] font-mono uppercase tracking-wider">
-                      Current
+                    <span className="relative flex h-2 w-2 ml-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5B8DB8] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5B8DB8]"></span>
                     </span>
                   )}
                 </div>
-                <p className={`text-xs ${
-                  isCurrent ? 'text-[var(--text-secondary)]' : 'text-[var(--text-tertiary)]'
+                <p className={`text-xs leading-relaxed ${
+                  isCurrent ? 'text-white/60' : 'text-white/40'
                 }`}>
                   {step.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>
@@ -139,20 +138,20 @@ export function CompactProgress({
   className = '' 
 }: CompactProgressProps) {
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <span className="font-mono text-xs text-[var(--text-tertiary)]">
-        Step {currentStep}/{totalSteps}:
+    <div className={`flex items-center gap-3 ${className}`}>
+      <span className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+        Step {currentStep}/{totalSteps}
       </span>
-      <div className="flex gap-1">
+      <div className="flex gap-1.5">
         {Array.from({ length: totalSteps }).map((_, idx) => (
           <div
             key={idx}
-            className={`h-1.5 w-6 rounded-full transition-all duration-300 ${
+            className={`h-1w-8 rounded-full transition-all duration-500 ${
               idx < currentStep 
-                ? 'bg-wabi-clay' 
+                ? 'bg-[#5B8DB8] shadow-[0_0_8px_#5B8DB8]' 
                 : idx === currentStep 
-                  ? 'bg-wabi-clay/50 animate-pulse'
-                  : 'bg-[var(--bg-tertiary)]'
+                  ? 'bg-[#5B8DB8]/40 animate-pulse'
+                  : 'bg-white/10'
             }`}
           />
         ))}
