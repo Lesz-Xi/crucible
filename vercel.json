@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rootDirectory": "synthesis-engine",
+  "framework": "nextjs",
+  "installCommand": "npm install --include=dev",
+  "buildCommand": "npm run build"
+}
