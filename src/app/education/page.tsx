@@ -663,7 +663,7 @@ export default function EducationPage() {
         </>
       }
       mainContent={
-        <div className="edu-page feature-education min-h-full transition-colors duration-500">
+        <div className="edu-page feature-education h-full overflow-y-auto transition-colors duration-500">
       {/* Header */}
       <header className="edu-header px-8 py-6">
         <div className="max-w-6xl mx-auto">

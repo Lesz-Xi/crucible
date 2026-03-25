@@ -573,7 +573,7 @@ export default function LabPage() {
     const experiments = state.experimentHistory || [];
 
     return (
-        <div className="feature-lab flex h-screen bg-[var(--lab-bg)] overflow-hidden" data-testid="lab-page">
+        <div className="feature-lab flex h-full bg-[var(--lab-bg)] overflow-hidden" data-testid="lab-page">
             {/* GAP-6: Offline Banner — shown when navigator.onLine is false */}
             <AnimatePresence>
                 {state.isOffline && (

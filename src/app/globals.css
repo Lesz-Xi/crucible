@@ -4478,13 +4478,13 @@ body {
   display: grid;
   height: 100%;
   min-height: 0;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 360px 1fr;
 }
 
 .split-sidebar {
   overflow-y: auto;
   border-right: 1px solid var(--border);
-  padding: 24px;
+  padding: 20px;
 }
 
 .split-canvas {
