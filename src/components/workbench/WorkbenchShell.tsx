@@ -42,7 +42,7 @@ export function WorkbenchShell({
       }}
     >
       <AppDashboardShell feature={feature} focusModeActive={focusMode}>
-        <div className={cn('dark shell app-shell', `main-mode-${mainMode}`, !showEvidenceRail && 'rail-hidden', focusMode && 'shell-focus-mode')}>
+        <div className={cn('shell app-shell', `main-mode-${mainMode}`, !showEvidenceRail && 'rail-hidden', focusMode && 'shell-focus-mode')}>
           {showEvidenceRail ? (
             <button type="button" className="mobile-rail-trigger" onClick={() => setMobileRailOpen(true)} aria-label="Open evidence rail">
               <PanelRightOpen className="h-4 w-4" />
