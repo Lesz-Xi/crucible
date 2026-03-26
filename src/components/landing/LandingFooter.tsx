@@ -51,10 +51,10 @@ export function LandingFooter() {
       className="w-full bg-[var(--bg-primary)] border-t border-[var(--border-subtle)]"
     >
       {/* ── Top — brand + navigation columns ──────────────────────────────── */}
-      <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-start md:justify-between gap-12 px-10 md:px-16 pt-16 pb-10">
+      <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-start md:justify-between gap-8 px-10 md:px-16 pt-10 pb-6">
 
         {/* Brand column */}
-        <div className="flex flex-col gap-5 max-w-xs">
+        <div className="flex flex-col gap-3 max-w-xs">
           <Link href="/" className="flex items-center gap-3">
             <Image
               src="/wu-wei-mark-true-alpha.png"
@@ -117,19 +117,19 @@ export function LandingFooter() {
       </div>
 
       {/* ── Flickering dot-matrix text band ───────────────────────────────── */}
-      <div className="relative h-44 md:h-56 mt-4 overflow-hidden">
-        {/* Gradient fades the grid into the footer above */}
+      <div className="relative h-32 md:h-40 overflow-hidden">
+        {/* Gradient fades the grid into the footer above and below */}
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none z-10"
           style={{
             background:
-              "linear-gradient(to bottom, var(--bg-primary) 0%, transparent 45%, transparent 55%, var(--bg-primary) 100%)",
+              "linear-gradient(to bottom, var(--bg-primary) 0%, transparent 25%, transparent 75%, var(--bg-primary) 100%)",
           }}
         />
         <FlickeringGrid
           text="CAUSAL SCIENCE"
-          fontSize={typeof window !== "undefined" && window.innerWidth < 768 ? 46 : 76}
+          fontSize={76}
           fontWeight={600}
           color="#c8965a"
           squareSize={2}
@@ -141,7 +141,7 @@ export function LandingFooter() {
       </div>
 
       {/* ── Disclaimer + copyright ─────────────────────────────────────────── */}
-      <div className="mx-auto max-w-7xl border-t border-[var(--border-subtle)] px-10 md:px-16 pt-10 pb-12">
+      <div className="mx-auto max-w-7xl border-t border-[var(--border-subtle)] px-10 md:px-16 pt-6 pb-8">
         <p className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
           Disclaimer
         </p>
