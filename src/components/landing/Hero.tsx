@@ -49,7 +49,7 @@ export function Hero() {
           <div className="flex items-center gap-3 mb-10">
             <span className="block h-px w-8 bg-[var(--accent-rust)] flex-shrink-0" />
             <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
-              MASA · Causal Science
+              WU-WEISM · CAUSAL SCIENCE
             </span>
           </div>
 

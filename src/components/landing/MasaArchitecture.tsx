@@ -29,8 +29,9 @@ const PORTS = [
   { px: 78,  py: 160, lx: 52,  ly: 163, anchor: "end"    as const, label: "GROUNDING"  },
 ] as const;
 
-// Uniform amber — all 8 ports the same color for visual consistency
-const PORT_COLOR = "#c8965a";
+// Warm platinum signal lights — reads as white/silver, harmonizes with amber chip structure
+const PORT_COLOR = "#d0ccc4";
+const DOT_COLOR  = "#eceae6"; // near-white core
 
 // Chip geometry
 const CX = 200; // center x
@@ -64,10 +65,10 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <stop offset="100%" stopColor="#8b6240" />
           </linearGradient>
 
-          {/* Trace line: amber → dark (fades into chip) */}
+          {/* Trace line: warm silver → dark (fades into chip) */}
           <linearGradient id="masa-trace-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#c8965a" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="#c8965a" stopOpacity="0.05" />
+            <stop offset="0%"   stopColor="#a8a49c" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#a8a49c" stopOpacity="0.04" />
           </linearGradient>
 
           {/* Chip body: subtle radial from stone-800 to near-black */}
@@ -85,18 +86,18 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             </feMerge>
           </filter>
 
-          {/* Sharper glow filter applied directly to each bright dot */}
+          {/* Tighter glow filter — crisper, less bloom */}
           <filter id="masa-dot-glow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
 
-          {/* Single amber glow gradient reused for all ports — full opacity center */}
+          {/* Warm platinum halo gradient — reduced center opacity for softer bloom */}
           <radialGradient id="masa-port-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor={PORT_COLOR} stopOpacity="1" />
+            <stop offset="0%"   stopColor={PORT_COLOR} stopOpacity="0.7" />
             <stop offset="100%" stopColor={PORT_COLOR} stopOpacity="0" />
           </radialGradient>
         </defs>
@@ -111,9 +112,9 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
               key={`trace-${i}`}
               x1={port.px} y1={port.py}
               x2={ex}      y2={ey}
-              stroke="#c8965a"
+              stroke="#a8a49c"
               strokeWidth="0.8"
-              strokeOpacity="0.35"
+              strokeOpacity="0.4"
               pathLength="1"
               strokeDasharray="1"
               strokeDashoffset="1"
@@ -224,33 +225,33 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         {/* ── Port glow markers — pulsing amber ─────────────────────── */}
         {PORTS.map((port, i) => (
           <g key={`port-${i}`}>
-            {/* Outer glow halo — pulses radius + opacity continuously */}
-            <circle cx={port.px} cy={port.py} r="12"
-              fill="url(#masa-port-glow)" opacity="0.7">
+            {/* Outer glow halo — softer, smaller bloom */}
+            <circle cx={port.px} cy={port.py} r="10"
+              fill="url(#masa-port-glow)" opacity="0.35">
               <animate attributeName="r"
-                values="10;15;10" dur="2.8s" begin={`${i * 0.35}s`}
+                values="8;12;8" dur="2.8s" begin={`${i * 0.35}s`}
                 repeatCount="indefinite" calcMode="spline"
                 keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
               <animate attributeName="opacity"
-                values="0.45;0.85;0.45" dur="2.8s" begin={`${i * 0.35}s`}
+                values="0.15;0.40;0.15" dur="2.8s" begin={`${i * 0.35}s`}
                 repeatCount="indefinite" />
             </circle>
-            {/* Inner solid dot — brighter gold, pop-in then continuous pulse */}
+            {/* Inner solid dot — warm white, crisp, subtle pulse */}
             <circle cx={port.px} cy={port.py} r="2.8"
-              fill="#e0b476" opacity="0.95"
+              fill={DOT_COLOR} opacity="0.85"
               filter="url(#masa-dot-glow)">
               {/* Pop-in on load */}
               <animate attributeName="r" values="0;4;2.8" dur="0.4s"
                 begin={`${0.05 * i + 0.5}s`} fill="freeze" />
-              {/* Continuous radius pulse */}
+              {/* Continuous radius pulse — tighter range */}
               <animate attributeName="r"
-                values="2.8;3.8;2.8" dur="2.8s"
+                values="2.8;3.3;2.8" dur="2.8s"
                 begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite"
                 calcMode="spline" keyTimes="0;0.5;1"
                 keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
-              {/* Continuous brightness pulse */}
+              {/* Continuous opacity pulse — quieter */}
               <animate attributeName="opacity"
-                values="0.75;1;0.75" dur="2.8s"
+                values="0.65;0.90;0.65" dur="2.8s"
                 begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite" />
             </circle>
           </g>
