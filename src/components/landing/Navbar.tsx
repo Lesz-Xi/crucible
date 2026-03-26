@@ -45,8 +45,8 @@ export function Navbar() {
 
   return (
     <header className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto max-w-[1440px] px-6 pt-5 md:px-10 md:pt-6">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto max-w-[1440px] h-20 px-6 md:px-10 flex items-center">
+        <div className="flex w-full items-center justify-between gap-4">
           <div className="flex items-center gap-6 lg:gap-10">
             <Link href="/" className="flex shrink-0 items-center">
               <WuWeiMark className="h-[38px] w-auto md:h-[48px]" />
