@@ -49,7 +49,7 @@ export function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 lg:gap-10">
             <Link href="/" className="flex shrink-0 items-center">
-              <WuWeiMark className="h-[52px] w-auto md:h-[64px]" />
+              <WuWeiMark className="h-[38px] w-auto md:h-[48px]" />
             </Link>
 
             <nav className="hidden items-center gap-7 lg:flex">
