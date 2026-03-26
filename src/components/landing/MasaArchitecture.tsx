@@ -43,7 +43,6 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
       <svg
         viewBox="0 0 400 360"
         width="100%"
-        height="100%"
         aria-label="MASA Automated Scientist Architecture"
         style={{ overflow: "visible" }}
       >

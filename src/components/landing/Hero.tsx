@@ -69,9 +69,8 @@ export function Hero() {
             className="mt-7 max-w-[34rem] text-[1.02rem] leading-[1.8] text-[var(--text-secondary)]"
             style={{ fontFamily: "var(--font-inter, Inter, sans-serif)" }}
           >
-            The world&apos;s first Automated Scientist — traversing Pearl&apos;s
-            ladder from observation to counterfactual with institutional rigor
-            and neural-speed synthesis.
+            From observation to counterfactual — Pearl&apos;s causal ladder,
+            automated with institutional rigor.
           </p>
 
           {/* CTAs */}
@@ -136,7 +135,7 @@ export function Hero() {
 
       {/* ── Right column — MASA architecture diagram ───────────────────── */}
       <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
-        <MasaArchitecture className="w-full h-full max-w-[520px] opacity-75" />
+        <MasaArchitecture className="w-[420px] max-w-[90%] opacity-75" />
       </div>
 
       {/* Bottom edge rule */}
