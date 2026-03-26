@@ -50,11 +50,11 @@ export function Navbar() {
           <div className="flex items-center gap-6 lg:gap-10">
             <Link href="/" className="flex shrink-0 items-center">
               <Image
-                src="/wu-wei-lockup.png"
+                src="/wu-wei-mark-true-alpha.png"
                 alt="Wu-Weism"
-                width={360}
+                width={80}
                 height={80}
-                className="-ml-2 h-auto w-[110px] object-contain md:w-[130px] lg:-ml-4 lg:w-[140px]"
+                className="h-[36px] w-[36px] object-contain md:h-[40px] md:w-[40px]"
                 unoptimized
                 priority
               />
