@@ -108,7 +108,7 @@ export function ResearchFAQ() {
     setOpenIndex((prev) => (prev === i ? null : i));
 
   return (
-    <section className="hd-section bg-[var(--bg-secondary)] py-24 md:py-32">
+    <section id="faq" className="hd-section bg-[var(--bg-secondary)] py-24 md:py-32">
       <div className="mx-auto max-w-4xl px-8 md:px-12 lg:px-16">
         {/* Header */}
         <div className="mb-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

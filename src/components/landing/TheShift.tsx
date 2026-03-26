@@ -37,7 +37,7 @@ export function TheShift() {
   const shouldReduce = useReducedMotion();
 
   return (
-    <section className="hd-section bg-[var(--bg-primary)] py-24 md:py-32">
+    <section id="why-us" className="hd-section bg-[var(--bg-primary)] py-24 md:py-32">
       <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
         {/* Header */}
         <div className="mb-16">

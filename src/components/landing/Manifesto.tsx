@@ -15,7 +15,7 @@ export function Manifesto() {
   const Wrap = shouldReduce ? "div" : motion.div;
 
   return (
-    <section className="hd-section bg-[var(--bg-primary)] py-28 md:py-36">
+    <section id="mission" className="hd-section bg-[var(--bg-primary)] py-28 md:py-36">
       <div className="mx-auto max-w-5xl px-8 md:px-12 lg:px-16">
         {/* Rule */}
         <div className="mb-12 h-px bg-gradient-to-r from-[var(--accent-rust)]/40 via-[var(--border-subtle)] to-transparent" />
