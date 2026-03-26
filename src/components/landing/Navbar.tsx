@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { WuWeiMark } from "./WuWeiMark";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -48,16 +48,8 @@ export function Navbar() {
       <div className="mx-auto max-w-[1440px] px-6 pt-5 md:px-10 md:pt-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 lg:gap-10">
-            <Link href="/" className="flex shrink-0 items-center bg-transparent">
-              <Image
-                src="/wu-wei-mark-transparent.png"
-                alt="Wu-Weism"
-                width={120}
-                height={120}
-                className="h-[52px] w-[52px] object-contain md:h-[60px] md:w-[60px]"
-                unoptimized
-                priority
-              />
+            <Link href="/" className="flex shrink-0 items-center">
+              <WuWeiMark className="h-[52px] w-auto md:h-[64px]" />
             </Link>
 
             <nav className="hidden items-center gap-7 lg:flex">

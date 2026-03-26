@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Twitter, Github, Linkedin } from "lucide-react";
 import { FlickeringGrid } from "./FlickeringGrid";
+import { WuWeiMark } from "./WuWeiMark";
 
 // ── Link data ────────────────────────────────────────────────────────────────
 
@@ -56,14 +56,7 @@ export function LandingFooter() {
         {/* Brand column */}
         <div className="flex flex-col gap-3 max-w-xs">
           <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/wu-wei-mark-true-alpha.png"
-              alt="Wu-Weism"
-              width={40}
-              height={32}
-              unoptimized
-              className="opacity-75"
-            />
+            <WuWeiMark className="h-[28px] w-auto opacity-70" />
           </Link>
 
           <p className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[var(--text-muted)] leading-relaxed">
