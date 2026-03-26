@@ -55,11 +55,11 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
         shouldReduce
           ? {}
           : inView
-          ? { backgroundColor: "rgba(28,25,23,0.72)", borderColor: "rgba(255,255,255,0.09)" }
-          : { backgroundColor: "rgba(28,25,23,0.0)", borderColor: "rgba(255,255,255,0.05)" }
+          ? { backgroundColor: "rgba(22,19,17,0.85)", borderColor: "rgba(255,255,255,0.09)" }
+          : { backgroundColor: "rgba(14,12,11,0.0)",  borderColor: "rgba(255,255,255,0.05)" }
       }
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      initial={shouldReduce ? {} : { backgroundColor: "rgba(28,25,23,0.0)" }}
+      initial={shouldReduce ? {} : { backgroundColor: "rgba(14,12,11,0.0)" }}
     >
 
       {/* ── Left accent bar ────────────────────────────────────────────── */}
@@ -182,7 +182,7 @@ export function CausalPipeline() {
   return (
     <section
       id="pipeline"
-      className="hd-section bg-[var(--bg-secondary)] py-24 md:py-32"
+      className="hd-section bg-[var(--bg-primary)] py-24 md:py-32"
     >
       <div className="mx-auto max-w-5xl px-8 md:px-12 lg:px-16">
 
