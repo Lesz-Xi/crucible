@@ -1,97 +1,79 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Github, Linkedin } from "lucide-react";
+import { FlickeringGrid } from "./FlickeringGrid";
 
-const researchLinks = [
-  { label: "Causal Workbench", href: "/chat" },
-  { label: "Hybrid Synthesis", href: "/hybrid" },
-  { label: "Legal Causation", href: "/legal" },
-  { label: "Lab", href: "/lab" },
-];
+// ── Link data ────────────────────────────────────────────────────────────────
 
-const legalLinks = [
-  { label: "Terms of Service", href: "/terms" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "White Paper", href: "/masa-white-paper.html", external: true },
-  { label: "Risk Disclosures", href: "/disclosures" },
+const footerLinks = [
+  {
+    title: "Research",
+    links: [
+      { label: "Causal Workbench", href: "/chat" },
+      { label: "Hybrid Synthesis", href: "/hybrid" },
+      { label: "Lab", href: "/lab" },
+      { label: "Legal Causation", href: "/legal" },
+    ],
+  },
+  {
+    title: "Platform",
+    links: [
+      { label: "White Paper", href: "/masa-white-paper.html", external: true },
+      { label: "Architecture", href: "/#architecture" },
+      { label: "MASA Engine", href: "/#engine" },
+      { label: "Contact", href: "/#contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Terms of Service", href: "/terms" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Risk Disclosures", href: "/disclosures" },
+    ],
+  },
 ];
 
 const socialIcons = [
-  { Icon: Twitter, href: "https://twitter.com/wuweism", label: "Twitter" },
-  { Icon: Github, href: "https://github.com/wuweism", label: "GitHub" },
-  { Icon: Linkedin, href: "https://linkedin.com/company/wuweism", label: "LinkedIn" },
+  { Icon: Twitter, href: "https://twitter.com/wuweism",           label: "Twitter"  },
+  { Icon: Github,  href: "https://github.com/wuweism",            label: "GitHub"   },
+  { Icon: Linkedin,href: "https://linkedin.com/company/wuweism",  label: "LinkedIn" },
 ];
+
+// ── Component ────────────────────────────────────────────────────────────────
 
 export function LandingFooter() {
   return (
-    <footer className="bg-stone-950 border-t border-stone-800 text-stone-500 py-24 px-12 lg:px-24">
-      {/* 4-column grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+    <footer
+      id="footer"
+      className="w-full bg-[var(--bg-primary)] border-t border-[var(--border-subtle)]"
+    >
+      {/* ── Top — brand + navigation columns ──────────────────────────────── */}
+      <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-start md:justify-between gap-12 px-10 md:px-16 pt-16 pb-10">
 
-        {/* Col 1 — Brand */}
-        <div className="col-span-1">
-          <Image
-            src="/wu-wei-mark-true-alpha.png"
-            alt="Wu-Weism"
-            width={52}
-            height={40}
-            unoptimized
-            className="mb-6 opacity-70 invert"
-          />
-          <p className="text-xs text-stone-500 leading-relaxed">
+        {/* Brand column */}
+        <div className="flex flex-col gap-5 max-w-xs">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src="/wu-wei-mark-true-alpha.png"
+              alt="Wu-Weism"
+              width={40}
+              height={32}
+              unoptimized
+              className="opacity-75"
+            />
+          </Link>
+
+          <p className="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[var(--text-muted)] leading-relaxed">
             Building the infrastructure for
             <br />
             automated causal science.
           </p>
-        </div>
 
-        {/* Col 2 — Research */}
-        <div>
-          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
-            Research
-          </h5>
-          <ul className="space-y-4 text-xs">
-            {researchLinks.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  className="hover:text-white transition-colors"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Col 3 — Legal */}
-        <div>
-          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
-            Legal
-          </h5>
-          <ul className="space-y-4 text-xs">
-            {legalLinks.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  {...("external" in link && link.external
-                    ? { target: "_blank", rel: "noreferrer" }
-                    : {})}
-                  className="hover:text-white transition-colors"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Col 4 — Social */}
-        <div>
-          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
-            Social
-          </h5>
-          <div className="flex gap-4">
+          {/* Social icons */}
+          <div className="flex items-center gap-4 mt-1">
             {socialIcons.map(({ Icon, href, label }) => (
               <a
                 key={label}
@@ -99,19 +81,71 @@ export function LandingFooter() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
-                className="w-4 h-4 hover:text-white cursor-pointer transition-colors"
+                className="text-[var(--text-tertiary)] hover:text-[var(--accent-rust)] transition-colors duration-200"
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
               </a>
             ))}
           </div>
         </div>
+
+        {/* Navigation columns */}
+        <div className="flex flex-col sm:flex-row gap-10 md:gap-16">
+          {footerLinks.map((col) => (
+            <div key={col.title}>
+              <h5 className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-[var(--text-tertiary)] mb-5">
+                {col.title}
+              </h5>
+              <ul className="flex flex-col gap-3">
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      {...("external" in link && link.external
+                        ? { target: "_blank", rel: "noreferrer" }
+                        : {})}
+                      className="font-mono text-[0.65rem] uppercase tracking-[0.12em] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Disclaimer + copyright */}
-      <div className="max-w-7xl mx-auto border-t border-stone-800 pt-12 text-[10px] text-stone-600 leading-loose text-justify">
-        <p className="mb-4 font-bold uppercase tracking-widest">Disclaimer</p>
-        <p>
+      {/* ── Flickering dot-matrix text band ───────────────────────────────── */}
+      <div className="relative h-44 md:h-56 mt-4 overflow-hidden">
+        {/* Gradient fades the grid into the footer above */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, var(--bg-primary) 0%, transparent 45%, transparent 55%, var(--bg-primary) 100%)",
+          }}
+        />
+        <FlickeringGrid
+          text="CAUSAL SCIENCE"
+          fontSize={typeof window !== "undefined" && window.innerWidth < 768 ? 46 : 76}
+          fontWeight={600}
+          color="#c8965a"
+          squareSize={2}
+          gridGap={3}
+          maxOpacity={0.38}
+          flickerChance={0.09}
+          className="absolute inset-0 h-full w-full"
+        />
+      </div>
+
+      {/* ── Disclaimer + copyright ─────────────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl border-t border-[var(--border-subtle)] px-10 md:px-16 pt-10 pb-12">
+        <p className="mb-3 font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+          Disclaimer
+        </p>
+        <p className="text-[0.65rem] leading-[1.9] text-[var(--text-tertiary)] text-justify max-w-4xl">
           This website is for informational purposes only. MASA (Methods of
           Automated Scientific Analysis) is a research tool and does not
           constitute legal, medical, or investment advice. All outputs are
@@ -120,14 +154,14 @@ export function LandingFooter() {
           Results may be incomplete, context-sensitive, or subject to model
           limitations.
         </p>
-        <p className="mt-3">
-          Wu-Weism does not guarantee the accuracy, completeness, or fitness for
-          purpose of any analysis produced by MASA. Use of this platform implies
-          acceptance of our Terms of Service and acknowledgment that causal
-          inference is probabilistic in nature. Not available to users in
-          jurisdictions where automated research tools are restricted by law.
+        <p className="mt-3 text-[0.65rem] leading-[1.9] text-[var(--text-tertiary)] text-justify max-w-4xl">
+          Wu-Weism does not guarantee the accuracy, completeness, or fitness
+          for purpose of any analysis produced by MASA. Use of this platform
+          implies acceptance of our Terms of Service and acknowledgment that
+          causal inference is probabilistic in nature. Not available to users
+          in jurisdictions where automated research tools are restricted by law.
         </p>
-        <p className="mt-8 text-center tracking-widest">
+        <p className="mt-8 font-mono text-[0.55rem] uppercase tracking-[0.2em] text-[var(--text-tertiary)] text-center">
           © 2026 Wu-Weism · wuweism.com · All rights reserved.
         </p>
       </div>

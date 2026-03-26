@@ -85,10 +85,19 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             </feMerge>
           </filter>
 
-          {/* Single amber glow gradient reused for all ports */}
+          {/* Sharper glow filter applied directly to each bright dot */}
+          <filter id="masa-dot-glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.8" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* Single amber glow gradient reused for all ports — full opacity center */}
           <radialGradient id="masa-port-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor={PORT_COLOR} stopOpacity="0.85" />
-            <stop offset="100%" stopColor={PORT_COLOR} stopOpacity="0"    />
+            <stop offset="0%"   stopColor={PORT_COLOR} stopOpacity="1" />
+            <stop offset="100%" stopColor={PORT_COLOR} stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -212,17 +221,37 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           CAUSAL ENGINE
         </text>
 
-        {/* ── Port glow markers — uniform amber ─────────────────────── */}
+        {/* ── Port glow markers — pulsing amber ─────────────────────── */}
         {PORTS.map((port, i) => (
           <g key={`port-${i}`}>
-            {/* Outer glow halo */}
-            <circle cx={port.px} cy={port.py} r="9"
-              fill="url(#masa-port-glow)" opacity="0.55" />
-            {/* Inner solid dot */}
-            <circle cx={port.px} cy={port.py} r="2.2"
-              fill={PORT_COLOR} opacity="0.9">
-              <animate attributeName="r" values="0; 3; 2.2" dur="0.4s"
+            {/* Outer glow halo — pulses radius + opacity continuously */}
+            <circle cx={port.px} cy={port.py} r="12"
+              fill="url(#masa-port-glow)" opacity="0.7">
+              <animate attributeName="r"
+                values="10;15;10" dur="2.8s" begin={`${i * 0.35}s`}
+                repeatCount="indefinite" calcMode="spline"
+                keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+              <animate attributeName="opacity"
+                values="0.45;0.85;0.45" dur="2.8s" begin={`${i * 0.35}s`}
+                repeatCount="indefinite" />
+            </circle>
+            {/* Inner solid dot — brighter gold, pop-in then continuous pulse */}
+            <circle cx={port.px} cy={port.py} r="2.8"
+              fill="#e0b476" opacity="0.95"
+              filter="url(#masa-dot-glow)">
+              {/* Pop-in on load */}
+              <animate attributeName="r" values="0;4;2.8" dur="0.4s"
                 begin={`${0.05 * i + 0.5}s`} fill="freeze" />
+              {/* Continuous radius pulse */}
+              <animate attributeName="r"
+                values="2.8;3.8;2.8" dur="2.8s"
+                begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite"
+                calcMode="spline" keyTimes="0;0.5;1"
+                keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
+              {/* Continuous brightness pulse */}
+              <animate attributeName="opacity"
+                values="0.75;1;0.75" dur="2.8s"
+                begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite" />
             </circle>
           </g>
         ))}
