@@ -48,13 +48,13 @@ export function Navbar() {
       <div className="mx-auto max-w-[1440px] px-6 pt-5 md:px-10 md:pt-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 lg:gap-10">
-            <Link href="/" className="flex shrink-0 items-center">
+            <Link href="/" className="flex shrink-0 items-center bg-transparent">
               <Image
-                src="/wu-wei-mark-true-alpha.png"
+                src="/wu-wei-mark-transparent.png"
                 alt="Wu-Weism"
-                width={80}
-                height={80}
-                className="h-[36px] w-[36px] object-contain md:h-[40px] md:w-[40px]"
+                width={120}
+                height={120}
+                className="h-[52px] w-[52px] object-contain md:h-[60px] md:w-[60px]"
                 unoptimized
                 priority
               />
