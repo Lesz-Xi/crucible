@@ -57,8 +57,8 @@ function OrbitalSVG() {
   return (
     <svg
       viewBox="0 0 320 320"
-      width="320"
-      height="320"
+      width="460"
+      height="460"
       aria-hidden="true"
       style={{ overflow: "visible", maxWidth: "100%" }}
     >

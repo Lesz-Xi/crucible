@@ -59,9 +59,8 @@ export function Hero() {
             style={{ fontSize: "clamp(3.2rem, 6.5vw, 6.5rem)" }}
           >
             Causal Science.{" "}
-            <em className="italic text-[var(--accent-rust)]">Automated.</em>
             <br />
-            Disciplined.
+            <em className="italic text-[var(--accent-rust)]">Automated.</em>
           </h1>
 
           {/* Body */}
@@ -135,7 +134,7 @@ export function Hero() {
 
       {/* ── Right column — MASA architecture diagram ───────────────────── */}
       <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
-        <MasaArchitecture className="w-[420px] max-w-[90%] opacity-75" />
+        <MasaArchitecture className="w-[580px] max-w-[95%] opacity-80" />
       </div>
 
       {/* Bottom edge rule */}
