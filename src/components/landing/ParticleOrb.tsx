@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useReducedMotion } from "framer-motion";
 import * as THREE from "three";
@@ -278,7 +278,12 @@ function ParticleSystem() {
 // ---------------------------------------------------------------------------
 export function ParticleOrb() {
   const shouldReduceMotion = useReducedMotion();
-  if (shouldReduceMotion) return null;
+  // isMounted prevents Canvas from initialising during SSR.
+  // Even though dynamic(ssr:false) is the primary guard, this adds defence-in-depth.
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { setIsMounted(true); }, []);
+
+  if (!isMounted || shouldReduceMotion) return null;
 
   return (
     <Canvas
@@ -292,11 +297,13 @@ export function ParticleOrb() {
         bottom: 0,
         left: 0,
         pointerEvents: "none",
-        zIndex: 0,
+        // z-20: floats above section content (main z-10) so the orb is
+        // visible across all sections during the scroll journey.
+        // pointer-events:none ensures all clicks/scrolls pass through.
+        // Navbar sits at z-30, so it always renders above the orb.
+        zIndex: 20,
       }}
     >
-      {/* Exponential fog — color matches stone-50 (#fafaf9) bg */}
-      <fogExp2 attach="fog" args={[0xfdfcf8, 0.035]} />
       <ParticleSystem />
     </Canvas>
   );

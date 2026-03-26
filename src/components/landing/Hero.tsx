@@ -36,9 +36,11 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-[var(--bg-primary)] grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+    <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
       {/* ── Left column — text content ─────────────────────────────────── */}
-      <div className="relative z-10 flex flex-col justify-between px-10 pt-32 pb-16 md:px-16 lg:px-24">
+      {/* bg is on the left column only — right column is transparent so the  */}
+      {/* fixed particle canvas (z-20) shows through without obstruction.     */}
+      <div className="relative z-10 bg-[var(--bg-primary)] flex flex-col justify-between px-10 pt-32 pb-16 md:px-16 lg:px-24">
 
         {/* Top content block */}
         <div>
