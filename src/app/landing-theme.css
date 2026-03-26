@@ -291,37 +291,3 @@ body:has(.theme-landing) {
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
 }
-
-/* ── Causal DAG — hero right-column diagram ──────────────────────────── */
-
-@keyframes dag-draw {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes dag-appear {
-  to { opacity: 1; }
-}
-
-/* Edge draw-in: pathLength="1" on each SVG line normalises its length to 1,
-   so strokeDasharray/Offset values of 1 work uniformly regardless of pixel
-   length. animation-fill-mode: both holds the "from" state during the delay
-   so elements don't flash visible before their animation begins. */
-.dag-edge {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: dag-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* Fade-in for nodes, dashed path, and labels */
-.dag-fade {
-  opacity: 0;
-  animation: dag-appear 0.5s ease both;
-}
-
-/* Mono eyebrow label — matches MASA's 9px mono label pattern */
-.dag-label {
-  font-size: 8.5px;
-  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}

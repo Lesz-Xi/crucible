@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
-import { CausalDAG } from "@/components/landing/CausalDAG";
 
 export function Hero() {
   const router = useRouter();
@@ -134,10 +133,8 @@ export function Hero() {
         </dl>
       </div>
 
-      {/* ── Right column — causal DAG diagram ─────────────────────────── */}
-      <div className="hidden lg:flex items-center justify-center" aria-hidden="true">
-        <CausalDAG />
-      </div>
+      {/* ── Right column — reserved ────────────────────────────────────── */}
+      <div className="hidden lg:block" aria-hidden="true" />
 
       {/* Bottom edge rule */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--border-subtle)]" />
