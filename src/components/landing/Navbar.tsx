@@ -4,7 +4,7 @@ import Link from "next/link";
 import { WuWeiMark } from "./WuWeiMark";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ArrowUpRight, ChevronDown, Loader2 } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -74,91 +74,98 @@ export function Navbar() {
     "font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] border-b border-transparent hover:border-[var(--accent-rust)] pb-0.5 whitespace-nowrap";
 
   return (
-    <header className="absolute inset-x-0 top-0 z-30">
-      <div className="mx-auto max-w-[1440px] h-20 flex items-center">
-
-        {/* ── Logo: w-20 = 80px = one grid cell, always centered within it */}
-        <div className="w-20 shrink-0 flex items-center justify-center">
+    <header className="landing-navbar">
+      <div className="landing-header-shell mx-auto flex h-20 max-w-[1440px] items-center px-4 md:px-6 lg:px-8">
+        <div className="landing-header-logo-rail flex shrink-0 items-center justify-center">
           <Link href="/" className="flex items-center">
             <WuWeiMark className="h-[34px] w-auto md:h-[40px]" />
           </Link>
         </div>
 
-        <div className="flex flex-1 items-center justify-between gap-4 pr-6 md:pr-10">
+        <div
+          aria-hidden="true"
+          className="hidden h-px shrink-0 lg:block"
+          style={{ width: "var(--landing-header-logo-gap)" }}
+        />
 
-          {/* ── Nav ───────────────────────────────────────────────────── */}
-          <div className="flex items-center">
-            <nav className="hidden items-center gap-6 lg:flex lg:gap-7">
-              {navItems.map((item) => (
-                <Link key={item.label} href={item.href} className={linkClass}>
-                  {item.label}
-                </Link>
-              ))}
+        <div className="landing-header-nav-center pointer-events-none hidden lg:flex items-center">
+          <nav className="pointer-events-auto flex items-center gap-6 xl:gap-8">
+            {navItems.map((item) => (
+              <Link key={item.label} href={item.href} className={linkClass}>
+                {item.label}
+              </Link>
+            ))}
 
-              {/* Pages dropdown */}
-              <div ref={pagesRef} className="relative">
-                <button
-                  type="button"
-                  onClick={() => setPagesOpen((o) => !o)}
-                  className={`${linkClass} flex items-center gap-1 border-b-0 pb-0`}
-                  aria-expanded={pagesOpen}
-                >
-                  Pages
-                  <ChevronDown
-                    className="h-3 w-3 transition-transform duration-200"
-                    style={{ transform: pagesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                  />
-                </button>
+            <div ref={pagesRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setPagesOpen((o) => !o)}
+                className={`${linkClass} flex items-center gap-1 border-b-0 pb-0`}
+                aria-expanded={pagesOpen}
+              >
+                Pages
+                <ChevronDown
+                  className="h-3 w-3 transition-transform duration-200"
+                  style={{ transform: pagesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                />
+              </button>
 
-                <AnimatePresence>
-                  {pagesOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
-                      animate={{ opacity: 1, y: 0,  scale: 1    }}
-                      exit={{    opacity: 0, y: -6, scale: 0.97 }}
-                      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                      className="absolute left-0 top-[calc(100%+10px)] z-50 min-w-[180px] overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] py-2 shadow-[var(--shadow-deep)] backdrop-blur-xl"
-                    >
-                      {pagesItems.map((item) => (
-                        <Link
-                          key={item.label}
-                          href={item.href}
-                          {...(item.external
-                            ? { target: "_blank", rel: "noreferrer" }
-                            : {})}
-                          onClick={() => setPagesOpen(false)}
-                          className="flex items-center px-4 py-2.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
-                        >
-                          {item.label}
-                          {item.external && (
-                            <span className="ml-auto pl-4 opacity-40">↗</span>
-                          )}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </nav>
-          </div>
+              <AnimatePresence>
+                {pagesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                    className="landing-header-pages-menu overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] py-2 shadow-[var(--shadow-deep)] backdrop-blur-xl"
+                  >
+                    {pagesItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        {...(item.external
+                          ? { target: "_blank", rel: "noreferrer" }
+                          : {})}
+                        onClick={() => setPagesOpen(false)}
+                        className="flex items-center px-4 py-2.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+                      >
+                        {item.label}
+                        {item.external && (
+                          <span className="ml-auto pl-4 opacity-40">↗</span>
+                        )}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </nav>
+        </div>
 
-          {/* ── Right: CTA ────────────────────────────────────────────── */}
-          <div className="flex items-center overflow-hidden rounded-[14px] border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-[var(--shadow-soft)] backdrop-blur-xl">
+        <div className="ml-auto flex items-center">
+          <div className="landing-header-cta overflow-hidden rounded-full backdrop-blur-xl">
             <button
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--accent-rust-soft)] disabled:cursor-not-allowed disabled:opacity-70"
+              className="group inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isLoadingAuthState && <Loader2 className="h-4 w-4 animate-spin" />}
-              <span>
-                {isLoadingAuthState ? "Loading" : isSignedIn ? "Open Instrument" : "Try Wu-Weism"}
+              {isLoadingAuthState ? (
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-rust-strong)]" />
+              ) : (
+                <ArrowUpRight className="h-4 w-4 text-[var(--accent-rust-strong)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              )}
+              <span className="landing-header-cta-copy">
+                {isLoadingAuthState
+                  ? "Loading"
+                  : isSignedIn
+                  ? "Open Instrument"
+                  : "Enter MASA"}
               </span>
             </button>
           </div>
-
-        </div>{/* flex-1 wrapper */}
-      </div>{/* max-w container */}
+        </div>
+      </div>
     </header>
   );
 }
