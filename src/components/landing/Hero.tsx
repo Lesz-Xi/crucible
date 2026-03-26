@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { ParticleOrb } from "@/components/landing/ParticleOrb";
 
 export function Hero() {
   const router = useRouter();
@@ -37,6 +38,9 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+      {/* Particle canvas — scoped to hero, clipped by overflow-hidden */}
+      <ParticleOrb />
+
       {/* ── Left column — text content ─────────────────────────────────── */}
       {/* bg is on the left column only — right column is transparent so the  */}
       {/* fixed particle canvas (z-20) shows through without obstruction.     */}

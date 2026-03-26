@@ -275,19 +275,18 @@ export function ParticleOrb() {
       gl={{ antialias: true, alpha: true }}
       dpr={[1, 2]}
       style={{
-        position: "fixed",
+        position: "absolute",
         top: 0,
         right: 0,
         bottom: 0,
         left: 0,
         pointerEvents: "none",
-        // z-20: floats above section content (main z-10) so the orb is
-        // visible across all sections during the scroll journey.
-        // pointer-events:none ensures all clicks/scrolls pass through.
-        // Navbar sits at z-30, so it always renders above the orb.
-        zIndex: 20,
-        // opacity 0.55 — "atmospheric presence" feel, text stays readable
-        opacity: 0.55,
+        // z-0: sits behind the left col (z-10 + opaque bg) so text is never
+        // obscured. The transparent right col lets the orb show through.
+        // overflow-hidden on the hero <section> clips the canvas to the
+        // hero bounds — orb disappears naturally as soon as you scroll past.
+        zIndex: 0,
+        opacity: 0.85,
       }}
     >
       <ParticleSystem />
