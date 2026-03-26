@@ -4,7 +4,7 @@ import Link from "next/link";
 import { WuWeiMark } from "./WuWeiMark";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, ChevronDown, Loader2 } from "lucide-react";
+import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -32,6 +32,7 @@ export function Navbar() {
   const [isLoadingAuthState, setIsLoadingAuthState] = useState(true);
   const [isSignedIn, setIsSignedIn]                 = useState(false);
   const [pagesOpen, setPagesOpen]                   = useState(false);
+  const [isScrolled, setIsScrolled]                 = useState(false);
   const pagesRef                                    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,6 +62,16 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  useEffect(() => {
+    const updateScrollState = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
   const handlePrimaryAction = async () => {
     if (isLoadingAuthState) return;
     if (isSignedIn) {
@@ -74,9 +85,17 @@ export function Navbar() {
     "font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] border-b border-transparent hover:border-[var(--accent-rust)] pb-0.5 whitespace-nowrap";
 
   return (
-    <header className="landing-navbar">
+    <header className="landing-navbar" data-scrolled={isScrolled ? "true" : "false"}>
+      <Link
+        href="/"
+        className="landing-header-logo-anchor hidden lg:flex"
+        aria-label="Wu-Weism home"
+      >
+        <WuWeiMark className="h-[34px] w-auto md:h-[40px]" />
+      </Link>
+
       <div className="landing-header-shell mx-auto flex h-20 max-w-[1440px] items-center px-4 md:px-6 lg:px-8">
-        <div className="landing-header-logo-rail flex shrink-0 items-center justify-center">
+        <div className="landing-header-logo-rail flex shrink-0 items-center justify-center lg:hidden">
           <Link href="/" className="flex items-center">
             <WuWeiMark className="h-[34px] w-auto md:h-[40px]" />
           </Link>
@@ -148,19 +167,22 @@ export function Navbar() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="group inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-[var(--text-primary)] transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
+              className="landing-header-cta-button group relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center rounded-full border-0 px-1 py-1 text-sm font-medium outline-none transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isLoadingAuthState ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent-rust-strong)]" />
-              ) : (
-                <ArrowUpRight className="h-4 w-4 text-[var(--accent-rust-strong)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              )}
+              <span className="landing-header-cta-fill" aria-hidden="true" />
+              <span className="landing-header-cta-icon">
+                {isLoadingAuthState ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
+                )}
+              </span>
               <span className="landing-header-cta-copy">
                 {isLoadingAuthState
                   ? "Loading"
                   : isSignedIn
                   ? "Open Instrument"
-                  : "Enter MASA"}
+                  : "Get Started"}
               </span>
             </button>
           </div>
