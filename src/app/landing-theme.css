@@ -37,9 +37,9 @@
   --landing-header-cta-fill-bg: linear-gradient(135deg, #e0b476 0%, #c8965a 100%);
   --landing-header-cta-fill-text: #120f0d;
   --landing-header-menu-bg:
-    linear-gradient(180deg, rgba(38, 31, 28, 0.96), rgba(20, 17, 15, 0.96));
-  --landing-header-menu-border: rgba(200, 150, 90, 0.16);
-  --landing-header-menu-highlight: rgba(224, 180, 118, 0.12);
+    linear-gradient(180deg, rgba(18, 15, 13, 0.78), rgba(10, 9, 8, 0.72));
+  --landing-header-menu-border: rgba(200, 150, 90, 0.1);
+  --landing-header-menu-highlight: rgba(224, 180, 118, 0.08);
   --landing-header-cta-shadow:
     0 12px 28px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -249,9 +249,11 @@ html:has(.theme-landing) {
   border-color: var(--landing-header-menu-border);
   background: var(--landing-header-menu-bg);
   box-shadow:
-    0 22px 40px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03),
-    0 0 0 1px rgba(200, 150, 90, 0.08);
+    0 20px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    0 0 0 1px rgba(200, 150, 90, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .theme-landing .landing-header-pages-menu::before {
@@ -260,8 +262,8 @@ html:has(.theme-landing) {
   inset: 0;
   border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 28%),
-    linear-gradient(90deg, transparent, rgba(224, 180, 118, 0.05), transparent);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 24%),
+    linear-gradient(90deg, transparent, rgba(224, 180, 118, 0.03), transparent);
   pointer-events: none;
 }
 
