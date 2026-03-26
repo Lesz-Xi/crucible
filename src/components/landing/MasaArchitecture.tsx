@@ -29,9 +29,9 @@ const PORTS = [
   { px: 78,  py: 160, lx: 52,  ly: 163, anchor: "end"    as const, label: "GROUNDING"  },
 ] as const;
 
-// Warm platinum signal lights — reads as white/silver, harmonizes with amber chip structure
-const PORT_COLOR = "#d0ccc4";
-const DOT_COLOR  = "#eceae6"; // near-white core
+// Warm amber-bronze signal lights — softer than chip amber, feels like dim instrument indicators
+const PORT_COLOR = "#b8904e";   // muted bronze halo
+const DOT_COLOR  = "#d4a862";   // slightly brighter amber core — picks up the chip's gold tone
 
 // Chip geometry
 const CX = 200; // center x
@@ -65,10 +65,10 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <stop offset="100%" stopColor="#8b6240" />
           </linearGradient>
 
-          {/* Trace line: warm silver → dark (fades into chip) */}
+          {/* Trace line: amber-bronze → dark (fades into chip) */}
           <linearGradient id="masa-trace-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#a8a49c" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#a8a49c" stopOpacity="0.04" />
+            <stop offset="0%"   stopColor="#b8904e" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="#b8904e" stopOpacity="0.04" />
           </linearGradient>
 
           {/* Chip body: subtle radial from stone-800 to near-black */}
@@ -112,9 +112,9 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
               key={`trace-${i}`}
               x1={port.px} y1={port.py}
               x2={ex}      y2={ey}
-              stroke="#a8a49c"
+              stroke="#b8904e"
               strokeWidth="0.8"
-              strokeOpacity="0.4"
+              strokeOpacity="0.38"
               pathLength="1"
               strokeDasharray="1"
               strokeDashoffset="1"

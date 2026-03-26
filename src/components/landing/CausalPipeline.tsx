@@ -1,6 +1,15 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useRef } from "react";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+
+// ── Data ─────────────────────────────────────────────────────────────────────
 
 const steps = [
   {
@@ -25,19 +34,163 @@ const steps = [
   },
 ];
 
+// ── Stage panel ───────────────────────────────────────────────────────────────
+
+interface StageProps {
+  step: (typeof steps)[number];
+  index: number;
+  total: number;
+  shouldReduce: boolean;
+}
+
+function StagePanel({ step, index, total, shouldReduce }: StageProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-12% 0px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      className="relative flex gap-0 overflow-hidden rounded-sm border border-[var(--border-subtle)]"
+      animate={
+        shouldReduce
+          ? {}
+          : inView
+          ? { backgroundColor: "rgba(28,25,23,0.72)", borderColor: "rgba(255,255,255,0.09)" }
+          : { backgroundColor: "rgba(28,25,23,0.0)", borderColor: "rgba(255,255,255,0.05)" }
+      }
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      initial={shouldReduce ? {} : { backgroundColor: "rgba(28,25,23,0.0)" }}
+    >
+
+      {/* ── Left accent bar ────────────────────────────────────────────── */}
+      <div className="relative w-[3px] shrink-0 overflow-hidden bg-[rgba(255,255,255,0.04)]">
+        <motion.div
+          className="absolute inset-x-0 top-0 origin-top"
+          style={{
+            height: "100%",
+            background:
+              "linear-gradient(to bottom, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 70%, rgba(200,150,90,0.05) 100%)",
+            transformOrigin: "top",
+          }}
+          initial={shouldReduce ? {} : { scaleY: 0 }}
+          animate={shouldReduce ? {} : inView ? { scaleY: 1 } : { scaleY: 0 }}
+          transition={{
+            duration: 0.7,
+            delay: 0.05,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        />
+      </div>
+
+      {/* ── Step number ────────────────────────────────────────────────── */}
+      <div className="flex shrink-0 items-start px-7 pt-8 pb-8 md:items-center md:px-10">
+        <motion.span
+          className="select-none font-mono leading-none tracking-[-0.05em]"
+          style={{ fontSize: "clamp(2.8rem, 5vw, 4.2rem)" }}
+          animate={
+            shouldReduce
+              ? {}
+              : inView
+              ? { color: "rgba(200,150,90,0.80)", scale: 1,   opacity: 1   }
+              : { color: "rgba(120,113,108,0.30)", scale: 0.88, opacity: 0.45 }
+          }
+          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {step.num}
+        </motion.span>
+      </div>
+
+      {/* ── Vertical divider ───────────────────────────────────────────── */}
+      <motion.div
+        className="my-6 w-px shrink-0 self-stretch"
+        animate={
+          shouldReduce
+            ? {}
+            : inView
+            ? { backgroundColor: "rgba(200,150,90,0.18)" }
+            : { backgroundColor: "rgba(255,255,255,0.05)" }
+        }
+        transition={{ duration: 0.55 }}
+      />
+
+      {/* ── Content ────────────────────────────────────────────────────── */}
+      <motion.div
+        className="flex-1 min-w-0 px-7 py-8 md:px-10 md:py-9"
+        initial={shouldReduce ? {} : { opacity: 0, y: 18 }}
+        animate={
+          shouldReduce ? {} : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
+        }
+        transition={{
+          duration: 0.7,
+          delay: 0.14 + index * 0.05,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+      >
+        <h3
+          className="mb-3 font-light leading-[1.3] tracking-[-0.02em] text-[var(--text-primary)]"
+          style={{
+            fontFamily: "var(--font-lora, Georgia, serif)",
+            fontSize: "clamp(1.05rem, 2vw, 1.3rem)",
+          }}
+        >
+          {step.title}
+        </h3>
+        <p className="max-w-[40rem] text-[0.875rem] leading-[1.9] text-[var(--text-secondary)]">
+          {step.body}
+        </p>
+      </motion.div>
+
+      {/* ── Pipeline connector arrow (between stages, not on last) ──────── */}
+      {index < total - 1 && (
+        <motion.div
+          aria-hidden="true"
+          className="absolute -bottom-[13px] left-[calc(2.5rem+50px)] z-10 text-[var(--accent-rust)]"
+          initial={shouldReduce ? {} : { opacity: 0, y: -4 }}
+          animate={
+            shouldReduce ? {} : inView ? { opacity: 0.55, y: 0 } : { opacity: 0, y: -4 }
+          }
+          transition={{ duration: 0.4, delay: 0.4 }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M7 1L7 10M7 10L3 6.5M7 10L11 6.5"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}
+
+// ── Section ───────────────────────────────────────────────────────────────────
+
 export function CausalPipeline() {
   const shouldReduce = useReducedMotion();
+
+  // Header scan line — draws left → right as section enters viewport
+  const headerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: headerProgress } = useScroll({
+    target: headerRef,
+    offset: ["start 85%", "start 30%"],
+  });
+  const lineScaleX = useTransform(headerProgress, [0, 1], [0, 1]);
 
   return (
     <section
       id="pipeline"
       className="hd-section bg-[var(--bg-secondary)] py-24 md:py-32"
     >
-      <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
-        {/* Header */}
-        <div className="mb-16 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="hd-kicker mb-4 uppercase">Causal Pipeline</p>
+      <div className="mx-auto max-w-5xl px-8 md:px-12 lg:px-16">
+
+        {/* ── Section header ─────────────────────────────────────────────── */}
+        <div ref={headerRef} className="mb-14">
+          <p className="hd-kicker mb-4 uppercase">Causal Pipeline</p>
+
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <h2
               className="hd-serif-display text-[var(--text-primary)]"
               style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.8rem)" }}
@@ -45,57 +198,39 @@ export function CausalPipeline() {
               From Question{" "}
               <em className="italic text-[var(--accent-rust)]">to Proof.</em>
             </h2>
+
+            <p className="max-w-[24rem] text-[0.875rem] leading-[1.8] text-[var(--text-muted)] md:text-right md:pb-1">
+              A closed-loop scientific process. Each stage is governed,
+              traced, and auditable.
+            </p>
           </div>
-          <p className="max-w-[26rem] text-[0.88rem] leading-[1.8] text-[var(--text-muted)] md:text-right">
-            A closed-loop scientific process. Each stage is governed, traced,
-            and auditable.
-          </p>
+
+          {/* Animated scan line */}
+          <div className="mt-8 h-px w-full overflow-hidden bg-[rgba(255,255,255,0.06)]">
+            {!shouldReduce && (
+              <motion.div
+                className="h-full origin-left"
+                style={{
+                  scaleX: lineScaleX,
+                  background:
+                    "linear-gradient(to right, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 60%, rgba(200,150,90,0.05) 100%)",
+                }}
+              />
+            )}
+          </div>
         </div>
 
-        {/* Full-width editorial rows */}
-        <div className="border-t border-[var(--border-subtle)]">
-          {steps.map((step, i) => {
-            const Wrap = shouldReduce ? "div" : motion.div;
-            const motionProps = shouldReduce
-              ? {}
-              : {
-                  initial: { opacity: 0, x: -8 },
-                  whileInView: { opacity: 1, x: 0 },
-                  viewport: { once: true },
-                  transition: {
-                    duration: 0.6,
-                    delay: i * 0.09,
-                    ease: [0.16, 1, 0.3, 1],
-                  },
-                };
-
-            return (
-              <Wrap
-                key={step.num}
-                {...(motionProps as object)}
-                className="grid grid-cols-[72px_1fr] gap-8 border-b border-[var(--border-subtle)] py-10 md:grid-cols-[96px_1fr] md:gap-14"
-              >
-                {/* Large step number */}
-                <span
-                  className="select-none font-mono text-[2.6rem] font-light leading-none tracking-[-0.04em] text-[var(--text-tertiary)] md:text-[3.2rem]"
-                >
-                  {step.num}
-                </span>
-
-                {/* Title + body */}
-                <div className="pt-1">
-                  <h3
-                    className="mb-3 text-[1.2rem] font-medium leading-[1.3] tracking-[-0.02em] text-[var(--text-primary)]"
-                  >
-                    {step.title}
-                  </h3>
-                  <p className="max-w-[44rem] text-[0.88rem] leading-[1.8] text-[var(--text-secondary)]">
-                    {step.body}
-                  </p>
-                </div>
-              </Wrap>
-            );
-          })}
+        {/* ── Pipeline stages ────────────────────────────────────────────── */}
+        <div className="flex flex-col gap-3">
+          {steps.map((step, i) => (
+            <StagePanel
+              key={step.num}
+              step={step}
+              index={i}
+              total={steps.length}
+              shouldReduce={Boolean(shouldReduce)}
+            />
+          ))}
         </div>
       </div>
     </section>

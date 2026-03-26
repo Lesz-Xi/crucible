@@ -26,7 +26,7 @@ export function WuWeiMark({
       viewBox="0 0 68 46"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
+      className={`block ${className ?? ""}`}
       aria-label="Wu-Weism"
     >
       {/* Connecting lines */}
