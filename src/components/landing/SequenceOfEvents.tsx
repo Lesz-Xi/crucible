@@ -2,10 +2,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-// Dark → Light mode conversion:
-// Original asset uses #1a1614 bg, #c8965a amber, white text.
-// Here we map to the landing parchment palette while keeping the
-// same numbered-flow structure and monospaced step identifiers.
 const steps = [
   {
     id: "01",
@@ -47,7 +43,7 @@ export function SequenceOfEvents() {
       <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
         {/* Header */}
         <div className="mb-16">
-          <p className="hd-kicker mb-4 uppercase">Data Journey</p>
+          <p className="hd-kicker mb-4 uppercase">The Mechanism</p>
           <h2
             className="hd-serif-display text-[var(--text-primary)]"
             style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.8rem)" }}
@@ -60,22 +56,19 @@ export function SequenceOfEvents() {
           </p>
         </div>
 
-        {/* Step flow */}
-        <div className="relative flex flex-col gap-0">
-          {/* Vertical connector line */}
-          <div className="absolute left-[1.35rem] top-6 bottom-6 w-px bg-gradient-to-b from-[var(--accent-rust)]/40 via-[var(--border-subtle)] to-transparent md:left-[1.6rem]" />
-
+        {/* Two-column timeline */}
+        <div className="border-t border-[var(--border-subtle)]">
           {steps.map((step, i) => {
             const Wrap = shouldReduce ? "div" : motion.div;
             const motionProps = shouldReduce
               ? {}
               : {
-                  initial: { opacity: 0, x: -10 },
-                  whileInView: { opacity: 1, x: 0 },
+                  initial: { opacity: 0, y: 10 },
+                  whileInView: { opacity: 1, y: 0 },
                   viewport: { once: true },
                   transition: {
-                    duration: 0.6,
-                    delay: i * 0.1,
+                    duration: 0.55,
+                    delay: i * 0.08,
                     ease: [0.16, 1, 0.3, 1],
                   },
                 };
@@ -84,44 +77,36 @@ export function SequenceOfEvents() {
               <Wrap
                 key={step.id}
                 {...(motionProps as object)}
-                className="relative flex items-start gap-6 py-8 pl-14 md:pl-16"
+                className="grid grid-cols-1 border-b border-[var(--border-subtle)] py-10 md:grid-cols-[200px_1fr] md:gap-12"
               >
-                {/* Step node */}
-                <div
-                  className="absolute left-0 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-card)] shadow-[var(--shadow-soft)]"
-                  style={
-                    i === 0
-                      ? {
-                          borderColor: "var(--accent-rust)",
-                          background: "var(--accent-rust-soft)",
-                        }
-                      : {}
-                  }
-                >
-                  <span
-                    className="font-mono text-[0.62rem] font-bold uppercase tracking-[0.1em]"
-                    style={{
-                      color: i === 0 ? "var(--accent-rust)" : "var(--text-muted)",
-                    }}
-                  >
-                    {step.id}
-                  </span>
+                {/* Left — number + verb label with vertical line */}
+                <div className="relative mb-4 flex items-start gap-4 md:mb-0 md:flex-col md:gap-3">
+                  {/* Vertical line (desktop only) */}
+                  <div className="absolute left-[5px] top-6 hidden h-full w-px bg-[var(--border-subtle)] md:block" />
+
+                  {/* Dot on timeline */}
+                  <div className="relative z-10 mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full border border-[var(--border-strong)] bg-[var(--bg-card)]" />
+
+                  {/* Label */}
+                  <div className="md:pl-6">
+                    <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[var(--text-tertiary)]">
+                      {step.id}
+                    </p>
+                    <p className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[var(--accent-rust)]">
+                      {step.verb}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex flex-1 flex-col gap-2 border-b border-dashed border-[var(--border-subtle)] pb-8">
-                  <div className="flex items-center gap-3">
-                    <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2.5 py-0.5 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[var(--accent-rust-strong)]">
-                      {step.verb}
-                    </span>
-                  </div>
+                {/* Right — title + body */}
+                <div>
                   <h3
-                    className="text-[1.05rem] font-light tracking-[-0.01em] text-[var(--text-primary)]"
+                    className="mb-3 text-[1.15rem] font-light leading-[1.35] tracking-[-0.02em] text-[var(--text-primary)]"
                     style={{ fontFamily: "var(--font-lora, Georgia, serif)" }}
                   >
                     {step.title}
                   </h3>
-                  <p className="max-w-[40rem] text-[0.84rem] leading-[1.85] text-[var(--text-secondary)]">
+                  <p className="max-w-[44rem] text-[0.88rem] leading-[1.85] text-[var(--text-secondary)]">
                     {step.body}
                   </p>
                 </div>

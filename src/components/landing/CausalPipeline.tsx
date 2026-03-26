@@ -52,47 +52,47 @@ export function CausalPipeline() {
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="grid grid-cols-1 gap-0 divide-y divide-dashed divide-[var(--border-subtle)] border border-dashed border-[var(--border-subtle)] md:grid-cols-2 md:divide-x md:divide-y-0">
+        {/* Full-width editorial rows */}
+        <div className="border-t border-[var(--border-subtle)]">
           {steps.map((step, i) => {
             const Wrap = shouldReduce ? "div" : motion.div;
             const motionProps = shouldReduce
               ? {}
               : {
-                  initial: { opacity: 0, x: i % 2 === 0 ? -12 : 12 },
+                  initial: { opacity: 0, x: -8 },
                   whileInView: { opacity: 1, x: 0 },
                   viewport: { once: true },
                   transition: {
-                    duration: 0.65,
-                    delay: i * 0.1,
+                    duration: 0.6,
+                    delay: i * 0.09,
                     ease: [0.16, 1, 0.3, 1],
                   },
                 };
 
             return (
-              <Wrap key={step.num} {...(motionProps as object)} className="p-8 md:p-10">
-                {/* Step number */}
+              <Wrap
+                key={step.num}
+                {...(motionProps as object)}
+                className="grid grid-cols-[72px_1fr] gap-8 border-b border-[var(--border-subtle)] py-10 md:grid-cols-[96px_1fr] md:gap-14"
+              >
+                {/* Large step number */}
                 <span
-                  className="block font-mono text-[3.5rem] font-light leading-none tracking-[-0.04em] text-[var(--border-strong)] select-none"
+                  className="select-none font-mono text-[2.6rem] font-light leading-none tracking-[-0.04em] text-[var(--text-tertiary)] md:text-[3.2rem]"
                 >
                   {step.num}
                 </span>
 
-                {/* Title */}
-                <h3
-                  className="mt-4 text-[1.35rem] font-light tracking-[-0.02em] text-[var(--text-primary)]"
-                  style={{ fontFamily: "var(--font-lora, Georgia, serif)" }}
-                >
-                  {step.title}
-                </h3>
-
-                {/* Amber rule */}
-                <div className="my-4 h-px w-8 bg-[var(--accent-rust)]/50" />
-
-                {/* Body */}
-                <p className="text-[0.88rem] leading-[1.8] text-[var(--text-secondary)]">
-                  {step.body}
-                </p>
+                {/* Title + body */}
+                <div className="pt-1">
+                  <h3
+                    className="mb-3 text-[1.2rem] font-medium leading-[1.3] tracking-[-0.02em] text-[var(--text-primary)]"
+                  >
+                    {step.title}
+                  </h3>
+                  <p className="max-w-[44rem] text-[0.88rem] leading-[1.8] text-[var(--text-secondary)]">
+                    {step.body}
+                  </p>
+                </div>
               </Wrap>
             );
           })}

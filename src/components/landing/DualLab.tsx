@@ -47,20 +47,20 @@ function Card({ card, delay }: { card: (typeof cards)[0]; delay: number }) {
   return (
     <Wrapper
       {...(motionProps as object)}
-      className="flex flex-col gap-7 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur-sm md:p-10"
+      className="flex flex-col gap-7 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-8 shadow-[var(--shadow-soft)] md:p-10"
     >
       {/* Icon chip */}
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/8">
-        <Icon size={18} strokeWidth={1.5} className="text-[#c8965a]" />
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+        <Icon size={18} strokeWidth={1.5} className="text-[var(--accent-rust)]" />
       </div>
 
       {/* Audience label */}
       <div>
-        <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-white/40">
+        <p className="mb-2 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
           {card.audience}
         </p>
         <h3
-          className="text-[1.6rem] font-light leading-[1.2] tracking-[-0.03em] text-white"
+          className="text-[1.6rem] font-light leading-[1.2] tracking-[-0.03em] text-[var(--text-primary)]"
           style={{ fontFamily: "var(--font-lora, Georgia, serif)" }}
         >
           {card.tagline}
@@ -68,16 +68,16 @@ function Card({ card, delay }: { card: (typeof cards)[0]; delay: number }) {
       </div>
 
       {/* Body */}
-      <p className="text-[0.88rem] leading-[1.8] text-white/55">{card.body}</p>
+      <p className="text-[0.88rem] leading-[1.8] text-[var(--text-secondary)]">{card.body}</p>
 
       {/* Bullets */}
       <ul className="flex flex-col gap-2.5">
         {card.bullets.map((b) => (
           <li
             key={b}
-            className="flex items-start gap-3 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-white/45"
+            className="flex items-start gap-3 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[var(--text-muted)]"
           >
-            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#c8965a]/60" />
+            <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-rust)]/50" />
             {b}
           </li>
         ))}
@@ -86,7 +86,7 @@ function Card({ card, delay }: { card: (typeof cards)[0]; delay: number }) {
       {/* CTA */}
       <a
         href={card.cta.href}
-        className="mt-auto inline-flex items-center gap-1.5 self-start border-b border-white/20 pb-0.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-white/50 transition-colors hover:border-[#c8965a] hover:text-[#c8965a]"
+        className="mt-auto inline-flex items-center gap-1.5 self-start border-b border-[var(--border-subtle)] pb-0.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:border-[var(--accent-rust)] hover:text-[var(--accent-rust)]"
       >
         {card.cta.label} →
       </a>
@@ -98,24 +98,18 @@ export function DualLab() {
   return (
     <section
       id="laboratory"
-      className="hd-section relative overflow-hidden py-24 md:py-32"
-      style={{ background: "#1a1614" }}
+      className="hd-section border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] py-24 md:py-32"
     >
-      {/* Subtle top-edge rule */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-      <div className="relative z-10 mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
+      <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
         {/* Section header */}
         <div className="mb-14">
-          <p className="mb-4 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-white/35">
-            The Laboratory
-          </p>
+          <p className="hd-kicker mb-4 uppercase">The Laboratory</p>
           <h2
-            className="max-w-2xl text-[2.4rem] font-light leading-[1.1] tracking-[-0.04em] text-white md:text-[3rem]"
+            className="max-w-2xl text-[2.4rem] font-light leading-[1.1] tracking-[-0.04em] text-[var(--text-primary)] md:text-[3rem]"
             style={{ fontFamily: "var(--font-lora, Georgia, serif)" }}
           >
             Two instruments.{" "}
-            <em className="italic text-[#c8965a]">One discipline.</em>
+            <em className="italic text-[var(--accent-rust)]">One discipline.</em>
           </h2>
         </div>
 
@@ -126,9 +120,6 @@ export function DualLab() {
           ))}
         </div>
       </div>
-
-      {/* Bottom-edge rule */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
     </section>
   );
 }
