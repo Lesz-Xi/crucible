@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { User, Users, Lock, Share2 } from "lucide-react";
+import { GlowButton } from "./GlowButton";
 
 const modes = [
   {
@@ -110,17 +111,9 @@ export function ResearchModes() {
                     </div>
                   </div>
 
-                  <Link href={mode.href} className="block w-full">
-                    <button
-                      className={`w-full border px-5 py-4 font-mono text-[10px] uppercase tracking-[0.2em] transition-all ${
-                        mode.primary
-                          ? "border-[var(--accent-dark)] bg-[var(--accent-dark)] text-white hover:opacity-92"
-                          : "border-[var(--border-strong)] bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-secondary)]"
-                      }`}
-                    >
-                      {mode.cta}
-                    </button>
-                  </Link>
+                  <GlowButton href={mode.href} fullWidth>
+                    {mode.cta}
+                  </GlowButton>
                 </article>
               </div>
             );

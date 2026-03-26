@@ -1,3 +1,5 @@
+import { GlowButton } from "./GlowButton";
+
 export function ContactForm() {
   return (
     <section id="contact" className="hd-section bg-[var(--bg-primary)] py-16 md:py-20">
@@ -44,9 +46,11 @@ export function ContactForm() {
             />
           </div>
 
-          <button className="mt-8 w-full rounded-full border border-[rgba(224,163,108,0.32)] bg-[linear-gradient(180deg,var(--accent-rust-strong)_0%,var(--accent-rust)_100%)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[#171411] transition-transform hover:-translate-y-0.5">
-            Send Request
-          </button>
+          <div className="mt-8">
+            <GlowButton type="submit" fullWidth>
+              Send Request
+            </GlowButton>
+          </div>
         </form>
       </div>
     </section>

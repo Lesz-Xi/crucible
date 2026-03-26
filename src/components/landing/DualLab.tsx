@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { Microscope, Building2 } from "lucide-react";
+import { GlowButton } from "./GlowButton";
 
 const cards = [
   {
@@ -84,12 +85,11 @@ function Card({ card, delay }: { card: (typeof cards)[0]; delay: number }) {
       </ul>
 
       {/* CTA */}
-      <a
-        href={card.cta.href}
-        className="mt-auto inline-flex items-center gap-1.5 self-start border-b border-[var(--border-subtle)] pb-0.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:border-[var(--accent-rust)] hover:text-[var(--accent-rust)]"
-      >
-        {card.cta.label} →
-      </a>
+      <div className="mt-auto">
+        <GlowButton href={card.cta.href}>
+          {card.cta.label} →
+        </GlowButton>
+      </div>
     </Wrapper>
   );
 }

@@ -10,6 +10,7 @@ import {
   Scale,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
+import { GlowButton } from "./GlowButton";
 
 // ── Data ────────────────────────────────────────────────────────────────────
 
@@ -141,6 +142,16 @@ function PlusCard({ app }: { app: AppEntry }) {
       {/* Route */}
       <div className="mt-3 border-t border-dashed border-[var(--border-subtle)] pt-3">
         <span className="hd-kicker text-[var(--text-tertiary)]">{app.route}</span>
+      </div>
+
+      {/* Decorative glow CTA — card itself is the link, so this is aria-hidden */}
+      <div className="mt-4 flex justify-start" aria-hidden="true">
+        <GlowButton
+          tabIndex={-1}
+          className="pointer-events-none py-2 px-4 text-[9px]"
+        >
+          Open →
+        </GlowButton>
       </div>
     </Link>
   );
