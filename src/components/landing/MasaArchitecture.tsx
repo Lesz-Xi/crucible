@@ -12,34 +12,25 @@ interface MasaArchitectureProps {
   text?: string;
 }
 
-// 8 port positions — distributed around the chip perimeter
+// 8 port positions — pulled closer to chip for a compact layout
 // Each port: dot position + label position + text anchor
 const PORTS = [
   // Top edge
-  { px: 160, py: 60,  lx: 160, ly: 36,  anchor: "middle" as const, label: "SCM"        },
-  { px: 240, py: 60,  lx: 240, ly: 36,  anchor: "middle" as const, label: "DAG"        },
+  { px: 160, py: 78,  lx: 160, ly: 58,  anchor: "middle" as const, label: "SCM"        },
+  { px: 240, py: 78,  lx: 240, ly: 58,  anchor: "middle" as const, label: "DAG"        },
   // Right edge
-  { px: 340, py: 160, lx: 368, ly: 163, anchor: "start"  as const, label: "INFERENCE"  },
-  { px: 340, py: 240, lx: 368, ly: 243, anchor: "start"  as const, label: "MEMORY"     },
+  { px: 322, py: 160, lx: 348, ly: 163, anchor: "start"  as const, label: "INFERENCE"  },
+  { px: 322, py: 240, lx: 348, ly: 243, anchor: "start"  as const, label: "MEMORY"     },
   // Bottom edge
-  { px: 240, py: 340, lx: 240, ly: 364, anchor: "middle" as const, label: "FALSIFY"    },
-  { px: 160, py: 340, lx: 160, ly: 364, anchor: "middle" as const, label: "PROVENANCE" },
+  { px: 240, py: 322, lx: 240, ly: 342, anchor: "middle" as const, label: "FALSIFY"    },
+  { px: 160, py: 322, lx: 160, ly: 342, anchor: "middle" as const, label: "PROVENANCE" },
   // Left edge
-  { px: 60,  py: 240, lx: 32,  ly: 243, anchor: "end"    as const, label: "CRITIQUE"   },
-  { px: 60,  py: 160, lx: 32,  ly: 163, anchor: "end"    as const, label: "GROUNDING"  },
+  { px: 78,  py: 240, lx: 52,  ly: 243, anchor: "end"    as const, label: "CRITIQUE"   },
+  { px: 78,  py: 160, lx: 52,  ly: 163, anchor: "end"    as const, label: "GROUNDING"  },
 ] as const;
 
-// Amber/stone spectrum — replaces rainbow marker colors from the CPU source
-const PORT_COLORS = [
-  "#e0b476", // amber-bright
-  "#c8965a", // amber
-  "#a67c52", // amber-dark
-  "#fafaf9", // stone-50 (white)
-  "#e7e5e4", // stone-200
-  "#d6d3d1", // stone-300
-  "#8b6240", // amber-dim
-  "#a8a29e", // stone-400
-] as const;
+// Uniform amber — all 8 ports the same color for visual consistency
+const PORT_COLOR = "#c8965a";
 
 // Chip geometry
 const CX = 200; // center x
@@ -50,7 +41,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
   return (
     <div className={className} style={{ color: "rgba(255,255,255,0.15)" }}>
       <svg
-        viewBox="0 0 400 400"
+        viewBox="0 0 400 360"
         width="100%"
         height="100%"
         aria-label="MASA Automated Scientist Architecture"
@@ -95,13 +86,11 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             </feMerge>
           </filter>
 
-          {/* Per-port radial glow gradients */}
-          {PORT_COLORS.map((color, i) => (
-            <radialGradient key={i} id={`masa-port-${i}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor={color} stopOpacity="0.85" />
-              <stop offset="100%" stopColor={color} stopOpacity="0"    />
-            </radialGradient>
-          ))}
+          {/* Single amber glow gradient reused for all ports */}
+          <radialGradient id="masa-port-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stopColor={PORT_COLOR} stopOpacity="0.85" />
+            <stop offset="100%" stopColor={PORT_COLOR} stopOpacity="0"    />
+          </radialGradient>
         </defs>
 
         {/* ── Trace lines: port → chip edge ─────────────────────────── */}
@@ -224,15 +213,15 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           CAUSAL ENGINE
         </text>
 
-        {/* ── Port glow markers ──────────────────────────────────────── */}
+        {/* ── Port glow markers — uniform amber ─────────────────────── */}
         {PORTS.map((port, i) => (
           <g key={`port-${i}`}>
             {/* Outer glow halo */}
             <circle cx={port.px} cy={port.py} r="9"
-              fill={`url(#masa-port-${i})`} opacity="0.55" />
+              fill="url(#masa-port-glow)" opacity="0.55" />
             {/* Inner solid dot */}
             <circle cx={port.px} cy={port.py} r="2.2"
-              fill={PORT_COLORS[i]} opacity="0.9">
+              fill={PORT_COLOR} opacity="0.9">
               <animate attributeName="r" values="0; 3; 2.2" dur="0.4s"
                 begin={`${0.05 * i + 0.5}s`} fill="freeze" />
             </circle>
@@ -255,17 +244,6 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           </text>
         ))}
 
-        {/* ── Bottom eyebrow ─────────────────────────────────────────── */}
-        <text
-          x={CX} y={390}
-          textAnchor="middle"
-          fill="#44403c"
-          fontFamily="var(--font-ibm-plex-mono, monospace)"
-          fontSize="8"
-          letterSpacing="0.2em"
-        >
-          AUTOMATED SCIENTIST
-        </text>
       </svg>
     </div>
   );

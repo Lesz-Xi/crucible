@@ -10,7 +10,7 @@ export function GridLines() {
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 0,
+        zIndex: 25,
         pointerEvents: "none",
         backgroundImage: [
           "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
