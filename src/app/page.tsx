@@ -1,13 +1,8 @@
-import dynamic from "next/dynamic";
 import { LandingThemeLock } from "@/components/landing/LandingThemeLock";
+// ParticleOrb uses isMounted (useState false → useEffect) to skip Canvas
+// during SSR — no dynamic() needed and ssr:false is illegal in Server Components
+import { ParticleOrb } from "@/components/landing/ParticleOrb";
 import { Navbar } from "@/components/landing/Navbar";
-
-// WebGL Canvas must never run on the server — dynamic import with ssr:false
-// prevents Next.js from attempting server-side rendering of the R3F Canvas
-const ParticleOrb = dynamic(
-  () => import("@/components/landing/ParticleOrb").then((m) => ({ default: m.ParticleOrb })),
-  { ssr: false }
-);
 import { Hero } from "@/components/landing/Hero";
 import { DualLab } from "@/components/landing/DualLab";
 import { Manifesto } from "@/components/landing/Manifesto";
