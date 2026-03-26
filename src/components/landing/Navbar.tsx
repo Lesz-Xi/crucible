@@ -34,6 +34,8 @@ export function Navbar() {
   const [pagesOpen, setPagesOpen]                   = useState(false);
   const [isScrolled, setIsScrolled]                 = useState(false);
   const pagesRef                                    = useRef<HTMLDivElement>(null);
+  const closePagesMenu = () => setPagesOpen(false);
+  const openPagesMenu = () => setPagesOpen(true);
 
   useEffect(() => {
     let isMounted = true;
@@ -55,7 +57,7 @@ export function Navbar() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (pagesRef.current && !pagesRef.current.contains(e.target as Node)) {
-        setPagesOpen(false);
+        closePagesMenu();
       }
     }
     document.addEventListener("mousedown", handleClick);
@@ -115,10 +117,16 @@ export function Navbar() {
               </Link>
             ))}
 
-            <div ref={pagesRef} className="relative">
+            <div
+              ref={pagesRef}
+              className="relative"
+              onMouseEnter={openPagesMenu}
+              onMouseLeave={closePagesMenu}
+            >
               <button
                 type="button"
                 onClick={() => setPagesOpen((o) => !o)}
+                onFocus={openPagesMenu}
                 className={`${linkClass} flex items-center gap-1 border-b-0 pb-0`}
                 aria-expanded={pagesOpen}
               >
@@ -145,12 +153,12 @@ export function Navbar() {
                         {...(item.external
                           ? { target: "_blank", rel: "noreferrer" }
                           : {})}
-                        onClick={() => setPagesOpen(false)}
-                        className="flex items-center px-4 py-2.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+                        onClick={closePagesMenu}
+                        className="landing-header-pages-link flex items-center px-4 py-3 font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors"
                       >
-                        {item.label}
+                        <span>{item.label}</span>
                         {item.external && (
-                          <span className="ml-auto pl-4 opacity-40">↗</span>
+                          <span className="landing-header-pages-external ml-auto pl-4">↗</span>
                         )}
                       </Link>
                     ))}
