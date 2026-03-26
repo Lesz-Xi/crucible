@@ -63,7 +63,7 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
     >
 
       {/* ── Left accent bar ────────────────────────────────────────────── */}
-      <div className="relative w-[3px] shrink-0 overflow-hidden bg-[rgba(255,255,255,0.04)]">
+      <div className="relative w-px shrink-0 overflow-hidden bg-[rgba(255,255,255,0.04)]">
         <motion.div
           className="absolute inset-x-0 top-0 origin-top"
           style={{
