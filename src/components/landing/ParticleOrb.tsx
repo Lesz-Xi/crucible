@@ -129,9 +129,8 @@ function ParticleSystem() {
   const { camera, scene }  = useThree();
 
   // Stable mutable refs — no state, no re-renders
-  const mouseTarget    = useRef({ x: 0, y: 0 });
-  const scrollProgress = useRef(0);
-  const timeRef        = useRef(0);
+  const mouseTarget = useRef({ x: 0, y: 0 });
+  const timeRef     = useRef(0);
 
   // ---- Shader uniforms (stable reference) --------------------------------
   const uniforms = useMemo<Record<string, THREE.IUniform>>(() => ({
@@ -188,23 +187,13 @@ function ParticleSystem() {
       mouseTarget.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
 
-    const onScroll = () => {
-      const maxScroll =
-        document.documentElement.scrollHeight - window.innerHeight;
-      if (maxScroll > 0) {
-        scrollProgress.current = Math.min(window.scrollY / maxScroll, 1);
-      }
-    };
-
     document.addEventListener("mousemove", onMouse);
-    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", adjustLayout);
 
     adjustLayout(); // initial layout
 
     return () => {
       document.removeEventListener("mousemove", onMouse);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", adjustLayout);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -229,21 +218,9 @@ function ParticleSystem() {
     camera.position.y += (mouseTarget.current.y * 0.5 - camera.position.y) * 0.05;
     camera.lookAt(0, 0, 0);
 
-    // Group rotation
+    // Group rotation — slow idle spin, position locked to hero section
     groupRef.current.rotation.y = t * 0.05;
     groupRef.current.rotation.z = Math.sin(t * 0.1) * 0.05;
-
-    // Scroll-driven journey across all sections
-    const p        = scrollProgress.current;                // 0 → 1
-    const desktop  = window.innerWidth >= 1024;
-    const baseX    = desktop ? 6.0 : 0.0;
-    const baseY    = desktop ? 0.0 : 3.0;
-
-    // Y: sinusoidal breath — max ±5.5 units, well within camera frustum (±8.4)
-    // Dips ~5.5 units at 50% scroll, returns to start at 100% — always visible
-    groupRef.current.position.y = baseY - Math.sin(p * Math.PI) * 5.5;
-    // X: gentle left-right weave, 2 full cycles across the page
-    groupRef.current.position.x = baseX + Math.sin(p * Math.PI * 2) * 1.8;
 
     // Line group sway
     if (lineGroupRef.current) {
