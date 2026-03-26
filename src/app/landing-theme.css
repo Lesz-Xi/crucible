@@ -1,7 +1,7 @@
 .theme-landing {
-  --background: #f5f5f4;
+  --background: #f0ede8;
   --foreground: #1c1917;
-  --bg-primary:    #f5f5f4;   /* stone-100 */
+  --bg-primary:    #f0ede8;   /* smoke white — warm hazy off-white */
   --bg-secondary:  #e7e5e4;   /* stone-200 */
   --bg-tertiary:   #d6d3d1;   /* stone-300 */
   --bg-card:       #ffffff;
@@ -44,7 +44,7 @@
 }
 
 body:has(.theme-landing) {
-  background: #f5f5f4;
+  background: #f0ede8;
   color: #1c1917;
 }
 
