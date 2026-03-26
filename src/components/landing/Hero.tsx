@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
-import { ParticleOrb } from "@/components/landing/ParticleOrb";
 
 export function Hero() {
   const router = useRouter();
@@ -38,9 +37,6 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
-      {/* Particle canvas — scoped to hero, clipped by overflow-hidden */}
-      <ParticleOrb />
-
       {/* ── Left column — text content ─────────────────────────────────── */}
       {/* bg is on the left column only — right column is transparent so the  */}
       {/* fixed particle canvas (z-20) shows through without obstruction.     */}
@@ -84,11 +80,11 @@ export function Hero() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="hover:from-[#c8965a]/20 hover:via-[#c8965a]/30 hover:to-[#c8965a]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-white/10 via-white/15 to-white/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="hover:from-[#a67c52]/20 hover:via-[#a67c52]/30 hover:to-[#a67c52]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
               style={{
                 boxShadow:
-                  "rgba(200, 150, 90, 0.2) 0px 12px 28px, rgba(250, 250, 249, 0.12) 0px 0px 0px 1px",
-                color: "rgb(229, 231, 235)",
+                  "rgba(0, 0, 0, 0.18) 0px 4px 16px, rgba(0, 0, 0, 0.10) 0px 0px 0px 1px",
+                color: "rgb(28, 25, 23)",
               }}
             >
               {isLoadingAuthState ? (
