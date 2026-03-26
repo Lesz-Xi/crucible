@@ -1,114 +1,135 @@
 import Link from "next/link";
 import Image from "next/image";
+import { Twitter, Github, Linkedin } from "lucide-react";
 
-const columns = [
-  {
-    heading: "Research",
-    links: [
-      { label: "Causal Workbench", href: "/chat" },
-      { label: "Hybrid Synthesis", href: "/hybrid" },
-      { label: "Legal Causation", href: "/legal" },
-      { label: "Lab", href: "/lab" },
-    ],
-  },
-  {
-    heading: "Resources",
-    links: [
-      { label: "White Paper", href: "/masa-white-paper.html", external: true },
-      { label: "Architecture", href: "#architecture" },
-      { label: "Documentation", href: "/docs" },
-      { label: "Education", href: "/education" },
-    ],
-  },
-  {
-    heading: "Company",
-    links: [
-      { label: "About Wu-Weism", href: "/" },
-      { label: "Philosophy", href: "/masa-white-paper.html", external: true },
-      { label: "Contact", href: "mailto:hello@wuweism.com" },
-    ],
-  },
+const researchLinks = [
+  { label: "Causal Workbench", href: "/chat" },
+  { label: "Hybrid Synthesis", href: "/hybrid" },
+  { label: "Legal Causation", href: "/legal" },
+  { label: "Lab", href: "/lab" },
+];
+
+const legalLinks = [
+  { label: "Terms of Service", href: "/terms" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "White Paper", href: "/masa-white-paper.html", external: true },
+  { label: "Risk Disclosures", href: "/disclosures" },
+];
+
+const socialIcons = [
+  { Icon: Twitter, href: "https://twitter.com/wuweism", label: "Twitter" },
+  { Icon: Github, href: "https://github.com/wuweism", label: "GitHub" },
+  { Icon: Linkedin, href: "https://linkedin.com/company/wuweism", label: "LinkedIn" },
 ];
 
 export function LandingFooter() {
   return (
-    <footer style={{ background: "#1a1614" }}>
-      {/* Top edge rule */}
-      <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    <footer className="bg-stone-900 text-stone-400 py-24 px-12 lg:px-24">
+      {/* 4-column grid */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
 
-      <div className="mx-auto max-w-6xl px-8 pb-12 pt-16 md:px-12 lg:px-16">
-        {/* 4-column grid */}
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
-          {/* Col 1 — Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Image
-              src="/wu-wei-mark-true-alpha.png"
-              alt="Wu-Weism"
-              width={52}
-              height={40}
-              unoptimized
-              className="mb-5 opacity-80 invert"
-            />
-            <p className="max-w-[18rem] font-mono text-[0.62rem] uppercase leading-[1.9] tracking-[0.14em] text-white/35">
-              MASA — Methods of Automated
-              <br />
-              Scientific Analysis.
-              <br />
-              Causal governance for
-              <br />
-              disciplined inquiry.
-            </p>
-          </div>
-
-          {/* Cols 2–4 — Nav */}
-          {columns.map((col) => (
-            <div key={col.heading}>
-              <p className="mb-5 font-mono text-[0.58rem] uppercase tracking-[0.2em] text-white/30">
-                {col.heading}
-              </p>
-              <ul className="flex flex-col gap-3">
-                {col.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      {...("external" in link && link.external
-                        ? { target: "_blank", rel: "noreferrer" }
-                        : {})}
-                      className="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-white/45 transition-colors hover:text-[#c8965a]"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom row */}
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/8 pt-8 md:flex-row md:items-center">
-          <p className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-white/25">
-            © 2026 Wu-Weism · wuweism.com
+        {/* Col 1 — Brand */}
+        <div className="col-span-1">
+          <Image
+            src="/wu-wei-mark-true-alpha.png"
+            alt="Wu-Weism"
+            width={52}
+            height={40}
+            unoptimized
+            className="mb-6 opacity-70 invert"
+          />
+          <p className="text-xs text-stone-500 leading-relaxed">
+            Building the infrastructure for
+            <br />
+            automated causal science.
           </p>
-          <nav className="flex gap-6">
-            {[
-              { label: "White Paper", href: "/masa-white-paper.html", external: true },
-              { label: "Open Instrument", href: "/chat" },
-              { label: "Architecture", href: "#architecture" },
-            ].map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                {...("external" in link && link.external
-                  ? { target: "_blank", rel: "noreferrer" }
-                  : {})}
-                className="font-mono text-[0.6rem] uppercase tracking-[0.14em] text-white/30 transition-colors hover:text-white/60"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
         </div>
+
+        {/* Col 2 — Research */}
+        <div>
+          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
+            Research
+          </h5>
+          <ul className="space-y-4 text-xs">
+            {researchLinks.map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  className="hover:text-white transition-colors"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Col 3 — Legal */}
+        <div>
+          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
+            Legal
+          </h5>
+          <ul className="space-y-4 text-xs">
+            {legalLinks.map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  {...("external" in link && link.external
+                    ? { target: "_blank", rel: "noreferrer" }
+                    : {})}
+                  className="hover:text-white transition-colors"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Col 4 — Social */}
+        <div>
+          <h5 className="text-white text-xs uppercase tracking-widest mb-6">
+            Social
+          </h5>
+          <div className="flex gap-4">
+            {socialIcons.map(({ Icon, href, label }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                className="w-4 h-4 hover:text-white cursor-pointer transition-colors"
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Disclaimer + copyright */}
+      <div className="max-w-7xl mx-auto border-t border-stone-800 pt-12 text-[10px] text-stone-600 leading-loose text-justify">
+        <p className="mb-4 font-bold uppercase tracking-widest">Disclaimer</p>
+        <p>
+          This website is for informational purposes only. MASA (Methods of
+          Automated Scientific Analysis) is a research tool and does not
+          constitute legal, medical, or investment advice. All outputs are
+          generated through automated causal inference pipelines and must be
+          reviewed by qualified professionals before any reliance or action.
+          Results may be incomplete, context-sensitive, or subject to model
+          limitations.
+        </p>
+        <p className="mt-3">
+          Wu-Weism does not guarantee the accuracy, completeness, or fitness for
+          purpose of any analysis produced by MASA. Use of this platform implies
+          acceptance of our Terms of Service and acknowledgment that causal
+          inference is probabilistic in nature. Not available to users in
+          jurisdictions where automated research tools are restricted by law.
+        </p>
+        <p className="mt-8 text-center tracking-widest">
+          © 2026 Wu-Weism · wuweism.com · All rights reserved.
+        </p>
       </div>
     </footer>
   );

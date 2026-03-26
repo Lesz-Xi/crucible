@@ -82,9 +82,18 @@ export function Hero() {
             type="button"
             onClick={handlePrimaryAction}
             disabled={isLoadingAuthState}
-            className="inline-flex items-center gap-2.5 rounded-[10px] bg-[var(--text-primary)] px-7 py-3.5 text-sm font-semibold text-[var(--bg-primary)] transition-opacity hover:opacity-[0.86] disabled:cursor-not-allowed disabled:opacity-70"
+            className="hover:from-[#c8965a]/15 hover:via-[#c8965a]/25 hover:to-[#c8965a]/15 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+            style={{
+              boxShadow:
+                "rgba(31, 41, 55, 0.25) 0px 18px 35px, rgba(209, 213, 219, 0.3) 0px 0px 0px 1px",
+              color: "rgb(229, 231, 235)",
+            }}
           >
-            {isLoadingAuthState && <Loader2 className="h-4 w-4 animate-spin" />}
+            {isLoadingAuthState ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin opacity-60" />
+            ) : (
+              <ArrowRight className="h-3.5 w-3.5 opacity-50 transition-transform duration-300 group-hover:translate-x-0.5" />
+            )}
             <span>
               {isLoadingAuthState
                 ? "Loading"
@@ -92,9 +101,6 @@ export function Hero() {
                 ? "Open Instrument"
                 : "Begin Research"}
             </span>
-            {!isLoadingAuthState && (
-              <ArrowRight className="h-3.5 w-3.5 opacity-70" />
-            )}
           </button>
 
           <a
