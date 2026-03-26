@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { MasaArchitecture } from "@/components/landing/MasaArchitecture";
 
 export function Hero() {
   const router = useRouter();
@@ -80,11 +81,11 @@ export function Hero() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="hover:from-[#a67c52]/20 hover:via-[#a67c52]/30 hover:to-[#a67c52]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="hover:from-[#c8965a]/20 hover:via-[#c8965a]/30 hover:to-[#c8965a]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-white/[0.08] via-white/[0.12] to-white/[0.08] rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
               style={{
                 boxShadow:
-                  "rgba(0, 0, 0, 0.18) 0px 4px 16px, rgba(0, 0, 0, 0.10) 0px 0px 0px 1px",
-                color: "rgb(28, 25, 23)",
+                  "rgba(200, 150, 90, 0.22) 0px 4px 16px, rgba(255, 255, 255, 0.10) 0px 0px 0px 1px",
+                color: "var(--text-primary)",
               }}
             >
               {isLoadingAuthState ? (
@@ -133,8 +134,10 @@ export function Hero() {
         </dl>
       </div>
 
-      {/* ── Right column — reserved ────────────────────────────────────── */}
-      <div className="hidden lg:block" aria-hidden="true" />
+      {/* ── Right column — MASA architecture diagram ───────────────────── */}
+      <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
+        <MasaArchitecture className="w-full h-full max-w-[520px] opacity-75" />
+      </div>
 
       {/* Bottom edge rule */}
       <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--border-subtle)]" />

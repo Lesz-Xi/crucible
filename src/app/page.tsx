@@ -1,4 +1,5 @@
 import { LandingThemeLock } from "@/components/landing/LandingThemeLock";
+import { GridLines } from "@/components/landing/GridLines";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { DualLab } from "@/components/landing/DualLab";
@@ -14,6 +15,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 export default function Home() {
   return (
     <div className="theme-landing hd-page min-h-screen bg-[var(--bg-primary)]">
+      <GridLines />
       <LandingThemeLock />
       <Navbar />
       <main className="relative z-10">

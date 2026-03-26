@@ -1,61 +1,61 @@
 .theme-landing {
-  --background: #f0ede8;
-  --foreground: #1c1917;
-  --bg-primary:    #f0ede8;   /* smoke white — warm hazy off-white */
-  --bg-secondary:  #e7e5e4;   /* stone-200 */
-  --bg-tertiary:   #d6d3d1;   /* stone-300 */
-  --bg-card:       #ffffff;
-  --bg-card-soft:  rgba(255, 255, 255, 0.92);
-  --bg-emphasis:   #e7e5e4;
-  --bg-elevated:   #ffffff;
-  --text-primary:   #1c1917;  /* stone-900 */
-  --text-secondary: #44403c;  /* stone-700 */
-  --text-muted:     #78716c;  /* stone-500 */
-  --text-tertiary:  #a8a29e;  /* stone-400 */
-  --border-subtle: #e7e5e4;   /* stone-200 */
-  --border-strong: rgba(28, 25, 23, 0.12);
-  --border-glow:   rgba(28, 25, 23, 0.18);
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.10), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-deep: 0 4px 24px rgba(0, 0, 0, 0.12);
-  /* Amber accent — warm tone for light bg */
-  --accent-rust:        #a67c52;
-  --accent-rust-strong: #8b6240;
-  --accent-rust-soft:   rgba(166, 124, 82, 0.12);
+  --background: #0c0a09;
+  --foreground: #fafaf9;
+  --bg-primary:    #0c0a09;   /* stone-950 */
+  --bg-secondary:  #1c1917;   /* stone-900 */
+  --bg-tertiary:   #292524;   /* stone-800 */
+  --bg-card:       #1c1917;
+  --bg-card-soft:  rgba(28, 25, 23, 0.92);
+  --bg-emphasis:   #292524;
+  --bg-elevated:   #292524;
+  --text-primary:   #fafaf9;  /* stone-50 */
+  --text-secondary: #e7e5e4;  /* stone-200 */
+  --text-muted:     #a8a29e;  /* stone-400 */
+  --text-tertiary:  #78716c;  /* stone-500 */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-glow:   rgba(200, 150, 90, 0.22);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-deep: 0 4px 24px rgba(0, 0, 0, 0.5);
+  /* Amber accent — brighter for dark bg */
+  --accent-rust:        #c8965a;
+  --accent-rust-strong: #e0b476;
+  --accent-rust-soft:   rgba(200, 150, 90, 0.12);
   --accent-moss:  #5a7a4a;
   --accent-slate: #5a6e8a;
   --accent-blue:  var(--accent-slate);
   --accent-blue-soft: rgba(90, 110, 138, 0.10);
   --accent-dark:  var(--accent-rust);
-  --metric-line: linear-gradient(90deg, rgba(166, 124, 82, 0.9), rgba(166, 124, 82, 0.18));
-  /* Wabi aliases */
-  --wabi-washi:    #f5f5f4;
-  --wabi-sumi:     #1c1917;
-  --wabi-ink:      #1c1917;
-  --wabi-ink-light:#44403c;
-  --wabi-clay:     #a67c52;
-  --wabi-rust:     #a67c52;
-  --wabi-gold:     #a67c52;
+  --metric-line: linear-gradient(90deg, rgba(200, 150, 90, 0.9), rgba(200, 150, 90, 0.18));
+  /* Wabi aliases — dark equivalents */
+  --wabi-washi:    #0c0a09;
+  --wabi-sumi:     #fafaf9;
+  --wabi-ink:      #fafaf9;
+  --wabi-ink-light:#e7e5e4;
+  --wabi-clay:     #c8965a;
+  --wabi-rust:     #c8965a;
+  --wabi-gold:     #e0b476;
   --wabi-moss:     #5a7a4a;
-  --wabi-charcoal: #e7e5e4;
-  --wabi-patina:   rgba(28, 25, 23, 0.44);
-  --wabi-stone:    rgba(166, 124, 82, 0.28);
-  --wabi-sand:     rgba(166, 124, 82, 0.12);
-  color-scheme: light;
+  --wabi-charcoal: #292524;
+  --wabi-patina:   rgba(255, 255, 255, 0.22);
+  --wabi-stone:    rgba(200, 150, 90, 0.28);
+  --wabi-sand:     rgba(200, 150, 90, 0.12);
+  color-scheme: dark;
 }
 
 body:has(.theme-landing) {
-  background: #f0ede8;
-  color: #1c1917;
+  background: #0c0a09;
+  color: #fafaf9;
 }
 
 .theme-landing .wabi-glass-panel {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(28, 25, 23, 0.82);
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-soft);
 }
 
 .theme-landing .bg-glass-card {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(28, 25, 23, 0.88);
   border-color: var(--border-subtle);
   box-shadow: var(--shadow-soft);
 }
@@ -150,7 +150,7 @@ body:has(.theme-landing) {
   content: "";
   position: absolute;
   inset: 1rem;
-  border: 1px solid rgba(28, 25, 23, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   pointer-events: none;
 }
 
@@ -225,7 +225,7 @@ body:has(.theme-landing) {
 .theme-landing .landing-hero-diagram::after {
   content: "";
   position: absolute;
-  border: 1px solid rgba(28, 25, 23, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   inset: 16% 18%;
   transform: rotate(0deg);
 }
@@ -278,7 +278,7 @@ body:has(.theme-landing) {
 
 .theme-landing .auth-panel-chip {
   border: 1px solid var(--border-subtle);
-  background: rgba(231, 229, 228, 0.9);
+  background: rgba(41, 37, 36, 0.9);
 }
 
 .theme-landing .auth-panel-info {
