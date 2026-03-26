@@ -100,14 +100,7 @@ export function Hero() {
               </span>
             </button>
 
-            {/* Secondary label — "PILOT LIVE" equivalent */}
-            <span className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
-              Pilot Active — Pearl do-calculus
-            </span>
-          </div>
-
-          {/* White paper link */}
-          <div className="mt-6">
+            {/* White paper link — inline with primary button */}
             <a
               href="/masa-white-paper.html"
               target="_blank"
