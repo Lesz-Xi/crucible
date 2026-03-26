@@ -80,10 +80,10 @@ export function Hero() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="hover:from-[#c8965a]/15 hover:via-[#c8965a]/25 hover:to-[#c8965a]/15 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-black/10 via-black/20 to-black/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)] gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="hover:from-[#c8965a]/20 hover:via-[#c8965a]/30 hover:to-[#c8965a]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-white/10 via-white/15 to-white/10 rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
               style={{
                 boxShadow:
-                  "rgba(31, 41, 55, 0.25) 0px 18px 35px, rgba(209, 213, 219, 0.3) 0px 0px 0px 1px",
+                  "rgba(200, 150, 90, 0.2) 0px 12px 28px, rgba(250, 250, 249, 0.12) 0px 0px 0px 1px",
                 color: "rgb(229, 231, 235)",
               }}
             >

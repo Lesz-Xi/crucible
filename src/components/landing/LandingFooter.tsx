@@ -24,7 +24,7 @@ const socialIcons = [
 
 export function LandingFooter() {
   return (
-    <footer className="bg-stone-900 text-stone-400 py-24 px-12 lg:px-24">
+    <footer className="bg-stone-950 border-t border-stone-800 text-stone-500 py-24 px-12 lg:px-24">
       {/* 4-column grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
 

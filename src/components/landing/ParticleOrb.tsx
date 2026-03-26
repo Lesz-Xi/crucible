@@ -126,7 +126,7 @@ const ORBIT_CONFIGS = [
 function ParticleSystem() {
   const groupRef    = useRef<THREE.Group>(null);
   const lineGroupRef = useRef<THREE.Group>(null);
-  const { camera }  = useThree();
+  const { camera, scene }  = useThree();
 
   // Stable mutable refs — no state, no re-renders
   const mouseTarget    = useRef({ x: 0, y: 0 });
@@ -138,8 +138,8 @@ function ParticleSystem() {
     uTime:       { value: 0 },
     uDistortion: { value: 0.9 },
     uSize:       { value: 2.4 },
-    uColor:      { value: new THREE.Color("#1C1917") },
-    uOpacity:    { value: 0.8 },
+    uColor:      { value: new THREE.Color("#f5f5f4") },
+    uOpacity:    { value: 0.75 },
     uMouse:      { value: new THREE.Vector2(0, 0) },
   }), []);
 
@@ -152,9 +152,9 @@ function ParticleSystem() {
       const points = curve.getPoints(128);
       const geo    = new THREE.BufferGeometry().setFromPoints(points);
       const mat    = new THREE.LineBasicMaterial({
-        color: 0x78350f,
+        color: 0xc8965a,
         transparent: true,
-        opacity: 0.15,
+        opacity: 0.25,
       });
       const line       = new THREE.Line(geo, mat);
       line.rotation.x  = rotX;
@@ -174,6 +174,12 @@ function ParticleSystem() {
       groupRef.current.scale.setScalar(1);
     }
   };
+
+  // ---- Dark fog — match bg-primary (#0c0a09) so orb fades naturally ------
+  useEffect(() => {
+    scene.fog = new THREE.FogExp2(0x0c0a09, 0.022);
+    return () => { scene.fog = null; };
+  }, [scene]);
 
   // ---- Event listeners ---------------------------------------------------
   useEffect(() => {
@@ -233,10 +239,11 @@ function ParticleSystem() {
     const baseX    = desktop ? 6.0 : 0.0;
     const baseY    = desktop ? 0.0 : 3.0;
 
-    // Y: descends 28 units over the full page (≈ 10 sections)
-    groupRef.current.position.y = baseY - p * 28;
-    // X: gentle sin weave — drifts 1.5 units left at mid-scroll, returns right
-    groupRef.current.position.x = baseX + Math.sin(p * Math.PI) * -1.5;
+    // Y: sinusoidal breath — max ±5.5 units, well within camera frustum (±8.4)
+    // Dips ~5.5 units at 50% scroll, returns to start at 100% — always visible
+    groupRef.current.position.y = baseY - Math.sin(p * Math.PI) * 5.5;
+    // X: gentle left-right weave, 2 full cycles across the page
+    groupRef.current.position.x = baseX + Math.sin(p * Math.PI * 2) * 1.8;
 
     // Line group sway
     if (lineGroupRef.current) {
@@ -302,6 +309,8 @@ export function ParticleOrb() {
         // pointer-events:none ensures all clicks/scrolls pass through.
         // Navbar sits at z-30, so it always renders above the orb.
         zIndex: 20,
+        // opacity 0.55 — "atmospheric presence" feel, text stays readable
+        opacity: 0.55,
       }}
     >
       <ParticleSystem />
