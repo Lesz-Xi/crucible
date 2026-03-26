@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 // ── Navigation data ───────────────────────────────────────────────────────────
 
 const navItems = [
-  { href: "#why-us",     label: "Why Us"    },
+  { href: "#why-us",     label: "About"     },
   { href: "#mission",    label: "Mission"   },
   { href: "#surfaces",   label: "Features"  },
   { href: "#laboratory", label: "Use Cases" },
