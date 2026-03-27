@@ -13,27 +13,30 @@
   --landing-header-logo-gap: 1rem;
   --landing-header-cta-min-width: 8.6rem;
   --landing-header-cta-height: 2.55rem;
-  --background: #0d0b0a;
+  --background: #050505;
   --foreground: #f2ebe3;
-  --bg-primary: #0d0b0a;
-  --bg-secondary: #14110f;
-  --bg-tertiary: #1b1613;
-  --bg-card: rgba(22, 18, 16, 0.9);
-  --bg-card-soft: rgba(19, 16, 14, 0.94);
-  --bg-emphasis: #181412;
-  --bg-elevated: rgba(28, 23, 20, 0.96);
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #11100f;
+  --bg-card: rgba(14, 13, 12, 0.88);
+  --bg-card-soft: rgba(11, 10, 10, 0.94);
+  --bg-emphasis: #10100f;
+  --bg-elevated: rgba(18, 16, 15, 0.96);
   --text-primary: #f2ebe3;
   --text-secondary: #c5b6a8;
   --text-muted: #9f8c7b;
   --text-tertiary: #756455;
-  --border-subtle: rgba(255, 247, 238, 0.1);
-  --border-strong: rgba(255, 247, 238, 0.16);
-  --border-glow: rgba(200, 150, 90, 0.28);
-  --shadow-soft: 0 18px 42px rgba(0, 0, 0, 0.32), 0 1px 2px rgba(0, 0, 0, 0.24);
-  --shadow-deep: 0 26px 58px rgba(0, 0, 0, 0.46);
+  --border-subtle: rgba(255, 247, 238, 0.11);
+  --border-strong: rgba(255, 247, 238, 0.18);
+  --border-glow: rgba(200, 150, 90, 0.32);
+  --shadow-soft: 0 20px 46px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-deep: 0 30px 64px rgba(0, 0, 0, 0.52);
   --metric-line: linear-gradient(90deg, rgba(200, 150, 90, 0.88), rgba(200, 150, 90, 0.14));
-  --landing-grid-line: rgba(255, 247, 238, 0.065);
-  --landing-header-scroll-bg: rgba(13, 11, 10, 0.82);
+  --landing-grid-line: rgba(255, 247, 238, 0.06);
+  --landing-grid-line-soft: rgba(255, 247, 238, 0.045);
+  --landing-grid-line-strong: rgba(255, 247, 238, 0.14);
+  --landing-grid-line-pulse: rgba(255, 247, 238, 0.22);
+  --landing-header-scroll-bg: rgba(5, 5, 5, 0.82);
   --landing-header-cta-text: #f3ece3;
   --landing-header-cta-fill-bg: linear-gradient(180deg, rgba(31, 26, 23, 0.98), rgba(22, 18, 16, 0.98));
   --landing-header-cta-fill-text: #f6eee6;
@@ -41,12 +44,12 @@
   --landing-header-cta-glow-hover: radial-gradient(74% 58% at 50% 100%, rgba(200, 150, 90, 0.42) 0%, rgba(224, 180, 118, 0.12) 34%, rgba(167, 112, 58, 0) 100%);
   --landing-header-cta-hover-border: rgba(205, 154, 86, 0.56);
   --landing-header-cta-hover-shadow: 0 20px 44px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(205, 154, 86, 0.26);
-  --landing-header-menu-bg: linear-gradient(180deg, rgba(20, 17, 15, 0.97), rgba(13, 11, 10, 0.97));
+  --landing-header-menu-bg: linear-gradient(180deg, rgba(15, 14, 13, 0.97), rgba(7, 7, 7, 0.97));
   --landing-header-menu-border: rgba(255, 247, 238, 0.1);
   --landing-header-menu-highlight: rgba(200, 150, 90, 0.12);
-  --landing-hero-cta-from: rgba(30, 25, 22, 0.98);
-  --landing-hero-cta-via: rgba(22, 18, 16, 0.98);
-  --landing-hero-cta-to: rgba(17, 14, 12, 1);
+  --landing-hero-cta-from: rgba(24, 22, 21, 0.98);
+  --landing-hero-cta-via: rgba(16, 15, 14, 0.98);
+  --landing-hero-cta-to: rgba(10, 10, 10, 1);
   --landing-hero-cta-shadow: rgba(0, 0, 0, 0.38) 0px 14px 32px, rgba(255, 247, 238, 0.08) 0px 0px 0px 1px;
   --pipeline-stage-active-bg: rgba(25, 20, 17, 0.92);
   --pipeline-stage-active-border: rgba(255, 247, 238, 0.1);
@@ -72,13 +75,13 @@
   --timeline-track: rgba(255,247,238,0.1);
   --timeline-progress: linear-gradient(to bottom, rgba(200,150,90,0.92) 0%, rgba(200,150,90,0.44) 60%, rgba(200,150,90,0.08) 100%);
   --landing-shift-after-shadow: 0 0 0 1px rgba(200,150,90,0.1), 0 10px 32px rgba(0,0,0,0.28);
-  --landing-masa-chip-fill: rgba(18, 16, 15, 0.86);
-  --landing-masa-chip-fill-start: rgba(28, 24, 22, 0.94);
-  --landing-masa-chip-fill-end: rgba(18, 16, 15, 0.84);
+  --landing-masa-chip-fill: rgba(12, 11, 10, 0.86);
+  --landing-masa-chip-fill-start: rgba(24, 22, 21, 0.94);
+  --landing-masa-chip-fill-end: rgba(12, 11, 10, 0.84);
   --landing-masa-chip-edge: rgba(206, 172, 123, 0.64);
   --landing-masa-chip-edge-highlight: rgba(233, 210, 173, 0.28);
   --landing-masa-chip-edge-shadow: rgba(255, 255, 255, 0.04);
-  --landing-masa-chip-grid: rgba(228, 194, 146, 0.07);
+  --landing-masa-chip-grid: rgba(228, 194, 146, 0.05);
   --landing-masa-trace: rgba(207, 169, 112, 0.68);
   --landing-masa-trace-start: rgba(177, 146, 104, 0.24);
   --landing-masa-trace-end: rgba(207, 169, 112, 0.58);
@@ -93,7 +96,7 @@
   --wabi-rust: var(--accent-rust);
   --wabi-gold: var(--accent-rust-strong);
   --wabi-moss: #5a7a4a;
-  --wabi-washi: #0d0b0a;
+  --wabi-washi: #050505;
   --wabi-sumi: #f2ebe3;
   --wabi-ink: #f2ebe3;
   --wabi-ink-light: #c5b6a8;
@@ -105,7 +108,7 @@
 }
 
 body:has(.theme-landing) {
-  background: #0d0b0a;
+  background: #050505;
   color: #f2ebe3;
 }
 
@@ -196,19 +199,19 @@ html:has(.theme-landing) {
 
 .theme-landing .hd-panel {
   border: 1px solid var(--border-subtle);
-  background: var(--bg-card);
+  background: linear-gradient(180deg, rgba(255, 247, 238, 0.02), transparent 26%), var(--bg-card);
   box-shadow: var(--shadow-soft);
 }
 
 .theme-landing .hd-panel-soft {
   border: 1px solid var(--border-subtle);
-  background: var(--bg-card-soft);
+  background: linear-gradient(180deg, rgba(255, 247, 238, 0.03), transparent 24%), var(--bg-card-soft);
   box-shadow: var(--shadow-soft);
 }
 
 .theme-landing .hd-panel-dark {
   border: 1px solid var(--border-subtle);
-  background: var(--bg-emphasis);
+  background: linear-gradient(180deg, rgba(255, 247, 238, 0.03), transparent 24%), var(--bg-emphasis);
   color: var(--text-primary);
   box-shadow: var(--shadow-deep);
 }
@@ -332,6 +335,7 @@ html:has(.theme-landing) {
     color-mix(in srgb, var(--landing-hero-cta-to) 88%, var(--accent-rust) 12%)
   );
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(200, 150, 90, 0.22);
+  color: var(--accent-rust-strong);
 }
 
 .theme-landing .landing-shift-after-card {
