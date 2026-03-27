@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   BrainCircuit,
   Database,
@@ -19,7 +19,6 @@ type PillarStatus = "live" | "active" | "gated";
 
 interface PillarDefinition {
   id: string;
-  num: string;
   label: string;
   sub: string;
   detail: string;
@@ -33,7 +32,6 @@ interface PillarDefinition {
 const pillars: readonly PillarDefinition[] = [
   {
     id: "scm",
-    num: "01",
     label: "Causal SCM",
     sub: "Structural causal models · DAG construction",
     detail:
@@ -46,7 +44,6 @@ const pillars: readonly PillarDefinition[] = [
   },
   {
     id: "contradiction",
-    num: "02",
     label: "Contradiction Engine",
     sub: "Hong recombination · novelty proofing",
     detail:
@@ -59,7 +56,6 @@ const pillars: readonly PillarDefinition[] = [
   },
   {
     id: "memory",
-    num: "03",
     label: "Sovereign Memory",
     sub: "Rejection-aware RAG · pyodide sandbox",
     detail:
@@ -72,7 +68,6 @@ const pillars: readonly PillarDefinition[] = [
   },
   {
     id: "critique",
-    num: "04",
     label: "Multi-Agent Critique",
     sub: "Epistemologist · skeptic · architect",
     detail:
@@ -85,7 +80,6 @@ const pillars: readonly PillarDefinition[] = [
   },
   {
     id: "gate",
-    num: "05",
     label: "Falsifiability Gate",
     sub: "Physical-reality validation · memory commit",
     detail:
@@ -122,9 +116,9 @@ function getStatusClass(status: PillarStatus) {
 
 export function FivePillars() {
   const shouldReduce = useReducedMotion();
-  const [activeId, setActiveId] = useState<string>(pillars[0].id);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
-  const activePillar = pillars.find((pillar) => pillar.id === activeId) ?? pillars[0];
+  const activePillar = pillars.find((pillar) => pillar.id === activeId) ?? null;
 
   const nodes = useMemo(
     () =>
@@ -164,8 +158,11 @@ export function FivePillars() {
         </div>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.08fr)_minmax(22rem,0.92fr)] lg:items-center lg:gap-16">
-          <div className="relative flex items-center justify-center lg:justify-start">
-            <div className="relative w-full max-w-[34rem]">
+          <div className="relative flex items-center justify-center lg:col-span-2">
+            <div
+              className="relative w-full max-w-[54rem]"
+              onMouseLeave={() => setActiveId(null)}
+            >
               <div className="five-pillars-orbit-frame relative aspect-square">
                 <svg
                   viewBox="0 0 424 424"
@@ -210,80 +207,26 @@ export function FivePillars() {
                 </svg>
 
                 <motion.div
-                  className="five-pillars-center-card absolute left-1/2 top-1/2 w-[min(100%,31rem)] max-w-[31rem] -translate-x-1/2 -translate-y-1/2 rounded-[1.7rem] border"
-                  initial={shouldReduce ? undefined : { opacity: 0, y: 18, scale: 0.985 }}
-                  whileInView={shouldReduce ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                  className="five-pillars-core absolute left-1/2 top-1/2 flex h-[8.5rem] w-[8.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border"
+                  initial={shouldReduce ? undefined : { opacity: 0, scale: 0.94 }}
+                  whileInView={shouldReduce ? undefined : { opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <span
-                      className={`five-pillars-status ${getStatusClass(activePillar.status)}`}
-                    >
-                      {getStatusLabel(activePillar.status)}
-                    </span>
-                    <span className="font-mono text-[0.76rem] uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
-                      PILLAR {activePillar.num}
-                    </span>
-                  </div>
-
-                  <div className="mt-6 flex items-center gap-4">
-                    <div className="five-pillars-center-icon flex h-12 w-12 items-center justify-center rounded-full border">
-                      <activePillar.icon className="h-5 w-5" strokeWidth={2} />
-                    </div>
-                    <div>
-                      <h3 className="text-[2rem] font-medium leading-none tracking-[-0.03em] text-[var(--text-primary)]">
-                        {activePillar.label}
-                      </h3>
-                      <p className="mt-2 font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
-                        {activePillar.sub}
-                      </p>
-                    </div>
-                  </div>
-
-                  <p className="mt-7 max-w-[28rem] text-[1rem] leading-[1.85] text-[var(--text-secondary)]">
-                    {activePillar.detail}
-                  </p>
-
-                  <div className="mt-7 h-px w-full bg-[var(--five-pillars-rule)]" />
-
-                  <div className="mt-7">
-                    <div className="mb-3 flex items-center justify-between gap-4">
-                      <span className="font-mono text-[0.76rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                        Energy Level
-                      </span>
-                      <span className="font-mono text-[0.82rem] tracking-[0.08em] text-[var(--text-primary)]">
-                        {activePillar.energy}%
-                      </span>
-                    </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-[var(--five-pillars-meter-track)]">
-                      <motion.div
-                        className="h-full rounded-full bg-[var(--five-pillars-meter-fill)]"
-                        initial={shouldReduce ? undefined : { width: 0 }}
-                        animate={{ width: `${activePillar.energy}%` }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-8">
-                    <p className="font-mono text-[0.78rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                      Connected Nodes
+                  <div className="text-center">
+                    <p className="font-mono text-[0.62rem] uppercase tracking-[0.26em] text-[var(--text-tertiary)]">
+                      MASA
                     </p>
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      {activePillar.connected.map((item) => (
-                        <span
-                          key={item}
-                          className="five-pillars-connected inline-flex items-center rounded-full border px-4 py-2 text-[0.88rem] text-[var(--text-secondary)]"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="mt-2 text-[1.65rem] font-medium tracking-[-0.04em] text-[var(--text-primary)]">
+                      Engine
+                    </p>
                   </div>
                 </motion.div>
 
-                {nodes.map((node, index) => {
+                <div
+                  className={`five-pillars-orbit-rotor absolute inset-0 ${activePillar ? "is-paused" : ""}`}
+                >
+                  {nodes.map((node, index) => {
                   const isActive = node.id === activeId;
                   const Icon = node.icon;
                   return (
@@ -293,6 +236,7 @@ export function FivePillars() {
                       onMouseEnter={() => setActiveId(node.id)}
                       onFocus={() => setActiveId(node.id)}
                       onClick={() => setActiveId(node.id)}
+                      onBlur={() => setActiveId(null)}
                       className="absolute -translate-x-1/2 -translate-y-1/2 bg-transparent text-left"
                       style={{ left: `${(node.x / 424) * 100}%`, top: `${(node.y / 424) * 100}%` }}
                       initial={shouldReduce ? undefined : { opacity: 0, scale: 0.92 }}
@@ -303,79 +247,101 @@ export function FivePillars() {
                         delay: index * 0.06,
                         ease: [0.16, 1, 0.3, 1],
                       }}
-                    >
-                      <div
-                        className={`five-pillars-node ${isActive ? "five-pillars-node-active" : "five-pillars-node-idle"}`}
                       >
-                        <div className="five-pillars-node-icon flex h-14 w-14 items-center justify-center rounded-full border">
-                          <Icon className="h-5 w-5" strokeWidth={2} />
-                        </div>
-                        <div className="mt-3 text-center">
-                          <p className="text-[0.66rem] font-mono uppercase tracking-[0.18em] text-[var(--accent-rust)]">
-                            {node.num}
-                          </p>
-                          <p className="mt-1 text-[0.9rem] font-medium tracking-[-0.01em] text-[var(--text-primary)]">
-                            {node.label}
-                          </p>
+                      <div className={`five-pillars-node-shell ${activePillar ? "is-paused" : ""}`}>
+                        <div
+                          className={`five-pillars-node ${isActive ? "five-pillars-node-active" : "five-pillars-node-idle"}`}
+                        >
+                          <div className="five-pillars-node-icon flex h-14 w-14 items-center justify-center rounded-full border">
+                            <Icon className="h-5 w-5" strokeWidth={2} />
+                          </div>
+                          <div className="mt-3 text-center">
+                            <p className="text-[0.86rem] font-medium tracking-[-0.01em] text-[var(--text-primary)]">
+                              {node.label}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </motion.button>
                   );
-                })}
+                  })}
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            {pillars.map((pillar, index) => {
-              const isActive = pillar.id === activeId;
-              const Wrap = shouldReduce ? "div" : motion.div;
-              const motionProps = shouldReduce
-                ? {}
-                : {
-                    initial: { opacity: 0, x: 22 },
-                    whileInView: { opacity: 1, x: 0 },
-                    viewport: { once: true },
-                    transition: {
-                      duration: 0.48,
-                      delay: index * 0.07,
-                      ease: [0.16, 1, 0.3, 1],
-                    },
-                  };
-
-              return (
-                <Wrap
-                  key={pillar.id}
-                  {...(motionProps as object)}
-                  className={`five-pillars-ledger group rounded-[1.25rem] border p-5 transition-all duration-250 ${
-                    isActive ? "five-pillars-ledger-active" : "five-pillars-ledger-idle"
-                  }`}
-                  onMouseEnter={() => setActiveId(pillar.id)}
-                >
-                  <div className="flex items-start gap-4">
-                    <span className="mt-1 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--accent-rust)]">
-                      {pillar.num}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-5">
-                        <div>
-                          <p className="text-[1.12rem] font-medium tracking-[-0.02em] text-[var(--text-primary)]">
-                            {pillar.label}
-                          </p>
-                          <p className="mt-2 font-mono text-[0.66rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                            {pillar.sub}
-                          </p>
-                        </div>
-                        <div className="five-pillars-ledger-meter mt-1 h-px w-12 shrink-0" />
+              <AnimatePresence mode="wait">
+                {activePillar && (
+                  <motion.div
+                    key={activePillar.id}
+                    className="five-pillars-hover-card mx-auto mt-10 max-w-[34rem] rounded-[1.6rem] border p-6"
+                    initial={{ opacity: 0, y: 18, scale: 0.985 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 14, scale: 0.985 }}
+                    transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <span
+                        className={`five-pillars-status ${getStatusClass(activePillar.status)}`}
+                      >
+                        {getStatusLabel(activePillar.status)}
+                      </span>
+                      <div className="five-pillars-center-icon flex h-11 w-11 items-center justify-center rounded-full border">
+                        <activePillar.icon className="h-4.5 w-4.5" strokeWidth={2} />
                       </div>
-                      <p className="mt-4 max-w-[34rem] text-[0.92rem] leading-[1.8] text-[var(--text-secondary)]">
-                        {pillar.detail}
+                    </div>
+
+                    <div className="mt-5">
+                      <h3 className="text-[1.7rem] font-medium leading-none tracking-[-0.03em] text-[var(--text-primary)]">
+                        {activePillar.label}
+                      </h3>
+                      <p className="mt-3 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                        {activePillar.sub}
                       </p>
                     </div>
-                  </div>
-                </Wrap>
-              );
-            })}
+
+                    <p className="mt-6 text-[0.98rem] leading-[1.85] text-[var(--text-secondary)]">
+                      {activePillar.detail}
+                    </p>
+
+                    <div className="mt-6 h-px w-full bg-[var(--five-pillars-rule)]" />
+
+                    <div className="mt-6">
+                      <div className="mb-3 flex items-center justify-between gap-4">
+                        <span className="font-mono text-[0.74rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                          Energy Level
+                        </span>
+                        <span className="font-mono text-[0.8rem] tracking-[0.08em] text-[var(--text-primary)]">
+                          {activePillar.energy}%
+                        </span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-[var(--five-pillars-meter-track)]">
+                        <motion.div
+                          className="h-full rounded-full bg-[var(--five-pillars-meter-fill)]"
+                          initial={shouldReduce ? undefined : { width: 0 }}
+                          animate={{ width: `${activePillar.energy}%` }}
+                          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-7">
+                      <p className="font-mono text-[0.76rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                        Connected Nodes
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {activePillar.connected.map((item) => (
+                          <span
+                            key={item}
+                            className="five-pillars-connected inline-flex items-center rounded-full border px-4 py-2 text-[0.88rem] text-[var(--text-secondary)]"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

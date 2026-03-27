@@ -469,6 +469,14 @@ html:has(.theme-landing) {
   pointer-events: none;
 }
 
+.theme-landing .five-pillars-core {
+  border-color: var(--five-pillars-center-border);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(200, 150, 90, 0.08), transparent 54%),
+    linear-gradient(180deg, rgba(14, 13, 12, 0.98), rgba(8, 8, 8, 0.98));
+  box-shadow: var(--five-pillars-center-shadow);
+}
+
 .theme-landing .five-pillars-center-card {
   border-color: var(--five-pillars-center-border);
   background: var(--five-pillars-center-bg);
@@ -476,11 +484,32 @@ html:has(.theme-landing) {
   padding: 1.6rem;
 }
 
+.theme-landing .five-pillars-hover-card {
+  border-color: var(--five-pillars-center-border);
+  background: var(--five-pillars-center-bg);
+  box-shadow: var(--five-pillars-center-shadow);
+}
+
 .theme-landing .five-pillars-center-icon {
   border-color: var(--five-pillars-center-icon-border);
   background: var(--five-pillars-center-icon-bg);
   color: var(--five-pillars-center-icon-ink);
   box-shadow: 0 0 26px rgba(255, 255, 255, 0.12);
+}
+
+.theme-landing .five-pillars-orbit-rotor {
+  animation: five-pillars-orbit-spin 28s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.theme-landing .five-pillars-orbit-rotor.is-paused,
+.theme-landing .five-pillars-node-shell.is-paused {
+  animation-play-state: paused;
+}
+
+.theme-landing .five-pillars-node-shell {
+  animation: five-pillars-orbit-spin-reverse 28s linear infinite;
+  transform-origin: center;
 }
 
 .theme-landing .five-pillars-status {
@@ -516,7 +545,7 @@ html:has(.theme-landing) {
 
 .theme-landing .five-pillars-node {
   display: flex;
-  min-width: 8.2rem;
+  min-width: 9.2rem;
   flex-direction: column;
   align-items: center;
 }
@@ -534,6 +563,7 @@ html:has(.theme-landing) {
   background: var(--five-pillars-node-idle-bg);
   border-color: var(--five-pillars-node-idle-border);
   color: var(--text-primary);
+  box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.02);
 }
 
 .theme-landing .five-pillars-node-active .five-pillars-node-icon {
@@ -557,6 +587,24 @@ html:has(.theme-landing) {
 
 .theme-landing .five-pillars-ledger-meter {
   background: linear-gradient(90deg, rgba(200, 150, 90, 0.64), rgba(255, 247, 238, 0.08));
+}
+
+@keyframes five-pillars-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes five-pillars-orbit-spin-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 .theme-landing .landing-header-cta {
