@@ -133,14 +133,14 @@ const CHIP_H = 30;
 const CHIP_CENTER_X = CHIP_X + CHIP_W / 2;
 
 const PORTS: readonly PortDefinition[] = [
+  { px: 14, py: 22, lx: 9, ly: 22, anchor: "end", label: "Grounding" },
+  { px: 186, py: 10, lx: 170, ly: 2, anchor: "middle", label: "Causal DAG" },
   { px: 136, py: 22, lx: 136, ly: 14, anchor: "middle", label: "SCM Model" },
-  { px: 170, py: 10, lx: 170, ly: 2, anchor: "middle", label: "Causal DAG" },
-  { px: 186, py: 10, lx: 191, ly: 10, anchor: "start", label: "Inference" },
+  { px: 34, py: 34, lx: 39, ly: 34, anchor: "start", label: "Inference" },
   { px: 170, py: 90, lx: 175, ly: 90, anchor: "start", label: "Memory" },
   { px: 142, py: 68, lx: 146, ly: 99, anchor: "middle", label: "Falsifiability" },
   { px: 100, py: 98, lx: 100, ly: 106, anchor: "middle", label: "Provenance" },
   { px: 91, py: 93, lx: 76, ly: 90, anchor: "end", label: "Critique" },
-  { px: 34, py: 34, lx: 26, ly: 34, anchor: "end", label: "Grounding" },
 ] as const;
 
 const PINS: readonly PinDefinition[] = [
@@ -293,9 +293,10 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor={port.anchor}
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
-            fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="3.75"
-            letterSpacing="0.14em"
+            fontFamily="var(--font-inter, Inter, sans-serif)"
+            fontSize="3.05"
+            fontWeight="500"
+            letterSpacing="0.04em"
           >
             {port.label}
           </text>
@@ -390,25 +391,25 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           />
 
           <text
-            x={CHIP_X + CHIP_W / 2}
+            x={CHIP_X + CHIP_W / 2 - 0.8}
             y={CHIP_Y + 16.8}
             textAnchor="middle"
             fill="url(#masa-text-grad)"
             fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="13.2"
+            fontSize="11.9"
             fontWeight="680"
-            letterSpacing="0.065em"
+            letterSpacing="0.045em"
           >
             {text}
           </text>
           <text
-            x={CHIP_CENTER_X}
+            x={CHIP_CENTER_X - 1.35}
             y={CHIP_Y + 24}
             textAnchor="middle"
             fill="var(--landing-masa-sub-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="3"
-            letterSpacing="0.19em"
+            fontSize="2.4"
+            letterSpacing="0.135em"
           >
             CAUSAL ENGINE
           </text>
