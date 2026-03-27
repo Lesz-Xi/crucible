@@ -79,9 +79,9 @@
   --landing-masa-chip-edge-highlight: rgba(233, 210, 173, 0.52);
   --landing-masa-chip-edge-shadow: rgba(255, 255, 255, 0.06);
   --landing-masa-chip-grid: rgba(228, 194, 146, 0.09);
-  --landing-masa-trace: rgba(208, 171, 116, 0.28);
-  --landing-masa-trace-start: rgba(177, 146, 104, 0.08);
-  --landing-masa-trace-end: rgba(177, 146, 104, 0.22);
+  --landing-masa-trace: rgba(191, 152, 98, 0.56);
+  --landing-masa-trace-start: rgba(169, 133, 88, 0.24);
+  --landing-masa-trace-end: rgba(181, 142, 92, 0.48);
   --landing-masa-dot-core: #2b2724;
   --landing-masa-dot-ring: rgba(206, 178, 139, 0.44);
   --landing-masa-dot-halo: rgba(200, 150, 90, 0.24);

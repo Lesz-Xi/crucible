@@ -107,12 +107,12 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <g
           stroke="url(#masa-route-line)"
           fill="none"
-          strokeWidth="0.24"
+          strokeWidth="0.3"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="100 100"
           pathLength="100"
-          opacity="0.92"
+          opacity="0.96"
         >
           {ROUTES.map((route, index) => (
             <path key={index} d={route.d} strokeDasharray="100 100" pathLength="100">
