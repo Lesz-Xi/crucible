@@ -98,7 +98,7 @@ export function DualLab() {
   return (
     <section
       id="laboratory"
-      className="hd-section border-t border-[var(--border-subtle)] bg-[var(--bg-primary)] py-24 md:py-32"
+      className="hd-section bg-[var(--bg-primary)] py-28 md:py-36"
     >
       <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
         {/* Section header */}

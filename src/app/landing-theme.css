@@ -226,8 +226,8 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .landing-hero-board {
-  min-height: clamp(21rem, 40vh, 34rem);
-  padding-top: 2.25rem;
+  min-height: clamp(24rem, 44vh, 38rem);
+  padding-top: 3.5rem;
 }
 
 /* No ambient gradient — clean dark background */
@@ -238,6 +238,14 @@ html:has(.theme-landing) {
 .theme-landing .hd-section {
   position: relative;
   z-index: 1;
+}
+
+.theme-landing .landing-hero-shell + .hd-section {
+  margin-top: clamp(4rem, 8vw, 7rem);
+}
+
+.theme-landing .hd-section + .hd-section {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .theme-landing .hd-panel,

@@ -117,13 +117,11 @@ export function Hero() {
       </div>
 
       <div
-        className="landing-hero-board relative z-10 mx-auto mt-14 flex w-full max-w-[92rem] items-end justify-center"
+        className="landing-hero-board relative z-10 mx-auto mt-16 flex w-full max-w-[96rem] items-end justify-center overflow-hidden"
         aria-hidden="true"
       >
-        <MasaArchitecture className="w-[min(96vw,1080px)] md:w-[min(92vw,1120px)] lg:w-[min(88vw,1180px)] max-w-none scale-[1.02] lg:scale-[1.05]" />
+        <MasaArchitecture className="w-[min(104vw,1180px)] md:w-[min(100vw,1260px)] lg:w-[min(96vw,1320px)] max-w-none translate-y-[5.75rem] scale-[1.08] lg:translate-y-[7.5rem] lg:scale-[1.14]" />
       </div>
-
-      <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--border-subtle)]" />
     </section>
   );
 }

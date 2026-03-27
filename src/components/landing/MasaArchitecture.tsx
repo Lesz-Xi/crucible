@@ -212,7 +212,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <g
           stroke="url(#masa-route-line)"
           fill="none"
-          strokeWidth="0.34"
+          strokeWidth="0.52"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="100 100"
@@ -293,10 +293,10 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor={port.anchor}
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
-            fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="3.05"
-            fontWeight="500"
-            letterSpacing="0.04em"
+            fontFamily="var(--font-ibm-plex-mono, monospace)"
+            fontSize="2.5"
+            fontWeight="400"
+            letterSpacing="0.08em"
           >
             {port.label}
           </text>
@@ -396,9 +396,9 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor="middle"
             fill="url(#masa-text-grad)"
             fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="11.9"
+            fontSize="10.6"
             fontWeight="680"
-            letterSpacing="0.045em"
+            letterSpacing="0.03em"
           >
             {text}
           </text>
@@ -408,8 +408,8 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor="middle"
             fill="var(--landing-masa-sub-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="2.4"
-            letterSpacing="0.135em"
+            fontSize="2.05"
+            letterSpacing="0.11em"
           >
             CAUSAL ENGINE
           </text>
