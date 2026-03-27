@@ -1,299 +1,383 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import {
+  BrainCircuit,
+  Database,
+  FlaskConical,
+  GitBranch,
+  ShieldCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 const TWO_PI = Math.PI * 2;
+const ORBIT_CENTER = 212;
+const ORBIT_RADIUS = 156;
 
-const pillars = [
+type PillarStatus = "live" | "active" | "gated";
+
+interface PillarDefinition {
+  id: string;
+  num: string;
+  label: string;
+  sub: string;
+  detail: string;
+  energy: number;
+  status: PillarStatus;
+  connected: string[];
+  icon: LucideIcon;
+  angle: number;
+}
+
+const pillars: readonly PillarDefinition[] = [
   {
     id: "scm",
     num: "01",
     label: "Causal SCM",
-    sub: "Structural Causal Models · DAG construction",
-    angle: -Math.PI / 2, // top
+    sub: "Structural causal models · DAG construction",
+    detail:
+      "Registers endogenous variables, edges, and mechanism forms into a versioned structural model before any causal query proceeds.",
+    energy: 96,
+    status: "active",
+    connected: ["Contradiction Engine", "Falsifiability Gate"],
+    icon: GitBranch,
+    angle: -Math.PI / 2,
   },
   {
     id: "contradiction",
     num: "02",
     label: "Contradiction Engine",
-    sub: "Hong recombination · Novelty proofing",
+    sub: "Hong recombination · novelty proofing",
+    detail:
+      "Pressurises conflict across claims to surface mechanisms that survive contradiction instead of smoothing it away.",
+    energy: 82,
+    status: "live",
+    connected: ["Causal SCM", "Multi-Agent Critique"],
+    icon: BrainCircuit,
     angle: -Math.PI / 2 + TWO_PI * (1 / 5),
   },
   {
     id: "memory",
     num: "03",
     label: "Sovereign Memory",
-    sub: "Rejection-aware RAG · Pyodide sandbox",
+    sub: "Rejection-aware RAG · pyodide sandbox",
+    detail:
+      "Persists only evidence and mechanisms that remain auditable, reproducible, and bounded by explicit provenance.",
+    energy: 68,
+    status: "live",
+    connected: ["Contradiction Engine", "Falsifiability Gate"],
+    icon: Database,
     angle: -Math.PI / 2 + TWO_PI * (2 / 5),
   },
   {
     id: "critique",
     num: "04",
     label: "Multi-Agent Critique",
-    sub: "Epistemologist · Skeptic · Architect",
+    sub: "Epistemologist · skeptic · architect",
+    detail:
+      "Runs adversarial review across methods, assumptions, and identification claims before an answer earns operational trust.",
+    energy: 74,
+    status: "gated",
+    connected: ["Causal SCM", "Sovereign Memory"],
+    icon: FlaskConical,
     angle: -Math.PI / 2 + TWO_PI * (3 / 5),
   },
   {
     id: "gate",
     num: "05",
     label: "Falsifiability Gate",
-    sub: "Physical-reality validation · Memory commit",
+    sub: "Physical-reality validation · memory commit",
+    detail:
+      "Stops plausible but untestable claims from entering memory unless they specify what would disconfirm them.",
+    energy: 88,
+    status: "active",
+    connected: ["Causal SCM", "Sovereign Memory"],
+    icon: ShieldCheck,
     angle: -Math.PI / 2 + TWO_PI * (4 / 5),
   },
 ] as const;
 
-const CX = 160;
-const CY = 160;
-const R  = 108; // orbit radius
+function getStatusLabel(status: PillarStatus) {
+  switch (status) {
+    case "active":
+      return "ACTIVE";
+    case "live":
+      return "LIVE";
+    case "gated":
+      return "GATED";
+  }
+}
 
-// Pre-compute node positions
-const nodes = pillars.map((p) => ({
-  ...p,
-  nx: CX + R * Math.cos(p.angle),
-  ny: CY + R * Math.sin(p.angle),
-}));
-
-function OrbitalSVG() {
-  return (
-    <svg
-      viewBox="0 0 320 320"
-      width="460"
-      height="460"
-      aria-hidden="true"
-      style={{ overflow: "visible", maxWidth: "100%" }}
-    >
-      <defs>
-        {/* Amber radial glow for center hub */}
-        <radialGradient id="fp-hub-glow" cx="50%" cy="40%" r="60%">
-          <stop offset="0%"   stopColor="#292524" />
-          <stop offset="100%" stopColor="#0e0d0c" />
-        </radialGradient>
-        <radialGradient id="fp-center-ring" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#c8965a" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#c8965a" stopOpacity="0"    />
-        </radialGradient>
-        {/* Amber dot glow */}
-        <radialGradient id="fp-dot-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%"   stopColor="#c8965a" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#c8965a" stopOpacity="0"   />
-        </radialGradient>
-      </defs>
-
-      {/* Orbit ring — solid amber, low opacity */}
-      <circle
-        cx={CX} cy={CY} r={R}
-        fill="none"
-        stroke="#c8965a"
-        strokeWidth="0.7"
-        strokeOpacity="0.22"
-      />
-
-      {/* Spoke lines — solid amber */}
-      {nodes.map((n) => (
-        <line
-          key={`spoke-${n.id}`}
-          x1={CX} y1={CY}
-          x2={n.nx} y2={n.ny}
-          stroke="#c8965a"
-          strokeWidth="0.6"
-          strokeOpacity="0.18"
-        />
-      ))}
-
-      {/* Center hub ambient glow disc */}
-      <circle cx={CX} cy={CY} r="56"
-        fill="url(#fp-center-ring)" />
-
-      {/* Center hub body */}
-      <circle
-        cx={CX} cy={CY} r="38"
-        fill="url(#fp-hub-glow)"
-        stroke="#c8965a"
-        strokeWidth="0.8"
-        strokeOpacity="0.4"
-      />
-
-      {/* Center hub inner ring */}
-      <circle
-        cx={CX} cy={CY} r="32"
-        fill="none"
-        stroke="#c8965a"
-        strokeWidth="0.4"
-        strokeOpacity="0.18"
-      />
-
-      {/* Center label */}
-      <text
-        x={CX} y={CY - 4}
-        textAnchor="middle"
-        fill="#c8965a"
-        fontFamily="var(--font-lora, Georgia, serif)"
-        fontSize="11"
-        fontWeight="400"
-        letterSpacing="0.06em"
-      >
-        MASA
-      </text>
-      <text
-        x={CX} y={CY + 10}
-        textAnchor="middle"
-        fill="#5a5148"
-        fontFamily="var(--font-ibm-plex-mono, monospace)"
-        fontSize="5.5"
-        letterSpacing="0.22em"
-      >
-        ENGINE
-      </text>
-
-      {/* Orbital dots + node number labels */}
-      {nodes.map((n, i) => (
-        <g key={`node-${n.id}`}>
-          {/* Glow halo */}
-          <circle cx={n.nx} cy={n.ny} r="10"
-            fill="url(#fp-dot-glow)" opacity="0.45" />
-          {/* Solid dot */}
-          <circle cx={n.nx} cy={n.ny} r="3.2"
-            fill="#c8965a" opacity="0.9">
-            <animate
-              attributeName="r"
-              values="0; 4; 3.2"
-              dur="0.45s"
-              begin={`${i * 0.1 + 0.3}s`}
-              fill="freeze"
-            />
-          </circle>
-          {/* Number badge beside dot */}
-          <text
-            x={n.nx + (Math.cos(n.angle) * 18)}
-            y={n.ny + (Math.sin(n.angle) * 18) + 2}
-            textAnchor="middle"
-            fill="#5a5148"
-            fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="6"
-            letterSpacing="0.1em"
-          >
-            {n.num}
-          </text>
-        </g>
-      ))}
-    </svg>
-  );
+function getStatusClass(status: PillarStatus) {
+  switch (status) {
+    case "active":
+      return "five-pillars-status-active";
+    case "live":
+      return "five-pillars-status-live";
+    case "gated":
+      return "five-pillars-status-gated";
+  }
 }
 
 export function FivePillars() {
   const shouldReduce = useReducedMotion();
+  const [activeId, setActiveId] = useState<string>(pillars[0].id);
+
+  const activePillar = pillars.find((pillar) => pillar.id === activeId) ?? pillars[0];
+
+  const nodes = useMemo(
+    () =>
+      pillars.map((pillar) => ({
+        ...pillar,
+        x: ORBIT_CENTER + ORBIT_RADIUS * Math.cos(pillar.angle),
+        y: ORBIT_CENTER + ORBIT_RADIUS * Math.sin(pillar.angle),
+      })),
+    [],
+  );
 
   return (
     <section
       id="architecture"
-      className="hd-section overflow-hidden bg-[var(--bg-primary)] py-24 md:py-32"
+      className="hd-section overflow-hidden bg-[var(--bg-primary)] py-28 md:py-36"
     >
-      <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
-
-        {/* Header */}
-        <div className="mb-16 lg:mb-20">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="block h-px w-8 bg-[var(--accent-rust)] flex-shrink-0" />
+      <div className="mx-auto max-w-7xl px-8 md:px-12 lg:px-16">
+        <div className="mb-16 max-w-3xl lg:mb-20">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
             <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
               Architecture
             </span>
           </div>
           <h2
-            className="hd-serif-display text-[var(--text-primary)] max-w-xl"
-            style={{ fontSize: "clamp(2rem, 4vw, 3.4rem)" }}
+            className="hd-serif-display text-[var(--text-primary)]"
+            style={{ fontSize: "clamp(2.2rem, 4vw, 4rem)" }}
           >
             Five Pillars.{" "}
-            <em className="italic text-[var(--accent-rust)]">
-              One Causal Engine.
-            </em>
+            <em className="italic text-[var(--accent-rust)]">One Causal Engine.</em>
           </h2>
-          <p className="mt-5 max-w-[32rem] text-[0.9rem] leading-[1.8] text-[var(--text-muted)]">
-            Every capability is purpose-built for causal governance. Together
-            they form a closed-loop automated scientist.
+          <p className="mt-6 max-w-[40rem] text-[0.98rem] leading-[1.95] text-[var(--text-muted)]">
+            Every capability is purpose-built for causal governance. Together they form
+            a closed-loop automated scientist: one orbital system, five operational
+            disciplines, no ungoverned path to output.
           </p>
         </div>
 
-        {/* Body — orbital diagram (left) + pillar list (right) */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.08fr)_minmax(22rem,0.92fr)] lg:items-center lg:gap-16">
+          <div className="relative flex items-center justify-center lg:justify-start">
+            <div className="relative w-full max-w-[34rem]">
+              <div className="five-pillars-orbit-frame relative aspect-square">
+                <svg
+                  viewBox="0 0 424 424"
+                  className="absolute inset-0 h-full w-full"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <radialGradient id="fp-orbit-glow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.12)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+                    </radialGradient>
+                  </defs>
 
-          {/* Left — orbital SVG */}
-          <div className="flex items-center justify-center lg:justify-start">
-            <OrbitalSVG />
+                  <circle
+                    cx={ORBIT_CENTER}
+                    cy={ORBIT_CENTER}
+                    r={ORBIT_RADIUS}
+                    fill="none"
+                    stroke="var(--five-pillars-orbit-stroke)"
+                    strokeWidth="1.2"
+                  />
+
+                  {nodes.map((node) => (
+                    <line
+                      key={`spoke-${node.id}`}
+                      x1={ORBIT_CENTER}
+                      y1={ORBIT_CENTER}
+                      x2={node.x}
+                      y2={node.y}
+                      stroke="var(--five-pillars-spoke-stroke)"
+                      strokeWidth="1"
+                    />
+                  ))}
+
+                  <circle
+                    cx={ORBIT_CENTER}
+                    cy={ORBIT_CENTER}
+                    r="116"
+                    fill="url(#fp-orbit-glow)"
+                    opacity="0.35"
+                  />
+                </svg>
+
+                <motion.div
+                  className="five-pillars-center-card absolute left-1/2 top-1/2 w-[min(100%,31rem)] max-w-[31rem] -translate-x-1/2 -translate-y-1/2 rounded-[1.7rem] border"
+                  initial={shouldReduce ? undefined : { opacity: 0, y: 18, scale: 0.985 }}
+                  whileInView={shouldReduce ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <span
+                      className={`five-pillars-status ${getStatusClass(activePillar.status)}`}
+                    >
+                      {getStatusLabel(activePillar.status)}
+                    </span>
+                    <span className="font-mono text-[0.76rem] uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
+                      PILLAR {activePillar.num}
+                    </span>
+                  </div>
+
+                  <div className="mt-6 flex items-center gap-4">
+                    <div className="five-pillars-center-icon flex h-12 w-12 items-center justify-center rounded-full border">
+                      <activePillar.icon className="h-5 w-5" strokeWidth={2} />
+                    </div>
+                    <div>
+                      <h3 className="text-[2rem] font-medium leading-none tracking-[-0.03em] text-[var(--text-primary)]">
+                        {activePillar.label}
+                      </h3>
+                      <p className="mt-2 font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+                        {activePillar.sub}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="mt-7 max-w-[28rem] text-[1rem] leading-[1.85] text-[var(--text-secondary)]">
+                    {activePillar.detail}
+                  </p>
+
+                  <div className="mt-7 h-px w-full bg-[var(--five-pillars-rule)]" />
+
+                  <div className="mt-7">
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <span className="font-mono text-[0.76rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                        Energy Level
+                      </span>
+                      <span className="font-mono text-[0.82rem] tracking-[0.08em] text-[var(--text-primary)]">
+                        {activePillar.energy}%
+                      </span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-[var(--five-pillars-meter-track)]">
+                      <motion.div
+                        className="h-full rounded-full bg-[var(--five-pillars-meter-fill)]"
+                        initial={shouldReduce ? undefined : { width: 0 }}
+                        animate={{ width: `${activePillar.energy}%` }}
+                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-8">
+                    <p className="font-mono text-[0.78rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                      Connected Nodes
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      {activePillar.connected.map((item) => (
+                        <span
+                          key={item}
+                          className="five-pillars-connected inline-flex items-center rounded-full border px-4 py-2 text-[0.88rem] text-[var(--text-secondary)]"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {nodes.map((node, index) => {
+                  const isActive = node.id === activeId;
+                  const Icon = node.icon;
+                  return (
+                    <motion.button
+                      key={node.id}
+                      type="button"
+                      onMouseEnter={() => setActiveId(node.id)}
+                      onFocus={() => setActiveId(node.id)}
+                      onClick={() => setActiveId(node.id)}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 bg-transparent text-left"
+                      style={{ left: `${(node.x / 424) * 100}%`, top: `${(node.y / 424) * 100}%` }}
+                      initial={shouldReduce ? undefined : { opacity: 0, scale: 0.92 }}
+                      whileInView={shouldReduce ? undefined : { opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{
+                        duration: 0.45,
+                        delay: index * 0.06,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                    >
+                      <div
+                        className={`five-pillars-node ${isActive ? "five-pillars-node-active" : "five-pillars-node-idle"}`}
+                      >
+                        <div className="five-pillars-node-icon flex h-14 w-14 items-center justify-center rounded-full border">
+                          <Icon className="h-5 w-5" strokeWidth={2} />
+                        </div>
+                        <div className="mt-3 text-center">
+                          <p className="text-[0.66rem] font-mono uppercase tracking-[0.18em] text-[var(--accent-rust)]">
+                            {node.num}
+                          </p>
+                          <p className="mt-1 text-[0.9rem] font-medium tracking-[-0.01em] text-[var(--text-primary)]">
+                            {node.label}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* Right — numbered pillar cards */}
-          <div className="flex flex-col gap-0">
-            {pillars.map((p, i) => {
+          <div className="space-y-4">
+            {pillars.map((pillar, index) => {
+              const isActive = pillar.id === activeId;
               const Wrap = shouldReduce ? "div" : motion.div;
               const motionProps = shouldReduce
                 ? {}
                 : {
-                    initial: { opacity: 0, x: 16 },
+                    initial: { opacity: 0, x: 22 },
                     whileInView: { opacity: 1, x: 0 },
                     viewport: { once: true },
                     transition: {
-                      duration: 0.5,
-                      delay: i * 0.07,
-                      ease: [0.25, 0.1, 0.5, 1],
+                      duration: 0.48,
+                      delay: index * 0.07,
+                      ease: [0.16, 1, 0.3, 1],
                     },
                   };
 
               return (
                 <Wrap
-                  key={p.id}
+                  key={pillar.id}
                   {...(motionProps as object)}
-                  className="group flex items-start gap-5 border-b border-[var(--border-subtle)] py-5 last:border-b-0"
+                  className={`five-pillars-ledger group rounded-[1.25rem] border p-5 transition-all duration-250 ${
+                    isActive ? "five-pillars-ledger-active" : "five-pillars-ledger-idle"
+                  }`}
+                  onMouseEnter={() => setActiveId(pillar.id)}
                 >
-                  {/* Number */}
-                  <span
-                    className="shrink-0 mt-0.5 font-mono text-[0.62rem] tracking-[0.18em] text-[var(--accent-rust)] opacity-70"
-                    aria-hidden="true"
-                  >
-                    {p.num}
-                  </span>
-
-                  {/* Content */}
-                  <div className="min-w-0">
-                    <p className="text-[0.92rem] font-medium leading-snug text-[var(--text-primary)] group-hover:text-[var(--accent-rust)] transition-colors duration-200">
-                      {p.label}
-                    </p>
-                    <p className="mt-1 font-mono text-[0.6rem] uppercase tracking-[0.12em] text-[var(--text-muted)] leading-relaxed">
-                      {p.sub}
-                    </p>
-                  </div>
-
-                  {/* Amber accent line — slides in on hover */}
-                  <div className="ml-auto shrink-0 self-stretch flex items-center">
-                    <div className="h-full w-px bg-[var(--accent-rust)] opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
+                  <div className="flex items-start gap-4">
+                    <span className="mt-1 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--accent-rust)]">
+                      {pillar.num}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-5">
+                        <div>
+                          <p className="text-[1.12rem] font-medium tracking-[-0.02em] text-[var(--text-primary)]">
+                            {pillar.label}
+                          </p>
+                          <p className="mt-2 font-mono text-[0.66rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                            {pillar.sub}
+                          </p>
+                        </div>
+                        <div className="five-pillars-ledger-meter mt-1 h-px w-12 shrink-0" />
+                      </div>
+                      <p className="mt-4 max-w-[34rem] text-[0.92rem] leading-[1.8] text-[var(--text-secondary)]">
+                        {pillar.detail}
+                      </p>
+                    </div>
                   </div>
                 </Wrap>
               );
             })}
           </div>
         </div>
-
-        {/* Mobile fallback — simple card grid (shown only on small screens) */}
-        <div className="mt-10 grid grid-cols-1 gap-3 lg:hidden">
-          {pillars.map((p) => (
-            <div
-              key={`mob-${p.id}`}
-              className="flex items-start gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)] p-4"
-            >
-              <span className="shrink-0 font-mono text-[0.62rem] tracking-[0.18em] text-[var(--accent-rust)]">
-                {p.num}
-              </span>
-              <div>
-                <p className="text-[0.88rem] font-medium text-[var(--text-primary)]">
-                  {p.label}
-                </p>
-                <p className="mt-0.5 font-mono text-[0.62rem] uppercase tracking-[0.1em] text-[var(--text-muted)]">
-                  {p.sub}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
       </div>
     </section>
   );
