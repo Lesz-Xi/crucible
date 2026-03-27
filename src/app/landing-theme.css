@@ -248,7 +248,7 @@ html:has(.theme-landing) {
 .theme-landing .landing-header-nav-link:focus-visible,
 .theme-landing .landing-header-nav-link[aria-expanded="true"] {
   color: #f3f7ff;
-  border-color: var(--accent-rust);
+  border-color: #f3f7ff;
   text-shadow: 0 0 10px rgba(243, 247, 255, 0.14);
 }
 
