@@ -14,22 +14,30 @@ import {
 const steps = [
   {
     num: "01",
+    eyebrow: "Observational Layer",
     title: "Observe",
+    signal: "Retrieval",
     body: "Surface relevant evidence from indexed corpora with confidence-weighted retrieval. Every source is scored, timestamped, and linked to the claim it supports.",
   },
   {
     num: "02",
+    eyebrow: "Mechanism Drafting",
     title: "Hypothesize",
+    signal: "Synthesis",
     body: "Generate falsifiable causal mechanisms through contradiction-driven recombination. MASA synthesises across conflicting claims — not around them.",
   },
   {
     num: "03",
+    eyebrow: "Interventional Layer",
     title: "Intervene",
+    signal: "Do-Calculus",
     body: "Execute Pearl do-calculus: simulate real-world interventions on the structural causal model. Ask not just what is correlated, but what would change if you acted.",
   },
   {
     num: "04",
+    eyebrow: "Refutation Gate",
     title: "Validate",
+    signal: "Commit",
     body: "Gate every claim through physical-reality tests before committing to sovereign memory. Science, not plausible text generation.",
   },
 ];
@@ -50,100 +58,109 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
   return (
     <motion.div
       ref={ref}
-      className="relative flex gap-0 overflow-hidden rounded-sm border border-[var(--border-subtle)]"
+      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--pipeline-stage-shell-border)] bg-[var(--pipeline-stage-shell-bg)] shadow-[var(--pipeline-stage-shell-shadow)]"
       animate={
         shouldReduce
           ? {}
           : inView
-          ? { backgroundColor: "var(--pipeline-stage-active-bg)", borderColor: "var(--pipeline-stage-active-border)" }
-          : { backgroundColor: "var(--pipeline-stage-idle-bg)", borderColor: "var(--pipeline-stage-idle-border)" }
+          ? {
+              backgroundColor: "var(--pipeline-stage-active-bg)",
+              borderColor: "var(--pipeline-stage-active-border)",
+              boxShadow: "var(--pipeline-stage-active-shadow)",
+            }
+          : {
+              backgroundColor: "var(--pipeline-stage-idle-bg)",
+              borderColor: "var(--pipeline-stage-idle-border)",
+              boxShadow: "var(--pipeline-stage-shell-shadow)",
+            }
       }
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       initial={shouldReduce ? {} : { backgroundColor: "var(--pipeline-stage-idle-bg)" }}
     >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--pipeline-stage-topline)]" />
+      <div className="grid gap-0 md:grid-cols-[10rem_minmax(0,1fr)]">
+        <div className="relative flex min-h-[10.5rem] flex-col justify-between border-b border-[var(--pipeline-divider-idle)] px-6 py-6 md:border-b-0 md:border-r md:px-7 md:py-7">
+          <div className="relative h-12 w-12 overflow-hidden rounded-2xl border border-[var(--pipeline-stage-badge-border)] bg-[var(--pipeline-stage-badge-bg)]">
+            <motion.div
+              className="absolute inset-y-2 left-2 w-px bg-[var(--pipeline-stage-badge-line)]"
+              initial={shouldReduce ? {} : { scaleY: 0 }}
+              animate={shouldReduce ? {} : inView ? { scaleY: 1 } : { scaleY: 0 }}
+              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              style={{ transformOrigin: "top" }}
+            />
+            <motion.span
+              className="absolute inset-x-0 bottom-2 text-center font-mono text-[0.8rem] tracking-[0.16em]"
+              animate={
+                shouldReduce
+                  ? {}
+                  : inView
+                  ? { color: "var(--pipeline-step-active-color)", opacity: 1 }
+                  : { color: "var(--pipeline-step-idle-color)", opacity: 0.7 }
+              }
+              transition={{ duration: 0.45 }}
+            >
+              {step.num}
+            </motion.span>
+          </div>
 
-      {/* ── Left accent bar ────────────────────────────────────────────── */}
-      <div className="relative w-px shrink-0 overflow-hidden bg-[var(--pipeline-stage-rail)]">
+          <div className="space-y-2">
+            <p className="hd-kicker text-[var(--pipeline-stage-kicker)]">{step.eyebrow}</p>
+            <div className="flex items-center gap-2 text-[0.68rem] uppercase tracking-[0.24em] text-[var(--pipeline-stage-signal)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--pipeline-stage-signal-dot)]" />
+              <span>{step.signal}</span>
+            </div>
+          </div>
+        </div>
+
         <motion.div
-          className="absolute inset-x-0 top-0 origin-top"
-          style={{
-            height: "100%",
-            background: "var(--pipeline-stage-progress)",
-            transformOrigin: "top",
-          }}
-          initial={shouldReduce ? {} : { scaleY: 0 }}
-          animate={shouldReduce ? {} : inView ? { scaleY: 1 } : { scaleY: 0 }}
+          className="relative min-w-0 px-6 py-6 md:px-8 md:py-7"
+          initial={shouldReduce ? {} : { opacity: 0, y: 18 }}
+          animate={shouldReduce ? {} : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
           transition={{
             duration: 0.7,
-            delay: 0.05,
+            delay: 0.14 + index * 0.05,
             ease: [0.16, 1, 0.3, 1],
           }}
-        />
-      </div>
-
-      {/* ── Step number ────────────────────────────────────────────────── */}
-      <div className="flex shrink-0 items-start px-7 pt-8 pb-8 md:items-center md:px-10">
-        <motion.span
-          className="select-none font-mono leading-none tracking-[-0.05em]"
-          style={{ fontSize: "clamp(2.8rem, 5vw, 4.2rem)" }}
-          animate={
-            shouldReduce
-              ? {}
-              : inView
-              ? { color: "var(--pipeline-step-active-color)", scale: 1, opacity: 1 }
-              : { color: "var(--pipeline-step-idle-color)", scale: 0.88, opacity: 0.45 }
-          }
-          transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         >
-          {step.num}
-        </motion.span>
+          <motion.div
+            className="mb-5 flex items-center justify-between gap-4"
+            animate={
+              shouldReduce
+                ? {}
+                : inView
+                ? { opacity: 1, y: 0 }
+                : { opacity: 0.7, y: 10 }
+            }
+            transition={{ duration: 0.5 }}
+          >
+            <h3
+              className="font-light leading-[1.1] tracking-[-0.03em] text-[var(--text-primary)]"
+              style={{
+                fontFamily: "var(--font-lora, Georgia, serif)",
+                fontSize: "clamp(1.45rem, 2vw, 2rem)",
+              }}
+            >
+              {step.title}
+            </h3>
+            <div className="hidden items-center gap-3 md:flex">
+              <div className="h-px w-16 bg-[var(--pipeline-stage-content-rule)]" />
+              <span className="font-mono text-[0.72rem] uppercase tracking-[0.2em] text-[var(--pipeline-stage-index)]">
+                Stage {step.num}
+              </span>
+            </div>
+          </motion.div>
+
+          <p className="max-w-[46rem] text-[0.96rem] leading-[1.95] text-[var(--text-secondary)]">
+            {step.body}
+          </p>
+        </motion.div>
       </div>
-
-      {/* ── Vertical divider ───────────────────────────────────────────── */}
-      <motion.div
-        className="my-6 w-px shrink-0 self-stretch"
-        animate={
-          shouldReduce
-            ? {}
-            : inView
-            ? { backgroundColor: "var(--pipeline-divider-active)" }
-            : { backgroundColor: "var(--pipeline-divider-idle)" }
-        }
-        transition={{ duration: 0.55 }}
-      />
-
-      {/* ── Content ────────────────────────────────────────────────────── */}
-      <motion.div
-        className="flex-1 min-w-0 px-7 py-8 md:px-10 md:py-9"
-        initial={shouldReduce ? {} : { opacity: 0, y: 18 }}
-        animate={
-          shouldReduce ? {} : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
-        }
-        transition={{
-          duration: 0.7,
-          delay: 0.14 + index * 0.05,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        <h3
-          className="mb-3 font-light leading-[1.3] tracking-[-0.02em] text-[var(--text-primary)]"
-          style={{
-            fontFamily: "var(--font-lora, Georgia, serif)",
-            fontSize: "clamp(1.05rem, 2vw, 1.3rem)",
-          }}
-        >
-          {step.title}
-        </h3>
-        <p className="max-w-[40rem] text-[0.875rem] leading-[1.9] text-[var(--text-secondary)]">
-          {step.body}
-        </p>
-      </motion.div>
 
       {/* ── Pipeline connector arrow (between stages, not on last) ──────── */}
       {index < total - 1 && (
         <motion.div
           aria-hidden="true"
-          className="absolute -bottom-[13px] left-[calc(2.5rem+50px)] z-10 text-[var(--accent-rust)]"
+          className="pointer-events-none absolute -bottom-[15px] left-10 text-[var(--accent-rust)] md:left-[7.2rem]"
           initial={shouldReduce ? {} : { opacity: 0, y: -4 }}
           animate={
             shouldReduce ? {} : inView ? { opacity: 0.55, y: 0 } : { opacity: 0, y: -4 }
@@ -183,7 +200,7 @@ export function CausalPipeline() {
       id="pipeline"
       className="hd-section bg-[var(--bg-primary)] py-24 md:py-32"
     >
-      <div className="mx-auto max-w-5xl px-8 md:px-12 lg:px-16">
+      <div className="mx-auto max-w-6xl px-8 md:px-12 lg:px-16">
 
         {/* ── Section header ─────────────────────────────────────────────── */}
         <div ref={headerRef} className="mb-14">
@@ -219,7 +236,7 @@ export function CausalPipeline() {
         </div>
 
         {/* ── Pipeline stages ────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4 md:gap-5">
           {steps.map((step, i) => (
             <StagePanel
               key={step.num}
