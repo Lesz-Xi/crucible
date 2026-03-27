@@ -5,7 +5,7 @@ import { WuWeiMark } from "./WuWeiMark";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ChevronDown, Loader2 } from "lucide-react";
-import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { getCurrentUser } from "@/lib/auth/actions";
 import { AnimatePresence, motion } from "framer-motion";
 
 // ── Navigation data ───────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ export function Navbar() {
     if (isSignedIn) {
       router.push("/chat");
     } else {
-      await signInWithGoogle("/chat");
+      router.push("/auth?next=%2Fchat");
     }
   };
 

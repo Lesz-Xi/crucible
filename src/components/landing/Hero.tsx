@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight } from "lucide-react";
-import { getCurrentUser, signInWithGoogle } from "@/lib/auth/actions";
+import { getCurrentUser } from "@/lib/auth/actions";
 import { MasaArchitecture } from "@/components/landing/MasaArchitecture";
 
 export function Hero() {
@@ -32,7 +32,7 @@ export function Hero() {
     if (isSignedIn) {
       router.push("/chat");
     } else {
-      await signInWithGoogle("/chat");
+      router.push("/auth?next=%2Fchat");
     }
   };
 
