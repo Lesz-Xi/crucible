@@ -46,8 +46,8 @@ interface SwitchDefinition {
 const ROUTES: readonly RouteDefinition[] = [
   {
     id: "route-grounding",
-    d: "M 24 22 H 104.5 Q 111 22 111 28.5 V 52",
-    cx: 24,
+    d: "M 30 22 H 104.5 Q 111 22 111 28.5 V 52",
+    cx: 30,
     cy: 22,
     color: "var(--landing-masa-route-amber)",
     pulseDelay: "0s",
@@ -133,7 +133,7 @@ const CHIP_H = 30;
 const CHIP_CENTER_X = CHIP_X + CHIP_W / 2;
 
 const PORTS: readonly PortDefinition[] = [
-  { px: 24, py: 22, lx: 30, ly: 14, anchor: "start", label: "Grounding" },
+  { px: 30, py: 22, lx: 26, ly: 14, anchor: "start", label: "Grounding" },
   { px: 186, py: 10, lx: 170, ly: 2, anchor: "middle", label: "Causal DAG" },
   { px: 136, py: 22, lx: 136, ly: 14, anchor: "middle", label: "SCM Model" },
   { px: 34, py: 34, lx: 39, ly: 34, anchor: "start", label: "Inference" },
