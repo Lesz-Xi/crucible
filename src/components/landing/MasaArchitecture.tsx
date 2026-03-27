@@ -5,6 +5,17 @@ interface MasaArchitectureProps {
   text?: string;
 }
 
+interface PinDefinition {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  rx: number;
+  rotate?: number;
+  cx?: number;
+  cy?: number;
+}
+
 const ROUTES = [
   { d: "M 14 22 H 104.5 Q 111 22 111 28.5 V 52", cx: 14, cy: 22 },
   { d: "M 186 10 H 108.5 Q 102 10 102 16.5 V 52", cx: 186, cy: 10 },
@@ -21,7 +32,7 @@ const CHIP_Y = 41;
 const CHIP_W = 30;
 const CHIP_H = 22;
 
-const PINS = [
+const PINS: readonly PinDefinition[] = [
   { x: 95, y: 37, w: 2.4, h: 5, rx: 0.7 },
   { x: 104.6, y: 37, w: 2.4, h: 5, rx: 0.7 },
   { x: 118.2, y: 46, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 119.4, cy: 48.5 },
