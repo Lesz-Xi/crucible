@@ -23,7 +23,6 @@ export function Hero() {
         if (isMounted) setIsLoadingAuthState(false);
       }
     };
-
     void loadAuthState();
     return () => {
       isMounted = false;
@@ -40,82 +39,88 @@ export function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--border-subtle)]">
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-1rem)] max-w-[1560px] flex-col px-6 pb-8 pt-36 md:px-10 lg:px-14 lg:pt-40">
-        <div className="landing-hero-top-grid gap-12">
-          <div className="max-w-[62rem]">
-            <div className="flex items-center gap-3">
-              <span className="block h-px w-10 bg-[var(--accent-rust)]" />
-              <span className="font-mono text-[0.66rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
-                WU-WEISM · CAUSAL OPERATIONS SYSTEM
-              </span>
-            </div>
-
-            <h1 className="landing-hero-headline mt-8 max-w-[15ch] text-[var(--text-primary)]">
-              The causal control system for research teams and agentic labs.
-            </h1>
+    <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+      <div className="relative z-10 bg-[var(--bg-primary)] flex flex-col justify-between px-10 pt-32 pb-16 md:px-16 lg:px-24">
+        <div>
+          <div className="mb-10 flex items-center gap-3">
+            <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
+            <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              WU-WEISM · CAUSAL SCIENCE
+            </span>
           </div>
 
-          <div className="landing-hero-copy-column">
-            <p className="landing-hero-support max-w-[34rem] text-[var(--text-secondary)]">
-              Coordinate evidence, critique, intervention, and counterfactual execution inside a
-              single governed operating surface. MASA turns causal research into a live system of
-              routes, signals, and traceable decision states.
-            </p>
+          <h1
+            className="hd-serif-display text-[var(--text-primary)]"
+            style={{ fontSize: "clamp(3.2rem, 6.5vw, 6.5rem)" }}
+          >
+            Causal Science.
+            <br />
+            <em className="italic text-[var(--accent-rust)]">Automated.</em>
+          </h1>
 
-            <div className="landing-hero-note mt-8 max-w-[28rem]">
-              <span className="landing-hero-note-dot" aria-hidden="true" />
+          <p
+            className="mt-7 max-w-[34rem] text-[1.02rem] leading-[1.8] text-[var(--text-secondary)]"
+            style={{ fontFamily: "var(--font-inter, Inter, sans-serif)" }}
+          >
+            From observation to counterfactual — Pearl&apos;s causal ladder,
+            automated with institutional rigor.
+          </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-6">
+            <button
+              type="button"
+              onClick={handlePrimaryAction}
+              disabled={isLoadingAuthState}
+              className="landing-hero-primary-button flex items-center gap-x-2 gap-y-2 rounded-full border border-[var(--border-subtle)] px-6 py-3 text-sm font-medium transition-all duration-500 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 group"
+              style={{
+                background:
+                  "linear-gradient(180deg, var(--landing-hero-cta-from), var(--landing-hero-cta-via), var(--landing-hero-cta-to))",
+                boxShadow: "var(--landing-hero-cta-shadow)",
+                color: "var(--text-primary)",
+              }}
+            >
+              {isLoadingAuthState ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin opacity-60" />
+              ) : (
+                <ArrowRight className="h-3.5 w-3.5 opacity-50 transition-transform duration-300 group-hover:translate-x-0.5" />
+              )}
               <span>
-                Real-time mimic routing for model state, provenance, and intervention readiness.
+                {isLoadingAuthState
+                  ? "Loading"
+                  : isSignedIn
+                    ? "Open Instrument"
+                    : "Begin Research"}
               </span>
-            </div>
+            </button>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              <button
-                type="button"
-                onClick={handlePrimaryAction}
-                disabled={isLoadingAuthState}
-                className="landing-hero-primary-button flex items-center gap-x-2 gap-y-2 rounded-full border border-[var(--border-subtle)] px-6 py-3 text-sm font-medium transition-all duration-500 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 group"
-                style={{
-                  background:
-                    "linear-gradient(180deg, var(--landing-hero-cta-from), var(--landing-hero-cta-via), var(--landing-hero-cta-to))",
-                  boxShadow: "var(--landing-hero-cta-shadow)",
-                  color: "var(--text-primary)",
-                }}
-              >
-                {isLoadingAuthState ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin opacity-60" />
-                ) : (
-                  <ArrowRight className="h-3.5 w-3.5 opacity-50 transition-transform duration-300 group-hover:translate-x-0.5" />
-                )}
-                <span>
-                  {isLoadingAuthState
-                    ? "Loading"
-                    : isSignedIn
-                      ? "Open Instrument"
-                      : "Begin Research"}
-                </span>
-              </button>
-
-              <a
-                href="/masa-white-paper.html"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 border-b border-[var(--border-subtle)] pb-0.5 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-[var(--text-muted)] transition-colors hover:border-[var(--accent-rust)] hover:text-[var(--text-primary)]"
-              >
-                Read white paper →
-              </a>
-            </div>
+            <a
+              href="/masa-white-paper.html"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 border-b border-[var(--border-subtle)] pb-0.5 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-[var(--text-muted)] transition-colors hover:border-[var(--accent-rust)] hover:text-[var(--text-primary)]"
+            >
+              Read white paper →
+            </a>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-1 items-end lg:mt-20">
-          <div className="landing-mimic-board-wrap relative w-full">
-            <div className="landing-mimic-board-glow" aria-hidden="true" />
-            <MasaArchitecture className="landing-mimic-board relative z-10 w-full" />
+        <dl className="mt-20 grid grid-cols-2 gap-x-6 font-mono text-[0.58rem] uppercase tracking-[0.16em]">
+          <div>
+            <dt className="text-[var(--text-tertiary)]">Sector</dt>
+            <dd className="mt-1 text-[var(--text-muted)]">Causal AI</dd>
           </div>
-        </div>
+          <div>
+            <dt className="text-[var(--text-tertiary)]">Platform</dt>
+            <dd className="mt-1 text-[var(--text-muted)]">wuweism.com</dd>
+          </div>
+        </dl>
       </div>
+
+      <div className="hidden lg:flex items-center justify-center relative overflow-visible" aria-hidden="true">
+        <MasaArchitecture className="w-[860px] max-w-none -translate-x-12 xl:-translate-x-16 2xl:-translate-x-20 scale-[1.08] xl:scale-[1.1]" />
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--border-subtle)]" />
     </section>
   );
 }
