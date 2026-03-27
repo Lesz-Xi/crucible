@@ -6,8 +6,10 @@ import {
   useScroll,
   useTransform,
   useInView,
+  useMotionValueEvent,
   useReducedMotion,
 } from "framer-motion";
+import { useState } from "react";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -50,11 +52,13 @@ interface StepProps {
   step: (typeof steps)[number];
   index: number;
   shouldReduce: boolean;
+  isScrollingDown: boolean;
 }
 
-function StepRow({ step, index, shouldReduce }: StepProps) {
+function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
   const rowRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(rowRef, { once: true, margin: "-15% 0px" });
+  const inView = useInView(rowRef, { margin: "-15% 0px" });
+  const isActive = inView && isScrollingDown;
 
   return (
     <div ref={rowRef} className="relative flex gap-8 md:gap-14 pb-16 last:pb-0">
@@ -68,7 +72,7 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
           animate={
             shouldReduce
               ? {}
-              : inView
+              : isActive
               ? {
                   borderColor: "rgba(200,150,90,0.9)",
                   backgroundColor: "rgba(200,150,90,0.08)",
@@ -91,7 +95,7 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
             animate={
               shouldReduce
                 ? {}
-                : inView
+                : isActive
                 ? { backgroundColor: "rgba(200,150,90,1)", opacity: 1 }
                 : { backgroundColor: "rgba(255,255,255,0.2)", opacity: 0.4 }
             }
@@ -103,7 +107,7 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
         <motion.span
           className="mt-2 font-mono text-[0.52rem] tracking-[0.22em] tabular-nums"
           animate={
-            shouldReduce ? {} : inView
+            shouldReduce ? {} : isActive
               ? { color: "rgba(200,150,90,0.7)", opacity: 1 }
               : { color: "rgba(255,255,255,0.15)", opacity: 0.5 }
           }
@@ -118,7 +122,7 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
         className="flex-1 min-w-0 pt-0.5"
         initial={shouldReduce ? {} : { opacity: 0, x: 28 }}
         animate={
-          shouldReduce ? {} : inView ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }
+          shouldReduce ? {} : isActive ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }
         }
         transition={{
           duration: 0.7,
@@ -159,7 +163,7 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
         className="pointer-events-none absolute right-0 top-[-0.2em] select-none font-mono text-[6rem] font-bold leading-none tracking-tight text-[var(--text-primary)] opacity-[0.025] md:text-[8rem]"
         initial={shouldReduce ? {} : { opacity: 0 }}
         animate={
-          shouldReduce ? {} : inView ? { opacity: 0.025 } : { opacity: 0 }
+          shouldReduce ? {} : isActive ? { opacity: 0.025 } : { opacity: 0 }
         }
         transition={{ duration: 1.2, delay: 0.3 }}
       >
@@ -173,14 +177,22 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
 
 export function SequenceOfEvents() {
   const shouldReduce = useReducedMotion();
+  const [isScrollingDown, setIsScrollingDown] = useState(true);
 
   // Scroll-driven line progress — tracks the full section
   const sectionRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
+  const { scrollY } = useScroll();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start 75%", "end 30%"],
+  });
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? latest;
+    if (latest === previous) return;
+    setIsScrollingDown(latest > previous);
   });
 
   // scaleY 0→1 drives the amber progress line
@@ -247,6 +259,7 @@ export function SequenceOfEvents() {
               step={step}
               index={i}
               shouldReduce={Boolean(shouldReduce)}
+              isScrollingDown={isScrollingDown}
             />
           ))}
         </div>
