@@ -211,6 +211,25 @@ html:has(.theme-landing) {
   background: var(--bg-primary);
 }
 
+.theme-landing .landing-hero-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    linear-gradient(180deg, rgba(5, 5, 5, 0.9) 0%, rgba(5, 5, 5, 0.72) 28%, rgba(5, 5, 5, 0.52) 100%),
+    var(--bg-primary);
+}
+
+.theme-landing .landing-hero-copy {
+  padding-top: 0.25rem;
+}
+
+.theme-landing .landing-hero-board {
+  min-height: clamp(21rem, 40vh, 34rem);
+  padding-top: 2.25rem;
+}
+
 /* No ambient gradient — clean dark background */
 .theme-landing .hd-page::before {
   content: none;

@@ -39,9 +39,9 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
-      <div className="relative z-10 bg-[var(--bg-primary)] flex flex-col justify-between px-10 pt-32 pb-16 md:px-16 lg:px-24">
-        <div>
+    <section className="landing-hero-shell relative overflow-hidden px-10 pt-32 pb-14 md:px-16 lg:px-24">
+      <div className="landing-hero-copy relative z-10 mx-auto w-full max-w-[78rem]">
+        <div className="max-w-[42rem]">
           <div className="mb-10 flex items-center gap-3">
             <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
             <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-[var(--text-muted)]">
@@ -104,7 +104,7 @@ export function Hero() {
           </div>
         </div>
 
-        <dl className="mt-20 grid grid-cols-2 gap-x-6 font-mono text-[0.58rem] uppercase tracking-[0.16em]">
+        <dl className="hd-meta-row mt-20 max-w-[34rem] font-mono text-[0.58rem] uppercase tracking-[0.16em]">
           <div>
             <dt className="text-[var(--text-tertiary)]">Sector</dt>
             <dd className="mt-1 text-[var(--text-muted)]">Causal AI</dd>
@@ -116,8 +116,11 @@ export function Hero() {
         </dl>
       </div>
 
-      <div className="hidden lg:flex items-center justify-center relative overflow-visible" aria-hidden="true">
-        <MasaArchitecture className="w-[860px] max-w-none -translate-x-12 xl:-translate-x-16 2xl:-translate-x-20 scale-[1.08] xl:scale-[1.1]" />
+      <div
+        className="landing-hero-board relative z-10 mx-auto mt-14 flex w-full max-w-[92rem] items-end justify-center"
+        aria-hidden="true"
+      >
+        <MasaArchitecture className="w-[min(96vw,1080px)] md:w-[min(92vw,1120px)] lg:w-[min(88vw,1180px)] max-w-none scale-[1.02] lg:scale-[1.05]" />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--border-subtle)]" />
