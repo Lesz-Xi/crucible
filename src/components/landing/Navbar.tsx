@@ -170,27 +170,32 @@ export function Navbar() {
         </div>
 
         <div className="ml-auto flex items-center">
-          <div className="landing-header-cta overflow-hidden rounded-full backdrop-blur-xl">
+          <div className="landing-header-cta group">
             <button
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="landing-header-cta-button group relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center rounded-full border-0 px-1 text-sm font-medium outline-none transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
+              className="landing-header-cta-button relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-center gap-2 px-5 text-sm font-medium outline-none transition-transform duration-200 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
             >
+              <span className="landing-header-cta-glow" aria-hidden="true" />
+              <span className="landing-header-cta-glow-hover" aria-hidden="true" />
+              <span className="landing-header-cta-stroke" aria-hidden="true" />
+              <span className="landing-header-cta-stroke-hover" aria-hidden="true" />
               <span className="landing-header-cta-fill" aria-hidden="true" />
-              <span className="landing-header-cta-icon">
-                {isLoadingAuthState ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-0.5" />
-                )}
-              </span>
+
               <span className="landing-header-cta-copy">
                 {isLoadingAuthState
                   ? "Loading"
                   : isSignedIn
                   ? "Open Instrument"
                   : "Get Started"}
+              </span>
+              <span className="landing-header-cta-icon">
+                {isLoadingAuthState ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                )}
               </span>
             </button>
           </div>
