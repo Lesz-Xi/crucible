@@ -175,7 +175,7 @@ export function Navbar() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="landing-header-cta-button group relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center rounded-full border-0 px-1 py-1 text-sm font-medium outline-none transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
+              className="landing-header-cta-button group relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center rounded-full border-0 px-1 text-sm font-medium outline-none transition-all duration-300 ease-out disabled:cursor-not-allowed disabled:opacity-70"
             >
               <span className="landing-header-cta-fill" aria-hidden="true" />
               <span className="landing-header-cta-icon">

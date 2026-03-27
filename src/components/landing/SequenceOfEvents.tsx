@@ -59,6 +59,7 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rowRef, { margin: "-15% 0px" });
   const isActive = inView && isScrollingDown;
+  const isContentVisible = inView;
 
   return (
     <div ref={rowRef} className="relative flex gap-8 md:gap-14 pb-16 last:pb-0">
@@ -122,7 +123,11 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
         className="flex-1 min-w-0 pt-0.5"
         initial={shouldReduce ? {} : { opacity: 0, x: 28 }}
         animate={
-          shouldReduce ? {} : isActive ? { opacity: 1, x: 0 } : { opacity: 0, x: 28 }
+          shouldReduce
+            ? {}
+            : isContentVisible
+            ? { opacity: 1, x: 0 }
+            : { opacity: 0, x: 28 }
         }
         transition={{
           duration: 0.7,
