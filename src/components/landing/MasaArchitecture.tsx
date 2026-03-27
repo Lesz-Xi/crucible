@@ -5,17 +5,6 @@ interface MasaArchitectureProps {
   text?: string;
 }
 
-interface PinDefinition {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  rx: number;
-  rotate?: number;
-  cx?: number;
-  cy?: number;
-}
-
 interface RouteDefinition {
   id: string;
   d: string;
@@ -138,20 +127,9 @@ const PORTS: readonly PortDefinition[] = [
   { px: 131.5, py: 23.5, lx: 130.5, ly: 15.2, anchor: "middle", label: "SCM Model" },
   { px: 32, py: 36, lx: 37.5, ly: 36, anchor: "start", label: "Inference" },
   { px: 166.5, py: 88, lx: 172.5, ly: 88, anchor: "start", label: "Memory" },
-  { px: 138, py: 68, lx: 142, ly: 98, anchor: "middle", label: "Falsifiability" },
-  { px: 96.5, py: 97.5, lx: 97.5, ly: 105.5, anchor: "middle", label: "Provenance" },
-  { px: 87, py: 91.5, lx: 72, ly: 88.5, anchor: "end", label: "Critique" },
-] as const;
-
-const PINS: readonly PinDefinition[] = [
-  { x: 94.5, y: 31.6, w: 3.2, h: 7, rx: 0.8 },
-  { x: 106.3, y: 31.6, w: 3.2, h: 7, rx: 0.8 },
-  { x: 121.3, y: 47.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 122.9, cy: 50.7 },
-  { x: 121.3, y: 60.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 122.9, cy: 63.7 },
-  { x: 94.5, y: 65.4, w: 3.2, h: 7, rx: 0.8 },
-  { x: 106.3, y: 65.4, w: 3.2, h: 7, rx: 0.8 },
-  { x: 79.5, y: 47.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 81.1, cy: 50.7 },
-  { x: 79.5, y: 60.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 81.1, cy: 63.7 },
+  { px: 138, py: 68, lx: 142, ly: 94.5, anchor: "middle", label: "Falsifiability" },
+  { px: 96.5, py: 97.5, lx: 97.5, ly: 100.2, anchor: "middle", label: "Provenance" },
+  { px: 87, py: 91.5, lx: 72, ly: 84.8, anchor: "end", label: "Critique" },
 ] as const;
 
 const SWITCHES: readonly SwitchDefinition[] = [
@@ -212,7 +190,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <g
           stroke="url(#masa-route-line)"
           fill="none"
-          strokeWidth="0.4"
+          strokeWidth="0.36"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="100 100"
@@ -254,7 +232,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
                 d="M -1.4 -1.2 L 1.35 0 L -1.4 1.2"
                 fill="none"
                 stroke={point.color}
-                strokeWidth="0.3"
+                strokeWidth="0.26"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -294,7 +272,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="2.15"
+            fontSize="1.95"
             fontWeight="400"
             letterSpacing="0.08em"
           >
@@ -307,13 +285,13 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="2.85"
+              r="2.35"
               fill="var(--landing-masa-dot-halo)"
               opacity="0.1"
             >
               <animate
                 attributeName="r"
-                values="2.2;3;2.2"
+                values="1.9;2.5;1.9"
                 dur="3.2s"
                 begin={`${0.22 * index}s`}
                 repeatCount="indefinite"
@@ -329,7 +307,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.72"
+              r="1.42"
               fill="var(--landing-masa-dot-core)"
             >
               <animate
@@ -343,34 +321,21 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="2.15"
+              r="1.8"
               fill="none"
               stroke="var(--landing-masa-dot-ring)"
-              strokeWidth="0.26"
+              strokeWidth="0.22"
             />
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="0.42"
+              r="0.3"
               fill="var(--landing-masa-dot-spark)"
             />
           </g>
         ))}
 
         <g filter="url(#masa-cpu-shadow)">
-          {PINS.map((pin, index) => (
-            <rect
-              key={index}
-              x={pin.x}
-              y={pin.y}
-              width={pin.w}
-              height={pin.h}
-              rx={pin.rx}
-              fill="var(--landing-masa-pin-fill)"
-              transform={pin.rotate ? `rotate(${pin.rotate} ${pin.cx} ${pin.cy})` : undefined}
-            />
-          ))}
-
           <rect
             x={CHIP_X}
             y={CHIP_Y}
