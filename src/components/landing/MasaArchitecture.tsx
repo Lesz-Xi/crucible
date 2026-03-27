@@ -128,8 +128,8 @@ const ROUTES: readonly RouteDefinition[] = [
 
 const CHIP_X = 83;
 const CHIP_Y = 37;
-const CHIP_W = 38;
-const CHIP_H = 30;
+const CHIP_W = 34;
+const CHIP_H = 26;
 const CHIP_CENTER_X = CHIP_X + CHIP_W / 2;
 
 const PORTS: readonly PortDefinition[] = [
@@ -212,7 +212,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <g
           stroke="url(#masa-route-line)"
           fill="none"
-          strokeWidth="0.52"
+          strokeWidth="0.4"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="100 100"
@@ -254,7 +254,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
                 d="M -1.4 -1.2 L 1.35 0 L -1.4 1.2"
                 fill="none"
                 stroke={point.color}
-                strokeWidth="0.36"
+                strokeWidth="0.3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -294,7 +294,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="2.5"
+            fontSize="2.15"
             fontWeight="400"
             letterSpacing="0.08em"
           >
@@ -307,13 +307,13 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="3.05"
+              r="2.85"
               fill="var(--landing-masa-dot-halo)"
               opacity="0.1"
             >
               <animate
                 attributeName="r"
-                values="2.5;3.25;2.5"
+                values="2.2;3;2.2"
                 dur="3.2s"
                 begin={`${0.22 * index}s`}
                 repeatCount="indefinite"
@@ -329,7 +329,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.82"
+              r="1.72"
               fill="var(--landing-masa-dot-core)"
             >
               <animate
@@ -343,7 +343,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="2.35"
+              r="2.15"
               fill="none"
               stroke="var(--landing-masa-dot-ring)"
               strokeWidth="0.26"
@@ -351,7 +351,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="0.48"
+              r="0.42"
               fill="var(--landing-masa-dot-spark)"
             />
           </g>
@@ -376,7 +376,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             y={CHIP_Y}
             width={CHIP_W}
             height={CHIP_H}
-            rx="4"
+            rx="3.6"
             fill="url(#masa-chip-fill)"
           />
           <rect
@@ -384,32 +384,32 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             y={CHIP_Y + 0.4}
             width={CHIP_W - 0.8}
             height={CHIP_H - 0.8}
-            rx="3.6"
+            rx="3.2"
             fill="none"
             stroke="url(#masa-chip-edge)"
-            strokeWidth="0.35"
+            strokeWidth="0.3"
           />
 
           <text
             x={CHIP_X + CHIP_W / 2 - 0.8}
-            y={CHIP_Y + 16.8}
+            y={CHIP_Y + 15}
             textAnchor="middle"
             fill="url(#masa-text-grad)"
             fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="10.6"
+            fontSize="8.9"
             fontWeight="680"
             letterSpacing="0.03em"
           >
             {text}
           </text>
           <text
-            x={CHIP_CENTER_X - 1.35}
-            y={CHIP_Y + 24}
+            x={CHIP_CENTER_X - 1.15}
+            y={CHIP_Y + 21.2}
             textAnchor="middle"
             fill="var(--landing-masa-sub-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="2.05"
-            letterSpacing="0.11em"
+            fontSize="1.72"
+            letterSpacing="0.095em"
           >
             CAUSAL ENGINE
           </text>
