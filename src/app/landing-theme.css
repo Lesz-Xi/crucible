@@ -299,6 +299,7 @@ html:has(.theme-landing) {
   border: 1px solid color-mix(in srgb, var(--accent-rust) 14%, var(--border-subtle));
   background: var(--landing-header-cta-bg);
   box-shadow: var(--landing-header-cta-shadow);
+  transform: translateY(0.05rem);
 }
 
 .theme-landing .landing-header-cta:hover {
