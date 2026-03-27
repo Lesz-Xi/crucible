@@ -236,6 +236,22 @@ html:has(.theme-landing) {
   transform: translateX(-50%);
 }
 
+.theme-landing .landing-header-nav-link {
+  color: var(--text-muted);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    text-shadow 180ms ease;
+}
+
+.theme-landing .landing-header-nav-link:hover,
+.theme-landing .landing-header-nav-link:focus-visible,
+.theme-landing .landing-header-nav-link[aria-expanded="true"] {
+  color: #f3f7ff;
+  border-color: var(--accent-rust);
+  text-shadow: 0 0 10px rgba(243, 247, 255, 0.14);
+}
+
 .theme-landing .landing-header-pages-menu {
   position: absolute;
   left: 50%;
