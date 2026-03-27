@@ -30,8 +30,8 @@ const PORTS = [
 ] as const;
 
 // Warm amber-bronze signal lights — softer than chip amber, feels like dim instrument indicators
-const PORT_COLOR = "#b8904e";   // muted bronze halo
-const DOT_COLOR  = "#d4a862";   // slightly brighter amber core — picks up the chip's gold tone
+const PORT_COLOR = "#cba86e";
+const DOT_COLOR  = "#dfbb80";
 
 // Chip geometry
 const CX = 200; // center x
@@ -40,7 +40,7 @@ const R  = 90;  // half-size of chip square
 
 export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureProps) {
   return (
-    <div className={className} style={{ color: "rgba(255,255,255,0.15)" }}>
+    <div className={className} style={{ color: "rgba(64, 53, 44, 0.22)" }}>
       <svg
         viewBox="0 0 400 360"
         width="100%"
@@ -50,8 +50,8 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <defs>
           {/* Amber text shimmer */}
           <linearGradient id="masa-text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#8b6240" />
-            <stop offset="50%"  stopColor="#e0b476">
+            <stop offset="0%"   stopColor="#9d7449" />
+            <stop offset="50%"  stopColor="#edc788">
               <animate
                 attributeName="offset"
                 values="0.3; 0.7; 0.3"
@@ -62,7 +62,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
                 keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
               />
             </stop>
-            <stop offset="100%" stopColor="#8b6240" />
+            <stop offset="100%" stopColor="#9d7449" />
           </linearGradient>
 
           {/* Trace line: amber-bronze → dark (fades into chip) */}
@@ -73,8 +73,8 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
 
           {/* Chip body: subtle radial from stone-800 to near-black */}
           <radialGradient id="masa-chip-bg" cx="50%" cy="40%" r="60%">
-            <stop offset="0%"   stopColor="#292524" />
-            <stop offset="100%" stopColor="#0e0d0c" />
+            <stop offset="0%"   stopColor="#4b4540" />
+            <stop offset="100%" stopColor="#3a342f" />
           </radialGradient>
 
           {/* Ambient glow on MASA text */}
@@ -112,7 +112,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
               key={`trace-${i}`}
               x1={port.px} y1={port.py}
               x2={ex}      y2={ey}
-              stroke="#b8904e"
+          stroke="#cba86e"
               strokeWidth="0.8"
               strokeOpacity="0.38"
               pathLength="1"
@@ -139,9 +139,9 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           width={R * 2} height={R * 2}
           rx="6"
           fill="url(#masa-chip-bg)"
-          stroke="#c8965a"
+          stroke="#c39a61"
           strokeWidth="0.6"
-          strokeOpacity="0.45"
+          strokeOpacity="0.54"
         />
 
         {/* ── Inner circuit grid (5 × 5 faint lines) ────────────────── */}
@@ -150,12 +150,12 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <line
               x1={CX - R + 6} y1={CY + offset}
               x2={CX + R - 6} y2={CY + offset}
-              stroke="rgba(200,150,90,0.07)" strokeWidth="0.4"
+              stroke="rgba(223,187,128,0.08)" strokeWidth="0.4"
             />
             <line
               x1={CX + offset} y1={CY - R + 6}
               x2={CX + offset} y2={CY + R - 6}
-              stroke="rgba(200,150,90,0.07)" strokeWidth="0.4"
+              stroke="rgba(223,187,128,0.08)" strokeWidth="0.4"
             />
           </g>
         ))}
@@ -168,33 +168,33 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
                 L ${CX + sx * (R - 4)} ${CY + sy * (R - 4)}
                 L ${CX + sx * (R - 16)} ${CY + sy * (R - 4)}`}
             fill="none"
-            stroke="#c8965a"
+            stroke="#d2ad78"
             strokeWidth="0.9"
-            strokeOpacity="0.55"
+            strokeOpacity="0.62"
           />
         ))}
 
         {/* ── Connection pins on chip edges ──────────────────────────── */}
         {/* Top pins */}
         <rect x={155} y={CY - R - 4} width="3" height="5" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         <rect x={242} y={CY - R - 4} width="3" height="5" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         {/* Right pins */}
         <rect x={CX + R - 1} y={155} width="5" height="3" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         <rect x={CX + R - 1} y={242} width="5" height="3" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         {/* Bottom pins */}
         <rect x={155} y={CY + R - 1} width="3" height="5" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         <rect x={242} y={CY + R - 1} width="3" height="5" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         {/* Left pins */}
         <rect x={CX - R - 4} y={155} width="5" height="3" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
         <rect x={CX - R - 4} y={242} width="5" height="3" rx="0.6"
-          fill="#c8965a" fillOpacity="0.5" />
+          fill="#d2ad78" fillOpacity="0.56" />
 
         {/* ── Central MASA label ─────────────────────────────────────── */}
         <text
@@ -214,7 +214,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <text
           x={CX} y={CY + 22}
           textAnchor="middle"
-          fill="#5a5148"
+          fill="#b79a72"
           fontFamily="var(--font-ibm-plex-mono, monospace)"
           fontSize="6.5"
           letterSpacing="0.22em"
@@ -264,7 +264,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             x={port.lx} y={port.ly}
             textAnchor={port.anchor}
             dominantBaseline="middle"
-            fill="#5a5148"
+            fill="#6c5d52"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
             fontSize="6.5"
             letterSpacing="0.14em"

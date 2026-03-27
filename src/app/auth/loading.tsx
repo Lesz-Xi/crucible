@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function AuthLoading() {
   return (
@@ -25,8 +24,9 @@ export default function AuthLoading() {
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Preparing the airlock</p>
             </div>
           </Link>
-
-          <ThemeToggle variant="landing" />
+          <div className="rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)] shadow-[var(--shadow-soft)]">
+            Light access
+          </div>
         </header>
 
         <main className="flex flex-1 items-center justify-center py-10 md:py-14">

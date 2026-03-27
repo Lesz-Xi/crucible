@@ -79,7 +79,7 @@ export function Hero() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="landing-hero-primary-button hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="landing-hero-primary-button flex items-center gap-x-2 gap-y-2 rounded-full border border-[var(--border-subtle)] px-6 py-3 text-sm font-medium transition-all duration-500 ease-out hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 group"
               style={{
                 background:
                   "linear-gradient(180deg, var(--landing-hero-cta-from), var(--landing-hero-cta-via), var(--landing-hero-cta-to))",

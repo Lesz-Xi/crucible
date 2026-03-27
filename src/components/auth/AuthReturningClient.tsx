@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { ArrowRight, Loader2, Orbit, ShieldCheck } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface AuthReturningClientProps {
   nextPath: string;
@@ -44,8 +43,9 @@ export function AuthReturningClient({ nextPath }: AuthReturningClientProps) {
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Identity restored</p>
             </div>
           </Link>
-
-          <ThemeToggle variant="landing" className="auth-theme-toggle" />
+          <div className="rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)] shadow-[var(--shadow-soft)]">
+            Session return
+          </div>
         </header>
 
         <main className="flex flex-1 items-center py-10 md:py-14">
@@ -111,7 +111,7 @@ export function AuthReturningClient({ nextPath }: AuthReturningClientProps) {
                 <button
                   type="button"
                   onClick={() => router.replace(nextPath)}
-                  className="inline-flex items-center justify-center gap-3 rounded-full border border-[rgba(171,111,57,0.3)] bg-[linear-gradient(180deg,#b77739_0%,#a86a31_100%)] px-6 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-[#171411] shadow-[inset_0_1px_0_rgba(255,244,230,0.34)] transition-transform hover:-translate-y-0.5 hover:brightness-[1.03] dark:border-[rgba(224,163,108,0.32)] dark:bg-[linear-gradient(180deg,var(--accent-rust-strong)_0%,var(--accent-rust)_100%)] dark:shadow-none"
+                  className="auth-primary-action inline-flex items-center justify-center gap-3 rounded-full px-6 py-4 font-mono text-[11px] uppercase tracking-[0.18em]"
                 >
                   <ArrowRight className="h-4 w-4" />
                   Continue now

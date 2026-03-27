@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ArrowRight, KeyRound, Loader2, Orbit, ShieldCheck } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { getCurrentUser, signInWithGoogle } from '@/lib/auth/actions';
 import type { AppAuthUser } from '@/types/auth';
 
@@ -110,8 +109,9 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
               <p className="mt-1 text-sm text-[var(--text-secondary)]">Grid-authored operator entry</p>
             </div>
           </Link>
-
-          <ThemeToggle variant="landing" className="auth-theme-toggle" />
+          <div className="rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)] shadow-[var(--shadow-soft)]">
+            Light access
+          </div>
         </header>
 
         <main className="flex flex-1 items-center py-10 md:py-14">
@@ -188,7 +188,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                     </div>
                   </div>
 
-                  <div className="rounded-full border border-[rgba(171,111,57,0.18)] bg-[rgba(184,125,72,0.1)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)] dark:border-[rgba(224,163,108,0.24)] dark:bg-[rgba(184,125,72,0.12)]">
+                  <div className="rounded-full border border-[rgba(171,111,57,0.18)] bg-[rgba(184,125,72,0.1)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)]">
                     Google only
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                     type="button"
                     onClick={handleLaunch}
                     disabled={isLoadingUser || isRedirecting || !authConfigured}
-                    className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-[rgba(171,111,57,0.3)] bg-[linear-gradient(180deg,#b77739_0%,#a86a31_100%)] px-5 py-4 font-mono text-[11px] uppercase tracking-[0.18em] text-[#171411] shadow-[inset_0_1px_0_rgba(255,244,230,0.34)] transition-transform hover:-translate-y-0.5 hover:brightness-[1.03] disabled:cursor-not-allowed disabled:opacity-60 dark:border-[rgba(224,163,108,0.32)] dark:bg-[linear-gradient(180deg,var(--accent-rust-strong)_0%,var(--accent-rust)_100%)] dark:shadow-none"
+                    className="auth-primary-action inline-flex w-full items-center justify-center gap-3 rounded-full px-5 py-4 font-mono text-[11px] uppercase tracking-[0.18em] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isLoadingUser || isRedirecting ? <Loader2 className="h-4 w-4 animate-spin" /> : user ? <ArrowRight className="h-4 w-4" /> : <GoogleGlyph />}
                     <span>
@@ -257,7 +257,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
 
                   <Link
                     href={emailFallbackHref}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(20,18,18,0.78)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:border-[rgba(243,247,255,0.18)] hover:text-[var(--text-primary)]"
+                    className="auth-secondary-action inline-flex w-full items-center justify-center rounded-full px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em]"
                   >
                     Use email instead
                   </Link>
