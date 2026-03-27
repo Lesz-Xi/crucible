@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -9,7 +9,6 @@ import {
   useMotionValueEvent,
   useReducedMotion,
 } from "framer-motion";
-import { useState } from "react";
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -52,14 +51,34 @@ interface StepProps {
   step: (typeof steps)[number];
   index: number;
   shouldReduce: boolean;
-  isScrollingDown: boolean;
 }
 
-function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
+function StepRow({ step, index, shouldReduce }: StepProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const inView = useInView(rowRef, { margin: "-15% 0px" });
-  const isActive = inView && isScrollingDown;
+  const [isActivated, setIsActivated] = useState(false);
   const isContentVisible = inView;
+  const { scrollY } = useScroll();
+
+  useEffect(() => {
+    const updateActivation = () => {
+      if (!rowRef.current) return;
+      const threshold = window.innerHeight * 0.4;
+      const { top } = rowRef.current.getBoundingClientRect();
+      setIsActivated(top <= threshold);
+    };
+
+    updateActivation();
+    window.addEventListener("resize", updateActivation);
+    return () => window.removeEventListener("resize", updateActivation);
+  }, []);
+
+  useMotionValueEvent(scrollY, "change", () => {
+    if (!rowRef.current) return;
+    const threshold = window.innerHeight * 0.4;
+    const { top } = rowRef.current.getBoundingClientRect();
+    setIsActivated(top <= threshold);
+  });
 
   return (
     <div ref={rowRef} className="relative flex gap-8 md:gap-14 pb-16 last:pb-0">
@@ -73,7 +92,7 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
           animate={
             shouldReduce
               ? {}
-              : isActive
+              : isActivated
               ? {
                   borderColor: "rgba(200,150,90,0.9)",
                   backgroundColor: "rgba(200,150,90,0.08)",
@@ -96,7 +115,7 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
             animate={
               shouldReduce
                 ? {}
-                : isActive
+                : isActivated
                 ? { backgroundColor: "rgba(200,150,90,1)", opacity: 1 }
                 : { backgroundColor: "rgba(255,255,255,0.2)", opacity: 0.4 }
             }
@@ -108,7 +127,7 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
         <motion.span
           className="mt-2 font-mono text-[0.52rem] tracking-[0.22em] tabular-nums"
           animate={
-            shouldReduce ? {} : isActive
+            shouldReduce ? {} : isActivated
               ? { color: "rgba(200,150,90,0.7)", opacity: 1 }
               : { color: "rgba(255,255,255,0.15)", opacity: 0.5 }
           }
@@ -168,7 +187,7 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
         className="pointer-events-none absolute right-0 top-[-0.2em] select-none font-mono text-[6rem] font-bold leading-none tracking-tight text-[var(--text-primary)] opacity-[0.025] md:text-[8rem]"
         initial={shouldReduce ? {} : { opacity: 0 }}
         animate={
-          shouldReduce ? {} : isActive ? { opacity: 0.025 } : { opacity: 0 }
+          shouldReduce ? {} : isActivated ? { opacity: 0.025 } : { opacity: 0 }
         }
         transition={{ duration: 1.2, delay: 0.3 }}
       >
@@ -182,22 +201,14 @@ function StepRow({ step, index, shouldReduce, isScrollingDown }: StepProps) {
 
 export function SequenceOfEvents() {
   const shouldReduce = useReducedMotion();
-  const [isScrollingDown, setIsScrollingDown] = useState(true);
 
   // Scroll-driven line progress — tracks the full section
   const sectionRef = useRef<HTMLElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  const { scrollY } = useScroll();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start 75%", "end 30%"],
-  });
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? latest;
-    if (latest === previous) return;
-    setIsScrollingDown(latest > previous);
   });
 
   // scaleY 0→1 drives the amber progress line
@@ -264,7 +275,6 @@ export function SequenceOfEvents() {
               step={step}
               index={i}
               shouldReduce={Boolean(shouldReduce)}
-              isScrollingDown={isScrollingDown}
             />
           ))}
         </div>

@@ -32,6 +32,8 @@
   --landing-header-logo-rail: 5rem;
   --landing-header-logo-gap: 1rem;
   --landing-header-cta-min-width: 8.4rem;
+  --landing-header-cta-height: 2.15rem;
+  --landing-header-cta-fill-size: 1.68rem;
   --landing-header-scroll-bg: rgba(12, 10, 9, 0.72);
   --landing-header-cta-text: #f3ede4;
   --landing-header-cta-fill-bg: linear-gradient(135deg, #e0b476 0%, #c8965a 100%);
@@ -328,19 +330,19 @@ html:has(.theme-landing) {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 2.15rem;
+  height: var(--landing-header-cta-height);
+  min-height: var(--landing-header-cta-height);
   color: var(--landing-header-cta-text);
 }
 
 .theme-landing .landing-header-cta-fill {
   position: absolute;
   left: 0.25rem;
-  top: 50%;
-  height: 1.68rem;
-  width: 1.68rem;
+  top: calc((var(--landing-header-cta-height) - var(--landing-header-cta-fill-size)) / 2);
+  height: var(--landing-header-cta-fill-size);
+  width: var(--landing-header-cta-fill-size);
   border-radius: 999px;
   background: var(--landing-header-cta-fill-bg);
-  transform: translateY(-50%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 18px rgba(200, 150, 90, 0.18);
