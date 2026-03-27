@@ -22,12 +22,12 @@ export function LandingSidebar() {
       <Link href="/" className="group flex flex-col items-center gap-1">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--text-primary)]">
           <Image
-            src="/wu-wei-mark-true-alpha.png"
+            src="/wu-logo.png"
             alt="Wu-Weism"
             width={28}
             height={28}
             unoptimized
-            className="h-auto w-6 invert"
+            className="h-auto w-6 object-contain"
           />
         </div>
       </Link>

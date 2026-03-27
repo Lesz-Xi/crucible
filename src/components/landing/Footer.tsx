@@ -61,10 +61,10 @@ export function Footer() {
             <div className="space-y-6">
               <div className="relative h-10 w-10">
                 <Image
-                  src="/wu-wei-mark-transparent.png"
+                  src="/wu-logo.png"
                   alt="Wu-Weism mark"
                   fill
-                  className="object-contain brightness-0"
+                  className="object-contain"
                   unoptimized
                 />
               </div>

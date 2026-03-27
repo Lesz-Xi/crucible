@@ -6,6 +6,7 @@ import { ChatInterface, ExecutionStream, FileTreeItem } from "@/components/epist
 import { KDenseSession, VirtualFile } from "@/lib/epistemic/types";
 import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function EpistemicPage() {
@@ -79,7 +80,7 @@ export default function EpistemicPage() {
           <div>
             <h1 className="flex items-center gap-2 text-sm font-semibold text-[var(--lab-text-primary)]">
               <div className="relative h-14 w-14 rounded-lg border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] p-1.5">
-                <img src="/wu-wei-mark.png" alt="Wu-Weism logo" className="h-full w-full object-contain dark:invert" />
+                <Image src="/wu-logo.png" alt="Wu-Weism logo" fill unoptimized className="object-contain" />
               </div>
               Epistemic Audit
               <span className="rounded-full border border-[var(--lab-border)] bg-[var(--lab-shell-sidebar)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--lab-accent-slate)]">

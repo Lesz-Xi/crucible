@@ -90,7 +90,7 @@ export function AuthVintage({
       <header className="absolute inset-x-0 top-0 z-20 px-6 py-5 md:px-10 md:py-6">
         <Link href="/" className="inline-flex items-center gap-3">
           <Image
-            src="/wu-wei-mark-true-alpha.png"
+            src="/wu-logo.png"
             alt="Wu-Weism mark"
             width={160}
             height={123}

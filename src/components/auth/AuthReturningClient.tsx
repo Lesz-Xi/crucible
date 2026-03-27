@@ -28,7 +28,7 @@ export function AuthReturningClient({ nextPath }: AuthReturningClientProps) {
         <header className="flex items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-3">
             <Image
-              src="/wu-wei-mark-true-alpha.png"
+              src="/wu-logo.png"
               alt="Wu-Weism mark"
               width={100}
               height={78}

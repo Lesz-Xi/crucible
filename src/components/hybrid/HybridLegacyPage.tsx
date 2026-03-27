@@ -2,6 +2,7 @@
 
 // Hybrid Synthesis Page - Combine PDFs + Companies
 import { useState, useEffect, useRef, useMemo } from "react";
+import Image from "next/image";
 import { PDFUpload } from "@/components/pdf-upload";
 import { CompanyInput } from "@/components/company-input";
 import { TacticalButton } from "@/components/ui/tactical-button";
@@ -371,7 +372,7 @@ export default function HybridSynthesisPage() {
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 relative rounded-lg bg-black p-1.5">
-<img src="/wu-wei-mark.png" alt="Wu-Weism logo" className="w-full h-full object-contain invert" />
+<Image src="/wu-logo.png" alt="Wu-Weism logo" fill unoptimized className="object-contain" />
                 </div>
                 <div>
                   <h1 className="text-xl font-mono font-bold text-[var(--text-primary)] tracking-wider">

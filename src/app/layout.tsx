@@ -42,16 +42,16 @@ export const metadata: Metadata = {
   description: "Instrument-grade scientific workspace for causal inquiry, provenance, and BYOK research.",
   applicationName: "Wu-Weism",
   icons: {
-    icon: "/wu-wei-mark-true-alpha.png",
-    shortcut: "/wu-wei-mark-true-alpha.png",
-    apple: "/wu-wei-mark-true-alpha.png",
+    icon: "/wu-logo.png",
+    shortcut: "/wu-logo.png",
+    apple: "/wu-logo.png",
   },
   openGraph: {
     title: "Wu-Weism",
     description: "Instrument-grade scientific workspace for causal inquiry, provenance, and BYOK research.",
     images: [
       {
-        url: "/wu-wei-mark-true-alpha.png",
+        url: "/wu-logo.png",
         alt: "Wu-Weism mark",
       },
     ],
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Wu-Weism",
     description: "Instrument-grade scientific workspace for causal inquiry, provenance, and BYOK research.",
-    images: ["/wu-wei-mark-true-alpha.png"],
+    images: ["/wu-logo.png"],
   },
 };
 
