@@ -180,10 +180,10 @@ export function Navbar() {
               <span className="landing-header-cta-shell" aria-hidden="true" />
               <span className="landing-header-cta-copy">
                 {isLoadingAuthState
-                  ? "LOADING"
+                  ? "Loading"
                   : isSignedIn
-                  ? "OPEN INSTRUMENT"
-                  : "GET STARTED"}
+                  ? "Open Instrument"
+                  : "Get Started"}
               </span>
               <span className="landing-header-cta-icon-puck" aria-hidden="true" />
               <span className="landing-header-cta-icon">
