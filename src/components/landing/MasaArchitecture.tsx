@@ -1,10 +1,3 @@
-// MasaArchitecture — MASA-branded chip/circuit diagram for the hero right column.
-// Adapted from the CPU architecture SVG concept. Pure inline SVG, no external deps.
-// All colors draw exclusively from the MASA amber/stone palette — no rainbow.
-//
-// "use client" is required only because this component is rendered inside Hero.tsx
-// which is a client component tree (uses useEffect / useRouter).
-
 "use client";
 
 interface MasaArchitectureProps {
@@ -12,271 +5,183 @@ interface MasaArchitectureProps {
   text?: string;
 }
 
-// 8 port positions — pulled closer to chip for a compact layout
-// Each port: dot position + label position + text anchor
-const PORTS = [
-  // Top edge
-  { px: 160, py: 78,  lx: 160, ly: 58,  anchor: "middle" as const, label: "SCM"        },
-  { px: 240, py: 78,  lx: 240, ly: 58,  anchor: "middle" as const, label: "DAG"        },
-  // Right edge
-  { px: 322, py: 160, lx: 348, ly: 163, anchor: "start"  as const, label: "INFERENCE"  },
-  { px: 322, py: 240, lx: 348, ly: 243, anchor: "start"  as const, label: "MEMORY"     },
-  // Bottom edge
-  { px: 240, py: 322, lx: 240, ly: 342, anchor: "middle" as const, label: "FALSIFY"    },
-  { px: 160, py: 322, lx: 160, ly: 342, anchor: "middle" as const, label: "PROVENANCE" },
-  // Left edge
-  { px: 78,  py: 240, lx: 52,  ly: 243, anchor: "end"    as const, label: "CRITIQUE"   },
-  { px: 78,  py: 160, lx: 52,  ly: 163, anchor: "end"    as const, label: "GROUNDING"  },
+const ROUTES = [
+  { d: "M 14 22 H 104.5 Q 111 22 111 28.5 V 52", cx: 14, cy: 22 },
+  { d: "M 186 10 H 108.5 Q 102 10 102 16.5 V 52", cx: 186, cy: 10 },
+  { d: "M 136 22 V 45.5 Q 136 52 129.5 52 H 116", cx: 136, cy: 22 },
+  { d: "M 170 90 V 67.5 Q 170 61 163.5 61 H 116", cx: 170, cy: 90 },
+  { d: "M 142 68 H 156 Q 162 68 162 74 V 84 Q 162 90 156 90 H 116.5 Q 110 90 110 83.5 V 61", cx: 142, cy: 68 },
+  { d: "M 100 98 V 62", cx: 100, cy: 98 },
+  { d: "M 91 93 V 74 Q 91 68 85 68 H 74 Q 68 68 68 62 V 54 Q 68 48 74 48 H 86", cx: 91, cy: 93 },
+  { d: "M 34 34 H 56 Q 62 34 62 40 V 46.5 Q 62 52 68 52 H 84", cx: 34, cy: 34 },
 ] as const;
 
-// Chip geometry
-const CX = 200; // center x
-const CY = 200; // center y
-const R  = 90;  // half-size of chip square
+const CHIP_X = 87;
+const CHIP_Y = 41;
+const CHIP_W = 30;
+const CHIP_H = 22;
+
+const PINS = [
+  { x: 95, y: 37, w: 2.4, h: 5, rx: 0.7 },
+  { x: 104.6, y: 37, w: 2.4, h: 5, rx: 0.7 },
+  { x: 118.2, y: 46, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 119.4, cy: 48.5 },
+  { x: 118.2, y: 55.4, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 119.4, cy: 57.9 },
+  { x: 95, y: 62.8, w: 2.4, h: 5, rx: 0.7 },
+  { x: 104.6, y: 62.8, w: 2.4, h: 5, rx: 0.7 },
+  { x: 84.2, y: 46, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 85.4, cy: 48.5 },
+  { x: 84.2, y: 55.4, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 85.4, cy: 57.9 },
+] as const;
 
 export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureProps) {
   return (
-    <div className={className} style={{ color: "rgba(64, 53, 44, 0.22)" }}>
+    <div className={className}>
       <svg
-        viewBox="0 0 400 360"
+        viewBox="0 0 200 110"
         width="100%"
-        aria-label="MASA Automated Scientist Architecture"
+        aria-label="MASA processor architecture"
         style={{ overflow: "visible" }}
       >
         <defs>
-          {/* Amber text shimmer */}
-          <linearGradient id="masa-text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="#9d7449" />
-            <stop offset="50%"  stopColor="#edc788">
-              <animate
-                attributeName="offset"
-                values="0.3; 0.7; 0.3"
-                dur="4s"
-                repeatCount="indefinite"
-                calcMode="spline"
-                keyTimes="0; 0.5; 1"
-                keySplines="0.4 0 0.2 1; 0.4 0 0.2 1"
-              />
-            </stop>
-            <stop offset="100%" stopColor="#9d7449" />
+          <filter id="masa-cpu-shadow" x="-20%" y="-20%" width="140%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" floodColor="rgba(40, 31, 24, 0.12)" />
+          </filter>
+
+          <filter id="masa-endpoint-shadow" x="-100%" y="-100%" width="300%" height="300%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="1.6" floodColor="rgba(58, 46, 34, 0.18)" />
+          </filter>
+
+          <linearGradient id="masa-route-line" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(92, 78, 64, 0.1)" />
+            <stop offset="100%" stopColor="rgba(92, 78, 64, 0.18)" />
           </linearGradient>
 
-          {/* Trace line: amber-bronze → dark (fades into chip) */}
-          <linearGradient id="masa-trace-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%"   stopColor="var(--landing-masa-trace)" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="var(--landing-masa-trace)" stopOpacity="0.08" />
+          <linearGradient id="masa-chip-fill" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="rgba(25, 24, 24, 0.96)" />
+            <stop offset="100%" stopColor="rgba(30, 29, 29, 0.92)" />
           </linearGradient>
 
-          {/* Chip body: translucent smoky glass so the parchment grid shows through */}
-          <radialGradient id="masa-chip-bg" cx="50%" cy="40%" r="60%">
-            <stop offset="0%"   stopColor="rgba(82, 75, 69, 0.82)" />
-            <stop offset="100%" stopColor="rgba(58, 52, 47, 0.68)" />
-          </radialGradient>
-
-          <linearGradient id="masa-chip-sheen" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="masa-chip-edge" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="rgba(255,255,255,0.14)" />
-            <stop offset="55%" stopColor="rgba(255,255,255,0.04)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0.04)" />
           </linearGradient>
 
-          {/* Ambient glow on MASA text */}
-          <filter id="masa-text-glow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="1.7" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-
-          {/* Tighter glow filter — crisper, less bloom */}
-          <filter id="masa-dot-glow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="0.7" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-
-          {/* Tight controlled halo for signal nodes */}
-          <radialGradient id="masa-port-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stopColor="var(--landing-masa-dot-halo)" stopOpacity="0.95" />
-            <stop offset="100%" stopColor="var(--landing-masa-dot-halo)" stopOpacity="0" />
-          </radialGradient>
+          <linearGradient id="masa-text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#f0ece6" />
+            <stop offset="55%" stopColor="#ffffff" />
+            <stop offset="100%" stopColor="#d7d0c7" />
+          </linearGradient>
         </defs>
 
-        {/* ── Trace lines: port → chip edge ─────────────────────────── */}
-        {PORTS.map((port, i) => {
-          // Clamp endpoint to chip perimeter
-          const ex = Math.max(CX - R, Math.min(CX + R, port.px));
-          const ey = Math.max(CY - R, Math.min(CY + R, port.py));
-          return (
-            <line
-              key={`trace-${i}`}
-              x1={port.px} y1={port.py}
-              x2={ex}      y2={ey}
-              stroke="url(#masa-trace-grad)"
-              strokeWidth="0.8"
-              strokeOpacity="1"
-              pathLength="1"
-              strokeDasharray="1"
-              strokeDashoffset="1"
-            >
+        <g
+          stroke="url(#masa-route-line)"
+          fill="none"
+          strokeWidth="0.3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeDasharray="100 100"
+          pathLength="100"
+        >
+          {ROUTES.map((route, index) => (
+            <path key={index} d={route.d} strokeDasharray="100 100" pathLength="100">
               <animate
                 attributeName="stroke-dashoffset"
-                from="1" to="0"
-                dur="0.9s"
+                from="100"
+                to="0"
+                dur="1.1s"
+                begin={`${index * 0.06}s`}
                 fill="freeze"
-                begin={`${0.05 * i}s`}
                 calcMode="spline"
-                keyTimes="0; 1"
-                keySplines="0.25 0.1 0.5 1"
+                keySplines="0.25,0.1,0.5,1"
+                keyTimes="0;1"
               />
-            </line>
-          );
-        })}
+            </path>
+          ))}
+        </g>
 
-        {/* ── Chip body ──────────────────────────────────────────────── */}
-        <rect
-          x={CX - R} y={CY - R}
-          width={R * 2} height={R * 2}
-          rx="6"
-          fill="url(#masa-chip-bg)"
-          stroke="var(--landing-masa-chip-edge)"
-          strokeWidth="0.8"
-          strokeOpacity="1"
-        />
-        <rect
-          x={CX - R} y={CY - R}
-          width={R * 2} height={R * 2}
-          rx="6"
-          fill="url(#masa-chip-sheen)"
-          opacity="0.55"
-        />
-
-        {/* ── Inner circuit grid (5 × 5 faint lines) ────────────────── */}
-        {[-36, -18, 0, 18, 36].map((offset) => (
-          <g key={`cg-${offset}`}>
-            <line
-              x1={CX - R + 6} y1={CY + offset}
-              x2={CX + R - 6} y2={CY + offset}
-              stroke="var(--landing-masa-chip-grid)" strokeWidth="0.4"
-            />
-            <line
-              x1={CX + offset} y1={CY - R + 6}
-              x2={CX + offset} y2={CY + R - 6}
-              stroke="var(--landing-masa-chip-grid)" strokeWidth="0.4"
+        {ROUTES.map((route, index) => (
+          <g key={`marker-${index}`} filter="url(#masa-endpoint-shadow)">
+            <circle
+              cx={route.cx}
+              cy={route.cy}
+              r="1.45"
+              fill="rgba(18, 18, 18, 0.98)"
+            >
+              <animate
+                attributeName="opacity"
+                values="0;1;1"
+                dur="0.55s"
+                begin={`${index * 0.07}s`}
+                fill="freeze"
+              />
+            </circle>
+            <circle
+              cx={route.cx}
+              cy={route.cy}
+              r="1.9"
+              fill="none"
+              stroke="rgba(45, 45, 45, 0.22)"
+              strokeWidth="0.26"
             />
           </g>
         ))}
 
-        {/* ── Corner brackets ────────────────────────────────────────── */}
-        {([[1, 1], [1, -1], [-1, -1], [-1, 1]] as const).map(([sx, sy], i) => (
-          <path
-            key={`cb-${i}`}
-            d={`M ${CX + sx * (R - 4)} ${CY + sy * (R - 16)}
-                L ${CX + sx * (R - 4)} ${CY + sy * (R - 4)}
-                L ${CX + sx * (R - 16)} ${CY + sy * (R - 4)}`}
-            fill="none"
-            stroke="var(--landing-masa-chip-edge)"
-            strokeWidth="0.9"
-            strokeOpacity="0.9"
+        <g filter="url(#masa-cpu-shadow)">
+          {PINS.map((pin, index) => (
+            <rect
+              key={index}
+              x={pin.x}
+              y={pin.y}
+              width={pin.w}
+              height={pin.h}
+              rx={pin.rx}
+              fill="rgba(44, 43, 43, 0.82)"
+              transform={pin.rotate ? `rotate(${pin.rotate} ${pin.cx} ${pin.cy})` : undefined}
+            />
+          ))}
+
+          <rect
+            x={CHIP_X}
+            y={CHIP_Y}
+            width={CHIP_W}
+            height={CHIP_H}
+            rx="3"
+            fill="url(#masa-chip-fill)"
           />
-        ))}
+          <rect
+            x={CHIP_X + 0.4}
+            y={CHIP_Y + 0.4}
+            width={CHIP_W - 0.8}
+            height={CHIP_H - 0.8}
+            rx="2.6"
+            fill="none"
+            stroke="url(#masa-chip-edge)"
+            strokeWidth="0.35"
+          />
 
-        {/* ── Connection pins on chip edges ──────────────────────────── */}
-        {/* Top pins */}
-        <rect x={155} y={CY - R - 4} width="3" height="5" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        <rect x={242} y={CY - R - 4} width="3" height="5" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        {/* Right pins */}
-        <rect x={CX + R - 1} y={155} width="5" height="3" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        <rect x={CX + R - 1} y={242} width="5" height="3" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        {/* Bottom pins */}
-        <rect x={155} y={CY + R - 1} width="3" height="5" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        <rect x={242} y={CY + R - 1} width="3" height="5" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        {/* Left pins */}
-        <rect x={CX - R - 4} y={155} width="5" height="3" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-        <rect x={CX - R - 4} y={242} width="5" height="3" rx="0.6"
-          fill="var(--landing-masa-chip-edge)" fillOpacity="0.84" />
-
-        {/* ── Central MASA label ─────────────────────────────────────── */}
-        <text
-          x={CX} y={CY + 6}
-          textAnchor="middle"
-          fill="url(#masa-text-grad)"
-          fontFamily="var(--font-ibm-plex-mono, 'JetBrains Mono', monospace)"
-          fontSize="26"
-          fontWeight="500"
-          letterSpacing="0.14em"
-          filter="url(#masa-text-glow)"
-        >
-          {text}
-        </text>
-
-        {/* Sub-label */}
-        <text
-          x={CX} y={CY + 22}
-          textAnchor="middle"
-          fill="var(--landing-masa-sub-label)"
-          fontFamily="var(--font-ibm-plex-mono, monospace)"
-          fontSize="6.5"
-          letterSpacing="0.22em"
-        >
-          CAUSAL ENGINE
-        </text>
-
-        {/* ── Port glow markers — pulsing amber ─────────────────────── */}
-        {PORTS.map((port, i) => (
-          <g key={`port-${i}`}>
-            <circle cx={port.px} cy={port.py} r="7.5"
-              fill="url(#masa-port-glow)" opacity="0.2">
-              <animate attributeName="r"
-                values="6.6;8.4;6.6" dur="3s" begin={`${i * 0.25}s`}
-                repeatCount="indefinite" calcMode="spline"
-                keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
-              <animate attributeName="opacity"
-                values="0.1;0.24;0.1" dur="3s" begin={`${i * 0.25}s`}
-                repeatCount="indefinite" />
-            </circle>
-            <circle cx={port.px} cy={port.py} r="2.35"
-              fill="var(--landing-masa-dot-core)" opacity="0.94"
-              filter="url(#masa-dot-glow)">
-              <animate attributeName="r" values="0;3;2.35" dur="0.35s"
-                begin={`${0.05 * i + 0.5}s`} fill="freeze" />
-              <animate attributeName="r"
-                values="2.35;2.65;2.35" dur="3s"
-                begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite"
-                calcMode="spline" keyTimes="0;0.5;1"
-                keySplines="0.4 0 0.2 1;0.4 0 0.2 1" />
-              <animate attributeName="opacity"
-                values="0.78;0.96;0.78" dur="3s"
-                begin={`${0.05 * i + 0.9}s`} repeatCount="indefinite" />
-            </circle>
-          </g>
-        ))}
-
-        {/* ── Port labels ────────────────────────────────────────────── */}
-        {PORTS.map((port, i) => (
           <text
-            key={`lbl-${i}`}
-            x={port.lx} y={port.ly}
-            textAnchor={port.anchor}
-            dominantBaseline="middle"
-            fill="var(--landing-masa-label)"
-            fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="6.5"
-            letterSpacing="0.14em"
+            x={CHIP_X + CHIP_W / 2}
+            y={CHIP_Y + 12}
+            textAnchor="middle"
+            fill="url(#masa-text-grad)"
+            fontFamily="var(--font-inter, Inter, sans-serif)"
+            fontSize="9.5"
+            fontWeight="700"
+            letterSpacing="0.08em"
           >
-            {port.label}
+            {text}
           </text>
-        ))}
-
+          <text
+            x={CHIP_X + CHIP_W / 2}
+            y={CHIP_Y + 17.6}
+            textAnchor="middle"
+            fill="rgba(228, 220, 210, 0.68)"
+            fontFamily="var(--font-ibm-plex-mono, monospace)"
+            fontSize="2.6"
+            letterSpacing="0.24em"
+          >
+            CAUSAL ENGINE
+          </text>
+        </g>
       </svg>
     </div>
   );
