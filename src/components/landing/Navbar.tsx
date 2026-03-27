@@ -84,7 +84,7 @@ export function Navbar() {
   };
 
   const linkClass =
-    "font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)] border-b border-transparent hover:border-[var(--accent-rust)] pb-0.5 whitespace-nowrap";
+    "font-mono text-[0.65rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:text-[#f3f7ff] focus-visible:text-[#f3f7ff] border-b border-transparent hover:border-[var(--accent-rust)] focus-visible:border-[var(--accent-rust)] pb-0.5 whitespace-nowrap";
 
   return (
     <header className="landing-navbar" data-scrolled={isScrolled ? "true" : "false"}>
