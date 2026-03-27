@@ -185,10 +185,10 @@ export function Navbar() {
 
               <span className="landing-header-cta-copy">
                 {isLoadingAuthState
-                  ? "Loading"
+                  ? "LOADING"
                   : isSignedIn
-                  ? "Open Instrument"
-                  : "Get Started"}
+                  ? "OPEN INSTRUMENT"
+                  : "GET STARTED"}
               </span>
               <span className="landing-header-cta-icon">
                 {isLoadingAuthState ? (

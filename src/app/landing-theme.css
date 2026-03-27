@@ -38,7 +38,9 @@
   --landing-header-cta-fill-bg: rgba(255, 249, 243, 0.98);
   --landing-header-cta-fill-text: #201813;
   --landing-header-cta-glow-base: radial-gradient(18% 54% at 50% 100%, rgba(167, 112, 58, 0.14) 0%, rgba(167, 112, 58, 0) 100%);
-  --landing-header-cta-glow-hover: radial-gradient(68% 54% at 50% 100%, rgba(167, 112, 58, 0.24) 0%, rgba(167, 112, 58, 0) 100%);
+  --landing-header-cta-glow-hover: radial-gradient(74% 58% at 50% 100%, rgba(198, 150, 90, 0.34) 0%, rgba(230, 191, 123, 0.18) 34%, rgba(167, 112, 58, 0) 100%);
+  --landing-header-cta-hover-border: rgba(205, 154, 86, 0.5);
+  --landing-header-cta-hover-shadow: 0 20px 44px rgba(177, 123, 62, 0.2), 0 0 0 1px rgba(205, 154, 86, 0.22);
   --landing-header-menu-bg: linear-gradient(180deg, rgba(255, 248, 242, 0.94), rgba(245, 237, 228, 0.94));
   --landing-header-menu-border: rgba(118, 101, 88, 0.14);
   --landing-header-menu-highlight: rgba(167, 112, 58, 0.08);
@@ -70,6 +72,14 @@
   --timeline-track: rgba(54,42,33,0.1);
   --timeline-progress: linear-gradient(to bottom, rgba(167,112,58,0.82) 0%, rgba(167,112,58,0.44) 60%, rgba(167,112,58,0.1) 100%);
   --landing-shift-after-shadow: 0 0 0 1px rgba(167,112,58,0.08), 0 8px 32px rgba(70,50,30,0.08);
+  --landing-masa-chip-fill: rgba(70, 63, 58, 0.76);
+  --landing-masa-chip-edge: rgba(206, 172, 123, 0.72);
+  --landing-masa-chip-grid: rgba(228, 194, 146, 0.09);
+  --landing-masa-trace: rgba(208, 171, 116, 0.44);
+  --landing-masa-dot-core: #e4c38f;
+  --landing-masa-dot-halo: rgba(228, 195, 143, 0.2);
+  --landing-masa-label: #695b50;
+  --landing-masa-sub-label: #b9986e;
   --wabi-clay: var(--accent-rust);
   --wabi-rust: var(--accent-rust);
   --wabi-gold: var(--accent-rust-strong);
@@ -357,10 +367,15 @@ html:has(.theme-landing) {
   font-size: 0.6rem;
   line-height: 1;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.16em;
   color: var(--landing-header-cta-text);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
   white-space: nowrap;
+  transition:
+    color 240ms ease,
+    text-shadow 240ms ease,
+    letter-spacing 240ms ease,
+    transform 240ms ease;
 }
 
 .theme-landing .landing-header-cta-button {
@@ -377,6 +392,10 @@ html:has(.theme-landing) {
   isolation: isolate;
   overflow: hidden;
   box-shadow: 0 10px 28px rgba(122, 87, 48, 0.08);
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease,
+    filter 240ms ease;
 }
 
 .theme-landing .landing-header-cta-fill {
@@ -394,6 +413,9 @@ html:has(.theme-landing) {
   align-items: center;
   justify-content: center;
   color: var(--landing-header-cta-fill-text);
+  transition:
+    color 240ms ease,
+    transform 240ms ease;
 }
 
 .theme-landing .landing-header-cta-glow,
@@ -410,7 +432,7 @@ html:has(.theme-landing) {
   z-index: 0;
   opacity: 1;
   background: var(--landing-header-cta-glow-base);
-  filter: blur(15px);
+  filter: blur(18px);
   transition: opacity 1200ms ease-in-out;
 }
 
@@ -418,7 +440,7 @@ html:has(.theme-landing) {
   z-index: 0;
   opacity: 0;
   background: var(--landing-header-cta-glow-hover);
-  filter: blur(18px);
+  filter: blur(24px);
   transition: opacity 1200ms ease-in-out;
 }
 
@@ -435,9 +457,36 @@ html:has(.theme-landing) {
   z-index: 0;
   opacity: 0;
   background:
-    radial-gradient(62% 54% at 50% 100%, rgba(200, 150, 90, 0.5) 0%, rgba(200, 150, 90, 0) 100%),
-    linear-gradient(rgba(167, 112, 58, 0.2), rgba(167, 112, 58, 0.2));
+    radial-gradient(62% 54% at 50% 100%, rgba(219, 176, 108, 0.54) 0%, rgba(200, 150, 90, 0) 100%),
+    linear-gradient(var(--landing-header-cta-hover-border), var(--landing-header-cta-hover-border));
   transition: opacity 1200ms ease-in-out;
+}
+
+.theme-landing .landing-header-cta:hover .landing-header-cta-button,
+.theme-landing .landing-header-cta-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--landing-header-cta-hover-shadow);
+  filter: saturate(1.05);
+}
+
+.theme-landing .landing-header-cta:hover .landing-header-cta-fill,
+.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-fill {
+  background:
+    linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(251, 243, 232, 0.98)),
+    var(--landing-header-cta-fill-bg);
+}
+
+.theme-landing .landing-header-cta:hover .landing-header-cta-copy,
+.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-copy {
+  color: color-mix(in srgb, var(--accent-rust-strong) 78%, #2a1e16 22%);
+  text-shadow: 0 0 10px rgba(230, 191, 123, 0.22);
+  transform: translateX(0.02rem);
+}
+
+.theme-landing .landing-header-cta:hover .landing-header-cta-icon,
+.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-icon {
+  color: color-mix(in srgb, var(--accent-rust-strong) 82%, #2a1e16 18%);
+  transform: translateX(0.08rem);
 }
 
 .theme-landing .landing-header-cta:hover .landing-header-cta-glow,
