@@ -175,7 +175,7 @@ export function Navbar() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="landing-header-cta-button relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-center gap-2 px-4 text-sm font-medium outline-none transition-transform duration-200 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+              className="landing-header-cta-button relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-center gap-2 px-3 text-sm font-medium outline-none transition-transform duration-200 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
             >
               <span className="landing-header-cta-glow" aria-hidden="true" />
               <span className="landing-header-cta-glow-hover" aria-hidden="true" />
