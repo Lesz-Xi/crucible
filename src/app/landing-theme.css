@@ -80,10 +80,13 @@
   --landing-masa-chip-edge-shadow: rgba(255, 255, 255, 0.06);
   --landing-masa-chip-grid: rgba(228, 194, 146, 0.09);
   --landing-masa-trace: rgba(208, 171, 116, 0.28);
+  --landing-masa-trace-start: rgba(177, 146, 104, 0.08);
+  --landing-masa-trace-end: rgba(177, 146, 104, 0.22);
   --landing-masa-dot-core: #2b2724;
-  --landing-masa-dot-ring: rgba(214, 185, 143, 0.58);
-  --landing-masa-dot-halo: rgba(200, 150, 90, 0.4);
-  --landing-masa-label: #7b685a;
+  --landing-masa-dot-ring: rgba(206, 178, 139, 0.44);
+  --landing-masa-dot-halo: rgba(200, 150, 90, 0.24);
+  --landing-masa-dot-spark: rgba(230, 188, 122, 0.92);
+  --landing-masa-label: #786658;
   --landing-masa-sub-label: #c8965a;
   --landing-masa-pin-fill: rgba(74, 70, 66, 0.9);
   --wabi-clay: var(--accent-rust);

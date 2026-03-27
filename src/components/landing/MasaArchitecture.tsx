@@ -83,8 +83,8 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           </filter>
 
           <linearGradient id="masa-route-line" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(92, 78, 64, 0.1)" />
-            <stop offset="100%" stopColor="rgba(92, 78, 64, 0.18)" />
+            <stop offset="0%" stopColor="var(--landing-masa-trace-start)" />
+            <stop offset="100%" stopColor="var(--landing-masa-trace-end)" />
           </linearGradient>
 
           <linearGradient id="masa-chip-fill" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -107,11 +107,12 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
         <g
           stroke="url(#masa-route-line)"
           fill="none"
-          strokeWidth="0.3"
+          strokeWidth="0.24"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeDasharray="100 100"
           pathLength="100"
+          opacity="0.92"
         >
           {ROUTES.map((route, index) => (
             <path key={index} d={route.d} strokeDasharray="100 100" pathLength="100">
@@ -138,9 +139,10 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor={port.anchor}
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
-            fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="4.2"
-            letterSpacing="0.16em"
+            fontFamily="var(--font-inter, Inter, sans-serif)"
+            fontSize="3.2"
+            fontWeight="500"
+            letterSpacing="0.1em"
           >
             {port.label}
           </text>
@@ -151,21 +153,21 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="3.3"
+              r="2.75"
               fill="var(--landing-masa-dot-halo)"
-              opacity="0.12"
+              opacity="0.08"
             >
               <animate
                 attributeName="r"
-                values="2.7;3.5;2.7"
-                dur="2.8s"
+                values="2.3;2.95;2.3"
+                dur="3s"
                 begin={`${0.18 * index}s`}
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="opacity"
-                values="0.08;0.18;0.08"
-                dur="2.8s"
+                values="0.04;0.12;0.04"
+                dur="3s"
                 begin={`${0.18 * index}s`}
                 repeatCount="indefinite"
               />
@@ -173,20 +175,20 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.9"
+              r="1.65"
               fill="var(--landing-masa-dot-core)"
             >
               <animate
                 attributeName="r"
-                values="1.75;2.15;1.75"
-                dur="2.8s"
+                values="1.5;1.78;1.5"
+                dur="3s"
                 begin={`${0.18 * index}s`}
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="opacity"
-                values="0.72;1;0.72"
-                dur="2.8s"
+                values="0.82;0.96;0.82"
+                dur="3s"
                 begin={`${0.18 * index}s`}
                 repeatCount="indefinite"
               />
@@ -194,11 +196,25 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="2.4"
+              r="2.05"
               fill="none"
               stroke="var(--landing-masa-dot-ring)"
-              strokeWidth="0.28"
+              strokeWidth="0.22"
             />
+            <circle
+              cx={route.cx}
+              cy={route.cy}
+              r="0.52"
+              fill="var(--landing-masa-dot-spark)"
+            >
+              <animate
+                attributeName="opacity"
+                values="0.5;1;0.5"
+                dur="3s"
+                begin={`${0.18 * index}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
           </g>
         ))}
 
@@ -241,20 +257,20 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             textAnchor="middle"
             fill="url(#masa-text-grad)"
             fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="13.8"
-            fontWeight="700"
-            letterSpacing="0.07em"
+            fontSize="11.6"
+            fontWeight="650"
+            letterSpacing="0.055em"
           >
             {text}
           </text>
           <text
             x={CHIP_CENTER_X}
-            y={CHIP_Y + 24}
+            y={CHIP_Y + 23.2}
             textAnchor="middle"
             fill="var(--landing-masa-sub-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="3.3"
-            letterSpacing="0.2em"
+            fontSize="2.45"
+            letterSpacing="0.18em"
           >
             CAUSAL ENGINE
           </text>
