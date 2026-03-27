@@ -175,23 +175,22 @@ export function Navbar() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="landing-header-cta-button relative inline-flex min-w-[var(--landing-header-cta-min-width)] items-center justify-between gap-3 px-2.5 py-2 text-sm font-medium outline-none transition-transform duration-200 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+              className="landing-header-cta-button relative inline-flex items-center justify-start text-sm font-medium outline-none transition-transform duration-200 ease-out active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
             >
               <span className="landing-header-cta-shell" aria-hidden="true" />
-
-              <span className="landing-header-cta-copy landing-header-cta-copy-text">
+              <span className="landing-header-cta-copy">
                 {isLoadingAuthState
                   ? "LOADING"
                   : isSignedIn
                   ? "OPEN INSTRUMENT"
                   : "GET STARTED"}
               </span>
-              <span className="landing-header-cta-icon-tile" aria-hidden="true" />
+              <span className="landing-header-cta-icon-puck" aria-hidden="true" />
               <span className="landing-header-cta-icon">
                 {isLoadingAuthState ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-rotate-45" />
                 )}
               </span>
             </button>
