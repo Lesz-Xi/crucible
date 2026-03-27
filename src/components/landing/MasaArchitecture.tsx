@@ -16,6 +16,15 @@ interface PinDefinition {
   cy?: number;
 }
 
+interface PortDefinition {
+  px: number;
+  py: number;
+  lx: number;
+  ly: number;
+  anchor: "start" | "middle" | "end";
+  label: string;
+}
+
 const ROUTES = [
   { d: "M 14 22 H 104.5 Q 111 22 111 28.5 V 52", cx: 14, cy: 22 },
   { d: "M 186 10 H 108.5 Q 102 10 102 16.5 V 52", cx: 186, cy: 10 },
@@ -27,20 +36,32 @@ const ROUTES = [
   { d: "M 34 34 H 56 Q 62 34 62 40 V 46.5 Q 62 52 68 52 H 84", cx: 34, cy: 34 },
 ] as const;
 
-const CHIP_X = 87;
-const CHIP_Y = 41;
-const CHIP_W = 30;
-const CHIP_H = 22;
+const CHIP_X = 83;
+const CHIP_Y = 37;
+const CHIP_W = 38;
+const CHIP_H = 30;
+const CHIP_CENTER_X = CHIP_X + CHIP_W / 2;
+
+const PORTS: readonly PortDefinition[] = [
+  { px: 136, py: 22, lx: 136, ly: 14, anchor: "middle", label: "SCM Model" },
+  { px: 170, py: 10, lx: 170, ly: 2, anchor: "middle", label: "Causal DAG" },
+  { px: 186, py: 10, lx: 191, ly: 10, anchor: "start", label: "Inference" },
+  { px: 170, py: 90, lx: 175, ly: 90, anchor: "start", label: "Memory" },
+  { px: 142, py: 68, lx: 146, ly: 99, anchor: "middle", label: "Falsifiability" },
+  { px: 100, py: 98, lx: 100, ly: 106, anchor: "middle", label: "Provenance" },
+  { px: 91, py: 93, lx: 76, ly: 90, anchor: "end", label: "Critique" },
+  { px: 34, py: 34, lx: 26, ly: 34, anchor: "end", label: "Grounding" },
+] as const;
 
 const PINS: readonly PinDefinition[] = [
-  { x: 95, y: 37, w: 2.4, h: 5, rx: 0.7 },
-  { x: 104.6, y: 37, w: 2.4, h: 5, rx: 0.7 },
-  { x: 118.2, y: 46, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 119.4, cy: 48.5 },
-  { x: 118.2, y: 55.4, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 119.4, cy: 57.9 },
-  { x: 95, y: 62.8, w: 2.4, h: 5, rx: 0.7 },
-  { x: 104.6, y: 62.8, w: 2.4, h: 5, rx: 0.7 },
-  { x: 84.2, y: 46, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 85.4, cy: 48.5 },
-  { x: 84.2, y: 55.4, w: 2.4, h: 5, rx: 0.7, rotate: 90, cx: 85.4, cy: 57.9 },
+  { x: 94.5, y: 31.6, w: 3.2, h: 7, rx: 0.8 },
+  { x: 106.3, y: 31.6, w: 3.2, h: 7, rx: 0.8 },
+  { x: 121.3, y: 47.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 122.9, cy: 50.7 },
+  { x: 121.3, y: 60.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 122.9, cy: 63.7 },
+  { x: 94.5, y: 65.4, w: 3.2, h: 7, rx: 0.8 },
+  { x: 106.3, y: 65.4, w: 3.2, h: 7, rx: 0.8 },
+  { x: 79.5, y: 47.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 81.1, cy: 50.7 },
+  { x: 79.5, y: 60.2, w: 3.2, h: 7, rx: 0.8, rotate: 90, cx: 81.1, cy: 63.7 },
 ] as const;
 
 export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureProps) {
@@ -67,19 +88,19 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           </linearGradient>
 
           <linearGradient id="masa-chip-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(25, 24, 24, 0.96)" />
-            <stop offset="100%" stopColor="rgba(30, 29, 29, 0.92)" />
+            <stop offset="0%" stopColor="var(--landing-masa-chip-fill-start)" />
+            <stop offset="100%" stopColor="var(--landing-masa-chip-fill-end)" />
           </linearGradient>
 
           <linearGradient id="masa-chip-edge" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.14)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0.04)" />
+            <stop offset="0%" stopColor="var(--landing-masa-chip-edge-highlight)" />
+            <stop offset="100%" stopColor="var(--landing-masa-chip-edge-shadow)" />
           </linearGradient>
 
           <linearGradient id="masa-text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#f0ece6" />
-            <stop offset="55%" stopColor="#ffffff" />
-            <stop offset="100%" stopColor="#d7d0c7" />
+            <stop offset="0%" stopColor="var(--accent-rust)" />
+            <stop offset="55%" stopColor="var(--accent-rust-strong)" />
+            <stop offset="100%" stopColor="var(--accent-rust)" />
           </linearGradient>
         </defs>
 
@@ -109,29 +130,74 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
           ))}
         </g>
 
+        {PORTS.map((port, index) => (
+          <text
+            key={`label-${index}`}
+            x={port.lx}
+            y={port.ly}
+            textAnchor={port.anchor}
+            dominantBaseline="middle"
+            fill="var(--landing-masa-label)"
+            fontFamily="var(--font-ibm-plex-mono, monospace)"
+            fontSize="4.2"
+            letterSpacing="0.16em"
+          >
+            {port.label}
+          </text>
+        ))}
+
         {ROUTES.map((route, index) => (
           <g key={`marker-${index}`} filter="url(#masa-endpoint-shadow)">
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.45"
-              fill="rgba(18, 18, 18, 0.98)"
+              r="3.3"
+              fill="var(--landing-masa-dot-halo)"
+              opacity="0.12"
             >
               <animate
+                attributeName="r"
+                values="2.7;3.5;2.7"
+                dur="2.8s"
+                begin={`${0.18 * index}s`}
+                repeatCount="indefinite"
+              />
+              <animate
                 attributeName="opacity"
-                values="0;1;1"
-                dur="0.55s"
-                begin={`${index * 0.07}s`}
-                fill="freeze"
+                values="0.08;0.18;0.08"
+                dur="2.8s"
+                begin={`${0.18 * index}s`}
+                repeatCount="indefinite"
               />
             </circle>
             <circle
               cx={route.cx}
               cy={route.cy}
               r="1.9"
+              fill="var(--landing-masa-dot-core)"
+            >
+              <animate
+                attributeName="r"
+                values="1.75;2.15;1.75"
+                dur="2.8s"
+                begin={`${0.18 * index}s`}
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="opacity"
+                values="0.72;1;0.72"
+                dur="2.8s"
+                begin={`${0.18 * index}s`}
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle
+              cx={route.cx}
+              cy={route.cy}
+              r="2.4"
               fill="none"
-              stroke="rgba(45, 45, 45, 0.22)"
-              strokeWidth="0.26"
+              stroke="var(--landing-masa-dot-ring)"
+              strokeWidth="0.28"
             />
           </g>
         ))}
@@ -145,7 +211,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
               width={pin.w}
               height={pin.h}
               rx={pin.rx}
-              fill="rgba(44, 43, 43, 0.82)"
+              fill="var(--landing-masa-pin-fill)"
               transform={pin.rotate ? `rotate(${pin.rotate} ${pin.cx} ${pin.cy})` : undefined}
             />
           ))}
@@ -155,7 +221,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             y={CHIP_Y}
             width={CHIP_W}
             height={CHIP_H}
-            rx="3"
+            rx="4"
             fill="url(#masa-chip-fill)"
           />
           <rect
@@ -163,7 +229,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             y={CHIP_Y + 0.4}
             width={CHIP_W - 0.8}
             height={CHIP_H - 0.8}
-            rx="2.6"
+            rx="3.6"
             fill="none"
             stroke="url(#masa-chip-edge)"
             strokeWidth="0.35"
@@ -171,24 +237,24 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
 
           <text
             x={CHIP_X + CHIP_W / 2}
-            y={CHIP_Y + 12}
+            y={CHIP_Y + 16.8}
             textAnchor="middle"
             fill="url(#masa-text-grad)"
             fontFamily="var(--font-inter, Inter, sans-serif)"
-            fontSize="9.5"
+            fontSize="13.8"
             fontWeight="700"
-            letterSpacing="0.08em"
+            letterSpacing="0.07em"
           >
             {text}
           </text>
           <text
-            x={CHIP_X + CHIP_W / 2}
-            y={CHIP_Y + 17.6}
+            x={CHIP_CENTER_X}
+            y={CHIP_Y + 24}
             textAnchor="middle"
-            fill="rgba(228, 220, 210, 0.68)"
+            fill="var(--landing-masa-sub-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="2.6"
-            letterSpacing="0.24em"
+            fontSize="3.3"
+            letterSpacing="0.2em"
           >
             CAUSAL ENGINE
           </text>

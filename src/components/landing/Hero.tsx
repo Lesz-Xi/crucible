@@ -127,8 +127,8 @@ export function Hero() {
       </div>
 
       {/* ── Right column — MASA architecture diagram ───────────────────── */}
-      <div className="hidden lg:flex items-center justify-center relative" aria-hidden="true">
-        <MasaArchitecture className="w-[760px] max-w-[102%]" />
+      <div className="hidden lg:flex items-center justify-center relative overflow-visible" aria-hidden="true">
+        <MasaArchitecture className="w-[820px] max-w-none -translate-x-14 xl:-translate-x-20 2xl:-translate-x-24 scale-[1.08] xl:scale-[1.12]" />
       </div>
 
       {/* Bottom edge rule */}
