@@ -25,13 +25,6 @@ interface PortDefinition {
   label: string;
 }
 
-interface SwitchDefinition {
-  x: number;
-  y: number;
-  angle: number;
-  color: string;
-}
-
 const ROUTES: readonly RouteDefinition[] = [
   {
     id: "route-grounding",
@@ -128,15 +121,8 @@ const PORTS: readonly PortDefinition[] = [
   { px: 32, py: 36, lx: 37.5, ly: 36, anchor: "start", label: "Inference" },
   { px: 166.5, py: 88, lx: 172.5, ly: 88, anchor: "start", label: "Memory" },
   { px: 138, py: 68, lx: 142, ly: 91.5, anchor: "middle", label: "Falsifiability" },
-  { px: 96.5, py: 97.5, lx: 97.5, ly: 96.8, anchor: "middle", label: "Provenance" },
+  { px: 96.5, py: 97.5, lx: 102, ly: 95.3, anchor: "middle", label: "Provenance" },
   { px: 87, py: 91.5, lx: 72, ly: 82.4, anchor: "end", label: "Critique" },
-] as const;
-
-const SWITCHES: readonly SwitchDefinition[] = [
-  { x: 111, y: 28.5, angle: 90, color: "var(--landing-masa-route-amber)" },
-  { x: 162, y: 74, angle: 90, color: "var(--landing-masa-route-amber-strong)" },
-  { x: 68, y: 52, angle: 0, color: "var(--landing-masa-route-soft)" },
-  { x: 62, y: 40, angle: 90, color: "var(--landing-masa-route-amber)" },
 ] as const;
 
 export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureProps) {
@@ -218,25 +204,6 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
                 repeatCount="indefinite"
               />
             </path>
-          ))}
-        </g>
-
-        <g>
-          {SWITCHES.map((point, index) => (
-            <g
-              key={`switch-${index}`}
-              transform={`translate(${point.x} ${point.y}) rotate(${point.angle})`}
-              opacity="0.86"
-            >
-              <path
-                d="M -1.4 -1.2 L 1.35 0 L -1.4 1.2"
-                fill="none"
-                stroke={point.color}
-                strokeWidth="0.26"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </g>
           ))}
         </g>
 
