@@ -11,8 +11,8 @@
   --landing-header-height: 5rem;
   --landing-header-logo-rail: 5rem;
   --landing-header-logo-gap: 1rem;
-  --landing-header-cta-min-width: 8.6rem;
-  --landing-header-cta-height: 2.55rem;
+  --landing-header-cta-min-width: 10.2rem;
+  --landing-header-cta-height: 2.9rem;
   --background: #050505;
   --foreground: #f2ebe3;
   --bg-primary: #050505;
@@ -37,13 +37,15 @@
   --landing-grid-line-strong: rgba(255, 247, 238, 0.14);
   --landing-grid-line-pulse: rgba(255, 247, 238, 0.22);
   --landing-header-scroll-bg: rgba(5, 5, 5, 0.82);
-  --landing-header-cta-text: #f3ece3;
-  --landing-header-cta-fill-bg: linear-gradient(180deg, rgba(31, 26, 23, 0.98), rgba(22, 18, 16, 0.98));
-  --landing-header-cta-fill-text: #f6eee6;
-  --landing-header-cta-glow-base: radial-gradient(18% 54% at 50% 100%, rgba(200, 150, 90, 0.18) 0%, rgba(200, 150, 90, 0) 100%);
-  --landing-header-cta-glow-hover: radial-gradient(74% 58% at 50% 100%, rgba(200, 150, 90, 0.42) 0%, rgba(224, 180, 118, 0.12) 34%, rgba(167, 112, 58, 0) 100%);
-  --landing-header-cta-hover-border: rgba(205, 154, 86, 0.56);
-  --landing-header-cta-hover-shadow: 0 20px 44px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(205, 154, 86, 0.26);
+  --landing-header-cta-text: #f2ebe3;
+  --landing-header-cta-shell-bg: rgba(24, 21, 19, 0.98);
+  --landing-header-cta-shell-border: rgba(255, 247, 238, 0.09);
+  --landing-header-cta-shell-border-hover: rgba(255, 247, 238, 0.18);
+  --landing-header-cta-shell-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
+  --landing-header-cta-tile-bg: rgba(242, 235, 227, 0.12);
+  --landing-header-cta-tile-bg-hover: rgba(242, 235, 227, 0.18);
+  --landing-header-cta-tile-icon: #f2ebe3;
+  --landing-header-cta-hover-shadow: 0 20px 42px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 247, 238, 0.08);
   --landing-header-menu-bg: linear-gradient(180deg, rgba(15, 14, 13, 0.97), rgba(7, 7, 7, 0.97));
   --landing-header-menu-border: rgba(255, 247, 238, 0.1);
   --landing-header-menu-highlight: rgba(200, 150, 90, 0.12);
@@ -384,17 +386,6 @@ html:has(.theme-landing) {
   pointer-events: none;
 }
 
-.theme-landing .landing-hero-primary-button:hover {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--landing-hero-cta-from) 88%, var(--accent-rust) 12%),
-    color-mix(in srgb, var(--landing-hero-cta-via) 84%, var(--accent-rust) 16%),
-    color-mix(in srgb, var(--landing-hero-cta-to) 88%, var(--accent-rust) 12%)
-  );
-  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.36), 0 0 0 1px rgba(200, 150, 90, 0.22);
-  color: var(--accent-rust-strong);
-}
-
 .theme-landing .landing-shift-after-card {
   box-shadow: var(--landing-shift-after-shadow);
 }
@@ -432,149 +423,113 @@ html:has(.theme-landing) {
 
 .theme-landing .landing-header-cta-copy {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   font-family: var(--font-inter, Inter, sans-serif);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   line-height: 1;
   font-weight: 500;
   letter-spacing: 0.16em;
   color: var(--landing-header-cta-text);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
   white-space: nowrap;
   transition:
-    color 240ms ease,
-    text-shadow 240ms ease,
-    letter-spacing 240ms ease,
-    transform 240ms ease;
+    opacity 240ms ease,
+    transform 240ms ease,
+    color 240ms ease;
 }
 
 .theme-landing .landing-header-cta-button {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   height: var(--landing-header-cta-height);
   min-height: var(--landing-header-cta-height);
   border: 0;
-  border-radius: 0.7rem;
-  background: rgba(255, 247, 238, 0.04);
+  border-radius: 0.85rem;
+  background: transparent;
   color: var(--landing-header-cta-text);
   isolation: isolate;
   overflow: hidden;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
+  box-shadow: var(--landing-header-cta-shell-shadow);
   transition:
     transform 240ms ease,
     box-shadow 240ms ease,
     filter 240ms ease;
 }
 
-.theme-landing .landing-header-cta-fill {
+.theme-landing .landing-header-cta-shell {
   position: absolute;
-  inset: 1px;
-  border-radius: 0.66rem;
-  background: var(--landing-header-cta-fill-bg);
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--landing-header-cta-shell-border);
+  background: var(--landing-header-cta-shell-bg);
   z-index: 1;
+}
+
+.theme-landing .landing-header-cta-copy-text {
+  padding-left: 1rem;
+  padding-right: 3.5rem;
+}
+
+.theme-landing .landing-header-cta-icon-tile {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  bottom: 4px;
+  width: 2.95rem;
+  border-radius: 0.62rem;
+  background: var(--landing-header-cta-tile-bg);
+  z-index: 2;
+  transition:
+    width 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 240ms ease;
 }
 
 .theme-landing .landing-header-cta-icon {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--landing-header-cta-fill-text);
+  margin-left: auto;
+  width: 2.95rem;
+  color: var(--landing-header-cta-tile-icon);
   transition:
     color 240ms ease,
     transform 240ms ease;
-}
-
-.theme-landing .landing-header-cta-glow,
-.theme-landing .landing-header-cta-glow-hover,
-.theme-landing .landing-header-cta-stroke,
-.theme-landing .landing-header-cta-stroke-hover {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  border-radius: 0.7rem;
-}
-
-.theme-landing .landing-header-cta-glow {
-  z-index: 0;
-  opacity: 1;
-  background: var(--landing-header-cta-glow-base);
-  filter: blur(18px);
-  transition: opacity 1200ms ease-in-out;
-}
-
-.theme-landing .landing-header-cta-glow-hover {
-  z-index: 0;
-  opacity: 0;
-  background: var(--landing-header-cta-glow-hover);
-  filter: blur(24px);
-  transition: opacity 1200ms ease-in-out;
-}
-
-.theme-landing .landing-header-cta-stroke {
-  z-index: 0;
-  opacity: 1;
-  background:
-    radial-gradient(14% 52% at 50% 100%, rgba(200, 150, 90, 0.38) 0%, rgba(200, 150, 90, 0) 100%),
-    linear-gradient(rgba(89, 68, 52, 0.12), rgba(89, 68, 52, 0.12));
-  transition: opacity 1200ms ease-in-out;
-}
-
-.theme-landing .landing-header-cta-stroke-hover {
-  z-index: 0;
-  opacity: 0;
-  background:
-    radial-gradient(62% 54% at 50% 100%, rgba(219, 176, 108, 0.54) 0%, rgba(200, 150, 90, 0) 100%),
-    linear-gradient(var(--landing-header-cta-hover-border), var(--landing-header-cta-hover-border));
-  transition: opacity 1200ms ease-in-out;
 }
 
 .theme-landing .landing-header-cta:hover .landing-header-cta-button,
 .theme-landing .landing-header-cta-button:focus-visible {
   transform: translateY(-2px);
   box-shadow: var(--landing-header-cta-hover-shadow);
-  filter: saturate(1.05);
+  filter: saturate(1.02);
 }
 
-.theme-landing .landing-header-cta:hover .landing-header-cta-fill,
-.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-fill {
-  background:
-    linear-gradient(180deg, rgba(37, 31, 28, 0.98), rgba(23, 19, 17, 0.98)),
-    var(--landing-header-cta-fill-bg);
+.theme-landing .landing-header-cta:hover .landing-header-cta-shell,
+.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-shell {
+  border-color: var(--landing-header-cta-shell-border-hover);
 }
 
 .theme-landing .landing-header-cta:hover .landing-header-cta-copy,
 .theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-copy {
-  color: color-mix(in srgb, var(--accent-rust-strong) 56%, var(--text-primary) 44%);
-  text-shadow: 0 0 10px rgba(230, 191, 123, 0.16);
-  transform: translateX(0.02rem);
+  opacity: 0;
+  transform: translateX(-0.35rem);
 }
 
 .theme-landing .landing-header-cta:hover .landing-header-cta-icon,
 .theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-icon {
-  color: color-mix(in srgb, var(--accent-rust-strong) 64%, var(--text-primary) 36%);
-  transform: translateX(0.08rem);
+  transform: translateX(-0.08rem);
 }
 
-.theme-landing .landing-header-cta:hover .landing-header-cta-glow,
-.theme-landing .landing-header-cta:hover .landing-header-cta-stroke,
-.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-glow,
-.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-stroke {
-  opacity: 0;
-}
-
-.theme-landing .landing-header-cta:hover .landing-header-cta-glow-hover,
-.theme-landing .landing-header-cta:hover .landing-header-cta-stroke-hover,
-.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-glow-hover,
-.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-stroke-hover {
-  opacity: 1;
+.theme-landing .landing-header-cta:hover .landing-header-cta-icon-tile,
+.theme-landing .landing-header-cta-button:focus-visible .landing-header-cta-icon-tile {
+  width: calc(100% - 8px);
+  background: var(--landing-header-cta-tile-bg-hover);
 }
 
 .theme-landing .landing-header-cta-button:focus-visible {
-  box-shadow: 0 0 0 2px rgba(224, 180, 118, 0.24), 0 14px 30px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 0 0 2px rgba(224, 180, 118, 0.24), var(--landing-header-cta-hover-shadow);
 }
 
 .theme-landing .landing-header-cta-button:disabled .landing-header-cta-copy,
