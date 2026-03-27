@@ -87,18 +87,26 @@ export function AuthVintage({
       style={{ background: "var(--bg-secondary)" }}
     >
       {/* Top nav bar */}
-      <header className="absolute inset-x-0 top-0 z-20 px-6 py-5 md:px-10 md:py-6">
+      <header className="px-6 py-5 md:px-10 md:py-6">
+        <div className="flex items-center justify-between gap-4">
         <Link href="/" className="inline-flex items-center gap-3">
           <Image
             src="/wu-logo.png"
             alt="Wu-Weism mark"
             width={160}
             height={123}
-            className="h-auto w-[56px] object-contain"
+            className="h-auto w-14 object-contain sm:w-16"
             unoptimized
             priority
           />
         </Link>
+        <Link
+          href={`/auth?next=${encodeURIComponent(nextPath)}`}
+          className="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-[var(--text-muted)] transition-colors hover:text-[var(--text-primary)]"
+        >
+          Google-first auth
+        </Link>
+        </div>
       </header>
 
       {/* Two-column layout */}

@@ -44,6 +44,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
   const [user, setUser] = useState<AppAuthUser | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(callbackError || null);
+  const emailFallbackHref = `/auth/email?next=${encodeURIComponent(nextPath)}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -88,53 +89,52 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
   };
 
   return (
-    <div className="theme-landing min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1480px] flex-col px-6 py-6 md:px-10">
-        <header className="flex items-center justify-between gap-4">
-          <Link href="/" className="inline-flex items-center gap-3">
+    <div className="theme-landing auth-grid-shell min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
+      <div className="auth-grid-overlay" aria-hidden="true" />
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1520px] flex-col px-5 pb-8 pt-6 sm:px-7 lg:px-10">
+        <header className="flex items-start justify-between gap-4">
+          <Link href="/" className="inline-flex items-center gap-3 sm:gap-4">
             <Image
               src="/wu-logo.png"
               alt="Wu-Weism mark"
               width={100}
               height={78}
-              className="h-auto w-[88px] object-contain"
+              className="h-auto w-16 object-contain sm:w-20 lg:w-24"
               unoptimized
               priority
             />
-            <div className="hidden md:block">
+            <div className="hidden sm:block">
               <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--text-muted)]">
                 Wu-Weism Access
               </p>
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">Branded auth airlock</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">Grid-authored operator entry</p>
             </div>
           </Link>
 
-          <ThemeToggle variant="landing" />
+          <ThemeToggle variant="landing" className="auth-theme-toggle" />
         </header>
 
         <main className="flex flex-1 items-center py-10 md:py-14">
-          <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)] lg:gap-14">
+          <div className="grid w-full gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:gap-14">
             <section className="flex flex-col justify-center">
               <div className="inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[var(--accent-rust-strong)]">
                 <span className="h-2.5 w-2.5 rounded-full bg-[var(--accent-rust)]" />
                 Instrument-grade entry
               </div>
 
-              <h1 className="mt-8 font-serif text-[3.4rem] leading-[0.94] tracking-tight text-[var(--text-primary)] md:text-[5.4rem]">
+              <h1 className="mt-8 max-w-4xl font-serif text-[3rem] leading-[0.94] tracking-tight text-[var(--text-primary)] md:text-[4.5rem] xl:text-[5.4rem]">
                 Enter the
                 <br />
                 Wu-Weism
                 <br />
-                <em className="text-[var(--accent-rust)]">workspace.</em>
+                <em className="text-[var(--accent-rust)]">command surface.</em>
               </h1>
 
-              <p className="mt-8 max-w-xl text-[1.04rem] leading-8 text-[var(--text-secondary)] md:text-[1.08rem]">
-                Sign in through Google, then configure providers inside the workspace. BYOK stays inside
-                the instrument after authentication, alongside provenance, session continuity, and your
-                private research ledger.
+              <p className="mt-7 max-w-2xl text-[1rem] leading-8 text-[var(--text-secondary)] md:text-[1.08rem]">
+                Google remains the provider-owned account chooser, but the entry, return path, and operator context stay inside Wu-Weism. The auth step should feel like part of the instrument, not a detour out of it.
               </p>
 
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <div className="rounded-[24px] border border-[var(--border-subtle)] bg-[var(--bg-card)] px-5 py-5 shadow-[var(--shadow-soft)]">
                   <ShieldCheck className="h-5 w-5 text-[var(--accent-rust)]" strokeWidth={1.7} />
                   <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
@@ -165,9 +165,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
               </div>
             </section>
 
-            <section className="relative">
-              <div className="absolute inset-6 -z-10 rounded-[34px] bg-[radial-gradient(circle_at_top,rgba(196,136,84,0.18),transparent_58%)] blur-3xl dark:bg-[radial-gradient(circle_at_top,rgba(196,136,84,0.2),transparent_62%)]" />
-              <div className="auth-panel-surface rounded-[34px] p-7 backdrop-blur-xl md:p-9">
+            <section className="auth-grid-panel auth-panel-surface rounded-[34px] p-6 backdrop-blur-xl sm:p-7 md:p-9">
                 <div className="auth-panel-banner flex items-start justify-between gap-4 rounded-[24px] px-4 py-4">
                   <div className="flex items-center gap-3">
                     <div className="auth-mark-chip flex h-12 w-12 items-center justify-center rounded-[18px]">
@@ -176,7 +174,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                         alt="Wu-Weism mark"
                         width={42}
                         height={32}
-                        className="h-auto w-[34px] object-contain"
+                        className="h-auto w-8 object-contain sm:w-9"
                         unoptimized
                       />
                     </div>
@@ -200,7 +198,7 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                 <p className="mt-4 text-[0.98rem] leading-7 text-[var(--text-secondary)]">
                   {user
                     ? `Signed in as ${user.fullName || user.email || 'authenticated operator'}. Continue into the instrument.`
-                    : 'Google is the only active provider for now. Wu-Weism preserves the return path, restores the workspace after sign-in, and keeps the app-owned part of the flow inside the instrument.'}
+                    : 'Choose Google to enter. Wu-Weism preserves the return path, restores the workspace after sign-in, and keeps the app-owned parts of the flow inside the instrument.'}
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-2">
@@ -258,11 +256,20 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                   </button>
 
                   <Link
-                    href="/"
-                    className="inline-flex w-full items-center justify-center rounded-full border border-[rgba(160,105,58,0.12)] bg-[rgba(255,251,246,0.84)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:bg-[rgba(245,233,217,0.92)] hover:text-[var(--text-primary)] dark:border-[var(--border-subtle)] dark:bg-[var(--bg-card)] dark:hover:bg-[var(--accent-rust-soft)]"
+                    href={emailFallbackHref}
+                    className="inline-flex w-full items-center justify-center rounded-full border border-[rgba(255,255,255,0.08)] bg-[rgba(20,18,18,0.78)] px-5 py-4 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-secondary)] transition-colors hover:border-[rgba(243,247,255,0.18)] hover:text-[var(--text-primary)]"
                   >
+                    Use email instead
+                  </Link>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between gap-3 text-[0.72rem] text-[var(--text-muted)]">
+                  <Link href="/" className="transition-colors hover:text-[var(--text-primary)]">
                     Return to landing
                   </Link>
+                  <span className="font-mono uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+                    OAuth chooser stays provider-owned
+                  </span>
                 </div>
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -283,7 +290,6 @@ export function AuthAirlock({ nextPath, callbackError, authConfigured }: AuthAir
                     </p>
                   </div>
                 </div>
-              </div>
             </section>
           </div>
         </main>

@@ -561,3 +561,57 @@ html:has(.theme-landing) {
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
 }
+
+.theme-landing .auth-grid-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-landing .auth-grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(200, 150, 90, 0.08), transparent 26%),
+    radial-gradient(circle at 82% 78%, rgba(200, 150, 90, 0.06), transparent 24%),
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: auto, auto, 80px 80px, 80px 80px;
+}
+
+.theme-landing .auth-grid-panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.018), transparent 18%),
+    rgba(23, 20, 17, 0.86);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.theme-landing .auth-grid-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02), transparent 28%),
+    radial-gradient(circle at top, rgba(200, 150, 90, 0.12), transparent 46%);
+}
+
+.theme-landing .auth-theme-toggle {
+  position: fixed;
+  left: 50%;
+  top: 1.25rem;
+  z-index: 40;
+  transform: translateX(-50%);
+}
+
+@media (max-width: 767px) {
+  .theme-landing .auth-theme-toggle {
+    top: auto;
+    bottom: 1.25rem;
+  }
+}

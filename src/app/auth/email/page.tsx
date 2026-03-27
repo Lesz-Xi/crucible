@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { AuthAirlock } from '@/components/auth/AuthAirlock';
+import { AuthVintage } from '@/components/auth/AuthVintage';
 
 export const metadata: Metadata = {
-  title: 'Sign In',
-  description: 'Google-first access gateway for the Wu-Weism scientific workspace.',
+  title: 'Email Access',
+  description: 'Email sign-in and account creation fallback for the Wu-Weism workspace.',
 };
 
 type SearchParams = Promise<{
@@ -24,14 +24,14 @@ function normalizeSingle(value: string | string[] | undefined): string | null {
   return null;
 }
 
-export default async function AuthPage({ searchParams }: { searchParams?: SearchParams }) {
+export default async function AuthEmailPage({ searchParams }: { searchParams?: SearchParams }) {
   const params = searchParams ? await searchParams : undefined;
   const rawNext = normalizeSingle(params?.next);
   const rawError = normalizeSingle(params?.error);
   const nextPath = rawNext && rawNext.startsWith('/') ? rawNext : '/chat';
 
   return (
-    <AuthAirlock
+    <AuthVintage
       nextPath={nextPath}
       callbackError={rawError}
       authConfigured={hasAuthEnv()}
