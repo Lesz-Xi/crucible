@@ -55,21 +55,20 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
         shouldReduce
           ? {}
           : inView
-          ? { backgroundColor: "rgba(22,19,17,0.85)", borderColor: "rgba(255,255,255,0.09)" }
-          : { backgroundColor: "rgba(14,12,11,0.0)",  borderColor: "rgba(255,255,255,0.05)" }
+          ? { backgroundColor: "var(--pipeline-stage-active-bg)", borderColor: "var(--pipeline-stage-active-border)" }
+          : { backgroundColor: "var(--pipeline-stage-idle-bg)", borderColor: "var(--pipeline-stage-idle-border)" }
       }
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      initial={shouldReduce ? {} : { backgroundColor: "rgba(14,12,11,0.0)" }}
+      initial={shouldReduce ? {} : { backgroundColor: "var(--pipeline-stage-idle-bg)" }}
     >
 
       {/* ── Left accent bar ────────────────────────────────────────────── */}
-      <div className="relative w-px shrink-0 overflow-hidden bg-[rgba(255,255,255,0.04)]">
+      <div className="relative w-px shrink-0 overflow-hidden bg-[var(--pipeline-stage-rail)]">
         <motion.div
           className="absolute inset-x-0 top-0 origin-top"
           style={{
             height: "100%",
-            background:
-              "linear-gradient(to bottom, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 70%, rgba(200,150,90,0.05) 100%)",
+            background: "var(--pipeline-stage-progress)",
             transformOrigin: "top",
           }}
           initial={shouldReduce ? {} : { scaleY: 0 }}
@@ -91,8 +90,8 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
             shouldReduce
               ? {}
               : inView
-              ? { color: "rgba(200,150,90,0.80)", scale: 1,   opacity: 1   }
-              : { color: "rgba(120,113,108,0.30)", scale: 0.88, opacity: 0.45 }
+              ? { color: "var(--pipeline-step-active-color)", scale: 1, opacity: 1 }
+              : { color: "var(--pipeline-step-idle-color)", scale: 0.88, opacity: 0.45 }
           }
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         >
@@ -107,8 +106,8 @@ function StagePanel({ step, index, total, shouldReduce }: StageProps) {
           shouldReduce
             ? {}
             : inView
-            ? { backgroundColor: "rgba(200,150,90,0.18)" }
-            : { backgroundColor: "rgba(255,255,255,0.05)" }
+            ? { backgroundColor: "var(--pipeline-divider-active)" }
+            : { backgroundColor: "var(--pipeline-divider-idle)" }
         }
         transition={{ duration: 0.55 }}
       />
@@ -206,14 +205,13 @@ export function CausalPipeline() {
           </div>
 
           {/* Animated scan line */}
-          <div className="mt-8 h-px w-full overflow-hidden bg-[rgba(255,255,255,0.06)]">
+          <div className="mt-8 h-px w-full overflow-hidden bg-[var(--pipeline-header-rail)]">
             {!shouldReduce && (
               <motion.div
                 className="h-full origin-left"
                 style={{
                   scaleX: lineScaleX,
-                  background:
-                    "linear-gradient(to right, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 60%, rgba(200,150,90,0.05) 100%)",
+                  background: "var(--pipeline-header-progress)",
                 }}
               />
             )}

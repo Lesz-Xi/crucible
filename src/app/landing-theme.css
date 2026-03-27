@@ -1,73 +1,182 @@
 .theme-landing {
-  --background: #0c0a09;
-  --foreground: #fafaf9;
-  --bg-primary:    #0c0a09;   /* stone-950 */
-  --bg-secondary:  #1c1917;   /* stone-900 */
-  --bg-tertiary:   #292524;   /* stone-800 */
-  --bg-card:       #1c1917;
-  --bg-card-soft:  rgba(28, 25, 23, 0.92);
-  --bg-emphasis:   #292524;
-  --bg-elevated:   #292524;
-  --text-primary:   #fafaf9;  /* stone-50 */
-  --text-secondary: #e7e5e4;  /* stone-200 */
-  --text-muted:     #a8a29e;  /* stone-400 */
-  --text-tertiary:  #78716c;  /* stone-500 */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --border-glow:   rgba(200, 150, 90, 0.22);
-  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-deep: 0 4px 24px rgba(0, 0, 0, 0.5);
-  /* Amber accent — brighter for dark bg */
-  --accent-rust:        #c8965a;
+  --accent-rust: #c8965a;
   --accent-rust-strong: #e0b476;
-  --accent-rust-soft:   rgba(200, 150, 90, 0.12);
-  --accent-moss:  #5a7a4a;
+  --accent-rust-soft: rgba(200, 150, 90, 0.12);
+  --accent-moss: #5a7a4a;
   --accent-slate: #5a6e8a;
-  --accent-blue:  var(--accent-slate);
-  --accent-blue-soft: rgba(90, 110, 138, 0.10);
-  --accent-dark:  var(--accent-rust);
-  --metric-line: linear-gradient(90deg, rgba(200, 150, 90, 0.9), rgba(200, 150, 90, 0.18));
+  --accent-blue: var(--accent-slate);
+  --accent-blue-soft: rgba(90, 110, 138, 0.1);
+  --accent-dark: var(--accent-rust);
   --landing-grid-size: 5rem;
   --landing-header-height: 5rem;
   --landing-header-logo-rail: 5rem;
   --landing-header-logo-gap: 1rem;
   --landing-header-cta-min-width: 8.25rem;
   --landing-header-cta-height: 2.35rem;
+  --wabi-clay: var(--accent-rust);
+  --wabi-rust: var(--accent-rust);
+  --wabi-gold: var(--accent-rust-strong);
+  --wabi-moss: #5a7a4a;
+}
+
+html.dark .theme-landing {
+  --background: #0c0a09;
+  --foreground: #fafaf9;
+  --bg-primary: #0c0a09;
+  --bg-secondary: #1c1917;
+  --bg-tertiary: #292524;
+  --bg-card: #1c1917;
+  --bg-card-soft: rgba(28, 25, 23, 0.92);
+  --bg-emphasis: #292524;
+  --bg-elevated: #292524;
+  --text-primary: #fafaf9;
+  --text-secondary: #e7e5e4;
+  --text-muted: #a8a29e;
+  --text-tertiary: #78716c;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-glow: rgba(200, 150, 90, 0.22);
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-deep: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --metric-line: linear-gradient(90deg, rgba(200, 150, 90, 0.9), rgba(200, 150, 90, 0.18));
+  --landing-grid-line: rgba(255, 255, 255, 0.04);
   --landing-header-scroll-bg: rgba(12, 10, 9, 0.72);
   --landing-header-cta-text: rgba(250, 245, 238, 0.96);
   --landing-header-cta-fill-bg: rgba(6, 6, 6, 0.94);
   --landing-header-cta-fill-text: rgba(250, 245, 238, 0.96);
-  --landing-header-cta-glow-base:
-    radial-gradient(15% 50% at 50% 100%, rgba(224, 180, 118, 0.45) 0%, rgba(224, 180, 118, 0) 100%);
-  --landing-header-cta-glow-hover:
-    radial-gradient(60.6% 50% at 50% 100%, rgba(224, 180, 118, 0.64) 0%, rgba(224, 180, 118, 0) 100%);
-  --landing-header-menu-bg:
-    linear-gradient(180deg, rgba(18, 15, 13, 0.78), rgba(10, 9, 8, 0.72));
+  --landing-header-cta-glow-base: radial-gradient(15% 50% at 50% 100%, rgba(224, 180, 118, 0.45) 0%, rgba(224, 180, 118, 0) 100%);
+  --landing-header-cta-glow-hover: radial-gradient(60.6% 50% at 50% 100%, rgba(224, 180, 118, 0.64) 0%, rgba(224, 180, 118, 0) 100%);
+  --landing-header-menu-bg: linear-gradient(180deg, rgba(18, 15, 13, 0.78), rgba(10, 9, 8, 0.72));
   --landing-header-menu-border: rgba(200, 150, 90, 0.1);
   --landing-header-menu-highlight: rgba(224, 180, 118, 0.08);
-  /* Wabi aliases — dark equivalents */
-  --wabi-washi:    #0c0a09;
-  --wabi-sumi:     #fafaf9;
-  --wabi-ink:      #fafaf9;
-  --wabi-ink-light:#e7e5e4;
-  --wabi-clay:     #c8965a;
-  --wabi-rust:     #c8965a;
-  --wabi-gold:     #e0b476;
-  --wabi-moss:     #5a7a4a;
+  --landing-hero-cta-from: rgba(255, 255, 255, 0.08);
+  --landing-hero-cta-via: rgba(255, 255, 255, 0.12);
+  --landing-hero-cta-to: rgba(255, 255, 255, 0.08);
+  --landing-hero-cta-shadow: rgba(200, 150, 90, 0.22) 0px 4px 16px, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px;
+  --landing-toggle-bg: rgba(14, 12, 11, 0.88);
+  --landing-toggle-border: rgba(255, 255, 255, 0.12);
+  --landing-toggle-color: #fafaf9;
+  --landing-toggle-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --pipeline-stage-active-bg: rgba(22, 19, 17, 0.85);
+  --pipeline-stage-active-border: rgba(255, 255, 255, 0.09);
+  --pipeline-stage-idle-bg: rgba(14, 12, 11, 0);
+  --pipeline-stage-idle-border: rgba(255, 255, 255, 0.05);
+  --pipeline-stage-rail: rgba(255, 255, 255, 0.04);
+  --pipeline-stage-progress: linear-gradient(to bottom, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 70%, rgba(200,150,90,0.05) 100%);
+  --pipeline-step-active-color: rgba(200,150,90,0.8);
+  --pipeline-step-idle-color: rgba(120,113,108,0.3);
+  --pipeline-divider-active: rgba(200,150,90,0.18);
+  --pipeline-divider-idle: rgba(255,255,255,0.05);
+  --pipeline-header-rail: rgba(255,255,255,0.06);
+  --pipeline-header-progress: linear-gradient(to right, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.4) 60%, rgba(200,150,90,0.05) 100%);
+  --timeline-dot-active-border: rgba(200,150,90,0.9);
+  --timeline-dot-active-bg: rgba(200,150,90,0.08);
+  --timeline-dot-active-shadow: 0 0 0 4px rgba(200,150,90,0.08), 0 0 16px rgba(200,150,90,0.35);
+  --timeline-dot-idle-border: rgba(255,255,255,0.12);
+  --timeline-dot-idle-bg: rgba(28,25,23,0.9);
+  --timeline-pip-active: rgba(200,150,90,1);
+  --timeline-pip-idle: rgba(255,255,255,0.2);
+  --timeline-step-active: rgba(200,150,90,0.7);
+  --timeline-step-idle: rgba(255,255,255,0.15);
+  --timeline-track: rgba(255,255,255,0.07);
+  --timeline-progress: linear-gradient(to bottom, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.55) 60%, rgba(200,150,90,0.15) 100%);
+  --landing-shift-after-shadow: 0 0 0 1px rgba(166,124,82,0.08), 0 4px 24px rgba(46,36,26,0.08);
+  --wabi-washi: #0c0a09;
+  --wabi-sumi: #fafaf9;
+  --wabi-ink: #fafaf9;
+  --wabi-ink-light: #e7e5e4;
   --wabi-charcoal: #292524;
-  --wabi-patina:   rgba(255, 255, 255, 0.22);
-  --wabi-stone:    rgba(200, 150, 90, 0.28);
-  --wabi-sand:     rgba(200, 150, 90, 0.12);
+  --wabi-patina: rgba(255, 255, 255, 0.22);
+  --wabi-stone: rgba(200, 150, 90, 0.28);
+  --wabi-sand: rgba(200, 150, 90, 0.12);
   color-scheme: dark;
 }
 
-body:has(.theme-landing) {
+html.light .theme-landing {
+  --background: #f5f0e8;
+  --foreground: #181311;
+  --bg-primary: #f5f0e8;
+  --bg-secondary: #ede4d8;
+  --bg-tertiary: #e6d8c8;
+  --bg-card: rgba(255, 250, 244, 0.84);
+  --bg-card-soft: rgba(250, 243, 235, 0.92);
+  --bg-emphasis: #f1e7db;
+  --bg-elevated: #fff8f2;
+  --text-primary: #181311;
+  --text-secondary: #40352c;
+  --text-muted: #766558;
+  --text-tertiary: #9e8c7e;
+  --border-subtle: rgba(52, 40, 30, 0.12);
+  --border-strong: rgba(52, 40, 30, 0.18);
+  --border-glow: rgba(200, 150, 90, 0.24);
+  --shadow-soft: 0 8px 30px rgba(70, 50, 30, 0.07), 0 1px 2px rgba(70, 50, 30, 0.05);
+  --shadow-deep: 0 18px 48px rgba(70, 50, 30, 0.12);
+  --metric-line: linear-gradient(90deg, rgba(167, 112, 58, 0.75), rgba(167, 112, 58, 0.1));
+  --landing-grid-line: rgba(54, 42, 33, 0.08);
+  --landing-header-scroll-bg: rgba(245, 240, 232, 0.78);
+  --landing-header-cta-text: rgba(28, 22, 18, 0.96);
+  --landing-header-cta-fill-bg: rgba(255, 248, 242, 0.96);
+  --landing-header-cta-fill-text: rgba(24, 19, 17, 0.96);
+  --landing-header-cta-glow-base: radial-gradient(15% 50% at 50% 100%, rgba(167, 112, 58, 0.18) 0%, rgba(167, 112, 58, 0) 100%);
+  --landing-header-cta-glow-hover: radial-gradient(60.6% 50% at 50% 100%, rgba(167, 112, 58, 0.28) 0%, rgba(167, 112, 58, 0) 100%);
+  --landing-header-menu-bg: linear-gradient(180deg, rgba(255, 248, 242, 0.92), rgba(245, 237, 228, 0.9));
+  --landing-header-menu-border: rgba(118, 101, 88, 0.14);
+  --landing-header-menu-highlight: rgba(167, 112, 58, 0.08);
+  --landing-hero-cta-from: rgba(255, 255, 255, 0.82);
+  --landing-hero-cta-via: rgba(255, 248, 242, 0.92);
+  --landing-hero-cta-to: rgba(250, 241, 231, 0.84);
+  --landing-hero-cta-shadow: rgba(167, 112, 58, 0.14) 0px 8px 22px, rgba(52, 40, 30, 0.08) 0px 0px 0px 1px;
+  --landing-toggle-bg: rgba(255, 251, 246, 0.96);
+  --landing-toggle-border: rgba(54, 42, 33, 0.12);
+  --landing-toggle-color: #181311;
+  --landing-toggle-shadow: 0 10px 26px rgba(70, 50, 30, 0.12);
+  --pipeline-stage-active-bg: rgba(255, 250, 244, 0.88);
+  --pipeline-stage-active-border: rgba(54, 42, 33, 0.1);
+  --pipeline-stage-idle-bg: rgba(255, 255, 255, 0);
+  --pipeline-stage-idle-border: rgba(54, 42, 33, 0.08);
+  --pipeline-stage-rail: rgba(54, 42, 33, 0.08);
+  --pipeline-stage-progress: linear-gradient(to bottom, rgba(167,112,58,0.82) 0%, rgba(167,112,58,0.34) 70%, rgba(167,112,58,0.05) 100%);
+  --pipeline-step-active-color: rgba(167,112,58,0.84);
+  --pipeline-step-idle-color: rgba(118,101,88,0.36);
+  --pipeline-divider-active: rgba(167,112,58,0.18);
+  --pipeline-divider-idle: rgba(54,42,33,0.08);
+  --pipeline-header-rail: rgba(54,42,33,0.08);
+  --pipeline-header-progress: linear-gradient(to right, rgba(167,112,58,0.82) 0%, rgba(167,112,58,0.34) 60%, rgba(167,112,58,0.05) 100%);
+  --timeline-dot-active-border: rgba(167,112,58,0.9);
+  --timeline-dot-active-bg: rgba(167,112,58,0.08);
+  --timeline-dot-active-shadow: 0 0 0 4px rgba(167,112,58,0.08), 0 0 16px rgba(167,112,58,0.18);
+  --timeline-dot-idle-border: rgba(54,42,33,0.14);
+  --timeline-dot-idle-bg: rgba(255,248,242,0.92);
+  --timeline-pip-active: rgba(167,112,58,1);
+  --timeline-pip-idle: rgba(118,101,88,0.28);
+  --timeline-step-active: rgba(167,112,58,0.78);
+  --timeline-step-idle: rgba(118,101,88,0.24);
+  --timeline-track: rgba(54,42,33,0.1);
+  --timeline-progress: linear-gradient(to bottom, rgba(167,112,58,0.82) 0%, rgba(167,112,58,0.44) 60%, rgba(167,112,58,0.1) 100%);
+  --landing-shift-after-shadow: 0 0 0 1px rgba(167,112,58,0.08), 0 8px 32px rgba(70,50,30,0.08);
+  --wabi-washi: #f5f0e8;
+  --wabi-sumi: #181311;
+  --wabi-ink: #181311;
+  --wabi-ink-light: #40352c;
+  --wabi-charcoal: #e6d8c8;
+  --wabi-patina: rgba(54, 42, 33, 0.18);
+  --wabi-stone: rgba(167, 112, 58, 0.22);
+  --wabi-sand: rgba(167, 112, 58, 0.1);
+  color-scheme: light;
+}
+
+html.dark body:has(.theme-landing) {
   background: #0c0a09;
   color: #fafaf9;
 }
 
+html.light body:has(.theme-landing) {
+  background: #f5f0e8;
+  color: #181311;
+}
+
 html:has(.theme-landing) {
-  scroll-padding-top: calc(var(--landing-header-height) + 1rem);
+  scroll-padding-top: calc(5rem + 1rem);
 }
 
 .theme-landing .landing-navbar {
@@ -96,7 +205,7 @@ html:has(.theme-landing) {
   background: var(--landing-header-scroll-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-soft);
 }
 
 .theme-landing .landing-navbar[data-scrolled="true"]::after {
@@ -279,6 +388,49 @@ html:has(.theme-landing) {
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 24%),
     linear-gradient(90deg, transparent, rgba(224, 180, 118, 0.03), transparent);
   pointer-events: none;
+}
+
+.theme-landing .landing-floating-toggle {
+  position: fixed;
+  left: 50%;
+  top: 1.5rem;
+  z-index: 41;
+  transform: translateX(-50%);
+}
+
+.theme-landing .landing-theme-toggle {
+  height: 2.7rem;
+  width: 4.25rem;
+  border-color: var(--landing-toggle-border);
+  background: var(--landing-toggle-bg);
+  color: var(--landing-toggle-color);
+  box-shadow: var(--landing-toggle-shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.theme-landing .landing-theme-toggle:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.theme-landing .landing-theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-landing .landing-hero-primary-button:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--landing-hero-cta-from) 82%, var(--accent-rust) 18%),
+    color-mix(in srgb, var(--landing-hero-cta-via) 78%, var(--accent-rust) 22%),
+    color-mix(in srgb, var(--landing-hero-cta-to) 82%, var(--accent-rust) 18%)
+  );
+}
+
+.theme-landing .landing-shift-after-card {
+  box-shadow: var(--landing-shift-after-shadow);
 }
 
 .theme-landing .landing-header-pages-link {

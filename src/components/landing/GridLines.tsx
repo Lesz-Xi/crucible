@@ -13,8 +13,8 @@ export function GridLines() {
         zIndex: 25,
         pointerEvents: "none",
         backgroundImage: [
-          "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-          "linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          "linear-gradient(var(--landing-grid-line) 1px, transparent 1px)",
+          "linear-gradient(90deg, var(--landing-grid-line) 1px, transparent 1px)",
         ].join(", "),
         backgroundSize: "80px 80px",
       }}

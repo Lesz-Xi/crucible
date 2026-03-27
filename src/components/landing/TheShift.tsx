@@ -118,7 +118,7 @@ export function TheShift() {
             return (
               <Wrap
                 {...(props as object)}
-                className="rounded-2xl border border-[var(--accent-rust)]/25 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-secondary)] p-7 shadow-[0_0_0_1px_rgba(166,124,82,0.08),0_4px_24px_rgba(46,36,26,0.08)] md:p-9"
+                className="landing-shift-after-card rounded-2xl border border-[var(--accent-rust)]/25 bg-gradient-to-br from-[var(--bg-card)] to-[var(--bg-secondary)] p-7 md:p-9"
               >
                 <p className="mb-7 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-[var(--accent-rust)]">
                   The MASA Layer

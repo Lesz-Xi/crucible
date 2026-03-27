@@ -94,15 +94,14 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
               ? {}
               : isActivated
               ? {
-                  borderColor: "rgba(200,150,90,0.9)",
-                  backgroundColor: "rgba(200,150,90,0.08)",
-                  boxShadow:
-                    "0 0 0 4px rgba(200,150,90,0.08), 0 0 16px rgba(200,150,90,0.35)",
+                  borderColor: "var(--timeline-dot-active-border)",
+                  backgroundColor: "var(--timeline-dot-active-bg)",
+                  boxShadow: "var(--timeline-dot-active-shadow)",
                   scale: 1,
                 }
               : {
-                  borderColor: "rgba(255,255,255,0.12)",
-                  backgroundColor: "rgba(28,25,23,0.9)",
+                  borderColor: "var(--timeline-dot-idle-border)",
+                  backgroundColor: "var(--timeline-dot-idle-bg)",
                   boxShadow: "none",
                   scale: 0.85,
                 }
@@ -116,8 +115,8 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
               shouldReduce
                 ? {}
                 : isActivated
-                ? { backgroundColor: "rgba(200,150,90,1)", opacity: 1 }
-                : { backgroundColor: "rgba(255,255,255,0.2)", opacity: 0.4 }
+                ? { backgroundColor: "var(--timeline-pip-active)", opacity: 1 }
+                : { backgroundColor: "var(--timeline-pip-idle)", opacity: 0.4 }
             }
             transition={{ duration: 0.4, delay: 0.1 }}
           />
@@ -127,9 +126,9 @@ function StepRow({ step, index, shouldReduce }: StepProps) {
         <motion.span
           className="mt-2 font-mono text-[0.52rem] tracking-[0.22em] tabular-nums"
           animate={
-            shouldReduce ? {} : isActivated
-              ? { color: "rgba(200,150,90,0.7)", opacity: 1 }
-              : { color: "rgba(255,255,255,0.15)", opacity: 0.5 }
+          shouldReduce ? {} : isActivated
+              ? { color: "var(--timeline-step-active)", opacity: 1 }
+              : { color: "var(--timeline-step-idle)", opacity: 0.5 }
           }
           transition={{ duration: 0.4, delay: 0.15 }}
         >
@@ -251,7 +250,7 @@ export function SequenceOfEvents() {
           <div
             aria-hidden="true"
             className="absolute left-[9px] top-0 h-full w-px"
-            style={{ background: "rgba(255,255,255,0.07)" }}
+            style={{ background: "var(--timeline-track)" }}
           />
 
           {/* Animated amber progress fill */}
@@ -262,8 +261,7 @@ export function SequenceOfEvents() {
               style={{
                 scaleY: lineScaleY,
                 height: "100%",
-                background:
-                  "linear-gradient(to bottom, rgba(200,150,90,0.9) 0%, rgba(200,150,90,0.55) 60%, rgba(200,150,90,0.15) 100%)",
+                background: "var(--timeline-progress)",
               }}
             />
           )}

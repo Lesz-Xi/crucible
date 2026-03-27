@@ -1,4 +1,3 @@
-import { LandingThemeLock } from "@/components/landing/LandingThemeLock";
 import { GridLines } from "@/components/landing/GridLines";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
@@ -11,12 +10,13 @@ import { FivePillars } from "@/components/landing/FivePillars";
 import { SequenceOfEvents } from "@/components/landing/SequenceOfEvents";
 import { ResearchFAQ } from "@/components/landing/ResearchFAQ";
 import { LandingFooter } from "@/components/landing/LandingFooter";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <div className="theme-landing hd-page min-h-screen bg-[var(--bg-primary)]">
       <GridLines />
-      <LandingThemeLock />
+      <ThemeToggle variant="landing" className="landing-floating-toggle" />
       <Navbar />
       <main className="relative z-10">
         <Hero />

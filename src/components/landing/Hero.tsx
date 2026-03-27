@@ -79,10 +79,11 @@ export function Hero() {
               type="button"
               onClick={handlePrimaryAction}
               disabled={isLoadingAuthState}
-              className="hover:from-[#c8965a]/20 hover:via-[#c8965a]/30 hover:to-[#c8965a]/20 hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium bg-gradient-to-b from-white/[0.08] via-white/[0.12] to-white/[0.08] rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
+              className="landing-hero-primary-button hover:scale-105 duration-500 ease-out transition-all flex group text-sm font-medium rounded-full pt-3 pr-6 pb-3 pl-6 relative gap-x-2 gap-y-2 items-center disabled:cursor-not-allowed disabled:opacity-50"
               style={{
-                boxShadow:
-                  "rgba(200, 150, 90, 0.22) 0px 4px 16px, rgba(255, 255, 255, 0.10) 0px 0px 0px 1px",
+                background:
+                  "linear-gradient(180deg, var(--landing-hero-cta-from), var(--landing-hero-cta-via), var(--landing-hero-cta-to))",
+                boxShadow: "var(--landing-hero-cta-shadow)",
                 color: "var(--text-primary)",
               }}
             >
