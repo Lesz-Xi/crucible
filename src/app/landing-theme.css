@@ -338,7 +338,7 @@ html:has(.theme-landing) {
 .theme-landing .landing-header-cta-fill {
   position: absolute;
   left: 0.25rem;
-  top: calc((var(--landing-header-cta-height) - var(--landing-header-cta-fill-size)) / 2);
+  top: calc((var(--landing-header-cta-height) - var(--landing-header-cta-fill-size)) / 2 + 0.04rem);
   height: var(--landing-header-cta-fill-size);
   width: var(--landing-header-cta-fill-size);
   border-radius: 999px;
