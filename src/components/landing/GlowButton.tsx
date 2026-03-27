@@ -17,7 +17,7 @@ interface GlowButtonProps {
 }
 
 /**
- * PremiumGlowButton — parchment-native pill with a warm amber underglow.
+ * PremiumGlowButton — obsidian-native pill with a restrained amber underglow.
  */
 export function GlowButton({
   children,
@@ -37,8 +37,8 @@ export function GlowButton({
         "relative z-10 inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3",
         "border-[var(--border-subtle)] bg-[var(--bg-elevated)]",
         "font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-primary)]",
-        "shadow-[0_12px_30px_rgba(122,87,48,0.08),inset_0_1px_0_rgba(255,255,255,0.85)]",
-        "transition-all duration-300 hover:-translate-y-0.5 hover:border-[color:var(--accent-rust)] hover:bg-white/[0.66] hover:text-[color:var(--accent-rust-strong)]",
+        "shadow-[0_16px_34px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,247,238,0.06)]",
+        "transition-all duration-300 hover:-translate-y-0.5 hover:border-[color:var(--accent-rust)] hover:bg-[color:rgba(29,24,21,0.98)] hover:text-[color:var(--accent-rust-strong)]",
         fullWidth ? "w-full" : "",
         className,
       )}
@@ -55,7 +55,7 @@ export function GlowButton({
         className="pointer-events-none absolute inset-x-0 -inset-y-4 rounded-full opacity-70 blur-[28px]"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 60%, rgba(200,150,90,0.22) 0%, transparent 72%)",
+            "radial-gradient(ellipse at 50% 60%, rgba(200,150,90,0.18) 0%, transparent 72%)",
         }}
       />
 

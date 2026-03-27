@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Twitter, Github, Linkedin } from "lucide-react";
 import { FlickeringGrid } from "./FlickeringGrid";
 import { WuWeiMark } from "./WuWeiMark";
-import { useTheme } from "next-themes";
 
 // ── Link data ────────────────────────────────────────────────────────────────
 
@@ -46,9 +45,6 @@ const socialIcons = [
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function LandingFooter() {
-  const { resolvedTheme } = useTheme();
-  const footerGridColor = resolvedTheme === "light" ? "#8f7356" : "#c8965a";
-
   return (
     <footer
       id="footer"
@@ -128,7 +124,7 @@ export function LandingFooter() {
           text="CAUSAL SCIENCE"
           fontSize={76}
           fontWeight={600}
-          color={footerGridColor}
+          color="#c8965a"
           squareSize={2}
           gridGap={3}
           maxOpacity={0.38}

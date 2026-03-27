@@ -25,7 +25,7 @@ export default function AuthLoading() {
             </div>
           </Link>
           <div className="rounded-full border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--accent-rust-strong)] shadow-[var(--shadow-soft)]">
-            Light access
+            Secure access
           </div>
         </header>
 
