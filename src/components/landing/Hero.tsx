@@ -59,7 +59,7 @@ export function Hero() {
         className="landing-hero-board relative z-10 mx-auto mt-16 flex w-full max-w-[96rem] items-end justify-center overflow-hidden"
         aria-hidden="true"
       >
-        <MasaArchitecture className="w-[min(92vw,980px)] md:w-[min(88vw,1040px)] lg:w-[min(84vw,1100px)] max-w-none translate-y-[2rem] scale-[0.92] lg:translate-y-[3.6rem] lg:scale-[0.95]" />
+        <MasaArchitecture className="w-[min(92vw,980px)] md:w-[min(88vw,1040px)] lg:w-[min(84vw,1100px)] max-w-none translate-y-[3.4rem] scale-[0.9] lg:translate-y-[5.6rem] lg:scale-[0.93]" />
       </div>
     </section>
   );
