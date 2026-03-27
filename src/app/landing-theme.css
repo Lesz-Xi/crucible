@@ -318,7 +318,7 @@ html:has(.theme-landing) {
   text-transform: uppercase;
   position: absolute;
   left: calc(50% + 0.24rem);
-  top: 50%;
+  top: calc(50% + 0.03rem);
   z-index: 2;
   transform: translate(-50%, -50%);
   color: var(--landing-header-cta-text);
