@@ -127,9 +127,9 @@ const PORTS: readonly PortDefinition[] = [
   { px: 131.5, py: 23.5, lx: 130.5, ly: 15.2, anchor: "middle", label: "SCM Model" },
   { px: 32, py: 36, lx: 37.5, ly: 36, anchor: "start", label: "Inference" },
   { px: 166.5, py: 88, lx: 172.5, ly: 88, anchor: "start", label: "Memory" },
-  { px: 138, py: 68, lx: 142, ly: 94.5, anchor: "middle", label: "Falsifiability" },
-  { px: 96.5, py: 97.5, lx: 97.5, ly: 100.2, anchor: "middle", label: "Provenance" },
-  { px: 87, py: 91.5, lx: 72, ly: 84.8, anchor: "end", label: "Critique" },
+  { px: 138, py: 68, lx: 142, ly: 91.5, anchor: "middle", label: "Falsifiability" },
+  { px: 96.5, py: 97.5, lx: 97.5, ly: 96.8, anchor: "middle", label: "Provenance" },
+  { px: 87, py: 91.5, lx: 72, ly: 82.4, anchor: "end", label: "Critique" },
 ] as const;
 
 const SWITCHES: readonly SwitchDefinition[] = [
@@ -272,9 +272,9 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             dominantBaseline="middle"
             fill="var(--landing-masa-label)"
             fontFamily="var(--font-ibm-plex-mono, monospace)"
-            fontSize="1.95"
+            fontSize="1.75"
             fontWeight="400"
-            letterSpacing="0.08em"
+            letterSpacing="0.075em"
           >
             {port.label}
           </text>
@@ -285,13 +285,13 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="2.35"
+              r="1.95"
               fill="var(--landing-masa-dot-halo)"
               opacity="0.1"
             >
               <animate
                 attributeName="r"
-                values="1.9;2.5;1.9"
+                values="1.55;2.15;1.55"
                 dur="3.2s"
                 begin={`${0.22 * index}s`}
                 repeatCount="indefinite"
@@ -307,7 +307,7 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.42"
+              r="1.18"
               fill="var(--landing-masa-dot-core)"
             >
               <animate
@@ -321,15 +321,15 @@ export function MasaArchitecture({ className, text = "MASA" }: MasaArchitectureP
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="1.8"
+              r="1.48"
               fill="none"
               stroke="var(--landing-masa-dot-ring)"
-              strokeWidth="0.22"
+              strokeWidth="0.18"
             />
             <circle
               cx={route.cx}
               cy={route.cy}
-              r="0.3"
+              r="0.22"
               fill="var(--landing-masa-dot-spark)"
             />
           </g>
