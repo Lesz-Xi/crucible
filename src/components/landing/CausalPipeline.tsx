@@ -1,253 +1,277 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   motion,
-  useInView,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
 
-// ── Data ─────────────────────────────────────────────────────────────────────
+type StageDefinition = {
+  id: string;
+  title: string;
+  descriptor: string;
+  summary: string;
+  signal: string;
+};
 
-const steps = [
+const stages: readonly StageDefinition[] = [
   {
-    num: "01",
-    eyebrow: "Observational Layer",
+    id: "observe",
     title: "Observe",
-    signal: "Retrieval",
-    body: "Surface relevant evidence from indexed corpora with confidence-weighted retrieval. Every source is scored, timestamped, and linked to the claim it supports.",
+    descriptor: "Observational intake",
+    summary:
+      "Retrieval lanes surface traceable evidence, score each source, and bind every claim to an auditable substrate.",
+    signal: "RETRIEVAL",
   },
   {
-    num: "02",
-    eyebrow: "Mechanism Drafting",
+    id: "hypothesize",
     title: "Hypothesize",
-    signal: "Synthesis",
-    body: "Generate falsifiable causal mechanisms through contradiction-driven recombination. MASA synthesises across conflicting claims — not around them.",
+    descriptor: "Mechanism drafting",
+    summary:
+      "Contradiction pressure forces mechanism candidates to survive conflict before MASA treats them as causal structure.",
+    signal: "SYNTHESIS",
   },
   {
-    num: "03",
-    eyebrow: "Interventional Layer",
+    id: "intervene",
     title: "Intervene",
-    signal: "Do-Calculus",
-    body: "Execute Pearl do-calculus: simulate real-world interventions on the structural causal model. Ask not just what is correlated, but what would change if you acted.",
+    descriptor: "Interventional runtime",
+    summary:
+      "Do-calculus lanes simulate action on the graph, separating plausible intervention effects from observational drift.",
+    signal: "DO-CALCULUS",
   },
   {
-    num: "04",
-    eyebrow: "Refutation Gate",
+    id: "validate",
     title: "Validate",
-    signal: "Commit",
-    body: "Gate every claim through physical-reality tests before committing to sovereign memory. Science, not plausible text generation.",
+    descriptor: "Refutation gate",
+    summary:
+      "Every conclusion is stress-tested against provenance, falsifiability, and audit rules before memory commit.",
+    signal: "COMMIT",
   },
-];
+] as const;
 
-// ── Stage panel ───────────────────────────────────────────────────────────────
-
-interface StageProps {
-  step: (typeof steps)[number];
-  index: number;
-  shouldReduce: boolean;
-}
-
-function StagePanel({ step, index, shouldReduce }: StageProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-12% 0px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      className="relative overflow-hidden rounded-[1.4rem] border border-[var(--pipeline-stage-shell-border)] bg-[var(--pipeline-stage-shell-bg)] shadow-[var(--pipeline-stage-shell-shadow)]"
-      animate={
-        shouldReduce
-          ? {}
-          : inView
-          ? {
-              backgroundColor: "var(--pipeline-stage-active-bg)",
-              borderColor: "var(--pipeline-stage-active-border)",
-              boxShadow: "var(--pipeline-stage-active-shadow)",
-            }
-          : {
-              backgroundColor: "var(--pipeline-stage-idle-bg)",
-              borderColor: "var(--pipeline-stage-idle-border)",
-              boxShadow: "var(--pipeline-stage-shell-shadow)",
-            }
-      }
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      initial={shouldReduce ? {} : { backgroundColor: "var(--pipeline-stage-idle-bg)" }}
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--pipeline-stage-topline)]" />
-      <div className="grid gap-0 md:grid-cols-[11.5rem_minmax(0,1fr)]">
-        <div className="relative flex min-h-[12rem] flex-col justify-between border-b border-[var(--pipeline-divider-idle)] px-6 py-6 md:border-b-0 md:border-r md:px-7 md:py-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="relative h-14 w-14 overflow-hidden rounded-[1.15rem] border border-[var(--pipeline-stage-badge-border)] bg-[var(--pipeline-stage-badge-bg)] shadow-[0_12px_24px_rgba(0,0,0,0.22)]">
-              <motion.div
-                className="absolute inset-y-3 left-3 w-px bg-[var(--pipeline-stage-badge-line)]"
-                initial={shouldReduce ? {} : { scaleY: 0 }}
-                animate={shouldReduce ? {} : inView ? { scaleY: 1 } : { scaleY: 0 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                style={{ transformOrigin: "top" }}
-              />
-              <motion.span
-                className="absolute inset-x-0 bottom-3 text-center font-mono text-[0.78rem] tracking-[0.16em]"
-                animate={
-                  shouldReduce
-                    ? {}
-                    : inView
-                    ? { color: "var(--pipeline-step-active-color)", opacity: 1 }
-                    : { color: "var(--pipeline-step-idle-color)", opacity: 0.7 }
-                }
-                transition={{ duration: 0.45 }}
-              >
-                {step.num}
-              </motion.span>
-            </div>
-
-            <motion.div
-              className="hidden h-px flex-1 self-center bg-[var(--pipeline-stage-content-rule)] md:block"
-              animate={
-                shouldReduce
-                  ? {}
-                  : inView
-                  ? { opacity: 1, scaleX: 1 }
-                  : { opacity: 0.35, scaleX: 0.78 }
-              }
-              transition={{ duration: 0.45 }}
-              style={{ transformOrigin: "left" }}
-            />
-          </div>
-
-          <div className="space-y-3">
-            <p className="font-mono text-[0.72rem] uppercase tracking-[0.22em] text-[var(--pipeline-stage-kicker)]">
-              {step.eyebrow}
-            </p>
-            <div className="flex items-center gap-2.5 text-[0.7rem] uppercase tracking-[0.22em] text-[var(--pipeline-stage-signal)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--pipeline-stage-signal-dot)] shadow-[0_0_10px_rgba(200,150,90,0.32)]" />
-              <span>{step.signal}</span>
-            </div>
-            <div className="flex items-center gap-2 pt-1">
-              <span className="h-px w-7 bg-[var(--pipeline-stage-content-rule)]" />
-              <span className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-[var(--pipeline-stage-index)]">
-                Stage {step.num}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <motion.div
-          className="relative min-w-0 px-6 py-6 md:px-8 md:py-8"
-          initial={shouldReduce ? {} : { opacity: 0, y: 18 }}
-          animate={shouldReduce ? {} : inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-          transition={{
-            duration: 0.7,
-            delay: 0.14 + index * 0.05,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <motion.div
-            className="mb-6 flex items-start justify-between gap-6"
-            animate={
-              shouldReduce
-                ? {}
-                : inView
-                ? { opacity: 1, y: 0 }
-                : { opacity: 0.7, y: 10 }
-            }
-            transition={{ duration: 0.5 }}
-          >
-            <div className="space-y-3">
-              <h3
-                className="font-light leading-[1.04] tracking-[-0.04em] text-[var(--text-primary)]"
-                style={{
-                  fontFamily: "var(--font-lora, Georgia, serif)",
-                  fontSize: "clamp(1.8rem, 2.35vw, 2.8rem)",
-                }}
-              >
-                {step.title}
-              </h3>
-              <div className="h-px w-20 bg-[var(--pipeline-stage-content-rule)]" />
-            </div>
-
-            <div className="hidden min-w-[7.25rem] items-center justify-end gap-3 md:flex">
-              <div className="h-px w-12 bg-[var(--pipeline-stage-content-rule)]" />
-              <span className="font-mono text-[0.7rem] uppercase tracking-[0.26em] text-[var(--pipeline-stage-index)]">
-                0{index + 1}
-              </span>
-            </div>
-          </motion.div>
-
-          <p className="max-w-[48rem] text-[1rem] leading-[1.95] text-[var(--text-secondary)] md:text-[1.02rem]">
-            {step.body}
-          </p>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Section ───────────────────────────────────────────────────────────────────
+const governanceClaims = [
+  "Evidence enters with source, time, and scoring intact.",
+  "Contradiction is preserved until a mechanism survives it.",
+  "Interventions are simulated on structure, not guessed from correlation.",
+  "Only refuted-safe findings reach memory or action.",
+] as const;
 
 export function CausalPipeline() {
-  const shouldReduce = useReducedMotion();
-
-  // Header scan line — draws left → right as section enters viewport
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: headerProgress } = useScroll({
-    target: headerRef,
-    offset: ["start 85%", "start 30%"],
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
   });
-  const lineScaleX = useTransform(headerProgress, [0, 1], [0, 1]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    const nextIndex =
+      value < 0.36 ? 0 : value < 0.54 ? 1 : value < 0.72 ? 2 : 3;
+    setActiveIndex(nextIndex);
+  });
+
+  const lampIntensity = useTransform(
+    scrollYProgress,
+    [0.08, 0.38, 0.58, 0.82],
+    shouldReduceMotion ? [0.44, 0.64, 0.76, 0.76] : [0.18, 0.38, 1, 0.62],
+  );
+  const beamOpacity = useTransform(
+    scrollYProgress,
+    [0.08, 0.4, 0.62, 0.84],
+    shouldReduceMotion ? [0.24, 0.32, 0.4, 0.4] : [0.06, 0.18, 0.44, 0.28],
+  );
+  const hazeOpacity = useTransform(
+    scrollYProgress,
+    [0.12, 0.46, 0.66, 0.88],
+    shouldReduceMotion ? [0.16, 0.2, 0.24, 0.24] : [0.04, 0.12, 0.28, 0.18],
+  );
+  const panelGlow = useTransform(
+    scrollYProgress,
+    [0.14, 0.44, 0.66, 0.92],
+    shouldReduceMotion ? [0.1, 0.14, 0.18, 0.18] : [0.03, 0.08, 0.22, 0.14],
+  );
+  const bulbShadow = useTransform(
+    lampIntensity,
+    [0, 1],
+    [
+      "0 0 0 rgba(224,180,118,0)",
+      "0 0 20px rgba(224,180,118,0.38), 0 0 44px rgba(224,180,118,0.2)",
+    ],
+  );
+  const panelShadow = useTransform(
+    panelGlow,
+    [0, 1],
+    [
+      "0 24px 48px rgba(0,0,0,0.28)",
+      "0 26px 68px rgba(0,0,0,0.42), 0 0 48px rgba(224,180,118,0.08)",
+    ],
+  );
+
+  const signalTimeline = useMemo(
+    () => stages.map((_, index) => (activeIndex >= index ? "active" : "idle")),
+    [activeIndex],
+  );
 
   return (
     <section
       id="pipeline"
-      className="hd-section bg-[var(--bg-primary)] py-28 md:py-36"
+      ref={sectionRef}
+      className="theme-landing hd-section relative overflow-hidden bg-[var(--bg-primary)] py-32 md:py-40"
     >
-      <div className="mx-auto max-w-[86rem] px-8 md:px-12 lg:px-16">
+      <div className="pipeline-lamp-anchor pointer-events-none absolute inset-x-0 top-0 z-0 h-full">
+        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-28 -translate-x-1/2" />
+        <motion.div
+          className="pipeline-lamp-head absolute left-1/2 top-24 -translate-x-1/2"
+          style={{ opacity: lampIntensity }}
+        >
+          <div className="pipeline-lamp-cap" />
+          <motion.div
+            className="pipeline-lamp-bulb"
+            style={{ opacity: lampIntensity, boxShadow: bulbShadow }}
+          />
+        </motion.div>
+        <motion.div
+          className="pipeline-lamp-beam absolute left-1/2 top-[6.85rem] -translate-x-1/2"
+          style={{ opacity: beamOpacity }}
+        />
+        <motion.div
+          className="pipeline-lamp-haze absolute inset-x-[8%] top-20 h-[36rem] rounded-full"
+          style={{ opacity: hazeOpacity }}
+        />
+      </div>
 
-        {/* ── Section header ─────────────────────────────────────────────── */}
-        <div ref={headerRef} className="mb-16">
-          <p className="hd-kicker mb-4 uppercase">Causal Pipeline</p>
-
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div className="relative z-10 mx-auto max-w-[86rem] px-8 md:px-12 lg:px-16">
+        <div className="grid items-start gap-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(24rem,1.08fr)] lg:gap-20">
+          <div className="max-w-[33rem] pt-16 md:pt-20">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
+              <span className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
+                Causal Pipeline
+              </span>
+            </div>
             <h2
               className="hd-serif-display text-[var(--text-primary)]"
-              style={{ fontSize: "clamp(2.6rem, 5vw, 4.9rem)" }}
+              style={{ fontSize: "clamp(2.3rem, 4vw, 4.6rem)" }}
             >
-              From Question{" "}
-              <em className="italic text-[var(--accent-rust)]">to Proof.</em>
+              From Question <em>to Proof.</em>
             </h2>
-
-            <p className="max-w-[27rem] text-[0.92rem] leading-[1.9] text-[var(--text-muted)] md:text-right md:pb-2">
-              A closed-loop scientific process. Each stage is governed,
-              traced, and auditable.
+            <p className="mt-6 max-w-[28rem] text-[1rem] leading-[1.9] text-[var(--text-secondary)]">
+              A closed-loop scientific process. Each stage is governed, traced, and
+              auditable before MASA commits a conclusion to action or memory.
             </p>
+
+            <div className="mt-10 space-y-5">
+              {governanceClaims.map((claim) => (
+                <div key={claim} className="pipeline-claim-row">
+                  <span className="pipeline-claim-signal" aria-hidden="true" />
+                  <p className="text-[0.98rem] leading-[1.85] text-[var(--text-secondary)]">
+                    {claim}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Animated scan line */}
-          <div className="mt-8 h-px w-full overflow-hidden bg-[var(--pipeline-header-rail)]">
-            {!shouldReduce && (
-              <motion.div
-                className="h-full origin-left"
-                style={{
-                  scaleX: lineScaleX,
-                  background: "var(--pipeline-header-progress)",
-                }}
-              />
-            )}
-          </div>
-        </div>
+          <motion.div
+            className="pipeline-control-shell relative mx-auto w-full max-w-[42rem] rounded-[2rem] border p-5 md:p-7"
+            style={{ boxShadow: panelShadow }}
+          >
+            <div className="pipeline-control-header flex items-center justify-between gap-6 border-b pb-5">
+              <div>
+                <p className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
+                  Monitored Sequence
+                </p>
+                <p className="mt-2 text-[1.05rem] font-medium tracking-[-0.02em] text-[var(--text-primary)]">
+                  Question to Proof Runtime
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="pipeline-status-chip">AUDITABLE</span>
+                <span className="pipeline-status-chip pipeline-status-chip-muted">
+                  PCH LAYERED
+                </span>
+              </div>
+            </div>
 
-        {/* ── Pipeline stages ────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-5 md:gap-6">
-          {steps.map((step, i) => (
-            <StagePanel
-              key={step.num}
-              step={step}
-              index={i}
-              shouldReduce={Boolean(shouldReduce)}
-            />
-          ))}
+            <div className="mt-6 space-y-4">
+              {stages.map((stage, index) => {
+                const isActive = signalTimeline[index] === "active";
+                return (
+                  <motion.article
+                    key={stage.id}
+                    className={`pipeline-control-row rounded-[1.5rem] border p-4 md:p-5 ${isActive ? "is-active" : "is-idle"}`}
+                    animate={
+                      shouldReduceMotion
+                        ? undefined
+                        : {
+                            borderColor: isActive
+                              ? "var(--pipeline-panel-active-border)"
+                              : "var(--pipeline-panel-idle-border)",
+                            backgroundColor: isActive
+                              ? "var(--pipeline-panel-active-bg)"
+                              : "var(--pipeline-panel-idle-bg)",
+                          }
+                    }
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="flex items-start justify-between gap-5">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`pipeline-row-indicator ${isActive ? "is-active" : ""}`}
+                            aria-hidden="true"
+                          />
+                          <div>
+                            <p className="text-[1.05rem] font-medium tracking-[-0.02em] text-[var(--text-primary)] md:text-[1.15rem]">
+                              {stage.title}
+                            </p>
+                            <p className="mt-1 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
+                              {stage.descriptor}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pipeline-row-status min-w-[8rem]">
+                        <span className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
+                          {isActive ? "Lit lane" : "Standby"}
+                        </span>
+                        <div className="pipeline-row-rail mt-2">
+                          <motion.span
+                            className="pipeline-row-rail-fill"
+                            animate={{
+                              width: isActive ? "100%" : "36%",
+                              opacity: isActive ? 1 : 0.35,
+                            }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 max-w-[34rem] text-[0.95rem] leading-[1.8] text-[var(--text-secondary)]">
+                      {stage.summary}
+                    </p>
+
+                    <div className="mt-5 flex items-center justify-between gap-4 border-t pt-4">
+                      <span className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[var(--pipeline-panel-signal-text)]">
+                        {stage.signal}
+                      </span>
+                      <span
+                        className={`pipeline-row-chip ${isActive ? "is-active" : ""}`}
+                      >
+                        {isActive ? "ACTIVE CHANNEL" : "QUEUED"}
+                      </span>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

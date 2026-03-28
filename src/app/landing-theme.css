@@ -79,6 +79,29 @@
   --pipeline-stage-index: rgba(159, 140, 123, 0.72);
   --pipeline-header-rail: rgba(255,247,238,0.08);
   --pipeline-header-progress: linear-gradient(to right, rgba(200,150,90,0.92) 0%, rgba(200,150,90,0.38) 60%, rgba(200,150,90,0.05) 100%);
+  --pipeline-lamp-wire: rgba(255, 247, 238, 0.16);
+  --pipeline-lamp-shade: rgba(34, 31, 29, 0.98);
+  --pipeline-lamp-shade-border: rgba(255, 247, 238, 0.08);
+  --pipeline-lamp-bulb: rgba(240, 219, 185, 0.98);
+  --pipeline-lamp-beam-core: rgba(214, 170, 108, 0.18);
+  --pipeline-lamp-beam-edge: rgba(214, 170, 108, 0);
+  --pipeline-lamp-haze: rgba(214, 170, 108, 0.14);
+  --pipeline-panel-shell-bg: linear-gradient(180deg, rgba(14, 13, 13, 0.96), rgba(8, 8, 9, 0.98));
+  --pipeline-panel-shell-border: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-active-bg: rgba(20, 18, 17, 0.9);
+  --pipeline-panel-idle-bg: rgba(12, 12, 13, 0.76);
+  --pipeline-panel-active-border: rgba(224, 180, 118, 0.24);
+  --pipeline-panel-idle-border: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-row-rule: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-signal-text: rgba(194, 176, 154, 0.84);
+  --pipeline-panel-chip-bg: rgba(255, 247, 238, 0.03);
+  --pipeline-panel-chip-border: rgba(255, 247, 238, 0.12);
+  --pipeline-panel-chip-active-bg: rgba(200, 150, 90, 0.14);
+  --pipeline-panel-chip-active-border: rgba(224, 180, 118, 0.3);
+  --pipeline-panel-indicator-idle: rgba(255, 247, 238, 0.16);
+  --pipeline-panel-indicator-active: rgba(224, 180, 118, 0.98);
+  --pipeline-panel-rail: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-rail-fill: linear-gradient(90deg, rgba(224, 180, 118, 0.98), rgba(200, 150, 90, 0.24));
   --timeline-dot-active-border: rgba(224,180,118,0.94);
   --timeline-dot-active-bg: rgba(200,150,90,0.12);
   --timeline-dot-active-shadow: 0 0 0 4px rgba(200,150,90,0.12), 0 0 16px rgba(200,150,90,0.22);
@@ -768,6 +791,185 @@ html:has(.theme-landing) {
   width: 100%;
   height: 2px;
   background: var(--metric-line);
+}
+
+.theme-landing .pipeline-lamp-wire {
+  width: 1px;
+  background: linear-gradient(180deg, rgba(255, 247, 238, 0.02), var(--pipeline-lamp-wire));
+}
+
+.theme-landing .pipeline-lamp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.theme-landing .pipeline-lamp-cap {
+  width: 2.4rem;
+  height: 1rem;
+  border-radius: 999px 999px 0.45rem 0.45rem;
+  border: 1px solid var(--pipeline-lamp-shade-border);
+  border-bottom: none;
+  background: linear-gradient(180deg, rgba(255, 247, 238, 0.03), var(--pipeline-lamp-shade));
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.theme-landing .pipeline-lamp-bulb {
+  margin-top: -0.15rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--pipeline-lamp-bulb);
+}
+
+.theme-landing .pipeline-lamp-beam {
+  width: min(54rem, 72vw);
+  height: 34rem;
+  background: radial-gradient(
+    ellipse at top,
+    var(--pipeline-lamp-beam-core) 0%,
+    rgba(214, 170, 108, 0.08) 26%,
+    var(--pipeline-lamp-beam-edge) 74%
+  );
+  filter: blur(12px);
+}
+
+.theme-landing .pipeline-lamp-haze {
+  background: radial-gradient(circle at top, var(--pipeline-lamp-haze) 0%, transparent 68%);
+  filter: blur(28px);
+}
+
+.theme-landing .pipeline-claim-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.theme-landing .pipeline-claim-signal {
+  margin-top: 0.7rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-rust-strong);
+  box-shadow: 0 0 0 6px rgba(200, 150, 90, 0.08);
+}
+
+.theme-landing .pipeline-control-shell {
+  position: relative;
+  border-color: var(--pipeline-panel-shell-border);
+  background:
+    linear-gradient(180deg, rgba(255, 247, 238, 0.03), transparent 24%),
+    var(--pipeline-panel-shell-bg);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28);
+}
+
+.theme-landing .pipeline-control-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 247, 238, 0.04), transparent 18%),
+    radial-gradient(circle at top center, rgba(224, 180, 118, 0.08), transparent 44%);
+}
+
+.theme-landing .pipeline-control-header {
+  border-color: var(--pipeline-panel-row-rule);
+}
+
+.theme-landing .pipeline-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(224, 180, 118, 0.2);
+  background: rgba(200, 150, 90, 0.08);
+  padding: 0.5rem 0.8rem;
+  font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-rust-strong);
+}
+
+.theme-landing .pipeline-status-chip-muted {
+  border-color: rgba(255, 247, 238, 0.08);
+  background: rgba(255, 247, 238, 0.03);
+  color: var(--text-muted);
+}
+
+.theme-landing .pipeline-control-row {
+  border-color: var(--pipeline-panel-idle-border);
+  background: var(--pipeline-panel-idle-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.02);
+}
+
+.theme-landing .pipeline-control-row.is-active {
+  box-shadow:
+    0 16px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 247, 238, 0.03);
+}
+
+.theme-landing .pipeline-row-indicator {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: var(--pipeline-panel-indicator-idle);
+  box-shadow: 0 0 0 6px rgba(255, 247, 238, 0.02);
+}
+
+.theme-landing .pipeline-row-indicator.is-active {
+  background: var(--pipeline-panel-indicator-active);
+  box-shadow: 0 0 0 8px rgba(224, 180, 118, 0.08), 0 0 18px rgba(224, 180, 118, 0.18);
+}
+
+.theme-landing .pipeline-row-rail {
+  position: relative;
+  overflow: hidden;
+  height: 2px;
+  width: 100%;
+  min-width: 7rem;
+  border-radius: 999px;
+  background: var(--pipeline-panel-rail);
+}
+
+.theme-landing .pipeline-row-rail-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: var(--pipeline-panel-rail-fill);
+}
+
+.theme-landing .pipeline-row-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--pipeline-panel-chip-border);
+  background: var(--pipeline-panel-chip-bg);
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.theme-landing .pipeline-row-chip.is-active {
+  border-color: var(--pipeline-panel-chip-active-border);
+  background: var(--pipeline-panel-chip-active-bg);
+  color: var(--accent-rust-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-landing .pipeline-lamp-beam,
+  .theme-landing .pipeline-lamp-haze {
+    opacity: 0.28 !important;
+  }
 }
 
 .theme-landing .lg-control,
