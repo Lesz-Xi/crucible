@@ -74,12 +74,12 @@ export function CausalPipeline() {
   const beamOpacity = useTransform(
     scrollYProgress,
     [0.02, 0.18, 0.44, 0.78, 1],
-    shouldReduceMotion ? [0.2, 0.28, 0.38, 0.32, 0.22] : [0.02, 0.1, 0.82, 0.52, 0.12],
+    shouldReduceMotion ? [0.12, 0.18, 0.24, 0.2, 0.14] : [0.01, 0.05, 0.34, 0.2, 0.06],
   );
   const hazeOpacity = useTransform(
     scrollYProgress,
     [0.04, 0.22, 0.46, 0.82, 1],
-    shouldReduceMotion ? [0.1, 0.14, 0.18, 0.14, 0.1] : [0.02, 0.07, 0.28, 0.14, 0.04],
+    shouldReduceMotion ? [0.08, 0.1, 0.14, 0.1, 0.08] : [0.01, 0.04, 0.18, 0.09, 0.03],
   );
   const boardOpacity = useTransform(
     scrollYProgress,
@@ -133,7 +133,7 @@ export function CausalPipeline() {
       </div>
 
       <div className="relative mx-auto max-w-[96rem] px-8 md:px-12 lg:px-16">
-        <div className="grid gap-14 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.22fr)] lg:items-start lg:gap-16">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.98fr)_minmax(0,1.06fr)] lg:items-start lg:gap-10 xl:gap-12">
           <div className="pipeline-editorial max-w-[36rem] pt-12 md:pt-16 lg:pt-24">
             <div className="mb-7 flex items-center gap-3">
               <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
@@ -165,7 +165,7 @@ export function CausalPipeline() {
           </div>
 
           <motion.div
-            className="pipeline-runtime-panel mx-auto w-full max-w-[52rem] rounded-[2rem] border p-6 md:p-8 lg:mt-3"
+            className="pipeline-runtime-panel mx-auto w-full max-w-[46rem] rounded-[2rem] border p-5 md:p-6 lg:mt-8"
             style={{
               opacity: boardOpacity,
               y: boardY,
