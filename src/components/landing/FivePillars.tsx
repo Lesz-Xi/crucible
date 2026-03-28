@@ -1,13 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   BrainCircuit,
   Database,
   FlaskConical,
   GitBranch,
-  Link2,
   ShieldCheck,
   Zap,
   type LucideIcon,
@@ -114,7 +112,6 @@ function getStatusClass(status: PillarStatus) {
 
 export function FivePillars() {
   const shouldReduceMotion = useReducedMotion();
-  const [activeId, setActiveId] = useState<string | null>(null);
 
   return (
     <section
@@ -167,21 +164,12 @@ export function FivePillars() {
 
             <div className="five-pillars-ledger-rows">
               {pillars.map((pillar, index) => {
-                const isActive = pillar.id === activeId;
                 const Icon = pillar.icon;
 
                 return (
-                  <motion.button
+                  <motion.div
                     key={pillar.id}
-                    type="button"
-                    aria-pressed={isActive}
-                    aria-label={`Focus ${pillar.label}`}
-                    className={`five-pillars-ledger-row ${isActive ? "is-active" : ""}`}
-                    onClick={() =>
-                      setActiveId((currentId) =>
-                        currentId === pillar.id ? null : pillar.id,
-                      )
-                    }
+                    className="five-pillars-ledger-row"
                     initial={shouldReduceMotion ? undefined : { opacity: 0, y: 18 }}
                     whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
@@ -207,7 +195,6 @@ export function FivePillars() {
                       </div>
 
                       <div className="five-pillars-ledger-row-status">
-                        <span className="five-pillars-ledger-row-status-label">Status</span>
                         <span
                           className={`five-pillars-status-chip ${getStatusClass(pillar.status)}`}
                         >
@@ -234,40 +221,7 @@ export function FivePillars() {
                         </div>
                       </div>
                     </div>
-
-                    <div
-                      className={`five-pillars-ledger-row-detail-shell ${isActive ? "is-active" : ""} ${shouldReduceMotion ? "is-reduced-motion" : ""}`}
-                    >
-                      <div className="five-pillars-ledger-row-detail">
-                          <p className="five-pillars-ledger-row-detail-copy">{pillar.detail}</p>
-
-                          <div className="five-pillars-ledger-row-links">
-                            <div className="five-pillars-ledger-row-links-label">
-                              <Link2 className="h-3.5 w-3.5" strokeWidth={1.8} />
-                              Linked Pillars
-                            </div>
-
-                            <div className="five-pillars-ledger-row-links-list">
-                              {pillar.relatedIds.map((relatedId) => {
-                                const relatedPillar = pillars.find(
-                                  (candidate) => candidate.id === relatedId,
-                                );
-
-                                if (!relatedPillar) {
-                                  return null;
-                                }
-
-                                return (
-                                  <span key={relatedId} className="five-pillars-ledger-link-chip">
-                                    {relatedPillar.label}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </div>
-                      </div>
-                    </div>
-                  </motion.button>
+                  </motion.div>
                 );
               })}
             </div>
