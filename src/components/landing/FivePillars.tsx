@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   BrainCircuit,
   Database,
@@ -14,17 +14,13 @@ import {
 const TWO_PI = Math.PI * 2;
 const ORBIT_CENTER = 310;
 const ORBIT_RADIUS = 230;
-
-type PillarStatus = "live" | "active" | "gated";
+const ORBIT_MARKER_RADIUS = 210;
+const CONTROL_RADIUS = 294;
 
 interface PillarDefinition {
   id: string;
   label: string;
-  sub: string;
   detail: string;
-  energy: number;
-  status: PillarStatus;
-  connected: string[];
   icon: LucideIcon;
   angle: number;
 }
@@ -33,86 +29,44 @@ const pillars: readonly PillarDefinition[] = [
   {
     id: "scm",
     label: "Causal SCM",
-    sub: "Structural causal models · DAG construction",
     detail:
-      "Registers endogenous variables, edges, and mechanism forms into a versioned structural model before any causal query proceeds.",
-    energy: 96,
-    status: "active",
-    connected: ["Contradiction Engine", "Falsifiability Gate"],
+      "Encodes the system as a causal model so every claim can be traced to explicit variables and mechanisms.",
     icon: GitBranch,
     angle: -Math.PI / 2,
   },
   {
     id: "contradiction",
     label: "Contradiction Engine",
-    sub: "Hong recombination · novelty proofing",
     detail:
-      "Pressurises conflict across claims to surface mechanisms that survive contradiction instead of smoothing it away.",
-    energy: 82,
-    status: "live",
-    connected: ["Causal SCM", "Multi-Agent Critique"],
+      "Forces competing explanations into conflict to expose weak assumptions and preserve only durable causal structure.",
     icon: BrainCircuit,
     angle: -Math.PI / 2 + TWO_PI * (1 / 5),
   },
   {
     id: "memory",
     label: "Sovereign Memory",
-    sub: "Rejection-aware RAG · pyodide sandbox",
     detail:
-      "Persists only evidence and mechanisms that remain auditable, reproducible, and bounded by explicit provenance.",
-    energy: 68,
-    status: "live",
-    connected: ["Contradiction Engine", "Falsifiability Gate"],
+      "Stores validated traces and rejected paths so the system learns without losing provenance.",
     icon: Database,
     angle: -Math.PI / 2 + TWO_PI * (2 / 5),
   },
   {
     id: "critique",
     label: "Multi-Agent Critique",
-    sub: "Epistemologist · skeptic · architect",
     detail:
-      "Runs adversarial review across methods, assumptions, and identification claims before an answer earns operational trust.",
-    energy: 74,
-    status: "gated",
-    connected: ["Causal SCM", "Sovereign Memory"],
+      "Uses adversarial specialist review to stress-test reasoning before conclusions are accepted.",
     icon: FlaskConical,
     angle: -Math.PI / 2 + TWO_PI * (3 / 5),
   },
   {
     id: "gate",
     label: "Falsifiability Gate",
-    sub: "Physical-reality validation · memory commit",
     detail:
-      "Stops plausible but untestable claims from entering memory unless they specify what would disconfirm them.",
-    energy: 88,
-    status: "active",
-    connected: ["Causal SCM", "Sovereign Memory"],
+      "Blocks claims that cannot specify what evidence would disconfirm them.",
     icon: ShieldCheck,
     angle: -Math.PI / 2 + TWO_PI * (4 / 5),
   },
 ] as const;
-
-function getStatusLabel(status: PillarStatus) {
-  switch (status) {
-    case "active":
-      return "ACTIVE";
-    case "live":
-      return "LIVE";
-    case "gated":
-      return "GATED";
-  }
-}
-
-function getStatusClass(status: PillarStatus) {
-  switch (status) {
-    case "active":
-      return "five-pillars-status-active";
-    case "live":
-      return "five-pillars-status-live";
-    case "gated":
-      return "five-pillars-status-gated";
-  }
-}
 
 export function FivePillars() {
   const shouldReduceMotion = useReducedMotion();
@@ -126,8 +80,10 @@ export function FivePillars() {
     () =>
       pillars.map((pillar) => ({
         ...pillar,
-        x: ORBIT_CENTER + ORBIT_RADIUS * Math.cos(pillar.angle),
-        y: ORBIT_CENTER + ORBIT_RADIUS * Math.sin(pillar.angle),
+        orbitX: ORBIT_CENTER + ORBIT_MARKER_RADIUS * Math.cos(pillar.angle),
+        orbitY: ORBIT_CENTER + ORBIT_MARKER_RADIUS * Math.sin(pillar.angle),
+        controlX: ORBIT_CENTER + CONTROL_RADIUS * Math.cos(pillar.angle),
+        controlY: ORBIT_CENTER + CONTROL_RADIUS * Math.sin(pillar.angle),
       })),
     [],
   );
@@ -159,17 +115,28 @@ export function FivePillars() {
           </p>
         </div>
 
-        <div className="five-pillars-orbit-shell relative mx-auto max-w-[52rem]">
-          <div className="five-pillars-orbit-frame relative mx-auto aspect-square max-w-[44rem]">
-            <svg
+        <div className="five-pillars-orbit-shell relative mx-auto max-w-[58rem]">
+          <div className="five-pillars-orbit-frame relative mx-auto aspect-square max-w-[52rem]">
+            <motion.svg
               viewBox="0 0 620 620"
               className="absolute inset-0 h-full w-full"
               aria-hidden="true"
+              animate={shouldReduceMotion ? undefined : { rotate: 360 }}
+              transition={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      duration: 80,
+                      ease: "linear",
+                      repeat: Number.POSITIVE_INFINITY,
+                    }
+              }
+              style={{ transformOrigin: "50% 50%" }}
             >
               <defs>
                 <radialGradient id="five-pillars-center-glow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="rgba(224,180,118,0.12)" />
-                  <stop offset="72%" stopColor="rgba(224,180,118,0.025)" />
+                  <stop offset="0%" stopColor="rgba(224,180,118,0.14)" />
+                  <stop offset="68%" stopColor="rgba(224,180,118,0.035)" />
                   <stop offset="100%" stopColor="rgba(224,180,118,0)" />
                 </radialGradient>
               </defs>
@@ -183,39 +150,56 @@ export function FivePillars() {
                 strokeWidth="1.35"
               />
 
+              <circle
+                cx={ORBIT_CENTER}
+                cy={ORBIT_CENTER}
+                r={ORBIT_RADIUS - 20}
+                fill="none"
+                stroke="var(--five-pillars-orbit-stroke-soft)"
+                strokeWidth="0.9"
+                strokeDasharray="4 10"
+              />
+
               {nodes.map((node) => (
                 <line
                   key={`spoke-${node.id}`}
                   x1={ORBIT_CENTER}
                   y1={ORBIT_CENTER}
-                  x2={node.x}
-                  y2={node.y}
+                  x2={node.orbitX}
+                  y2={node.orbitY}
                   stroke="var(--five-pillars-spoke-stroke)"
                   strokeWidth="1"
                 />
               ))}
 
+              {nodes.map((node) => (
+                <g key={`marker-${node.id}`}>
+                  <circle
+                    cx={node.orbitX}
+                    cy={node.orbitY}
+                    r="26"
+                    fill="var(--five-pillars-marker-shell)"
+                    stroke="var(--five-pillars-marker-border)"
+                    strokeWidth="1"
+                  />
+                  <circle
+                    cx={node.orbitX}
+                    cy={node.orbitY}
+                    r="7"
+                    fill="var(--five-pillars-marker-core)"
+                  />
+                </g>
+              ))}
+
               <circle
                 cx={ORBIT_CENTER}
                 cy={ORBIT_CENTER}
-                r="156"
+                r="154"
                 fill="url(#five-pillars-center-glow)"
               />
-            </svg>
+            </motion.svg>
 
-            <motion.div
-              className="five-pillars-orbit-spin-layer absolute inset-[13%] rounded-full"
-              animate={shouldReduceMotion ? undefined : { rotate: 360 }}
-              transition={
-                shouldReduceMotion
-                  ? undefined
-                  : {
-                      duration: 34,
-                      ease: "linear",
-                      repeat: Number.POSITIVE_INFINITY,
-                    }
-              }
-            />
+            <div className="five-pillars-orbit-spin-layer absolute inset-[14%] rounded-full" />
 
             {nodes.map((node, index) => {
               const isSelected = node.id === activePillar.id;
@@ -232,10 +216,11 @@ export function FivePillars() {
                   onBlur={() => setPreviewId(null)}
                   onClick={() => setActiveId(node.id)}
                   aria-pressed={isSelected}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 bg-transparent"
+                  aria-label={node.label}
+                  className="five-pillars-control absolute -translate-x-1/2 -translate-y-1/2 bg-transparent"
                   style={{
-                    left: `${(node.x / 620) * 100}%`,
-                    top: `${(node.y / 620) * 100}%`,
+                    left: `${(node.controlX / 620) * 100}%`,
+                    top: `${(node.controlY / 620) * 100}%`,
                   }}
                   initial={
                     shouldReduceMotion ? undefined : { opacity: 0, scale: 0.92 }
@@ -253,60 +238,45 @@ export function FivePillars() {
                   <div
                     className={`five-pillars-node ${isSelected ? "five-pillars-node-active" : isPreview ? "five-pillars-node-preview" : "five-pillars-node-idle"}`}
                   >
-                    <div className="five-pillars-node-icon flex h-16 w-16 items-center justify-center rounded-full border">
-                      <Icon className="h-5.5 w-5.5" strokeWidth={2} />
+                    <div className="five-pillars-node-pill inline-flex items-center gap-3 rounded-full border px-4 py-3">
+                      <span className="five-pillars-node-icon flex h-9 w-9 items-center justify-center rounded-full border">
+                        <Icon className="h-4.5 w-4.5" strokeWidth={2} />
+                      </span>
+                      <span className="five-pillars-node-label block whitespace-nowrap text-left text-[0.9rem] font-medium tracking-[-0.02em] text-[var(--text-secondary)]">
+                        {node.label}
+                      </span>
                     </div>
-                    <span className="five-pillars-node-label mt-4 block whitespace-nowrap text-center text-[0.88rem] font-medium tracking-[-0.02em] text-[var(--text-secondary)]">
-                      {node.label}
-                    </span>
                   </div>
                 </motion.button>
               );
             })}
 
-            <motion.div
-              key={activePillar.id}
-              className="five-pillars-core absolute left-1/2 top-1/2 flex h-[21rem] w-[20rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border px-8 py-8 text-center"
-              initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="flex flex-col items-center">
-                <p className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[var(--text-tertiary)]">
-                  MASA ENGINE
-                </p>
-                <span
-                  className={`five-pillars-status mt-5 ${getStatusClass(activePillar.status)}`}
+            <div className="absolute left-1/2 top-1/2 z-[2] -translate-x-1/2 -translate-y-1/2">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activePillar.id}
+                  className="five-pillars-core flex min-h-[12.75rem] w-[min(82vw,21rem)] items-center justify-center rounded-[1.75rem] border px-6 py-6 text-center md:min-h-[13.5rem] md:w-[22rem] md:px-8"
+                  initial={
+                    shouldReduceMotion ? undefined : { opacity: 0, y: 10, scale: 0.98 }
+                  }
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8, scale: 0.985 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {getStatusLabel(activePillar.status)}
-                </span>
-                <h3 className="mt-6 text-[2rem] font-medium tracking-[-0.04em] text-[var(--text-primary)]">
-                  {activePillar.label}
-                </h3>
-                <p className="mt-3 font-mono text-[0.64rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
-                  {activePillar.sub}
-                </p>
-                <p className="mt-6 max-w-[15rem] text-[0.98rem] leading-[1.9] text-[var(--text-secondary)]">
-                  {activePillar.detail}
-                </p>
-
-                <div className="mt-7 w-full border-t border-[var(--five-pillars-rule)] pt-5">
-                  <p className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                    Connected Nodes
-                  </p>
-                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
-                    {activePillar.connected.map((item) => (
-                      <span
-                        key={item}
-                        className="five-pillars-connected inline-flex items-center rounded-full border px-3 py-1.5 text-[0.82rem] text-[var(--text-secondary)]"
-                      >
-                        {item}
-                      </span>
-                    ))}
+                  <div className="flex flex-col items-center">
+                    <p className="font-mono text-[0.58rem] uppercase tracking-[0.26em] text-[var(--text-tertiary)]">
+                      Selected Pillar
+                    </p>
+                    <h3 className="mt-4 text-[1.85rem] font-medium tracking-[-0.04em] text-[var(--text-primary)] md:text-[2.05rem]">
+                      {activePillar.label}
+                    </h3>
+                    <p className="mt-4 max-w-[15.5rem] text-[0.95rem] leading-[1.75] text-[var(--text-secondary)] md:max-w-[16rem]">
+                      {activePillar.detail}
+                    </p>
                   </div>
-                </div>
-              </div>
-            </motion.div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
