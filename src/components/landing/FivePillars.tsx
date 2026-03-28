@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   BrainCircuit,
@@ -112,6 +113,7 @@ function getStatusClass(status: PillarStatus) {
 
 export function FivePillars() {
   const shouldReduceMotion = useReducedMotion();
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   return (
     <section
@@ -164,12 +166,21 @@ export function FivePillars() {
 
             <div className="five-pillars-ledger-rows">
               {pillars.map((pillar, index) => {
+                const isActive = pillar.id === activeId;
                 const Icon = pillar.icon;
 
                 return (
-                  <motion.div
+                  <motion.button
                     key={pillar.id}
-                    className="five-pillars-ledger-row"
+                    type="button"
+                    aria-pressed={isActive}
+                    aria-label={`Focus ${pillar.label}`}
+                    className={`five-pillars-ledger-row ${isActive ? "is-active" : ""}`}
+                    onClick={() =>
+                      setActiveId((currentId) =>
+                        currentId === pillar.id ? null : pillar.id,
+                      )
+                    }
                     initial={shouldReduceMotion ? undefined : { opacity: 0, y: 18 }}
                     whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
@@ -221,7 +232,7 @@ export function FivePillars() {
                         </div>
                       </div>
                     </div>
-                  </motion.div>
+                  </motion.button>
                 );
               })}
             </div>
