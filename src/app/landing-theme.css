@@ -86,21 +86,21 @@
   --pipeline-lamp-beam-core: rgba(214, 170, 108, 0.26);
   --pipeline-lamp-beam-edge: rgba(214, 170, 108, 0);
   --pipeline-lamp-haze: rgba(214, 170, 108, 0.18);
-  --pipeline-panel-shell-bg: linear-gradient(180deg, rgba(14, 13, 13, 0.96), rgba(8, 8, 9, 0.98));
-  --pipeline-panel-shell-border: rgba(255, 247, 238, 0.08);
-  --pipeline-panel-active-bg: rgba(20, 18, 17, 0.9);
-  --pipeline-panel-idle-bg: rgba(12, 12, 13, 0.76);
-  --pipeline-panel-active-border: rgba(224, 180, 118, 0.24);
-  --pipeline-panel-idle-border: rgba(255, 247, 238, 0.08);
-  --pipeline-panel-row-rule: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-shell-bg: linear-gradient(180deg, rgba(14, 13, 13, 0.92), rgba(8, 8, 9, 0.95));
+  --pipeline-panel-shell-border: rgba(255, 247, 238, 0.06);
+  --pipeline-panel-active-bg: rgba(26, 22, 18, 0.42);
+  --pipeline-panel-idle-bg: rgba(12, 12, 13, 0.14);
+  --pipeline-panel-active-border: rgba(224, 180, 118, 0.16);
+  --pipeline-panel-idle-border: rgba(255, 247, 238, 0.04);
+  --pipeline-panel-row-rule: rgba(255, 247, 238, 0.06);
   --pipeline-panel-signal-text: rgba(194, 176, 154, 0.84);
-  --pipeline-panel-chip-bg: rgba(255, 247, 238, 0.03);
-  --pipeline-panel-chip-border: rgba(255, 247, 238, 0.12);
-  --pipeline-panel-chip-active-bg: rgba(200, 150, 90, 0.14);
-  --pipeline-panel-chip-active-border: rgba(224, 180, 118, 0.3);
-  --pipeline-panel-indicator-idle: rgba(255, 247, 238, 0.16);
+  --pipeline-panel-chip-bg: rgba(255, 247, 238, 0.015);
+  --pipeline-panel-chip-border: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-chip-active-bg: rgba(200, 150, 90, 0.1);
+  --pipeline-panel-chip-active-border: rgba(224, 180, 118, 0.22);
+  --pipeline-panel-indicator-idle: rgba(255, 247, 238, 0.1);
   --pipeline-panel-indicator-active: rgba(224, 180, 118, 0.98);
-  --pipeline-panel-rail: rgba(255, 247, 238, 0.08);
+  --pipeline-panel-rail: rgba(255, 247, 238, 0.06);
   --pipeline-panel-rail-fill: linear-gradient(90deg, rgba(224, 180, 118, 0.98), rgba(200, 150, 90, 0.24));
   --timeline-dot-active-border: rgba(224,180,118,0.94);
   --timeline-dot-active-bg: rgba(200,150,90,0.12);
@@ -1028,6 +1028,10 @@ html:has(.theme-landing) {
   position: relative;
 }
 
+.theme-landing .pipeline-editorial {
+  position: relative;
+}
+
 .theme-landing .pipeline-claim-row {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -1036,127 +1040,140 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .pipeline-claim-signal {
-  margin-top: 0.58rem;
-  width: 0.55rem;
-  height: 0.55rem;
+  margin-top: 0.52rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 999px;
   background: var(--accent-rust-strong);
-  box-shadow: 0 0 0 6px rgba(200, 150, 90, 0.08);
+  box-shadow: 0 0 0 5px rgba(200, 150, 90, 0.08);
 }
 
-.theme-landing .pipeline-runtime-shell {
+.theme-landing .pipeline-runtime-panel {
   position: relative;
   border-color: var(--pipeline-panel-shell-border);
   background:
-    linear-gradient(180deg, rgba(255, 247, 238, 0.04), transparent 18%),
+    linear-gradient(180deg, rgba(255, 247, 238, 0.02), transparent 18%),
     var(--pipeline-panel-shell-bg);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(10px);
 }
 
-.theme-landing .pipeline-runtime-shell::before {
+.theme-landing .pipeline-runtime-panel::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(255, 247, 238, 0.04), transparent 18%),
-    radial-gradient(circle at top center, rgba(224, 180, 118, 0.08), transparent 44%);
+    linear-gradient(180deg, rgba(255, 247, 238, 0.02), transparent 18%),
+    radial-gradient(circle at top center, rgba(224, 180, 118, 0.05), transparent 40%);
 }
 
-.theme-landing .pipeline-runtime-header {
+.theme-landing .pipeline-runtime-head {
   border-color: var(--pipeline-panel-row-rule);
 }
 
-.theme-landing .pipeline-runtime-lane {
-  backdrop-filter: blur(8px);
+.theme-landing .pipeline-lane {
+  display: grid;
+  gap: 1rem;
+  border-top: 1px solid var(--pipeline-panel-row-rule);
+  padding: 1.2rem 0;
 }
 
-.theme-landing .pipeline-status-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid rgba(224, 180, 118, 0.2);
-  background: rgba(200, 150, 90, 0.08);
-  padding: 0.5rem 0.8rem;
-  font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--accent-rust-strong);
+@media (min-width: 1024px) {
+  .theme-landing .pipeline-lane {
+    grid-template-columns: minmax(0, 1.7fr) minmax(12rem, 0.7fr);
+    align-items: center;
+    gap: 2rem;
+  }
 }
 
-.theme-landing .pipeline-status-chip-muted {
-  border-color: rgba(255, 247, 238, 0.08);
-  background: rgba(255, 247, 238, 0.03);
-  color: var(--text-muted);
+.theme-landing .pipeline-lane-main {
+  display: grid;
+  gap: 0.95rem;
 }
 
-.theme-landing .pipeline-runtime-row {
-  border-color: var(--pipeline-panel-idle-border);
-  background: linear-gradient(180deg, rgba(18, 17, 17, 0.62), rgba(10, 10, 11, 0.48));
-  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.02);
+@media (min-width: 768px) {
+  .theme-landing .pipeline-lane-main {
+    grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 1.4fr);
+    align-items: start;
+    gap: 1.4rem;
+  }
 }
 
-.theme-landing .pipeline-runtime-row.is-active {
-  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.03);
-  background: linear-gradient(180deg, rgba(30, 24, 18, 0.76), rgba(18, 16, 15, 0.68));
+.theme-landing .pipeline-lane-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
 }
 
-.theme-landing .pipeline-runtime-row.is-lit {
-  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.03);
-  background: linear-gradient(180deg, rgba(22, 19, 18, 0.68), rgba(12, 11, 11, 0.54));
+.theme-landing .pipeline-lane-summary {
+  max-width: 38rem;
 }
 
-.theme-landing .pipeline-row-indicator {
+.theme-landing .pipeline-lane-signal {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.theme-landing .pipeline-lane-dot {
   display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.46rem;
+  height: 0.46rem;
   flex-shrink: 0;
   border-radius: 999px;
   background: var(--pipeline-panel-indicator-idle);
-  box-shadow: 0 0 0 6px rgba(255, 247, 238, 0.02);
+  box-shadow: 0 0 0 6px rgba(255, 247, 238, 0.015);
+  margin-top: 0.42rem;
 }
 
-.theme-landing .pipeline-row-indicator.is-active {
+.theme-landing .pipeline-lane-dot.is-past {
+  background: rgba(224, 180, 118, 0.56);
+  box-shadow: 0 0 0 6px rgba(224, 180, 118, 0.04);
+}
+
+.theme-landing .pipeline-lane-dot.is-active {
   background: var(--pipeline-panel-indicator-active);
-  box-shadow: 0 0 0 7px rgba(224, 180, 118, 0.08), 0 0 18px rgba(224, 180, 118, 0.18);
+  box-shadow: 0 0 0 7px rgba(224, 180, 118, 0.06), 0 0 18px rgba(224, 180, 118, 0.14);
 }
 
-.theme-landing .pipeline-row-rail {
+.theme-landing .pipeline-lane-rail {
   position: relative;
   overflow: hidden;
   height: 1px;
   width: 100%;
-  min-width: 8rem;
+  min-width: 9rem;
   border-radius: 999px;
   background: var(--pipeline-panel-rail);
 }
 
-.theme-landing .pipeline-row-rail-fill {
+.theme-landing .pipeline-lane-rail-fill {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
   background: var(--pipeline-panel-rail-fill);
 }
 
-.theme-landing .pipeline-row-chip {
+.theme-landing .pipeline-lane-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   border: 1px solid var(--pipeline-panel-chip-border);
   background: var(--pipeline-panel-chip-bg);
-  padding: 0.38rem 0.68rem;
+  padding: 0.32rem 0.62rem;
   font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
-  font-size: 0.56rem;
+  font-size: 0.54rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-.theme-landing .pipeline-row-chip.is-active {
+.theme-landing .pipeline-lane-chip.is-past {
+  color: var(--text-secondary);
+}
+
+.theme-landing .pipeline-lane-chip.is-active {
   border-color: var(--pipeline-panel-chip-active-border);
   background: var(--pipeline-panel-chip-active-bg);
   color: var(--accent-rust-strong);
