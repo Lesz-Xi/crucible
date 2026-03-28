@@ -79,29 +79,29 @@
   --pipeline-stage-index: rgba(159, 140, 123, 0.72);
   --pipeline-header-rail: rgba(255,247,238,0.08);
   --pipeline-header-progress: linear-gradient(to right, rgba(200,150,90,0.92) 0%, rgba(200,150,90,0.38) 60%, rgba(200,150,90,0.05) 100%);
-  --pipeline-lamp-wire: rgba(255, 247, 238, 0.16);
-  --pipeline-lamp-shade: rgba(34, 31, 29, 0.98);
-  --pipeline-lamp-shade-border: rgba(255, 247, 238, 0.08);
-  --pipeline-lamp-bulb: rgba(240, 219, 185, 0.98);
-  --pipeline-lamp-beam-core: rgba(214, 170, 108, 0.26);
+  --pipeline-lamp-wire: rgba(255, 247, 238, 0.22);
+  --pipeline-lamp-shade: rgba(28, 25, 23, 0.98);
+  --pipeline-lamp-shade-border: rgba(255, 247, 238, 0.1);
+  --pipeline-lamp-bulb: rgba(245, 225, 192, 0.98);
+  --pipeline-lamp-beam-core: rgba(214, 170, 108, 0.34);
   --pipeline-lamp-beam-edge: rgba(214, 170, 108, 0);
-  --pipeline-lamp-haze: rgba(214, 170, 108, 0.18);
-  --pipeline-panel-shell-bg: linear-gradient(180deg, rgba(14, 13, 13, 0.92), rgba(8, 8, 9, 0.95));
-  --pipeline-panel-shell-border: rgba(255, 247, 238, 0.06);
+  --pipeline-lamp-haze: rgba(214, 170, 108, 0.22);
+  --pipeline-panel-shell-bg: linear-gradient(180deg, rgba(12, 11, 11, 0.88), rgba(7, 7, 8, 0.92));
+  --pipeline-panel-shell-border: rgba(255, 247, 238, 0.045);
   --pipeline-panel-active-bg: rgba(26, 22, 18, 0.42);
   --pipeline-panel-idle-bg: rgba(12, 12, 13, 0.14);
   --pipeline-panel-active-border: rgba(224, 180, 118, 0.16);
   --pipeline-panel-idle-border: rgba(255, 247, 238, 0.04);
-  --pipeline-panel-row-rule: rgba(255, 247, 238, 0.06);
+  --pipeline-panel-row-rule: rgba(255, 247, 238, 0.05);
   --pipeline-panel-signal-text: rgba(194, 176, 154, 0.84);
-  --pipeline-panel-chip-bg: rgba(255, 247, 238, 0.015);
-  --pipeline-panel-chip-border: rgba(255, 247, 238, 0.08);
-  --pipeline-panel-chip-active-bg: rgba(200, 150, 90, 0.1);
-  --pipeline-panel-chip-active-border: rgba(224, 180, 118, 0.22);
-  --pipeline-panel-indicator-idle: rgba(255, 247, 238, 0.1);
+  --pipeline-panel-chip-bg: rgba(255, 247, 238, 0.012);
+  --pipeline-panel-chip-border: rgba(255, 247, 238, 0.06);
+  --pipeline-panel-chip-active-bg: rgba(200, 150, 90, 0.09);
+  --pipeline-panel-chip-active-border: rgba(224, 180, 118, 0.18);
+  --pipeline-panel-indicator-idle: rgba(224, 180, 118, 0.72);
   --pipeline-panel-indicator-active: rgba(224, 180, 118, 0.98);
-  --pipeline-panel-rail: rgba(255, 247, 238, 0.06);
-  --pipeline-panel-rail-fill: linear-gradient(90deg, rgba(224, 180, 118, 0.98), rgba(200, 150, 90, 0.24));
+  --pipeline-panel-rail: rgba(255, 247, 238, 0.05);
+  --pipeline-panel-rail-fill: linear-gradient(90deg, rgba(224, 180, 118, 0.88), rgba(200, 150, 90, 0.14));
   --timeline-dot-active-border: rgba(224,180,118,0.94);
   --timeline-dot-active-bg: rgba(200,150,90,0.12);
   --timeline-dot-active-shadow: 0 0 0 4px rgba(200,150,90,0.12), 0 0 16px rgba(200,150,90,0.22);
@@ -1014,29 +1014,30 @@ html:has(.theme-landing) {
 
 .theme-landing .pipeline-lamp-bulb {
   margin-top: -0.08rem;
-  width: 0.56rem;
-  height: 0.56rem;
+  width: 0.64rem;
+  height: 0.64rem;
   border-radius: 999px;
   background: var(--pipeline-lamp-bulb);
-  box-shadow: 0 0 34px rgba(240, 219, 185, 0.56), 0 0 110px rgba(224, 180, 118, 0.26);
+  box-shadow: 0 0 28px rgba(240, 219, 185, 0.52), 0 0 92px rgba(224, 180, 118, 0.24);
 }
 
 .theme-landing .pipeline-lamp-beam {
-  width: min(84rem, 96vw);
-  height: 44rem;
-  background: radial-gradient(
-    ellipse at top,
-    var(--pipeline-lamp-beam-core) 0%,
-    rgba(214, 170, 108, 0.14) 20%,
-    rgba(214, 170, 108, 0.04) 42%,
-    var(--pipeline-lamp-beam-edge) 76%
+  width: min(96rem, 100vw);
+  height: 48rem;
+  clip-path: polygon(50% 0%, 87% 100%, 13% 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(228, 187, 126, 0.28) 0%,
+    rgba(214, 170, 108, 0.14) 28%,
+    rgba(214, 170, 108, 0.05) 56%,
+    var(--pipeline-lamp-beam-edge) 100%
   );
-  filter: blur(24px);
+  filter: blur(28px);
 }
 
 .theme-landing .pipeline-lamp-haze {
-  background: radial-gradient(circle at top, var(--pipeline-lamp-haze) 0%, transparent 70%);
-  filter: blur(42px);
+  background: radial-gradient(circle at top, var(--pipeline-lamp-haze) 0%, rgba(214, 170, 108, 0.08) 28%, transparent 72%);
+  filter: blur(48px);
 }
 
 .theme-landing .pipeline-section-glow {
@@ -1055,17 +1056,16 @@ html:has(.theme-landing) {
 .theme-landing .pipeline-claim-row {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 0.85rem;
+  gap: 0.9rem;
   align-items: start;
 }
 
-.theme-landing .pipeline-claim-signal {
-  margin-top: 0.52rem;
-  width: 0.5rem;
-  height: 0.5rem;
+.theme-landing .pipeline-claim-rule {
+  margin-top: 0.9rem;
+  width: 1rem;
+  height: 1px;
   border-radius: 999px;
-  background: var(--accent-rust-strong);
-  box-shadow: 0 0 0 5px rgba(200, 150, 90, 0.08);
+  background: linear-gradient(90deg, rgba(224, 180, 118, 0.92), rgba(224, 180, 118, 0.2));
 }
 
 .theme-landing .pipeline-runtime-panel {
@@ -1074,8 +1074,8 @@ html:has(.theme-landing) {
   background:
     linear-gradient(180deg, rgba(255, 247, 238, 0.02), transparent 18%),
     var(--pipeline-panel-shell-bg);
-  box-shadow: 0 20px 46px rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(12px);
 }
 
 .theme-landing .pipeline-runtime-panel::before {
@@ -1097,7 +1097,7 @@ html:has(.theme-landing) {
   display: grid;
   gap: 1rem;
   border-top: 1px solid var(--pipeline-panel-row-rule);
-  padding: 1.2rem 0;
+  padding: 1.05rem 0;
 }
 
 @media (min-width: 1024px) {
@@ -1128,7 +1128,7 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .pipeline-lane-summary {
-  max-width: 38rem;
+  max-width: 35rem;
 }
 
 .theme-landing .pipeline-lane-signal {
@@ -1138,23 +1138,18 @@ html:has(.theme-landing) {
 
 .theme-landing .pipeline-lane-dot {
   display: inline-block;
-  width: 0.46rem;
-  height: 0.46rem;
+  width: 0.32rem;
+  height: 0.32rem;
   flex-shrink: 0;
   border-radius: 999px;
   background: var(--pipeline-panel-indicator-idle);
-  box-shadow: 0 0 0 6px rgba(255, 247, 238, 0.015);
-  margin-top: 0.42rem;
-}
-
-.theme-landing .pipeline-lane-dot.is-past {
-  background: rgba(224, 180, 118, 0.56);
-  box-shadow: 0 0 0 6px rgba(224, 180, 118, 0.04);
+  box-shadow: 0 0 0 4px rgba(224, 180, 118, 0.035);
+  margin-top: 0.46rem;
 }
 
 .theme-landing .pipeline-lane-dot.is-active {
   background: var(--pipeline-panel-indicator-active);
-  box-shadow: 0 0 0 7px rgba(224, 180, 118, 0.06), 0 0 18px rgba(224, 180, 118, 0.14);
+  box-shadow: 0 0 0 4px rgba(224, 180, 118, 0.045), 0 0 10px rgba(224, 180, 118, 0.08);
 }
 
 .theme-landing .pipeline-lane-rail {
@@ -1181,22 +1176,22 @@ html:has(.theme-landing) {
   border-radius: 999px;
   border: 1px solid var(--pipeline-panel-chip-border);
   background: var(--pipeline-panel-chip-bg);
-  padding: 0.32rem 0.62rem;
+  padding: 0.26rem 0.56rem;
   font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
-  font-size: 0.54rem;
+  font-size: 0.5rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);
-}
-
-.theme-landing .pipeline-lane-chip.is-past {
-  color: var(--text-secondary);
 }
 
 .theme-landing .pipeline-lane-chip.is-active {
   border-color: var(--pipeline-panel-chip-active-border);
   background: var(--pipeline-panel-chip-active-bg);
   color: var(--accent-rust-strong);
+}
+
+.theme-landing .pipeline-lane.is-featured {
+  background: linear-gradient(90deg, rgba(224, 180, 118, 0.04), rgba(224, 180, 118, 0.015) 32%, transparent 78%);
 }
 
 @media (prefers-reduced-motion: reduce) {
