@@ -182,7 +182,7 @@
   --five-pillars-status-gated-bg: rgba(200, 150, 90, 0.12);
   --five-pillars-status-gated-text: #e0b476;
   --five-pillars-meter-track: rgba(255, 247, 238, 0.08);
-  --five-pillars-meter-fill: linear-gradient(90deg, #5f8dff 0%, #9a5cff 100%);
+  --five-pillars-meter-fill: linear-gradient(90deg, rgba(224, 180, 118, 0.98) 0%, rgba(200, 150, 90, 0.74) 62%, rgba(166, 126, 82, 0.9) 100%);
   --five-pillars-connected-bg: rgba(255, 247, 238, 0.03);
   --five-pillars-connected-border: rgba(255, 247, 238, 0.1);
   --five-pillars-rule: rgba(255, 247, 238, 0.08);
@@ -492,277 +492,313 @@ html:has(.theme-landing) {
   transform: translate(1px, -1px);
 }
 
-.theme-landing .five-pillars-board {
-  position: relative;
-  border-color: var(--pipeline-panel-shell-border);
-  background:
-    linear-gradient(180deg, rgba(255, 247, 238, 0.03), transparent 16%),
-    linear-gradient(180deg, rgba(14, 13, 12, 0.96), rgba(8, 8, 9, 0.98));
-  box-shadow: 0 28px 64px rgba(0, 0, 0, 0.34);
+.theme-landing .five-pillars-orbit-shell {
+  max-width: 56rem;
 }
 
-.theme-landing .five-pillars-board::before {
+.theme-landing .five-pillars-orbit-shell::before {
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255, 247, 238, 0.04), transparent 16%),
-    radial-gradient(circle at 50% 36%, rgba(224, 180, 118, 0.08), transparent 46%);
-}
-
-.theme-landing .five-pillars-board-glow {
-  background: radial-gradient(circle at center, rgba(224, 180, 118, 0.12) 0%, rgba(224, 180, 118, 0.02) 42%, transparent 78%);
-  filter: blur(42px);
-  pointer-events: none;
-}
-
-.theme-landing .five-pillars-board-grid {
-  pointer-events: none;
-  opacity: 0.18;
-  background-image:
-    linear-gradient(rgba(255, 247, 238, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 247, 238, 0.05) 1px, transparent 1px);
-  background-size: 4.75rem 4.75rem;
-  mask-image: radial-gradient(circle at center, black 26%, transparent 86%);
-}
-
-.theme-landing .five-pillars-board-header {
-  border-color: var(--pipeline-panel-row-rule);
-}
-
-.theme-landing .five-pillars-note-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  inset: 12% 10%;
   border-radius: 999px;
-  border: 1px solid rgba(255, 247, 238, 0.09);
-  background: rgba(255, 247, 238, 0.03);
-  padding: 0.42rem 0.78rem;
-  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.theme-landing .five-pillars-desktop-stage {
-  min-height: 35rem;
-}
-
-.theme-landing .five-pillars-mobile-stage::before,
-.theme-landing .five-pillars-desktop-stage::before {
-  content: "";
-  position: absolute;
-  inset: 14%;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 247, 238, 0.04) 0%, rgba(255, 247, 238, 0) 72%);
+  background: radial-gradient(circle, rgba(224, 180, 118, 0.11) 0%, rgba(224, 180, 118, 0.02) 34%, rgba(224, 180, 118, 0) 72%);
+  filter: blur(30px);
   pointer-events: none;
+}
+
+.theme-landing .five-pillars-orbit-stage {
+  width: min(100%, 45rem);
+  aspect-ratio: 1 / 1;
+}
+
+.theme-landing .five-pillars-mobile-stage {
+  width: min(100%, 29rem);
+  aspect-ratio: 1 / 1;
 }
 
 .theme-landing .five-pillars-orbit-spin-layer {
-  border: 1px solid rgba(255, 247, 238, 0.05);
+  border: 1px solid rgba(255, 247, 238, 0.04);
   background:
     conic-gradient(
       from 0deg,
       rgba(224, 180, 118, 0) 0deg,
-      rgba(224, 180, 118, 0.14) 76deg,
-      rgba(224, 180, 118, 0.03) 168deg,
+      rgba(224, 180, 118, 0.12) 76deg,
+      rgba(224, 180, 118, 0.02) 168deg,
       rgba(224, 180, 118, 0) 360deg
     );
   filter: blur(14px);
+  transform-origin: 50% 50%;
   pointer-events: none;
 }
 
-.theme-landing .five-pillars-micro-label {
-  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.56rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-.theme-landing .five-pillars-core {
-  border-color: rgba(255, 247, 238, 0.12);
-  background:
-    radial-gradient(circle at 50% 16%, rgba(200, 150, 90, 0.14), transparent 40%),
-    linear-gradient(180deg, rgba(18, 16, 15, 0.72), rgba(11, 11, 12, 0.56));
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow:
-    0 22px 60px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 247, 238, 0.05);
-}
-
-.theme-landing .five-pillars-station {
+.theme-landing .five-pillars-node {
   z-index: 3;
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 0.72rem;
   transform: translate(-50%, -50%);
+  background: transparent;
 }
 
-.theme-landing .five-pillars-station-left {
-  transform: translate(0, -50%);
-}
-
-.theme-landing .five-pillars-station-right {
-  transform: translate(-100%, -50%);
-}
-
-.theme-landing .five-pillars-station-center {
-  transform: translate(-50%, 0);
-}
-
-.theme-landing .five-pillars-station:focus-visible {
+.theme-landing .five-pillars-node:focus-visible {
   outline: none;
 }
 
-.theme-landing .five-pillars-station-rail {
+.theme-landing .five-pillars-node-halo {
+  position: absolute;
+  inset: auto;
+  top: 0;
+  width: 5.4rem;
+  height: 5.4rem;
+  border-radius: 999px;
+  transform: translateY(-0.62rem);
+  background: radial-gradient(circle, rgba(255, 247, 238, 0.08) 0%, rgba(255, 247, 238, 0.02) 44%, rgba(255, 247, 238, 0) 74%);
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.theme-landing .five-pillars-node-halo.is-related {
+  background: radial-gradient(circle, rgba(224, 180, 118, 0.14) 0%, rgba(224, 180, 118, 0.04) 44%, rgba(224, 180, 118, 0) 72%);
+  opacity: 0.62;
+}
+
+.theme-landing .five-pillars-node-halo.is-active {
+  background: radial-gradient(circle, rgba(255, 247, 238, 0.24) 0%, rgba(255, 247, 238, 0.08) 46%, rgba(255, 247, 238, 0) 76%);
+  opacity: 0.96;
+}
+
+.theme-landing .five-pillars-node-disc {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: 3.7rem;
+  height: 3.7rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 247, 238, 0.24);
+  background: rgba(10, 10, 10, 0.94);
+  color: rgba(242, 235, 227, 0.88);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+  transition:
+    border-color 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.theme-landing .five-pillars-node-disc.is-related {
+  border-color: rgba(224, 180, 118, 0.36);
+  color: rgba(242, 235, 227, 0.98);
+}
+
+.theme-landing .five-pillars-node-disc.is-active {
+  border-color: rgba(255, 247, 238, 0.34);
+  background: rgba(255, 247, 238, 0.98);
+  color: #050505;
+  box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.08), 0 0 28px rgba(255, 255, 255, 0.16);
+}
+
+.theme-landing .five-pillars-node-label {
+  position: relative;
+  z-index: 1;
+  max-width: 9rem;
+  text-align: center;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(197, 182, 168, 0.72);
+  transition:
+    color 220ms ease,
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.theme-landing .five-pillars-node-label.is-related {
+  color: rgba(224, 180, 118, 0.9);
+}
+
+.theme-landing .five-pillars-node-label.is-active {
+  color: var(--text-primary);
+  transform: scale(1.06);
+}
+
+.theme-landing .five-pillars-card {
+  border-color: rgba(255, 247, 238, 0.14);
+  background:
+    radial-gradient(circle at 50% 14%, rgba(200, 150, 90, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(9, 9, 10, 0.92), rgba(4, 4, 5, 0.96));
+  box-shadow:
+    0 24px 62px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 247, 238, 0.03),
+    0 18px 36px rgba(255, 247, 238, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.theme-landing .five-pillars-card-inner {
+  position: relative;
+}
+
+.theme-landing .five-pillars-card-mobile .five-pillars-card-meta {
+  max-width: 6.2rem;
+  text-align: right;
+}
+
+.theme-landing .five-pillars-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 247, 238, 0.18);
+  padding: 0.46rem 0.84rem;
   font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.52rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.theme-landing .five-pillars-status-active {
+  background: var(--five-pillars-status-active-bg);
+  color: var(--five-pillars-status-active-text);
+}
+
+.theme-landing .five-pillars-status-monitoring {
+  background: var(--five-pillars-status-live-bg);
+  color: var(--five-pillars-status-live-text);
+}
+
+.theme-landing .five-pillars-status-gated {
+  background: var(--five-pillars-status-gated-bg);
+  color: var(--five-pillars-status-gated-text);
+}
+
+.theme-landing .five-pillars-card-meta,
+.theme-landing .five-pillars-connected-label {
+  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--text-tertiary);
 }
 
-.theme-landing .five-pillars-station-card {
+.theme-landing .five-pillars-metric-label {
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  min-height: 3.5rem;
-  min-width: 11.5rem;
-  border-radius: 1.2rem;
-  border: 1px solid rgba(255, 247, 238, 0.09);
-  background: rgba(13, 13, 14, 0.8);
-  padding: 0.68rem 0.92rem;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.26);
-  transition:
-    background-color 220ms ease,
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    transform 220ms ease;
-}
-
-.theme-landing .five-pillars-station:hover .five-pillars-station-card,
-.theme-landing .five-pillars-station:focus-visible .five-pillars-station-card {
-  border-color: rgba(255, 247, 238, 0.16);
-  background: rgba(17, 16, 15, 0.92);
-  transform: translateY(-1px);
-}
-
-.theme-landing .five-pillars-station-card.is-active {
-  border-color: rgba(255, 247, 238, 0.18);
-  background: rgba(243, 235, 224, 0.94);
-  box-shadow:
-    0 0 0 1px rgba(255, 247, 238, 0.08),
-    0 0 30px rgba(255, 255, 255, 0.08);
-}
-
-.theme-landing .five-pillars-station-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  flex-shrink: 0;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 247, 238, 0.12);
-  background: rgba(255, 247, 238, 0.06);
-  color: var(--text-primary);
-  transition:
-    background-color 220ms ease,
-    border-color 220ms ease,
-    color 220ms ease;
-}
-
-.theme-landing .five-pillars-station-card.is-active .five-pillars-station-icon {
-  border-color: rgba(5, 5, 5, 0.92);
-  background: rgba(5, 5, 5, 0.92);
-  color: rgba(245, 237, 228, 0.95);
-}
-
-.theme-landing .five-pillars-station-copy {
-  display: flex;
-  min-width: 0;
-}
-
-.theme-landing .five-pillars-station-title {
-  font-size: 0.92rem;
-  line-height: 1.2;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  gap: 0.45rem;
+  font-size: 0.96rem;
   color: var(--text-secondary);
-  transition: color 220ms ease;
 }
 
-.theme-landing .five-pillars-station-card.is-active .five-pillars-station-title {
-  color: #090909;
+.theme-landing .five-pillars-metric-value {
+  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
+  font-size: 0.94rem;
+  color: var(--text-primary);
+}
+
+.theme-landing .five-pillars-meter-track {
+  overflow: hidden;
+  width: 100%;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--five-pillars-meter-track);
+}
+
+.theme-landing .five-pillars-meter-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--five-pillars-meter-fill);
+}
+
+.theme-landing .five-pillars-connected-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border-radius: 0;
+  border: 1px solid var(--five-pillars-connected-border);
+  background: transparent;
+  padding: 0.64rem 0.86rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition:
+    border-color 220ms ease,
+    color 220ms ease,
+    background-color 220ms ease;
+}
+
+.theme-landing .five-pillars-connected-chip:hover,
+.theme-landing .five-pillars-connected-chip:focus-visible {
+  outline: none;
+  border-color: rgba(224, 180, 118, 0.26);
+  background: rgba(255, 247, 238, 0.03);
+  color: var(--text-primary);
 }
 
 .theme-landing .five-pillars-mobile-dock {
   position: relative;
-  z-index: 3;
+  z-index: 10;
 }
 
-.theme-landing .five-pillars-mobile-tab {
+.theme-landing .five-pillars-mobile-chip {
   display: flex;
   width: 100%;
   align-items: center;
-  gap: 0.9rem;
+  gap: 0.82rem;
   border-radius: 1rem;
   border: 1px solid rgba(255, 247, 238, 0.08);
-  background: rgba(13, 13, 14, 0.82);
-  padding: 0.82rem 0.9rem;
+  background: rgba(10, 10, 10, 0.9);
+  padding: 0.84rem 0.9rem;
   text-align: left;
   transition:
-    background-color 220ms ease,
     border-color 220ms ease,
+    background-color 220ms ease,
     box-shadow 220ms ease;
 }
 
-.theme-landing .five-pillars-mobile-tab:hover,
-.theme-landing .five-pillars-mobile-tab:focus-visible {
+.theme-landing .five-pillars-mobile-chip:hover,
+.theme-landing .five-pillars-mobile-chip:focus-visible {
   outline: none;
   border-color: rgba(255, 247, 238, 0.16);
-  background: rgba(17, 16, 15, 0.92);
+  background: rgba(14, 14, 15, 0.96);
 }
 
-.theme-landing .five-pillars-mobile-tab.is-active {
-  border-color: rgba(255, 247, 238, 0.16);
+.theme-landing .five-pillars-mobile-chip.is-active {
+  border-color: rgba(255, 247, 238, 0.14);
   background: rgba(243, 235, 224, 0.94);
   box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.06);
 }
 
-.theme-landing .five-pillars-mobile-tab-icon {
+.theme-landing .five-pillars-mobile-chip-icon {
   display: inline-flex;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  flex-shrink: 0;
   border-radius: 999px;
   border: 1px solid rgba(255, 247, 238, 0.12);
-  background: rgba(255, 247, 238, 0.06);
+  background: rgba(255, 247, 238, 0.04);
   color: var(--text-primary);
 }
 
-.theme-landing .five-pillars-mobile-tab.is-active .five-pillars-mobile-tab-icon {
-  border-color: rgba(5, 5, 5, 0.92);
+.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-icon {
   background: rgba(5, 5, 5, 0.92);
-  color: rgba(245, 237, 228, 0.95);
+  border-color: rgba(5, 5, 5, 0.92);
+  color: rgba(245, 237, 228, 0.96);
 }
 
-.theme-landing .five-pillars-mobile-tab-copy {
+.theme-landing .five-pillars-mobile-chip-copy {
   display: flex;
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  gap: 0.24rem;
+  gap: 0.18rem;
 }
 
-.theme-landing .five-pillars-mobile-tab-title {
+.theme-landing .five-pillars-mobile-chip-title {
   font-size: 0.92rem;
   line-height: 1.18;
   font-weight: 500;
@@ -770,41 +806,25 @@ html:has(.theme-landing) {
   color: var(--text-secondary);
 }
 
-.theme-landing .five-pillars-mobile-tab.is-active .five-pillars-mobile-tab-title {
+.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-title {
   color: #090909;
 }
 
-.theme-landing .five-pillars-mobile-tab-rail {
+.theme-landing .five-pillars-mobile-chip-meta {
   font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
   font-size: 0.52rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-tertiary);
 }
 
-.theme-landing .five-pillars-mobile-tab.is-active .five-pillars-mobile-tab-rail {
-  color: rgba(9, 9, 9, 0.62);
-}
-
-@media (max-width: 900px) {
-  .theme-landing .five-pillars-board {
-    padding-inline: 1rem;
-  }
+.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-meta {
+  color: rgba(9, 9, 9, 0.58);
 }
 
 @media (max-width: 767px) {
-  .theme-landing .five-pillars-board {
-    border-radius: 1.5rem;
-  }
-
-  .theme-landing .five-pillars-board-header {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .theme-landing .five-pillars-note-chip {
-    padding: 0.38rem 0.64rem;
-    font-size: 0.5rem;
+  .theme-landing .five-pillars-orbit-shell {
+    max-width: 31rem;
   }
 }
 
