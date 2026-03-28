@@ -507,7 +507,7 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .five-pillars-ledger {
-  --five-pillars-ledger-column-template: minmax(0, 1.42fr) minmax(6.4rem, 0.44fr) minmax(10rem, 0.9fr);
+  --five-pillars-ledger-column-template: minmax(0, 1.42fr) minmax(6rem, 0.4fr) minmax(10rem, 0.9fr);
   position: relative;
   overflow: hidden;
   border: 1px solid var(--five-pillars-board-border);
@@ -644,6 +644,7 @@ html:has(.theme-landing) {
   align-content: start;
   justify-items: start;
   justify-self: start;
+  width: 100%;
 }
 
 .theme-landing .five-pillars-ledger-row-metric {
@@ -706,33 +707,31 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .five-pillars-status-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 247, 238, 0.18);
-  min-width: 5.45rem;
-  min-height: 1.6rem;
-  padding: 0.2rem 0.56rem;
+  display: inline-block;
+  min-width: 0;
+  padding: 0;
   font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.53rem;
-  letter-spacing: 0.16em;
+  font-size: 0.58rem;
+  line-height: 1;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  text-align: left;
 }
 
 .theme-landing .five-pillars-status-active {
-  background: var(--five-pillars-status-active-bg);
-  color: var(--five-pillars-status-active-text);
+  color: rgba(244, 236, 226, 0.96);
 }
 
 .theme-landing .five-pillars-status-monitoring {
-  background: var(--five-pillars-status-live-bg);
-  color: var(--five-pillars-status-live-text);
+  color: rgba(211, 198, 183, 0.86);
 }
 
 .theme-landing .five-pillars-status-gated {
-  background: var(--five-pillars-status-gated-bg);
-  color: var(--five-pillars-status-gated-text);
+  color: rgba(224, 180, 118, 0.92);
 }
 
 .theme-landing .five-pillars-metric-label {
@@ -777,7 +776,7 @@ html:has(.theme-landing) {
   }
 
   .theme-landing .five-pillars-status-chip {
-    padding-inline: 0.72rem;
+    font-size: 0.54rem;
   }
 
   .theme-landing .five-pillars-metric-label {
@@ -793,7 +792,7 @@ html:has(.theme-landing) {
   .theme-landing .five-pillars-layout {
     grid-template-columns: minmax(17rem, 22rem) minmax(0, 1fr);
     align-items: start;
-    gap: 5rem;
+    gap: 4.3rem;
   }
 
   .theme-landing .five-pillars-ledger {
