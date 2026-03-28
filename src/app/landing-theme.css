@@ -959,7 +959,7 @@ html:has(.theme-landing) {
   background:
     linear-gradient(180deg, rgba(255, 247, 238, 0.04), transparent 18%),
     var(--pipeline-panel-shell-bg);
-  box-shadow: 0 26px 62px rgba(0, 0, 0, 0.34);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
 }
 
 .theme-landing .pipeline-runtime-shell::before {
@@ -978,7 +978,7 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .pipeline-runtime-lane {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
 }
 
 .theme-landing .pipeline-status-chip {
@@ -1004,41 +1004,39 @@ html:has(.theme-landing) {
 
 .theme-landing .pipeline-runtime-row {
   border-color: var(--pipeline-panel-idle-border);
-  background: var(--pipeline-panel-idle-bg);
+  background: linear-gradient(180deg, rgba(18, 17, 17, 0.62), rgba(10, 10, 11, 0.48));
   box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.02);
 }
 
 .theme-landing .pipeline-runtime-row.is-active {
-  box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 247, 238, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.03);
+  background: linear-gradient(180deg, rgba(30, 24, 18, 0.76), rgba(18, 16, 15, 0.68));
 }
 
 .theme-landing .pipeline-runtime-row.is-lit {
-  box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 247, 238, 0.03);
+  box-shadow: inset 0 1px 0 rgba(255, 247, 238, 0.03);
+  background: linear-gradient(180deg, rgba(22, 19, 18, 0.68), rgba(12, 11, 11, 0.54));
 }
 
 .theme-landing .pipeline-row-indicator {
   display: inline-block;
-  width: 0.56rem;
-  height: 0.56rem;
+  width: 0.5rem;
+  height: 0.5rem;
   flex-shrink: 0;
   border-radius: 999px;
   background: var(--pipeline-panel-indicator-idle);
-  box-shadow: 0 0 0 7px rgba(255, 247, 238, 0.02);
+  box-shadow: 0 0 0 6px rgba(255, 247, 238, 0.02);
 }
 
 .theme-landing .pipeline-row-indicator.is-active {
   background: var(--pipeline-panel-indicator-active);
-  box-shadow: 0 0 0 8px rgba(224, 180, 118, 0.08), 0 0 22px rgba(224, 180, 118, 0.22);
+  box-shadow: 0 0 0 7px rgba(224, 180, 118, 0.08), 0 0 18px rgba(224, 180, 118, 0.18);
 }
 
 .theme-landing .pipeline-row-rail {
   position: relative;
   overflow: hidden;
-  height: 2px;
+  height: 1px;
   width: 100%;
   min-width: 8rem;
   border-radius: 999px;
@@ -1059,9 +1057,9 @@ html:has(.theme-landing) {
   border-radius: 999px;
   border: 1px solid var(--pipeline-panel-chip-border);
   background: var(--pipeline-panel-chip-bg);
-  padding: 0.45rem 0.75rem;
+  padding: 0.38rem 0.68rem;
   font-family: var(--font-geist-mono), var(--font-jetbrains-mono), monospace;
-  font-size: 0.6rem;
+  font-size: 0.56rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--text-muted);

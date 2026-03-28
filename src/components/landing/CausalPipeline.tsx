@@ -146,8 +146,8 @@ export function CausalPipeline() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[92rem] px-8 md:px-12 lg:px-16">
-        <div className="pipeline-copy-cluster mx-auto max-w-[76rem] text-center">
+      <div className="relative z-10 mx-auto max-w-[96rem] px-8 md:px-12 lg:px-16">
+        <div className="pipeline-copy-cluster mx-auto max-w-[78rem] text-center">
           <div className="mb-7 flex items-center justify-center gap-3">
             <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
             <span className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
@@ -165,7 +165,7 @@ export function CausalPipeline() {
             auditable before MASA commits a conclusion to action or memory.
           </p>
 
-          <div className="pipeline-claims-grid mx-auto mt-10 grid max-w-[70rem] gap-x-10 gap-y-5 text-left md:grid-cols-2 xl:grid-cols-4">
+          <div className="pipeline-claims-grid mx-auto mt-10 grid max-w-[72rem] gap-x-10 gap-y-5 text-left md:grid-cols-2 xl:grid-cols-4">
             {governanceClaims.map((claim) => (
               <div key={claim} className="pipeline-claim-row">
                 <span className="pipeline-claim-signal" aria-hidden="true" />
@@ -178,10 +178,10 @@ export function CausalPipeline() {
         </div>
 
         <motion.div
-          className="pipeline-runtime-shell relative mx-auto mt-16 max-w-[86rem] overflow-hidden rounded-[2.2rem] border px-5 py-5 md:mt-20 md:px-7 md:py-7"
+          className="pipeline-runtime-shell relative mx-auto mt-16 max-w-[92rem] overflow-hidden rounded-[2rem] border px-5 py-5 md:mt-20 md:px-8 md:py-7"
           style={{ boxShadow: boardShadow }}
         >
-          <div className="pipeline-runtime-header mb-6 flex flex-wrap items-center justify-between gap-4 border-b pb-5">
+          <div className="pipeline-runtime-header mb-5 flex flex-wrap items-center justify-between gap-4 border-b pb-4">
             <div>
               <p className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
                 Monitored Sequence
@@ -198,14 +198,14 @@ export function CausalPipeline() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {stages.map((stage, index) => {
               const state = stageStates[index];
 
               return (
                 <motion.article
                   key={stage.id}
-                  className={`pipeline-runtime-row pipeline-runtime-lane rounded-[1.6rem] border px-5 py-5 md:px-6 ${state.isActive ? "is-active" : state.isLit ? "is-lit" : "is-idle"}`}
+                  className={`pipeline-runtime-row pipeline-runtime-lane rounded-[1.15rem] border px-5 py-4 md:px-6 ${state.isActive ? "is-active" : state.isLit ? "is-lit" : "is-idle"}`}
                   animate={
                     shouldReduceMotion
                       ? undefined
@@ -222,23 +222,23 @@ export function CausalPipeline() {
                   }
                   transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <div className="grid gap-5 xl:grid-cols-[minmax(13rem,0.9fr)_minmax(23rem,1.8fr)_minmax(13rem,0.8fr)] xl:items-center xl:gap-8">
+                  <div className="grid gap-4 xl:grid-cols-[minmax(12rem,0.82fr)_minmax(24rem,2fr)_minmax(14rem,0.8fr)] xl:items-center xl:gap-8">
                     <div className="min-w-0">
                       <div className="flex items-center gap-3">
                         <span
                           className={`pipeline-row-indicator ${state.isActive ? "is-active" : state.isLit ? "is-lit" : ""}`}
                           aria-hidden="true"
                         />
-                        <h3 className="text-[1.08rem] font-medium tracking-[-0.03em] text-[var(--text-primary)]">
+                        <h3 className="text-[1.03rem] font-medium tracking-[-0.03em] text-[var(--text-primary)]">
                           {stage.title}
                         </h3>
                       </div>
-                      <p className="mt-3 font-mono text-[0.58rem] uppercase tracking-[0.26em] text-[var(--text-muted)]">
+                      <p className="mt-2.5 font-mono text-[0.56rem] uppercase tracking-[0.28em] text-[var(--text-muted)]">
                         {stage.descriptor}
                       </p>
                     </div>
 
-                    <p className="min-w-0 text-[0.96rem] leading-[1.8] text-[var(--text-secondary)]">
+                    <p className="min-w-0 text-[0.95rem] leading-[1.7] text-[var(--text-secondary)]">
                       {stage.summary}
                     </p>
 
@@ -253,7 +253,7 @@ export function CausalPipeline() {
                           {state.isActive ? "ACTIVE" : state.isLit ? "LIT" : "IDLE"}
                         </span>
                       </div>
-                      <div className="pipeline-row-rail mt-4">
+                      <div className="pipeline-row-rail mt-3">
                         <motion.span
                           className="pipeline-row-rail-fill"
                           animate={{
@@ -263,7 +263,7 @@ export function CausalPipeline() {
                           transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
                         />
                       </div>
-                      <p className="mt-3 font-mono text-[0.58rem] uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
+                      <p className="mt-2.5 font-mono text-[0.56rem] uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
                         {stage.status}
                       </p>
                     </div>
