@@ -232,6 +232,14 @@ export function FivePillars() {
                         </div>
                       </div>
                     </div>
+
+                    <div
+                      className={`five-pillars-ledger-row-detail-shell ${isActive ? "is-active" : ""} ${shouldReduceMotion ? "is-reduced-motion" : ""}`}
+                    >
+                      <div className="five-pillars-ledger-row-detail">
+                        <p className="five-pillars-ledger-row-detail-copy">{pillar.detail}</p>
+                      </div>
+                    </div>
                   </motion.button>
                 );
               })}
