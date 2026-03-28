@@ -489,7 +489,7 @@ html:has(.theme-landing) {
 .theme-landing .five-pillars-orbit-frame::before {
   content: "";
   position: absolute;
-  inset: 12% 14%;
+  inset: 10% 12%;
   border-radius: 999px;
   background: radial-gradient(circle, rgba(255, 247, 238, 0.05) 0%, rgba(255, 247, 238, 0) 72%);
   pointer-events: none;
@@ -498,29 +498,35 @@ html:has(.theme-landing) {
 .theme-landing .five-pillars-orbit-shell::before {
   content: "";
   position: absolute;
-  inset: 14% 12% 16%;
+  inset: 12% 10% 14%;
   border-radius: 999px;
   background: radial-gradient(circle, rgba(224, 180, 118, 0.08) 0%, rgba(224, 180, 118, 0) 66%);
   filter: blur(22px);
   pointer-events: none;
 }
 
+.theme-landing .five-pillars-orbit-spin-layer {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 247, 238, 0.05);
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(224, 180, 118, 0) 0deg,
+      rgba(224, 180, 118, 0.12) 72deg,
+      rgba(224, 180, 118, 0.02) 160deg,
+      rgba(224, 180, 118, 0) 360deg
+    );
+  filter: blur(10px);
+  transform-origin: 50% 50%;
+  pointer-events: none;
+}
+
 .theme-landing .five-pillars-core {
   border-color: var(--five-pillars-center-border);
   background:
-    radial-gradient(circle at 50% 45%, rgba(200, 150, 90, 0.08), transparent 54%),
+    radial-gradient(circle at 50% 22%, rgba(200, 150, 90, 0.1), transparent 44%),
     linear-gradient(180deg, rgba(14, 13, 12, 0.98), rgba(8, 8, 8, 0.98));
   box-shadow: var(--five-pillars-center-shadow);
-}
-
-.theme-landing .five-pillars-orbit-rotor {
-  transform-origin: 50% 50%;
-}
-
-.theme-landing .five-pillars-dock {
-  border-color: var(--five-pillars-dock-border);
-  background: var(--five-pillars-dock-bg);
-  box-shadow: var(--five-pillars-dock-shadow);
 }
 
 .theme-landing .five-pillars-status {
@@ -560,6 +566,13 @@ html:has(.theme-landing) {
   align-items: center;
 }
 
+.theme-landing .five-pillars-node-label {
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    transform 220ms ease;
+}
+
 .theme-landing .five-pillars-node-icon {
   transition:
     background-color 220ms ease,
@@ -576,6 +589,14 @@ html:has(.theme-landing) {
   box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.02), 0 12px 22px rgba(0, 0, 0, 0.18);
 }
 
+.theme-landing .five-pillars-node-preview .five-pillars-node-icon {
+  background: rgba(255, 247, 238, 0.12);
+  border-color: rgba(255, 247, 238, 0.22);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.03), 0 0 24px rgba(255, 247, 238, 0.08);
+  transform: scale(1.02);
+}
+
 .theme-landing .five-pillars-node-active .five-pillars-node-icon {
   background: var(--five-pillars-node-active-bg);
   border-color: var(--five-pillars-node-active-border);
@@ -584,19 +605,25 @@ html:has(.theme-landing) {
   transform: scale(1.04);
 }
 
-.theme-landing .five-pillars-ledger-idle {
-  background: var(--five-pillars-ledger-idle-bg);
-  border-color: var(--five-pillars-ledger-idle-border);
+.theme-landing .five-pillars-node-idle .five-pillars-node-label {
+  color: var(--text-secondary);
+  opacity: 0.86;
 }
 
-.theme-landing .five-pillars-ledger-active {
-  background: var(--five-pillars-ledger-active-bg);
-  border-color: var(--five-pillars-ledger-active-border);
-  box-shadow: var(--five-pillars-ledger-active-shadow);
+.theme-landing .five-pillars-node-preview .five-pillars-node-label {
+  color: var(--text-primary);
+  opacity: 0.98;
+  transform: translateY(0.02rem);
 }
 
-.theme-landing .five-pillars-ledger-meter {
-  background: linear-gradient(90deg, rgba(200, 150, 90, 0.64), rgba(255, 247, 238, 0.08));
+.theme-landing .five-pillars-node-active .five-pillars-node-label {
+  color: var(--text-primary);
+  opacity: 1;
+}
+
+.theme-landing .five-pillars-connected {
+  background: var(--five-pillars-connected-bg);
+  border-color: var(--five-pillars-connected-border);
 }
 
 .theme-landing .landing-header-cta {

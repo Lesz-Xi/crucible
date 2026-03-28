@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 
 const TWO_PI = Math.PI * 2;
-const ORBIT_CENTER = 244;
-const ORBIT_RADIUS = 176;
+const ORBIT_CENTER = 310;
+const ORBIT_RADIUS = 230;
 
 type PillarStatus = "live" | "active" | "gated";
 
@@ -117,7 +117,7 @@ function getStatusClass(status: PillarStatus) {
 export function FivePillars() {
   const shouldReduceMotion = useReducedMotion();
   const [activeId, setActiveId] = useState<string>(pillars[0].id);
-  const [isOrbitFocused, setIsOrbitFocused] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
 
   const activePillar =
     pillars.find((pillar) => pillar.id === activeId) ?? pillars[0];
@@ -159,200 +159,155 @@ export function FivePillars() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(24rem,0.92fr)_minmax(22rem,0.72fr)] lg:items-center lg:gap-14">
-          <div
-            className="five-pillars-orbit-shell relative"
-            onMouseEnter={() => setIsOrbitFocused(true)}
-            onMouseLeave={() => setIsOrbitFocused(false)}
-            onFocusCapture={() => setIsOrbitFocused(true)}
-            onBlurCapture={() => setIsOrbitFocused(false)}
-          >
-            <div className="five-pillars-orbit-frame relative mx-auto aspect-square max-w-[34rem]">
-              <svg
-                viewBox="0 0 488 488"
-                className="absolute inset-0 h-full w-full"
-                aria-hidden="true"
-              >
-                <defs>
-                  <radialGradient id="five-pillars-glow" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="rgba(224,180,118,0.11)" />
-                    <stop offset="72%" stopColor="rgba(224,180,118,0.03)" />
-                    <stop offset="100%" stopColor="rgba(224,180,118,0)" />
-                  </radialGradient>
-                </defs>
+        <div className="five-pillars-orbit-shell relative mx-auto max-w-[52rem]">
+          <div className="five-pillars-orbit-frame relative mx-auto aspect-square max-w-[44rem]">
+            <svg
+              viewBox="0 0 620 620"
+              className="absolute inset-0 h-full w-full"
+              aria-hidden="true"
+            >
+              <defs>
+                <radialGradient id="five-pillars-center-glow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="rgba(224,180,118,0.12)" />
+                  <stop offset="72%" stopColor="rgba(224,180,118,0.025)" />
+                  <stop offset="100%" stopColor="rgba(224,180,118,0)" />
+                </radialGradient>
+              </defs>
 
-                <circle
-                  cx={ORBIT_CENTER}
-                  cy={ORBIT_CENTER}
-                  r={ORBIT_RADIUS}
-                  fill="none"
-                  stroke="var(--five-pillars-orbit-stroke)"
-                  strokeWidth="1.2"
+              <circle
+                cx={ORBIT_CENTER}
+                cy={ORBIT_CENTER}
+                r={ORBIT_RADIUS}
+                fill="none"
+                stroke="var(--five-pillars-orbit-stroke)"
+                strokeWidth="1.35"
+              />
+
+              {nodes.map((node) => (
+                <line
+                  key={`spoke-${node.id}`}
+                  x1={ORBIT_CENTER}
+                  y1={ORBIT_CENTER}
+                  x2={node.x}
+                  y2={node.y}
+                  stroke="var(--five-pillars-spoke-stroke)"
+                  strokeWidth="1"
                 />
+              ))}
 
-                {nodes.map((node) => (
-                  <line
-                    key={`spoke-${node.id}`}
-                    x1={ORBIT_CENTER}
-                    y1={ORBIT_CENTER}
-                    x2={node.x}
-                    y2={node.y}
-                    stroke="var(--five-pillars-spoke-stroke)"
-                    strokeWidth="1"
-                  />
-                ))}
+              <circle
+                cx={ORBIT_CENTER}
+                cy={ORBIT_CENTER}
+                r="156"
+                fill="url(#five-pillars-center-glow)"
+              />
+            </svg>
 
-                <circle
-                  cx={ORBIT_CENTER}
-                  cy={ORBIT_CENTER}
-                  r="118"
-                  fill="url(#five-pillars-glow)"
-                />
-              </svg>
+            <motion.div
+              className="five-pillars-orbit-spin-layer absolute inset-[13%] rounded-full"
+              animate={shouldReduceMotion ? undefined : { rotate: 360 }}
+              transition={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      duration: 34,
+                      ease: "linear",
+                      repeat: Number.POSITIVE_INFINITY,
+                    }
+              }
+            />
 
-              <motion.div
-                className="five-pillars-orbit-rotor absolute inset-0"
-                animate={
-                  shouldReduceMotion || isOrbitFocused
-                    ? { rotate: 0 }
-                    : { rotate: 360 }
-                }
-                transition={
-                  shouldReduceMotion || isOrbitFocused
-                    ? { duration: 0.35, ease: [0.22, 1, 0.36, 1] }
-                    : {
-                        duration: 38,
-                        ease: "linear",
-                        repeat: Number.POSITIVE_INFINITY,
-                      }
-                }
-              >
-                {nodes.map((node, index) => {
-                  const isActive = node.id === activePillar.id;
-                  const Icon = node.icon;
+            {nodes.map((node, index) => {
+              const isSelected = node.id === activePillar.id;
+              const isPreview = node.id === previewId;
+              const Icon = node.icon;
 
-                  return (
-                    <motion.button
-                      key={node.id}
-                      type="button"
-                      onMouseEnter={() => setActiveId(node.id)}
-                      onFocus={() => setActiveId(node.id)}
-                      onClick={() => setActiveId(node.id)}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 bg-transparent"
-                      style={{
-                        left: `${(node.x / 488) * 100}%`,
-                        top: `${(node.y / 488) * 100}%`,
-                      }}
-                      initial={
-                        shouldReduceMotion ? undefined : { opacity: 0, scale: 0.92 }
-                      }
-                      whileInView={
-                        shouldReduceMotion ? undefined : { opacity: 1, scale: 1 }
-                      }
-                      viewport={{ once: true }}
-                      transition={{
-                        duration: 0.4,
-                        delay: index * 0.05,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                    >
-                      <div
-                        className={`five-pillars-node ${isActive ? "five-pillars-node-active" : "five-pillars-node-idle"}`}
-                      >
-                        <div className="five-pillars-node-icon flex h-14 w-14 items-center justify-center rounded-full border">
-                          <Icon className="h-5 w-5" strokeWidth={2} />
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+              return (
+                <motion.button
+                  key={node.id}
+                  type="button"
+                  onMouseEnter={() => setPreviewId(node.id)}
+                  onMouseLeave={() => setPreviewId(null)}
+                  onFocus={() => setPreviewId(node.id)}
+                  onBlur={() => setPreviewId(null)}
+                  onClick={() => setActiveId(node.id)}
+                  aria-pressed={isSelected}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 bg-transparent"
+                  style={{
+                    left: `${(node.x / 620) * 100}%`,
+                    top: `${(node.y / 620) * 100}%`,
+                  }}
+                  initial={
+                    shouldReduceMotion ? undefined : { opacity: 0, scale: 0.92 }
+                  }
+                  whileInView={
+                    shouldReduceMotion ? undefined : { opacity: 1, scale: 1 }
+                  }
+                  viewport={{ once: true }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.05,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                >
+                  <div
+                    className={`five-pillars-node ${isSelected ? "five-pillars-node-active" : isPreview ? "five-pillars-node-preview" : "five-pillars-node-idle"}`}
+                  >
+                    <div className="five-pillars-node-icon flex h-16 w-16 items-center justify-center rounded-full border">
+                      <Icon className="h-5.5 w-5.5" strokeWidth={2} />
+                    </div>
+                    <span className="five-pillars-node-label mt-4 block whitespace-nowrap text-center text-[0.88rem] font-medium tracking-[-0.02em] text-[var(--text-secondary)]">
+                      {node.label}
+                    </span>
+                  </div>
+                </motion.button>
+              );
+            })}
 
-              <motion.div
-                className="five-pillars-core absolute left-1/2 top-1/2 flex h-[9.5rem] w-[9.5rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border"
-                initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
-                whileInView={shouldReduceMotion ? undefined : { opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <div className="text-center">
-                  <p className="font-mono text-[0.62rem] uppercase tracking-[0.24em] text-[var(--text-tertiary)]">
-                    MASA
-                  </p>
-                  <p className="mt-2 text-[1.8rem] font-medium tracking-[-0.04em] text-[var(--text-primary)]">
-                    Engine
-                  </p>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-
-          <motion.aside
-            key={activePillar.id}
-            className="five-pillars-dock rounded-[1.8rem] border p-6 md:p-7"
-            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
-                  Active Pillar
+            <motion.div
+              key={activePillar.id}
+              className="five-pillars-core absolute left-1/2 top-1/2 flex h-[21rem] w-[20rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[2rem] border px-8 py-8 text-center"
+              initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="flex flex-col items-center">
+                <p className="font-mono text-[0.62rem] uppercase tracking-[0.28em] text-[var(--text-tertiary)]">
+                  MASA ENGINE
                 </p>
-                <h3 className="mt-4 text-[1.9rem] font-medium tracking-[-0.03em] text-[var(--text-primary)]">
+                <span
+                  className={`five-pillars-status mt-5 ${getStatusClass(activePillar.status)}`}
+                >
+                  {getStatusLabel(activePillar.status)}
+                </span>
+                <h3 className="mt-6 text-[2rem] font-medium tracking-[-0.04em] text-[var(--text-primary)]">
                   {activePillar.label}
                 </h3>
-                <p className="mt-3 font-mono text-[0.66rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+                <p className="mt-3 font-mono text-[0.64rem] uppercase tracking-[0.22em] text-[var(--text-muted)]">
                   {activePillar.sub}
                 </p>
-              </div>
+                <p className="mt-6 max-w-[15rem] text-[0.98rem] leading-[1.9] text-[var(--text-secondary)]">
+                  {activePillar.detail}
+                </p>
 
-              <span
-                className={`five-pillars-status ${getStatusClass(activePillar.status)}`}
-              >
-                {getStatusLabel(activePillar.status)}
-              </span>
-            </div>
-
-            <p className="mt-7 text-[1rem] leading-[1.85] text-[var(--text-secondary)]">
-              {activePillar.detail}
-            </p>
-
-            <div className="mt-7 border-t border-[var(--five-pillars-rule)] pt-6">
-              <div className="mb-3 flex items-center justify-between gap-4">
-                <span className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                  Runtime Confidence
-                </span>
-                <span className="font-mono text-[0.8rem] tracking-[0.08em] text-[var(--text-primary)]">
-                  {activePillar.energy}%
-                </span>
+                <div className="mt-7 w-full border-t border-[var(--five-pillars-rule)] pt-5">
+                  <p className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-[var(--text-tertiary)]">
+                    Connected Nodes
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+                    {activePillar.connected.map((item) => (
+                      <span
+                        key={item}
+                        className="five-pillars-connected inline-flex items-center rounded-full border px-3 py-1.5 text-[0.82rem] text-[var(--text-secondary)]"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="five-pillars-ledger-meter h-2 overflow-hidden rounded-full">
-                <motion.div
-                  className="h-full rounded-full bg-[var(--five-pillars-meter-fill)]"
-                  initial={shouldReduceMotion ? undefined : { width: 0 }}
-                  animate={{ width: `${activePillar.energy}%` }}
-                  transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-                />
-              </div>
-            </div>
-
-            <div className="mt-7 border-t border-[var(--five-pillars-rule)] pt-6">
-              <p className="font-mono text-[0.68rem] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-                Connected Nodes
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {activePillar.connected.map((item) => (
-                  <span
-                    key={item}
-                    className="five-pillars-connected inline-flex items-center rounded-full border px-4 py-2 text-[0.88rem] text-[var(--text-secondary)]"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.aside>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
