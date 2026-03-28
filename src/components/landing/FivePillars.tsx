@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   BrainCircuit,
   Database,
@@ -235,16 +235,10 @@ export function FivePillars() {
                       </div>
                     </div>
 
-                    <AnimatePresence initial={false}>
-                      {isActive ? (
-                        <motion.div
-                          key={`${pillar.id}-detail`}
-                          className="five-pillars-ledger-row-detail"
-                          initial={shouldReduceMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
-                          animate={shouldReduceMotion ? undefined : { opacity: 1, height: "auto", y: 0 }}
-                          exit={shouldReduceMotion ? undefined : { opacity: 0, height: 0, y: -6 }}
-                          transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-                        >
+                    <div
+                      className={`five-pillars-ledger-row-detail-shell ${isActive ? "is-active" : ""} ${shouldReduceMotion ? "is-reduced-motion" : ""}`}
+                    >
+                      <div className="five-pillars-ledger-row-detail">
                           <p className="five-pillars-ledger-row-detail-copy">{pillar.detail}</p>
 
                           <div className="five-pillars-ledger-row-links">
@@ -271,9 +265,8 @@ export function FivePillars() {
                               })}
                             </div>
                           </div>
-                        </motion.div>
-                      ) : null}
-                    </AnimatePresence>
+                      </div>
+                    </div>
                   </motion.button>
                 );
               })}
