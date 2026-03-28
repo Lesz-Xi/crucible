@@ -114,7 +114,7 @@ function getStatusClass(status: PillarStatus) {
 
 export function FivePillars() {
   const shouldReduceMotion = useReducedMotion();
-  const [activeId, setActiveId] = useState<string>(pillars[0].id);
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   return (
     <section
@@ -174,11 +174,14 @@ export function FivePillars() {
                   <motion.button
                     key={pillar.id}
                     type="button"
-                    role="listitem"
                     aria-pressed={isActive}
                     aria-label={`Focus ${pillar.label}`}
                     className={`five-pillars-ledger-row ${isActive ? "is-active" : ""}`}
-                    onClick={() => setActiveId(pillar.id)}
+                    onClick={() =>
+                      setActiveId((currentId) =>
+                        currentId === pillar.id ? null : pillar.id,
+                      )
+                    }
                     initial={shouldReduceMotion ? undefined : { opacity: 0, y: 18 }}
                     whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
@@ -191,21 +194,25 @@ export function FivePillars() {
                     <div className="five-pillars-ledger-row-main">
                       <div className="five-pillars-ledger-row-title-wrap">
                         <span className="five-pillars-ledger-row-icon">
-                          <Icon className="h-4.5 w-4.5" strokeWidth={1.9} />
+                          <Icon className="h-4 w-4" strokeWidth={1.9} />
                         </span>
 
                         <div className="min-w-0">
                           <div className="five-pillars-ledger-row-title-line">
                             <h3 className="five-pillars-ledger-row-title">{pillar.label}</h3>
-                            <span
-                              className={`five-pillars-status-chip ${getStatusClass(pillar.status)}`}
-                            >
-                              {getStatusLabel(pillar.status)}
-                            </span>
                           </div>
 
                           <p className="five-pillars-ledger-row-meta">{pillar.meta}</p>
                         </div>
+                      </div>
+
+                      <div className="five-pillars-ledger-row-status">
+                        <span className="five-pillars-ledger-row-status-label">Status</span>
+                        <span
+                          className={`five-pillars-status-chip ${getStatusClass(pillar.status)}`}
+                        >
+                          {getStatusLabel(pillar.status)}
+                        </span>
                       </div>
 
                       <div className="five-pillars-ledger-row-metric">

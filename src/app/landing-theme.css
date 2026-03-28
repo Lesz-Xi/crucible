@@ -595,8 +595,8 @@ html:has(.theme-landing) {
 
 .theme-landing .five-pillars-ledger-row-icon {
   display: inline-flex;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 2.15rem;
+  height: 2.15rem;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--five-pillars-row-icon-border);
@@ -618,7 +618,7 @@ html:has(.theme-landing) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.55rem 0.75rem;
+  gap: 0.4rem 0.75rem;
 }
 
 .theme-landing .five-pillars-ledger-row-title {
@@ -631,6 +631,20 @@ html:has(.theme-landing) {
 
 .theme-landing .five-pillars-ledger-row-meta {
   margin-top: 0.38rem;
+  color: var(--text-tertiary);
+}
+
+.theme-landing .five-pillars-ledger-row-status {
+  display: grid;
+  align-content: start;
+  gap: 0.42rem;
+}
+
+.theme-landing .five-pillars-ledger-row-status-label {
+  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   color: var(--text-tertiary);
 }
 
@@ -697,7 +711,9 @@ html:has(.theme-landing) {
   justify-content: center;
   border-radius: 999px;
   border: 1px solid rgba(255, 247, 238, 0.18);
-  padding: 0.46rem 0.84rem;
+  width: fit-content;
+  min-height: 2rem;
+  padding: 0.36rem 0.78rem;
   font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
   font-size: 0.62rem;
   letter-spacing: 0.18em;
@@ -736,7 +752,7 @@ html:has(.theme-landing) {
 .theme-landing .five-pillars-meter-track {
   overflow: hidden;
   width: 100%;
-  height: 0.42rem;
+  height: 0.28rem;
   border-radius: 999px;
   background: var(--five-pillars-meter-track);
 }
@@ -789,7 +805,7 @@ html:has(.theme-landing) {
   }
 
   .theme-landing .five-pillars-ledger-row-main {
-    grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 0.9fr);
+    grid-template-columns: minmax(0, 1.45fr) minmax(6.4rem, 0.42fr) minmax(10rem, 0.9fr);
     align-items: center;
     gap: 1.4rem;
   }
