@@ -478,160 +478,217 @@ html:has(.theme-landing) {
   transform: translate(1px, -1px);
 }
 
-.theme-landing .five-pillars-orbit-shell {
-  max-width: 56rem;
+.theme-landing .five-pillars-layout {
+  display: grid;
+  gap: 2.25rem;
 }
 
-.theme-landing .five-pillars-orbit-shell::before {
+.theme-landing .five-pillars-editorial {
+  max-width: 36rem;
+}
+
+.theme-landing .five-pillars-editorial-note {
+  border-top: 1px solid var(--five-pillars-rule);
+  padding-top: 1rem;
+}
+
+.theme-landing .five-pillars-editorial-kicker,
+.theme-landing .five-pillars-ledger-kicker,
+.theme-landing .five-pillars-ledger-columns,
+.theme-landing .five-pillars-ledger-row-meta,
+.theme-landing .five-pillars-ledger-row-links-label {
+  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.theme-landing .five-pillars-editorial-kicker {
+  color: var(--accent-rust);
+}
+
+.theme-landing .five-pillars-ledger {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--five-pillars-board-border);
+  background: var(--five-pillars-board-bg);
+  box-shadow: var(--five-pillars-board-shadow);
+}
+
+.theme-landing .five-pillars-ledger::before {
   content: "";
   position: absolute;
-  inset: 12% 10%;
+  inset: -15% auto auto 12%;
+  width: 24rem;
+  height: 24rem;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(224, 180, 118, 0.11) 0%, rgba(224, 180, 118, 0.02) 34%, rgba(224, 180, 118, 0) 72%);
-  filter: blur(30px);
+  background: radial-gradient(circle, var(--five-pillars-board-glow) 0%, rgba(200, 150, 90, 0) 72%);
   pointer-events: none;
 }
 
-.theme-landing .five-pillars-orbit-stage {
-  width: min(100%, 45rem);
-  aspect-ratio: 1 / 1;
-}
-
-.theme-landing .five-pillars-mobile-stage {
-  width: min(100%, 29rem);
-  aspect-ratio: 1 / 1;
-}
-
-.theme-landing .five-pillars-orbit-spin-layer {
-  border: 1px solid rgba(255, 247, 238, 0.04);
-  background:
-    conic-gradient(
-      from 0deg,
-      rgba(224, 180, 118, 0) 0deg,
-      rgba(224, 180, 118, 0.12) 76deg,
-      rgba(224, 180, 118, 0.02) 168deg,
-      rgba(224, 180, 118, 0) 360deg
-    );
-  filter: blur(14px);
-  transform-origin: 50% 50%;
-  pointer-events: none;
-}
-
-.theme-landing .five-pillars-node {
-  z-index: 3;
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.72rem;
-  transform: translate(-50%, -50%);
-  background: transparent;
-}
-
-.theme-landing .five-pillars-node:focus-visible {
-  outline: none;
-}
-
-.theme-landing .five-pillars-node-halo {
-  position: absolute;
-  inset: auto;
-  top: 0;
-  width: 5.4rem;
-  height: 5.4rem;
-  border-radius: 999px;
-  transform: translateY(-0.62rem);
-  background: radial-gradient(circle, rgba(255, 247, 238, 0.08) 0%, rgba(255, 247, 238, 0.02) 44%, rgba(255, 247, 238, 0) 74%);
-  opacity: 0.34;
-  pointer-events: none;
-}
-
-.theme-landing .five-pillars-node-halo.is-related {
-  background: radial-gradient(circle, rgba(224, 180, 118, 0.14) 0%, rgba(224, 180, 118, 0.04) 44%, rgba(224, 180, 118, 0) 72%);
-  opacity: 0.62;
-}
-
-.theme-landing .five-pillars-node-halo.is-active {
-  background: radial-gradient(circle, rgba(255, 247, 238, 0.24) 0%, rgba(255, 247, 238, 0.08) 46%, rgba(255, 247, 238, 0) 76%);
-  opacity: 0.96;
-}
-
-.theme-landing .five-pillars-node-disc {
+.theme-landing .five-pillars-ledger-header {
   position: relative;
-  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  border-bottom: 1px solid var(--five-pillars-row-border);
+  padding: 1.1rem 1.1rem 1rem;
+}
+
+.theme-landing .five-pillars-ledger-kicker {
+  color: var(--text-muted);
+}
+
+.theme-landing .five-pillars-ledger-columns {
+  display: none;
+  align-items: center;
+  grid-template-columns: minmax(0, 1.6fr) minmax(6rem, 0.68fr) minmax(10rem, 0.9fr);
+  color: var(--text-tertiary);
+}
+
+.theme-landing .five-pillars-ledger-rows {
+  position: relative;
+}
+
+.theme-landing .five-pillars-ledger-row {
+  display: block;
+  width: 100%;
+  border-top: 1px solid var(--five-pillars-row-border);
+  background: var(--five-pillars-row-idle-bg);
+  padding: 1rem 1.1rem 1.05rem;
+  text-align: left;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+.theme-landing .five-pillars-ledger-row:first-child {
+  border-top: none;
+}
+
+.theme-landing .five-pillars-ledger-row:hover {
+  background: var(--five-pillars-row-hover-bg);
+}
+
+.theme-landing .five-pillars-ledger-row:focus-visible {
+  outline: none;
+  background: var(--five-pillars-row-hover-bg);
+  box-shadow: inset 0 0 0 1px rgba(224, 180, 118, 0.3);
+}
+
+.theme-landing .five-pillars-ledger-row.is-active {
+  border-color: var(--five-pillars-row-active-border);
+  background: var(--five-pillars-row-active-bg);
+}
+
+.theme-landing .five-pillars-ledger-row-main {
+  display: grid;
+  gap: 1rem;
+}
+
+.theme-landing .five-pillars-ledger-row-title-wrap {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.theme-landing .five-pillars-ledger-row-icon {
   display: inline-flex;
-  width: 3.7rem;
-  height: 3.7rem;
+  width: 2.4rem;
+  height: 2.4rem;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  border: 2px solid rgba(255, 247, 238, 0.24);
-  background: rgba(10, 10, 10, 0.94);
-  color: rgba(242, 235, 227, 0.88);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
-  transition:
-    border-color 220ms ease,
-    background-color 220ms ease,
-    color 220ms ease,
-    box-shadow 220ms ease;
-}
-
-.theme-landing .five-pillars-node-disc.is-related {
-  border-color: rgba(224, 180, 118, 0.36);
-  color: rgba(242, 235, 227, 0.98);
-}
-
-.theme-landing .five-pillars-node-disc.is-active {
-  border-color: rgba(255, 247, 238, 0.34);
-  background: rgba(255, 247, 238, 0.98);
-  color: #050505;
-  box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.08), 0 0 28px rgba(255, 255, 255, 0.16);
-}
-
-.theme-landing .five-pillars-node-label {
-  position: relative;
-  z-index: 1;
-  max-width: 9rem;
-  text-align: center;
-  font-size: 0.88rem;
-  line-height: 1.2;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: rgba(197, 182, 168, 0.72);
-  transition:
-    color 220ms ease,
-    transform 220ms ease,
-    opacity 220ms ease;
-}
-
-.theme-landing .five-pillars-node-label.is-related {
-  color: rgba(224, 180, 118, 0.9);
-}
-
-.theme-landing .five-pillars-node-label.is-active {
+  border: 1px solid var(--five-pillars-row-icon-border);
+  background: var(--five-pillars-row-icon-bg);
   color: var(--text-primary);
-  transform: scale(1.06);
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
 }
 
-.theme-landing .five-pillars-card {
-  border-color: rgba(255, 247, 238, 0.14);
-  background:
-    radial-gradient(circle at 50% 14%, rgba(200, 150, 90, 0.08), transparent 38%),
-    linear-gradient(180deg, rgba(9, 9, 10, 0.92), rgba(4, 4, 5, 0.96));
-  box-shadow:
-    0 24px 62px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 247, 238, 0.03),
-    0 18px 36px rgba(255, 247, 238, 0.04);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.theme-landing .five-pillars-ledger-row.is-active .five-pillars-ledger-row-icon {
+  border-color: var(--five-pillars-row-icon-active-border);
+  background: var(--five-pillars-row-icon-active-bg);
+  color: var(--accent-rust-strong);
 }
 
-.theme-landing .five-pillars-card-inner {
-  position: relative;
+.theme-landing .five-pillars-ledger-row-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
 }
 
-.theme-landing .five-pillars-card-mobile .five-pillars-card-meta {
-  max-width: 6.2rem;
-  text-align: right;
+.theme-landing .five-pillars-ledger-row-title {
+  font-size: clamp(1rem, 1.2vw, 1.16rem);
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+}
+
+.theme-landing .five-pillars-ledger-row-meta {
+  margin-top: 0.38rem;
+  color: var(--text-tertiary);
+}
+
+.theme-landing .five-pillars-ledger-row-metric {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.theme-landing .five-pillars-ledger-row-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.theme-landing .five-pillars-ledger-row-detail {
+  overflow: hidden;
+  border-top: 1px solid var(--five-pillars-rule);
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+}
+
+.theme-landing .five-pillars-ledger-row-detail-copy {
+  max-width: 44rem;
+  font-size: 0.94rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.theme-landing .five-pillars-ledger-row-links {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.theme-landing .five-pillars-ledger-row-links-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  color: var(--text-tertiary);
+}
+
+.theme-landing .five-pillars-ledger-row-links-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.theme-landing .five-pillars-ledger-link-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.95rem;
+  border: 1px solid var(--five-pillars-link-chip-border);
+  background: var(--five-pillars-link-chip-bg);
+  padding: 0.28rem 0.65rem;
+  font-size: 0.84rem;
+  line-height: 1.2;
+  color: var(--five-pillars-link-chip-text);
 }
 
 .theme-landing .five-pillars-status-chip {
@@ -662,15 +719,6 @@ html:has(.theme-landing) {
   color: var(--five-pillars-status-gated-text);
 }
 
-.theme-landing .five-pillars-card-meta,
-.theme-landing .five-pillars-connected-label {
-  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
 .theme-landing .five-pillars-metric-label {
   display: inline-flex;
   align-items: center;
@@ -699,118 +747,51 @@ html:has(.theme-landing) {
   background: var(--five-pillars-meter-fill);
 }
 
-.theme-landing .five-pillars-connected-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  border-radius: 0;
-  border: 1px solid var(--five-pillars-connected-border);
-  background: transparent;
-  padding: 0.64rem 0.86rem;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  transition:
-    border-color 220ms ease,
-    color 220ms ease,
-    background-color 220ms ease;
-}
-
-.theme-landing .five-pillars-connected-chip:hover,
-.theme-landing .five-pillars-connected-chip:focus-visible {
-  outline: none;
-  border-color: rgba(224, 180, 118, 0.26);
-  background: rgba(255, 247, 238, 0.03);
-  color: var(--text-primary);
-}
-
-.theme-landing .five-pillars-mobile-dock {
-  position: relative;
-  z-index: 10;
-}
-
-.theme-landing .five-pillars-mobile-chip {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  gap: 0.82rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 247, 238, 0.08);
-  background: rgba(10, 10, 10, 0.9);
-  padding: 0.84rem 0.9rem;
-  text-align: left;
-  transition:
-    border-color 220ms ease,
-    background-color 220ms ease,
-    box-shadow 220ms ease;
-}
-
-.theme-landing .five-pillars-mobile-chip:hover,
-.theme-landing .five-pillars-mobile-chip:focus-visible {
-  outline: none;
-  border-color: rgba(255, 247, 238, 0.16);
-  background: rgba(14, 14, 15, 0.96);
-}
-
-.theme-landing .five-pillars-mobile-chip.is-active {
-  border-color: rgba(255, 247, 238, 0.14);
-  background: rgba(243, 235, 224, 0.94);
-  box-shadow: 0 0 0 1px rgba(255, 247, 238, 0.06);
-}
-
-.theme-landing .five-pillars-mobile-chip-icon {
-  display: inline-flex;
-  width: 2.1rem;
-  height: 2.1rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 247, 238, 0.12);
-  background: rgba(255, 247, 238, 0.04);
-  color: var(--text-primary);
-}
-
-.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-icon {
-  background: rgba(5, 5, 5, 0.92);
-  border-color: rgba(5, 5, 5, 0.92);
-  color: rgba(245, 237, 228, 0.96);
-}
-
-.theme-landing .five-pillars-mobile-chip-copy {
-  display: flex;
-  min-width: 0;
-  flex: 1;
-  flex-direction: column;
-  gap: 0.18rem;
-}
-
-.theme-landing .five-pillars-mobile-chip-title {
-  font-size: 0.92rem;
-  line-height: 1.18;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--text-secondary);
-}
-
-.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-title {
-  color: #090909;
-}
-
-.theme-landing .five-pillars-mobile-chip-meta {
-  font-family: var(--font-ibm-plex-mono), var(--font-geist-mono), monospace;
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-}
-
-.theme-landing .five-pillars-mobile-chip.is-active .five-pillars-mobile-chip-meta {
-  color: rgba(9, 9, 9, 0.58);
-}
-
 @media (max-width: 767px) {
-  .theme-landing .five-pillars-orbit-shell {
-    max-width: 31rem;
+  .theme-landing .five-pillars-layout {
+    gap: 1.75rem;
+  }
+
+  .theme-landing .five-pillars-ledger {
+    margin-inline: -0.15rem;
+  }
+
+  .theme-landing .five-pillars-ledger-row {
+    padding-inline: 0.95rem;
+  }
+
+  .theme-landing .five-pillars-status-chip {
+    padding-inline: 0.72rem;
+  }
+
+  .theme-landing .five-pillars-metric-label {
+    font-size: 0.88rem;
+  }
+
+  .theme-landing .five-pillars-metric-value {
+    font-size: 0.88rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .theme-landing .five-pillars-layout {
+    grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+    align-items: start;
+    gap: 3rem;
+  }
+
+  .theme-landing .five-pillars-ledger {
+    min-height: 100%;
+  }
+
+  .theme-landing .five-pillars-ledger-columns {
+    display: grid;
+  }
+
+  .theme-landing .five-pillars-ledger-row-main {
+    grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 0.9fr);
+    align-items: center;
+    gap: 1.4rem;
   }
 }
 
