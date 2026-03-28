@@ -78,9 +78,9 @@ const ROUTES: readonly RouteDefinition[] = [
   },
   {
     id: "route-provenance",
-    d: "M 96.5 97.5 V 77 Q 96.5 68 90 68 H 87 Q 84 68 84 64 V 61",
-    cx: 96.5,
-    cy: 97.5,
+    d: "M 95.5 92 V 76.5 Q 95.5 68.5 90 68.5 H 87.5 Q 84.5 68.5 84.5 64.5 V 61",
+    cx: 95.5,
+    cy: 92,
     color: "var(--landing-masa-route-amber)",
     pulseDelay: "2.6s",
     travelDur: "5.8s",
@@ -121,7 +121,7 @@ const PORTS: readonly PortDefinition[] = [
   { px: 32, py: 36, lx: 37.5, ly: 36, anchor: "start", label: "Inference" },
   { px: 166.5, py: 88, lx: 172.5, ly: 88, anchor: "start", label: "Memory" },
   { px: 138, py: 68, lx: 142, ly: 91.5, anchor: "middle", label: "Falsifiability" },
-  { px: 96.5, py: 97.5, lx: 102, ly: 95.3, anchor: "middle", label: "Provenance" },
+  { px: 95.5, py: 92, lx: 99.8, ly: 89.4, anchor: "start", label: "Provenance" },
   { px: 87, py: 91.5, lx: 72, ly: 82.4, anchor: "end", label: "Critique" },
 ] as const;
 
