@@ -99,20 +99,20 @@ export function CausalPipeline() {
       className="theme-landing relative overflow-hidden bg-[var(--bg-primary)] py-32 md:py-40"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-full">
-        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-40 -translate-x-1/2" />
+        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-32 -translate-x-1/2" />
         <motion.div
-          className="pipeline-lamp-head absolute left-1/2 top-36 -translate-x-1/2"
+          className="pipeline-lamp-head absolute left-1/2 top-28 -translate-x-1/2"
           style={{ opacity: lampPower }}
         >
           <div className="pipeline-lamp-cap" />
           <div className="pipeline-lamp-bulb" />
         </motion.div>
         <motion.div
-          className="pipeline-lamp-beam absolute left-1/2 top-[9.25rem] -translate-x-1/2"
+          className="pipeline-lamp-beam absolute left-1/2 top-[6.9rem] -translate-x-1/2"
           style={{ opacity: beamOpacity }}
         />
         <motion.div
-          className="pipeline-lamp-haze absolute inset-x-[10%] top-[8rem] h-[38rem] rounded-full"
+          className="pipeline-lamp-haze absolute inset-x-[2%] top-[5.75rem] h-[44rem] rounded-full"
           style={{ opacity: hazeOpacity }}
         />
       </div>
