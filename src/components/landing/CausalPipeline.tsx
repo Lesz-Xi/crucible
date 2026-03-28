@@ -86,6 +86,21 @@ export function CausalPipeline() {
     [0.06, 0.24, 0.46, 0.82],
     shouldReduceMotion ? [0.9, 0.94, 0.98, 0.94] : [0.78, 0.88, 1, 0.94],
   );
+  const panelLightOpacity = useTransform(
+    lampPower,
+    [0, 0.2, 0.65, 1],
+    shouldReduceMotion ? [0.22, 0.28, 0.34, 0.38] : [0.04, 0.1, 0.3, 0.48],
+  );
+  const panelReflectionOpacity = useTransform(
+    lampPower,
+    [0, 0.22, 0.62, 1],
+    shouldReduceMotion ? [0.18, 0.24, 0.28, 0.3] : [0.02, 0.06, 0.22, 0.34],
+  );
+  const featuredOpacity = useTransform(
+    lampPower,
+    [0, 0.25, 0.6, 1],
+    shouldReduceMotion ? [0.08, 0.1, 0.12, 0.14] : [0.02, 0.04, 0.08, 0.14],
+  );
   const boardY = useTransform(
     scrollYProgress,
     [0.02, 0.42, 0.86],
@@ -99,20 +114,20 @@ export function CausalPipeline() {
       className="theme-landing relative overflow-hidden bg-[var(--bg-primary)] py-32 md:py-40"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-full">
-        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-32 -translate-x-1/2" />
+        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-28 -translate-x-1/2" />
         <motion.div
-          className="pipeline-lamp-head absolute left-1/2 top-28 -translate-x-1/2"
+          className="pipeline-lamp-head absolute left-1/2 top-[5.5rem] -translate-x-1/2"
           style={{ opacity: lampPower }}
         >
           <div className="pipeline-lamp-cap" />
           <div className="pipeline-lamp-bulb" />
         </motion.div>
         <motion.div
-          className="pipeline-lamp-beam absolute left-1/2 top-[6.9rem] -translate-x-1/2"
+          className="pipeline-lamp-beam absolute left-1/2 top-[4.75rem] -translate-x-1/2"
           style={{ opacity: beamOpacity }}
         />
         <motion.div
-          className="pipeline-lamp-haze absolute inset-x-[2%] top-[5.75rem] h-[44rem] rounded-full"
+          className="pipeline-lamp-haze absolute inset-x-[-4%] top-[3.5rem] h-[42rem] rounded-full"
           style={{ opacity: hazeOpacity }}
         />
       </div>
@@ -150,8 +165,14 @@ export function CausalPipeline() {
           </div>
 
           <motion.div
-            className="pipeline-runtime-panel mx-auto w-full max-w-[52rem] rounded-[2rem] border p-6 md:p-8 lg:mt-8"
-            style={{ opacity: boardOpacity, y: boardY }}
+            className="pipeline-runtime-panel mx-auto w-full max-w-[52rem] rounded-[2rem] border p-6 md:p-8 lg:mt-3"
+            style={{
+              opacity: boardOpacity,
+              y: boardY,
+              ["--pipeline-panel-light-opacity" as string]: panelLightOpacity,
+              ["--pipeline-panel-reflection-opacity" as string]: panelReflectionOpacity,
+              ["--pipeline-feature-opacity" as string]: featuredOpacity,
+            }}
           >
             <div className="pipeline-runtime-head">
               <div>
