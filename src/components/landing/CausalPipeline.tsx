@@ -114,26 +114,26 @@ export function CausalPipeline() {
       className="theme-landing relative overflow-hidden bg-[var(--bg-primary)] py-32 md:py-40"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-full">
-        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-28 -translate-x-1/2" />
+        <div className="pipeline-lamp-wire absolute left-1/2 top-0 h-24 -translate-x-1/2" />
         <motion.div
-          className="pipeline-lamp-head absolute left-1/2 top-[5.5rem] -translate-x-1/2"
+          className="pipeline-lamp-head absolute left-1/2 top-[4.65rem] -translate-x-1/2"
           style={{ opacity: lampPower }}
         >
           <div className="pipeline-lamp-cap" />
           <div className="pipeline-lamp-bulb" />
         </motion.div>
         <motion.div
-          className="pipeline-lamp-beam absolute left-1/2 top-[4.75rem] -translate-x-1/2"
+          className="pipeline-lamp-beam absolute left-1/2 top-[3.9rem] -translate-x-1/2"
           style={{ opacity: beamOpacity }}
         />
         <motion.div
-          className="pipeline-lamp-haze absolute inset-x-[-4%] top-[3.5rem] h-[42rem] rounded-full"
+          className="pipeline-lamp-haze absolute inset-x-[-1%] top-[2.75rem] h-[34rem] rounded-full"
           style={{ opacity: hazeOpacity }}
         />
       </div>
 
       <div className="relative mx-auto max-w-[96rem] px-8 md:px-12 lg:px-16">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-start lg:gap-8 xl:gap-10">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,0.98fr)_minmax(0,0.84fr)] lg:items-start lg:gap-6 xl:gap-8">
           <div className="pipeline-editorial max-w-[34rem] pt-12 md:pt-16 lg:pt-24">
             <div className="mb-7 flex items-center gap-3">
               <span className="block h-px w-8 flex-shrink-0 bg-[var(--accent-rust)]" />
@@ -165,7 +165,7 @@ export function CausalPipeline() {
           </div>
 
           <motion.div
-            className="pipeline-runtime-panel mx-auto w-full max-w-[41rem] rounded-[1.75rem] border p-4 md:p-5 lg:mt-12"
+            className="pipeline-runtime-panel mx-auto w-full max-w-[38rem] rounded-[1.75rem] border p-4 md:p-5 lg:mt-5"
             style={{
               opacity: boardOpacity,
               y: boardY,

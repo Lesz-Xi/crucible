@@ -986,38 +986,38 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .pipeline-lamp-cap {
-  width: 1.9rem;
-  height: 0.74rem;
-  border-radius: 999px 999px 0.55rem 0.55rem;
+  width: 1.58rem;
+  height: 0.58rem;
+  border-radius: 999px 999px 0.45rem 0.45rem;
   border: 1px solid var(--pipeline-lamp-shade-border);
   border-bottom: none;
   background: linear-gradient(180deg, rgba(255, 247, 238, 0.05), var(--pipeline-lamp-shade));
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.16);
 }
 
 .theme-landing .pipeline-lamp-bulb {
-  margin-top: -0.08rem;
-  width: 0.48rem;
-  height: 0.48rem;
+  margin-top: -0.04rem;
+  width: 0.42rem;
+  height: 0.42rem;
   border-radius: 999px;
   background: var(--pipeline-lamp-bulb);
-  box-shadow: 0 0 10px rgba(240, 219, 185, 0.2), 0 0 26px rgba(224, 180, 118, 0.1);
+  box-shadow: 0 0 9px rgba(240, 219, 185, 0.18), 0 0 18px rgba(224, 180, 118, 0.08);
 }
 
 .theme-landing .pipeline-lamp-beam {
-  width: min(60rem, 76vw);
-  height: 16rem;
+  width: min(42rem, 58vw);
+  height: 11rem;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(244, 217, 178, 0.12) 0%, rgba(226, 184, 118, 0.06) 18%, rgba(214, 170, 108, 0.018) 34%, transparent 56%),
-    radial-gradient(ellipse at 50% 12%, rgba(214, 170, 108, 0.03) 0%, rgba(214, 170, 108, 0.012) 26%, transparent 46%);
-  filter: blur(26px);
+    radial-gradient(ellipse at 50% 2%, rgba(244, 217, 178, 0.11) 0%, rgba(226, 184, 118, 0.045) 22%, rgba(214, 170, 108, 0.012) 40%, transparent 68%),
+    radial-gradient(ellipse at 50% 24%, rgba(214, 170, 108, 0.018) 0%, rgba(214, 170, 108, 0.006) 28%, transparent 54%);
+  filter: blur(18px);
 }
 
 .theme-landing .pipeline-lamp-haze {
   background:
-    radial-gradient(ellipse at 50% 0%, var(--pipeline-lamp-haze) 0%, rgba(214, 170, 108, 0.05) 18%, rgba(214, 170, 108, 0.015) 34%, transparent 58%),
-    radial-gradient(ellipse at 50% 22%, rgba(214, 170, 108, 0.02), transparent 46%);
-  filter: blur(44px);
+    radial-gradient(circle at 50% 6%, rgba(214, 170, 108, 0.11) 0%, rgba(214, 170, 108, 0.05) 14%, rgba(214, 170, 108, 0.012) 34%, transparent 58%),
+    radial-gradient(ellipse at 50% 26%, rgba(214, 170, 108, 0.016), transparent 52%);
+  filter: blur(34px);
 }
 
 .theme-landing .pipeline-section-glow {
@@ -1054,7 +1054,7 @@ html:has(.theme-landing) {
   background:
     linear-gradient(180deg, rgba(255, 247, 238, 0.018), rgba(255, 247, 238, 0.004) 14%, transparent 38%),
     var(--pipeline-panel-shell-bg);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px) saturate(108%);
 }
 
@@ -1089,29 +1089,29 @@ html:has(.theme-landing) {
 
 .theme-landing .pipeline-lane {
   display: grid;
-  gap: 0.68rem;
+  gap: 0.56rem;
   border-top: 1px solid var(--pipeline-panel-row-rule);
-  padding: 0.72rem 0;
+  padding: 0.6rem 0;
 }
 
 @media (min-width: 1024px) {
 .theme-landing .pipeline-lane {
     grid-template-columns: minmax(0, 1.7fr) minmax(12rem, 0.7fr);
     align-items: center;
-    gap: 1.2rem;
+    gap: 1rem;
   }
 }
 
 .theme-landing .pipeline-lane-main {
   display: grid;
-  gap: 0.58rem;
+  gap: 0.5rem;
 }
 
 @media (min-width: 768px) {
 .theme-landing .pipeline-lane-main {
     grid-template-columns: minmax(10rem, 0.7fr) minmax(0, 1.4fr);
     align-items: start;
-    gap: 0.9rem;
+    gap: 0.75rem;
   }
 }
 
@@ -1122,7 +1122,7 @@ html:has(.theme-landing) {
 }
 
 .theme-landing .pipeline-lane-summary {
-  max-width: 24rem;
+  max-width: 21rem;
 }
 
 .theme-landing .pipeline-lane-signal {
