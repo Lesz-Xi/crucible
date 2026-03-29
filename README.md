@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/wu-wei-mark-transparent.png" alt="Wu-Weism mark" width="108" />
+  <img src="./public/wu-logo.png" alt="Wu-Weism logo" width="132" />
 </p>
 
 # 🏺 Wu-Weism
