@@ -172,19 +172,3 @@ This repository is not trying to be a generic chat wrapper. The code and docs sh
 - SCM promotion has dedicated validation and governance surfaces
 
 If you are onboarding into the codebase, start by reading the routes, scripts, and docs together. The platform makes more sense as a governed system than as a standard frontend app.
-
-## Useful Starting Points
-
-- [docs/route-registry.md](./docs/route-registry.md)
-- [implementation_plan.md](./implementation_plan.md)
-- [public/masa-white-paper.html](./public/masa-white-paper.html)
-
-## Naming Guidance
-
-Use this naming split consistently:
-
-- say `Wu-Weism` in README copy, product copy, and public-facing descriptions
-- use `MASA` when referring to the methodology, reasoning framework, or scientific posture
-- keep `crucible` for repo-level and internal engineering references
-
-That keeps brand, system, and implementation names cleanly separated instead of blending them into one overloaded label.
