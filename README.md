@@ -1,12 +1,13 @@
 <table>
   <tr>
-    <td width="164" align="center" valign="middle">
+    <td width="180" align="center" valign="middle">
       <img src="./public/wu-logo.png" alt="Wu-Weism logo" width="132" />
     </td>
     <td valign="middle">
+      <p><sub>MASA WORKBENCH</sub></p>
       <h1>Wu-Weism</h1>
       <p><strong>Wu-Weism</strong> is the public-facing product identity for the MASA workbench. <code>crucible</code> is the internal codename for the repository and engineering platform behind it.</p>
-      <p>This codebase combines a Next.js research interface, Supabase-backed memory and governance data, and a growing set of causal reasoning workflows intended to support auditable scientific analysis instead of generic AI output.</p>
+      <p>Causal science, auditable reasoning, and closed-loop research workflows.</p>
     </td>
   </tr>
 </table>
@@ -15,7 +16,7 @@
   <img src="./public/readme/crucible-readme.png" alt="Wu-Weism landing page" width="100%" />
 </p>
 
-## ✦ What This Repository Is
+## What This Repository Is
 
 This repository is the implementation surface for MASA-style workflows:
 
@@ -27,7 +28,7 @@ This repository is the implementation surface for MASA-style workflows:
 
 The repo name does not need to match the app domain. Public-facing surfaces should use `Wu-Weism`; internal engineering references can continue using `crucible`.
 
-## ◉ Current Product Surface
+## Current Product Surface
 
 The application currently exposes a multi-surface workbench rather than a single narrow tool:
 
@@ -43,15 +44,15 @@ The application currently exposes a multi-surface workbench rather than a single
 
 API and orchestration layers live under `src/app/api/`, including SCM, claims, chat, synthesis, bridge, legal reasoning, lab, education, benchmark, and MCP-related endpoints.
 
-## ⬢ Architecture at a Glance
+## Architecture at a Glance
 
-### ◇ Product Identity
+### Product Identity
 
 - `Wu-Weism`: app, site, and user-facing identity
 - `MASA`: the research and reasoning methodology behind the system
 - `crucible`: internal codename for the repo and platform implementation
 
-### ▣ Technical Stack
+### Technical Stack
 
 - Next.js App Router
 - TypeScript across frontend, services, and automation scripts
@@ -59,7 +60,7 @@ API and orchestration layers live under `src/app/api/`, including SCM, claims, c
 - Vitest for test coverage
 - GitHub Actions and local governance scripts for integrity checks
 
-### ⌁ System Shape
+### System Shape
 
 The system is organized around three practical layers:
 
@@ -67,15 +68,15 @@ The system is organized around three practical layers:
 2. Platform and service logic in `src/lib/`
 3. Governance, migration, validation, and promotion flows in `scripts/` and `supabase/migrations/`
 
-## ◌ Capabilities and Direction
+## Capabilities and Direction
 
-### ✦ What Exists Today
+### What Exists Today
 
 - workbench routes for chat, hybrid synthesis, epistemic, legal, lab, education, claims, and PDF synthesis
 - Supabase migrations for vector memory, claim ledgers, persistent memory, hypothesis lifecycle governance, counterfactual traces, scientific integrity signoffs, SCM promotion governance, SCM reports, and related platform state
 - automation scripts for claim drift scanning, law falsification, uncertainty calibration, causal method selection, persistent memory integrity, migration audits, SCM promotion, and schema/consistency validation
 
-### ◇ What Is Still Evolving
+### What Is Still Evolving
 
 - broader cross-domain SCM platform coverage
 - deeper separation of observational, interventional, and counterfactual runtimes
@@ -83,22 +84,22 @@ The system is organized around three practical layers:
 
 The important distinction is practical: the repo already contains meaningful governance and causal infrastructure, while some broader platform ambitions are still being shaped and expanded.
 
-## ⬣ Getting Started
+## Getting Started
 
-### ◇ Prerequisites
+### Prerequisites
 
 - Node.js 20+
 - npm
 - a Supabase project for local or shared development
 - provider credentials for the AI paths you intend to exercise
 
-### ▣ Install
+### Install
 
 ```bash
 npm install
 ```
 
-### ⌁ Run Locally
+### Run Locally
 
 ```bash
 npm run dev
@@ -106,9 +107,9 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## ⚙ Development Workflows
+## Development Workflows
 
-### ◇ Core Commands
+### Core Commands
 
 ```bash
 npm run dev
@@ -117,7 +118,7 @@ npm run lint
 npm run test
 ```
 
-### ▣ Governance and Validation Commands
+### Governance and Validation Commands
 
 ```bash
 npm run validate:schemas
@@ -132,14 +133,14 @@ npm run governance:persistent-memory-integrity
 npm run promote:scm -- --help
 ```
 
-### ⌁ SCM and Migration Support
+### SCM and Migration Support
 
 ```bash
 npm run seed:framework-scms
 npm run audit:migrations
 ```
 
-## ▦ Repository Map
+## Repository Map
 
 | Path | Purpose |
 | --- | --- |
@@ -152,7 +153,7 @@ npm run audit:migrations
 | `public/` | brand assets, landing imagery, and white-paper/static files |
 | `openclaw-skills/` | skill and agent support assets used by the wider system |
 
-## 🛡 Governance Posture
+## Governance Posture
 
 This repository is not trying to be a generic chat wrapper. The code and docs show a stronger governance posture than that:
 
@@ -164,13 +165,13 @@ This repository is not trying to be a generic chat wrapper. The code and docs sh
 
 If you are onboarding into the codebase, start by reading the routes, scripts, and docs together. The platform makes more sense as a governed system than as a standard frontend app.
 
-## ↗ Useful Starting Points
+## Useful Starting Points
 
 - [docs/route-registry.md](./docs/route-registry.md)
 - [implementation_plan.md](./implementation_plan.md)
 - [public/masa-white-paper.html](./public/masa-white-paper.html)
 
-## ◆ Naming Guidance
+## Naming Guidance
 
 Use this naming split consistently:
 
