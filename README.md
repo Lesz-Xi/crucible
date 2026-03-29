@@ -6,8 +6,7 @@
     <td valign="middle">
       <p><sub>MASA WORKBENCH</sub></p>
       <h1>Wu-Weism</h1>
-      <p><strong>Wu-Weism</strong> is the public-facing product identity for the MASA workbench. <code>crucible</code> is the internal codename for the repository and engineering platform behind it.</p>
-      <p>Causal science, auditable reasoning, and closed-loop research workflows.</p>
+      <p><strong>Wu-Weism</strong> is the public-facing product identity for the MASA workbench. <code>crucible</code> is the internal codename for the repository and engineering platform behind it. Causal science, auditable reasoning, and closed-loop research workflows. </p>
     </td>
   </tr>
 </table>
