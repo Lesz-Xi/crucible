@@ -14,7 +14,6 @@
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/LICENSE-0D1323?style=for-the-badge&labelColor=0D1323&color=0D1323" />
   <img alt="MIT" src="https://img.shields.io/badge/MIT-F2B24D?style=for-the-badge&labelColor=F2B24D&color=F2B24D&logoColor=111111" />
-  <img alt="Tests" src="https://img.shields.io/badge/TESTS-0D1323?style=for-the-badge&labelColor=0D1323&color=0D1323" />
   <img alt="Active" src="https://img.shields.io/badge/ACTIVE-63D2E6?style=for-the-badge&labelColor=63D2E6&color=63D2E6&logoColor=111111" />
   <img alt="Connectors" src="https://img.shields.io/badge/CONNECTORS-0D1323?style=for-the-badge&labelColor=0D1323&color=0D1323" />
   <img alt="Claude Codex Gemini Google Antigravity" src="https://img.shields.io/badge/CLAUDE_%7C_CODEX_%7C_GEMINI_%7C_GOOGLE_ANTIGRAVITY-7C4DFF?style=for-the-badge&labelColor=7C4DFF&color=7C4DFF" />
