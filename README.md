@@ -13,6 +13,22 @@
 </table>
 
 <p align="center">
+  <sub>PROOF-FIRST ORCHESTRATION FOR SCIENTIFIC AGENTS</sub>
+</p>
+
+<table align="center">
+  <tr>
+    <td><strong>LICENSE</strong></td>
+    <td><strong>MIT</strong></td>
+    <td><strong>CONNECTORS</strong></td>
+    <td><strong>CLAUDE</strong></td>
+    <td><strong>CODEX</strong></td>
+    <td><strong>GEMINI</strong></td>
+    <td><strong>GOOGLE ANTIGRAVITY</strong></td>
+  </tr>
+</table>
+
+<p align="center">
   <img src="./public/readme/crucible-readme.png" alt="Wu-Weism landing page" width="100%" />
 </p>
 
