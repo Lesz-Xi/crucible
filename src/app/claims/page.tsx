@@ -16,7 +16,7 @@ type ClaimListItem = {
   created_at: string;
 };
 
-const SOURCE_FEATURES: Array<ClaimSourceFeature | 'all'> = ['all', 'chat', 'hybrid', 'legal'];
+const SOURCE_FEATURES: Array<ClaimSourceFeature | 'all'> = ['all', 'chat', 'hybrid', 'legal', 'companion'];
 
 const UNCERTAINTY_STYLE: Record<string, string> = {
   low: 'text-emerald-600',
@@ -76,8 +76,18 @@ export default function ClaimsIndexPage() {
   return (
     <main className="mx-auto max-w-5xl space-y-4 p-6">
       <header className="rounded-lg border border-[var(--lab-border)] bg-[var(--lab-bg)] p-4">
-        <p className="text-xs text-[var(--lab-text-secondary)]">Claim Ledger</p>
-        <h1 className="text-sm font-semibold text-[var(--lab-text-primary)]">Claims</h1>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs text-[var(--lab-text-secondary)]">Claim Ledger</p>
+            <h1 className="text-sm font-semibold text-[var(--lab-text-primary)]">Claims</h1>
+          </div>
+          <Link
+            href="/companion"
+            className="shrink-0 rounded bg-[var(--lab-accent-earth)] px-3 py-2 text-xs text-[var(--lab-bg)]"
+          >
+            Examine a claim
+          </Link>
+        </div>
         <div className="mt-3 flex flex-wrap gap-2">
           {SOURCE_FEATURES.map((feature) => (
             <button

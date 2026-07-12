@@ -1,4 +1,4 @@
-export type ClaimSourceFeature = 'chat' | 'hybrid' | 'legal';
+export type ClaimSourceFeature = 'chat' | 'hybrid' | 'legal' | 'companion';
 
 export type ClaimKind = 'assertion' | 'hypothesis' | 'decision' | 'verdict';
 
