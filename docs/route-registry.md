@@ -1,6 +1,6 @@
 # Route Registry
 
-**Last Updated:** 2026-02-07  
+**Last Updated:** 2026-07-12  
 **Registry Version:** 1.0.0
 
 ## Purpose
@@ -17,6 +17,7 @@ This registry tracks all application routes in `synthesis-engine` to prevent arc
 | `/hybrid` | `active` | @gemini | `9a6e082` | 2026-02-07 | Hybrid Synthesis UI with causal graphs, metacognition dashboard |
 | `/epistemic` | `active` | @gemini | `564ffa1` | 2026-02-07 | Epistemic Audit dashboard for automated scientist validation |
 | `/pdf-synthesis` | `active` | @gemini | `a04d4e6` | 2026-02-07 | PDF analysis and causal synthesis interface |
+| `/claims/[claimId]` | `active` | @gemini | `d3e4490` | 2026-07-12 | Claim reconstruction detail view (evidence links, gate decisions, counterfactual tests, receipts) — previously undocumented, backfilled here |
 
 ---
 
@@ -32,7 +33,7 @@ This registry tracks all application routes in `synthesis-engine` to prevent arc
 
 | Route | Status | Owner | First Commit | Expected Completion | Purpose |
 |-------|--------|-------|--------------|---------------------|---------|
-| _None_ | - | - | - | - | - |
+| `/claims` | `experimental` | @claude | `a568d00` | 2026-07-12 (complete) | Claim ledger index — lists claims via `/api/claims` with source-feature filtering; entry point into the CSL reasoning-companion claim/evidence surface (see `docs/CSL-Reasoning-Companion-Architecture.md`) |
 
 ---
 
