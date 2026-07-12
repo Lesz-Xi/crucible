@@ -34,6 +34,8 @@ This registry tracks all application routes in `synthesis-engine` to prevent arc
 | Route | Status | Owner | First Commit | Expected Completion | Purpose |
 |-------|--------|-------|--------------|---------------------|---------|
 | `/claims` | `experimental` | @claude | `a568d00` | 2026-07-12 (complete) | Claim ledger index — lists claims via `/api/claims` with source-feature filtering; entry point into the CSL reasoning-companion claim/evidence surface (see `docs/CSL-Reasoning-Companion-Architecture.md`) |
+| `/companion` | `experimental` | @claude | `1f59c8e` | 2026-07-12 (complete) | CSL reasoning companion capture surface — conversational, one-question-at-a-time case flow (choose object, name the question, separate layers, ground the reading, disconfirmation, private disposition) writing through `/api/companion` to the claim ledger with epistemic invariants enforced |
+| `/companion/[claimId]` | `experimental` | @claude | `1f59c8e` | 2026-07-12 (complete) | Compact reasoning card (Spec §7) — read projection of a companion case, with expand-to-full-ledger link into `/claims/[claimId]` |
 
 ---
 
