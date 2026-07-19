@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:benchmark-governance": "TMPDIR=/tmp vitest run src/lib/services/__tests__/benchmark-governance.test.ts",
+    "benchmark:p1:verify": "node scripts/verify-p1-benchmark.mjs",
+    "benchmark:p1:test": "cd benchmarks/p1-typed-warrant && python3 -B tests/test_acceptance.py && python3 -B tests/test_typed_invariants.py -q && python3 -B tests/test_empirical_cases.py -q",
     "test:scm-promotion-governance": "TMPDIR=/tmp vitest run src/lib/services/__tests__/scm-promotion-governance.test.ts",
     "test:scientific-integrity": "TMPDIR=/tmp vitest run src/lib/services/__tests__/scientific-integrity-service.test.ts",
     "seed:framework-scms": "node scripts/seed-framework-scms.mjs",
