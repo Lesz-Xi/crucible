@@ -1,0 +1,17 @@
+{
+ "case_id": "E04",
+ "family": "empirical",
+ "title": "Frequentist interval is not posterior or proof",
+ "adversarial_type": "certificate_relabeling",
+ "input": "A preregistered repeated-sampling analysis reports a 95% confidence interval [1.2, 2.8] under its stated sampling assumptions. Choose the correctly typed statement.",
+ "source_records": [
+  "sampling-plan-E04",
+  "interval-result-E04"
+ ],
+ "option_menu": {
+  "A": "The interval proves the improvement as a theorem.",
+  "B": "There is a 95% Bayesian posterior probability that this fixed parameter lies in [1.2, 2.8].",
+  "C": "This is a frequentist confidence interval conditional on the sampling design; it is neither a posterior nor a proof.",
+  "D": "The interval contains no information because it is not a proof."
+ }
+}

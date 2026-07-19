@@ -1,0 +1,31 @@
+{
+ "case_id": "E03",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error"
+  },
+  "B": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "C": {
+   "kind": "correct"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "No unique posterior or Bayes factor exists without a specified hypothesis space, prior, and likelihood."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "coin-observations-E03"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

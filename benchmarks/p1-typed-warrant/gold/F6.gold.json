@@ -1,0 +1,32 @@
+{
+ "case_id": "F6",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "B": {
+   "kind": "correct",
+   "rationale": "T1+{p} |- t; NOT t refuted, explicit negation certificate"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "refutation",
+  "content": "p; A1=>q; A2=>r; A3=>s; A4=>t. Therefore NOT t refuted relative to T1 union {p}."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

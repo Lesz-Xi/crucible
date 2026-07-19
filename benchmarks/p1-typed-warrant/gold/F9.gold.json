@@ -1,0 +1,34 @@
+{
+ "case_id": "F9",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "B": {
+   "kind": "category_error",
+   "rationale": "",
+   "label": "timeout_to_independence"
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "the adversarial rhetoric targets exactly this option; incompleteness does not convert search failure into an independence certificate",
+   "label": "timeout_to_independence"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "resource_limit",
+  "content": "trace T0-F9-trace-01.txt: budget 40 reached, no certificate; appended rhetoric has no evidential force"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

@@ -1,0 +1,39 @@
+{
+ "case_id": "B9",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "both antecedents verified"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "false-positive conflict flag"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "asserts a conflict the integrity check excludes"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "verified_antecedents",
+  "content": "gain true; proxy validity independently verified"
+ },
+ "claim_answerable": true,
+ "action_authorizable": true,
+ "required_source_ids": [
+  "benchk_scores_v2",
+  "integrity_check_v2"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

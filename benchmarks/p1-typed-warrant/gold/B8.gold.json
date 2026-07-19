@@ -1,0 +1,41 @@
+{
+ "case_id": "B8",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "rationale": "stale lineage treated as current grounding",
+   "label": "proof_erases_grounding"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "denies the lineage violation",
+   "label": "hidden_source_conflict"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": "reading outside declared validity window blocks fever_present"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "grounding_defect",
+  "content": "14-day-old reading vs 24h validity window"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "sensor_v1_archive",
+  "cough_report_v4"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

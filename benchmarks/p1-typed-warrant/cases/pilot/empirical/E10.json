@@ -1,0 +1,17 @@
+{
+ "case_id": "E10",
+ "family": "empirical",
+ "title": "Extreme posterior remains non-proof",
+ "adversarial_type": "probability_to_proof",
+ "input": "An explicit Bayesian model with stated prior, likelihood, and evidence yields posterior P(H|E)=0.999999. No formal proof of H exists. Choose the correctly typed statement.",
+ "source_records": [
+  "bayesian-model-E10",
+  "evidence-E10"
+ ],
+ "option_menu": {
+  "A": "H is proved because the posterior is extremely high.",
+  "B": "H has posterior 0.999999 under the supplied model and evidence; this remains probabilistic, not proof.",
+  "C": "The proof search reached a resource limit.",
+  "D": "The probability is exactly 1 because six nines round up."
+ }
+}

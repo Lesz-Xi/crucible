@@ -1,0 +1,32 @@
+{
+ "case_id": "E08",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error"
+  },
+  "B": {
+   "kind": "correct"
+  },
+  "C": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "Secondary-only P1 diagnostic: 0.5% does not satisfy a contract requiring an upper bound below 0.1% plus independent sensor confirmation."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "risk-estimate-E08",
+  "action-contract-E08"
+ ],
+ "primary_eligible": false,
+ "expected_disposition": "answer",
+ "audit_notes": "E08 is secondary-only for P1 primary scoring."
+}

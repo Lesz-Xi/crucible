@@ -1,0 +1,33 @@
+{
+ "case_id": "F7",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "C": {
+   "kind": "correct",
+   "rationale": "second two-model witness: M1 makes q false, M2 makes q true, both satisfy T0"
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "independence_two_model_witness",
+  "content": "M1(p=F,q=F,r=F) and M2(p=F,q=T,r=T) both satisfy T0; q false in M1, true in M2.",
+  "metatheory": "classical propositional semantics"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

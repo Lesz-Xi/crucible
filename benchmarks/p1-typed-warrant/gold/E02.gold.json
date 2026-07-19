@@ -1,0 +1,32 @@
+{
+ "case_id": "E02",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct"
+  },
+  "B": {
+   "kind": "ordinary_error"
+  },
+  "C": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "BF=(0.75^8*0.25^2)/(0.5^10)=6.4072265625; equal-prior posterior=BF/(1+BF)=0.8649967040"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "coin-model-v1",
+  "coin-observations-E02"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

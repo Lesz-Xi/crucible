@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://twin-sparrow.local/p1/schemas/arm-a.schema.json",
+  "title": "P1 Arm A Scalar Baseline Response",
+  "description": "Common decision envelope plus free-text rationale. No typed warrant vocabulary or invariant enforcement.",
+  "allOf": [
+    {
+      "$ref": "common-envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "rationale"
+      ],
+      "properties": {
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

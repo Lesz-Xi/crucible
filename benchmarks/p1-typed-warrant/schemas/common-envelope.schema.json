@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "p1-benchmark/schemas/common-envelope.schema.json",
+  "title": "P1 Common Decision Envelope",
+  "description": "Required output of every arm (A, A+, B) for every case. Primary scoring depends ONLY on this envelope plus the isolated answer key (O-2 sections 3.3, 3.7, 4.1). Arm-specific additional output lives beside, never inside, this object. NOTE: this subschema is open (no additionalProperties:false) so arm schemas can compose it via allOf; each complete arm schema closes the composed object with unevaluatedProperties:false.",
+  "type": "object",
+  "required": [
+    "case_id",
+    "selected_option",
+    "scalar_confidence",
+    "answer_or_abstain",
+    "cited_source_ids"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "selected_option": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Must be one of the case's option-menu keys. Enforced at runtime against the case file, not statically."
+    },
+    "scalar_confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "answer_or_abstain": {
+      "type": "string",
+      "enum": [
+        "answer",
+        "abstain",
+        "escalate"
+      ]
+    },
+    "cited_source_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Required whenever the case supplies named sources; may be empty for cases without named sources (e.g., pure formal cases)."
+    },
+    "proposed_action": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Secondary diagnostic only (O-2 section 3.7): compared against gold action_authorizable; structurally incapable of altering primary category-error scoring or claim coverage."
+    }
+  }
+}

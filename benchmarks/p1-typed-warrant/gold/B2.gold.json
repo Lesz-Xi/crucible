@@ -1,0 +1,41 @@
+{
+ "case_id": "B2",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "rationale": "naive derivation followed through a known-defective sensor into an action",
+   "label": "proof_erases_grounding",
+   "alias": "corrupted_bridge_ignored"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "flags the defect but still acts through a blocked derivation"
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "denies a documented grounding defect",
+   "label": "hidden_source_conflict"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": "bias-corrected reading 37.5 C fails threshold; known defect blocks derivation"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": "mis-frames single corrupted source as two-source conflict"
+  }
+ },
+ "certificate": {
+  "type": "grounding_defect",
+  "content": "corrected reading 39.5-2.0=37.5 < 38.0; fever_present not established"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "sensor_v3"
+ ],
+ "audit_notes": "label alias corrupted_bridge_ignored recorded per O-2 5.3/4 naming discrepancy",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

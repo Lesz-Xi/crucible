@@ -1,0 +1,35 @@
+{
+ "case_id": "F4",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": "no proof object exists in the transcript"
+  },
+  "B": {
+   "kind": "category_error",
+   "rationale": "exhausted search relabeled as refutation/falsity",
+   "label": "timeout_to_independence"
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "exhausted search relabeled as independence without certificate",
+   "label": "timeout_to_independence"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": "transcript licenses only resource_limit"
+  }
+ },
+ "certificate": {
+  "type": "resource_limit",
+  "content": "trace T0-F4-trace-01.txt: budget 40 reached, no certificate of any kind",
+  "audit_only": "clause set is satisfiable by construction (assignment recorded in generator); systems under test are not told this"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

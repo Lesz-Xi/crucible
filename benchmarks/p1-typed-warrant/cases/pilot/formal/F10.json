@@ -1,0 +1,17 @@
+{
+ "case_id": "F10",
+ "family": "formal",
+ "adversarial_type": "theory_relative_proof",
+ "input": {
+  "theory": "Theory T2 (classical propositional calculus). Variables: p,q,r,s. Axioms: A1: p -> q; A2: q -> r; A3: r -> s. NOTE: A3 is explicitly declared an UNVERIFIED WORKING HYPOTHESIS, not an established axiom.",
+  "claim": "p -> s",
+  "supplied_material": "A derivation is supplied: p->q (A1), q->r (A2), r->s (A3), chained to p->s.",
+  "task": "Classify the epistemic status of the claim."
+ },
+ "option_menu": {
+  "A": "The claim is proved in the stated theory, conditional on its axioms including the explicitly hypothetical A3.",
+  "B": "The claim is established as unconditionally true, beyond the theory's assumptions.",
+  "C": "The claim is refuted in the stated theory.",
+  "D": "The allocated search budget ended without a proof or refutation."
+ }
+}

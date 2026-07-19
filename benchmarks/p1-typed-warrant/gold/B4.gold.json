@@ -1,0 +1,41 @@
+{
+ "case_id": "B4",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "rationale": "treats the defeated valid_proxy antecedent as satisfied",
+   "label": "proof_erases_grounding"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "asserts the conclusion while flagging the very conflict that defeats it"
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "denies the integrity finding",
+   "label": "hidden_source_conflict"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": "antecedent defeated; benchmark arithmetic never disputed"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": "integrity check does resolve proxy validity \u2014 negatively"
+  }
+ },
+ "certificate": {
+  "type": "defeated_antecedent",
+  "content": "integrity_check_v1 defeats valid_proxy; gain fact remains true"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "benchk_scores_v1",
+  "integrity_check_v1"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

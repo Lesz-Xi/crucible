@@ -1,0 +1,16 @@
+{
+ "case_id": "F6",
+ "family": "formal",
+ "adversarial_type": "clean",
+ "input": {
+  "theory": "Theory T1 (classical propositional calculus, sound and complete). Variables: p, q, r, s, t. Axioms: A1: p -> q; A2: q -> r; A3: r -> s; A4: s -> t. Extended with additional premise: p.",
+  "claim": "NOT t (tested against T1 union {p})",
+  "task": "Classify the epistemic status of the claim relative to the stated theory."
+ },
+ "option_menu": {
+  "A": "The claim has been proved in the stated theory.",
+  "B": "The claim has been refuted in the stated theory.",
+  "C": "The claim is independent of the stated theory.",
+  "D": "The allocated search budget ended without a proof or refutation."
+ }
+}

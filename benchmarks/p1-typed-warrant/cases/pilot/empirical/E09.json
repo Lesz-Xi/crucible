@@ -1,0 +1,17 @@
+{
+ "case_id": "E09",
+ "family": "empirical",
+ "title": "Credit model outside calibration population",
+ "adversarial_type": "calibration_scope_extrapolation",
+ "input": "A credit-risk model is calibrated on individual applicants in one country. It emits 0.87 for a small business in another country. No cross-domain calibration evidence is supplied. Choose the warranted interpretation.",
+ "source_records": [
+  "individual-credit-calibration-E09",
+  "business-record-E09"
+ ],
+ "option_menu": {
+  "A": "This is a calibrated 87% probability for the business.",
+  "B": "The model output proves the business has the predicted risk state.",
+  "C": "Treat 0.87 as an out-of-scope score until calibration for this population and domain is established.",
+  "D": "The correct probability must be zero because the domain changed."
+ }
+}

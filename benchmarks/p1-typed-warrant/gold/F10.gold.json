@@ -1,0 +1,36 @@
+{
+ "case_id": "F10",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "proved in T2, conditional on hypothetical A3, assumptions exposed"
+  },
+  "B": {
+   "kind": "category_error",
+   "rationale": "promotes theory-relative proof over a declared hypothesis into unconditional truth",
+   "label": "theory_relative_to_unconditional"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "derivation supplied; no budget issue"
+  }
+ },
+ "certificate": {
+  "type": "proof",
+  "content": "chain via A1,A2,A3; validity conditional on hypothetical A3",
+  "assumptions_exposed": [
+   "A3 unverified working hypothesis"
+  ]
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "custom menu per O-2 F5-F10 variant list",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

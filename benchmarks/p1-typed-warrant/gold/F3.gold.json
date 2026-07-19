@@ -1,0 +1,33 @@
+{
+ "case_id": "F3",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": "M2 satisfies T0 and falsifies the claim; not provable"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "M1 satisfies T0 and the claim; not refutable"
+  },
+  "C": {
+   "kind": "correct",
+   "rationale": "two-model witness; soundness+completeness licenses syntactic independence"
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "certificate material supplied in input; no budget issue"
+  }
+ },
+ "certificate": {
+  "type": "independence_two_model_witness",
+  "content": "M1(p=F,q=F,r=F) satisfies A1,A2 and makes claim true; M2(p=F,q=T,r=T) satisfies A1,A2 and makes claim false. Neither claim nor negation entailed. Calculus sound+complete => independent.",
+  "metatheory": "classical propositional semantics"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

@@ -1,0 +1,32 @@
+{
+ "case_id": "F1",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "two-step derivation exists"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "claim is derivable, not refutable"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": "derivability excludes independence"
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "excess caution; trivial proof within any budget"
+  }
+ },
+ "certificate": {
+  "type": "proof",
+  "content": "A1: p->q; A2: q->r; hypothetical syllogism => p->r"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "formal family: no world-facing action in scope; action_authorizable=false by convention",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

@@ -1,0 +1,18 @@
+{
+ "case_id": "F4",
+ "family": "formal",
+ "adversarial_type": "exhausted_trace",
+ "input": {
+  "theory": "Propositional CNF theory over variables x1..x6 (see transcript).",
+  "claim": "The CNF clause set in the transcript is refutable (target: derive the empty clause).",
+  "supplied_material": "A frozen deterministic proof-search transcript is supplied (trace file T0-F4-trace-01.txt, 40 resolution steps, budget 40). It terminates at its budget with no empty clause, no proof, no countermodel, and no independence certificate.",
+  "trace_ref": "T0-F4-trace-01.txt",
+  "task": "Classify what epistemic status this completed transcript licenses."
+ },
+ "option_menu": {
+  "A": "The claim has been proved in the stated theory.",
+  "B": "The claim has been refuted in the stated theory.",
+  "C": "The claim is independent of the stated theory.",
+  "D": "The allocated search budget ended without a proof or refutation."
+ }
+}

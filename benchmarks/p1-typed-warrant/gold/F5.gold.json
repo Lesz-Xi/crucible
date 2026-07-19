@@ -1,0 +1,32 @@
+{
+ "case_id": "F5",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "four-step chained derivation"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "proof short; budget irrelevant"
+  }
+ },
+ "certificate": {
+  "type": "proof",
+  "content": "A1..A4 chained hypothetical syllogism: p->q->r->s->t"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

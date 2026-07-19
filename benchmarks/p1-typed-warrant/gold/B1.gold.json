@@ -1,0 +1,39 @@
+{
+ "case_id": "B1",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "both records integrity-clean; derivation licensed"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "false-positive conflict flag"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "grounding_clean",
+  "content": "sensor_v1 calibrated; cough record clean; 39.2>=38.0"
+ },
+ "claim_answerable": true,
+ "action_authorizable": true,
+ "required_source_ids": [
+  "sensor_v1",
+  "cough_report_v1"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

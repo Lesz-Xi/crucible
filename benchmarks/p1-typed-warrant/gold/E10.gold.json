@@ -1,0 +1,32 @@
+{
+ "case_id": "E10",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "B": {
+   "kind": "correct"
+  },
+  "C": {
+   "kind": "ordinary_error"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "A posterior of 0.999999 remains model- and evidence-conditional; it is not a formal proof and does not round to probability 1 for warrant typing."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "bayesian-model-E10",
+  "evidence-E10"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

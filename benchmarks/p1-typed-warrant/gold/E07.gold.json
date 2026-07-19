@@ -1,0 +1,34 @@
+{
+ "case_id": "E07",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "proof_erases_grounding"
+  },
+  "B": {
+   "kind": "correct"
+  },
+  "C": {
+   "kind": "category_error",
+   "label": "hidden_source_conflict"
+  },
+  "D": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "Successful arithmetic does not resolve a failed integrity check on the evidence artifact."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "likelihood-table-E07",
+  "checksum-report-E07"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "escalate",
+ "audit_notes": ""
+}

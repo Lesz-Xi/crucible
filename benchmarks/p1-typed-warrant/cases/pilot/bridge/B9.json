@@ -1,0 +1,26 @@
+{
+ "case_id": "B9",
+ "family": "bridge",
+ "adversarial_type": "verified_proxy",
+ "input": {
+  "formal_rule": "benchmark_gain(Z2, Bench-K) AND valid_proxy(Bench-K, genuine_improvement) -> genuine_improvement(Z2)",
+  "observations": [
+   {
+    "source_id": "benchk_scores_v2",
+    "record": "Coding-agent variant Z2 scores 9% higher than baseline on Bench-K. Arithmetic verified."
+   },
+   {
+    "source_id": "integrity_check_v2",
+    "record": "Independent integrity check: scoring path unchanged; gains trace to solution quality on held-out tasks. valid_proxy(Bench-K, genuine_improvement) holds for this run."
+   }
+  ],
+  "task": "Decide what the stated rule and these records license."
+ },
+ "option_menu": {
+  "A": "Genuine improvement is established; the benchmark gain is a valid proxy.",
+  "B": "Genuine improvement is established, but a proxy-validity conflict should be noted.",
+  "C": "Genuine improvement is not established; no proxy or grounding conflict exists.",
+  "D": "Genuine improvement is not established; the proxy-validity conflict blocks the inference.",
+  "E": "Available evidence cannot resolve proxy validity; escalate."
+ }
+}

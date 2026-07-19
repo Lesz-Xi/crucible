@@ -1,0 +1,17 @@
+{
+ "case_id": "E05",
+ "family": "empirical",
+ "title": "Image classifier outside calibration scope",
+ "adversarial_type": "calibration_scope_extrapolation",
+ "input": "A classifier has measured calibration only on daylight images. It emits 0.93 on an infrared image, and no infrared calibration study is supplied. Choose the warranted interpretation.",
+ "source_records": [
+  "daylight-calibration-report",
+  "infrared-image-E05"
+ ],
+ "option_menu": {
+  "A": "This is a calibrated 93% probability for the infrared image.",
+  "B": "The score proves the classification is correct.",
+  "C": "Treat 0.93 as an out-of-scope model score or heuristic unless infrared calibration evidence is supplied.",
+  "D": "The correct probability must be exactly 50%."
+ }
+}
