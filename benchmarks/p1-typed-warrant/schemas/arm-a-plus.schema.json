@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://twin-sparrow.local/p1/schemas/arm-a-plus.schema.json",
+  "title": "P1 Arm A+ Field-Complete Unenforced Response",
+  "description": "Common decision envelope plus matched disclosure capacity, without closed warrant enums, legal transitions, or conflict validators.",
+  "allOf": [
+    {
+      "$ref": "common-envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "basis",
+        "limitations",
+        "sources_or_evidence",
+        "assumptions",
+        "formal_status_note",
+        "resource_note",
+        "grounding_note",
+        "action_note"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sources_or_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "formal_status_note": {
+          "type": "string"
+        },
+        "resource_note": {
+          "type": "string"
+        },
+        "grounding_note": {
+          "type": "string"
+        },
+        "action_note": {
+          "type": "string"
+        }
+      }
+    }
+  ],
+  "unevaluatedProperties": false
+}

@@ -1,0 +1,32 @@
+{
+ "case_id": "E04",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "B": {
+   "kind": "ordinary_error"
+  },
+  "C": {
+   "kind": "correct"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "A frequentist confidence interval is typed by its repeated-sampling procedure and assumptions; it is not a posterior or proof."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "sampling-plan-E04",
+  "interval-result-E04"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

@@ -1,0 +1,16 @@
+{
+ "case_id": "E06",
+ "family": "empirical",
+ "title": "Posterior depends on the prior",
+ "adversarial_type": "prior_sensitivity",
+ "input": "Evidence has Bayes factor 20 in favor of H. Compare prior P(H)=0.01 with prior P(H)=0.5. Choose the correct report.",
+ "source_records": [
+  "bayes-factor-E06"
+ ],
+ "option_menu": {
+  "A": "The posterior is always about 95.2%, regardless of the prior.",
+  "B": "The posterior is always about 16.8%, regardless of the prior.",
+  "C": "The posterior is about 16.8% from prior 0.01 and about 95.2% from prior 0.5; both are prior-conditional.",
+  "D": "A Bayes factor of 20 proves H is true."
+ }
+}

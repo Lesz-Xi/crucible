@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0.0",
+  "status": "unsigned_template",
+  "experiment": "P1 Typed-Warrant Advantage",
+  "value_owner": "Chief",
+  "required_before": "comparative_stage0_outcome_unblinding",
+  "purpose": "Freeze human-owned utility and burden judgments before comparative arm outcomes can influence them.",
+  "inherited_thresholds_locked_from_o2": {
+    "b_vs_a_target_relative_cer_reduction": 0.30,
+    "b_vs_a_minimum_useful_relative_cer_reduction": 0.10,
+    "maximum_claim_coverage_loss_for_success_percentage_points": 5,
+    "claim_coverage_loss_kill_threshold_percentage_points": 15
+  },
+  "chief_owned_values": {
+    "maximum_family_specific_absolute_cer_harm_percentage_points": null,
+    "b_vs_a_plus_minimum_useful_cer_improvement": {
+      "value": null,
+      "unit": null,
+      "rationale": null
+    },
+    "b_vs_a_plus_practical_equivalence_margin": {
+      "value": null,
+      "unit": null,
+      "rationale": null
+    },
+    "maximum_b_vs_a_plus_claim_coverage_loss_percentage_points": null,
+    "maximum_b_vs_a_plus_latency_overhead_percent": null,
+    "maximum_b_vs_a_plus_token_cost_overhead_percent": null,
+    "ordinary_task_accuracy_noninferiority_margin_percentage_points": null
+  },
+  "decision_cost_record": {
+    "incremental_implementation_cost_of_b_over_a_plus": null,
+    "incremental_maintenance_cost_of_b_over_a_plus": null,
+    "category_error_cost_assumptions": null,
+    "family_specific_harm_rationale": null,
+    "notes": null
+  },
+  "signoff": {
+    "owner_name": null,
+    "decision_date": null,
+    "artifact_sha256": null,
+    "approved": false
+  },
+  "constraints": [
+    "Inherited B-vs-A thresholds cannot be changed by this charter.",
+    "Null values block comparative outcome unblinding; they are not interpreted as zero.",
+    "Stage 0 may estimate variance, baseline incidence, runtime, and cost, but observed arm differences cannot retroactively move these margins.",
+    "This template records value judgments; Sol and Fable do not sign it for Chief."
+  ]
+}

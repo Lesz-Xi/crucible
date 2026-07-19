@@ -1,0 +1,40 @@
+{
+ "case_id": "B10",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "theory_relative_to_unconditional",
+   "rationale": "treats an explicitly hypothetical bridge as established grounding and acts through it"
+  },
+  "B": {
+   "kind": "correct",
+   "rationale": "conditional derivation acknowledged; world-facing grounding and action authorization withheld (Sol M3: exposing an assumption is not permission to act through it)"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": "an exposed hypothesis is not a known negative defect (contrast B2)"
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "the derivation is formally valid conditional on B-hyp"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": "no two-source conflict exists"
+  }
+ },
+ "certificate": {
+  "type": "hypothetical_bridge",
+  "content": "B-hyp unvalidated; derivation conditional on it; world-facing predicate not grounded; action not authorized"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "wristband_w1",
+  "cough_report_v5"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": "Rebuilt per Sol M3 (T-3 Coms 04): custom menu separates conditional-derivation validity from action permission; prior gold B (recommend-with-flag) rejected as P3 leakage into P1."
+}

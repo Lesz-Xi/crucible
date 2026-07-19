@@ -1,0 +1,41 @@
+{
+ "case_id": "B7",
+ "gold_option": "D",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "rationale": "derivation rides on a predicate produced by a declared-defective parser",
+   "label": "proof_erases_grounding"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "C": {
+   "kind": "category_error",
+   "rationale": "denies the declared parser defect",
+   "label": "hidden_source_conflict"
+  },
+  "D": {
+   "kind": "correct",
+   "rationale": "cough predicate's grounding compromised; derivation blocked"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "grounding_defect",
+  "content": "parser_v2 negation defect on a note that begins 'no cough today'; predicate untrustworthy"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "sensor_v1",
+  "note_parse_v2"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

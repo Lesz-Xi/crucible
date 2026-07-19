@@ -1,10 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
+  AssessmentScope,
   ClaimCounterfactualResultLabel,
   ClaimKind,
   ClaimSourceFeature,
   ClaimUncertaintyLabel,
+  EpistemicKind,
+  EvidenceRelation,
+  SourceIndependence,
 } from '@/types/claim-ledger';
+import { validateEpistemicInvariants } from '@/lib/validators/epistemic-invariants';
 
 export interface ClaimLedgerEvidenceInput {
   evidenceType: 'source' | 'tool_output' | 'citation' | 'memory' | 'counterfactual_trace' | 'scientific_provenance';
@@ -12,6 +17,12 @@ export interface ClaimLedgerEvidenceInput {
   snippet?: string;
   reliabilityScore?: number;
   metadata?: Record<string, unknown>;
+  /** CSL: how this evidence relates to the target claim, claim-relative. Stage-1: carried in `metadata`. */
+  relation?: EvidenceRelation;
+  /** CSL: source independence relative to the target claim. Stage-1: carried in `metadata`. */
+  independence?: SourceIndependence;
+  /** CSL: epistemic kind of the thing being cited (e.g. a felt_state item cannot independently support a world_claim). */
+  sourceEpistemicKind?: EpistemicKind;
 }
 
 export interface ClaimLedgerGateDecisionInput {
@@ -54,6 +65,10 @@ export interface RecordClaimInput {
   gateDecisions?: ClaimLedgerGateDecisionInput[];
   counterfactualTests?: ClaimLedgerCounterfactualInput[];
   receipts?: ClaimLedgerReceiptInput[];
+  /** CSL: what kind of epistemic item this claim represents. Stage-1: carried in the emission receipt. */
+  epistemicKind?: EpistemicKind;
+  /** CSL: what the claim's evidence is claimed to establish (source-statement vs world-claim vs personal-experience). */
+  assessmentScope?: AssessmentScope;
 }
 
 export class ClaimLedgerService {
@@ -62,6 +77,31 @@ export class ClaimLedgerService {
   async recordClaim(input: RecordClaimInput): Promise<string | null> {
     const claimText = input.claimText?.trim();
     if (!claimText) return null;
+
+    const usesEpistemicInvariants =
+      input.epistemicKind !== undefined ||
+      input.assessmentScope !== undefined ||
+      (input.evidenceLinks ?? []).some((link) => link.relation || link.independence || link.sourceEpistemicKind);
+
+    if (usesEpistemicInvariants) {
+      const result = validateEpistemicInvariants({
+        claimKind: input.claimKind,
+        claimText,
+        epistemicKind: input.epistemicKind,
+        assessmentScope: input.assessmentScope,
+        evidenceLinks: (input.evidenceLinks ?? []).map((link) => ({
+          relation: link.relation,
+          independence: link.independence,
+          sourceEpistemicKind: link.sourceEpistemicKind,
+        })),
+        gateDecisions: (input.gateDecisions ?? []).map((g) => ({ gateName: g.gateName, decision: g.decision })),
+      });
+      if (!result.ok) {
+        throw new Error(
+          `Claim violates epistemic invariants: ${result.violations.map((v) => v.message).join(' | ')}`
+        );
+      }
+    }
 
     const claimInsert = await this.supabase
       .from('claims')
@@ -90,14 +130,23 @@ export class ClaimLedgerService {
     if (Array.isArray(input.evidenceLinks) && input.evidenceLinks.length > 0) {
       const rows = input.evidenceLinks
         .filter((item) => item.evidenceRef && item.evidenceRef.trim().length > 0)
-        .map((item) => ({
-          claim_id: claimId,
-          evidence_type: item.evidenceType,
-          evidence_ref: item.evidenceRef,
-          snippet: item.snippet || null,
-          reliability_score: typeof item.reliabilityScore === 'number' ? item.reliabilityScore : null,
-          metadata: item.metadata || {},
-        }));
+        .map((item) => {
+          // CSL Stage-1: relation/independence/sourceEpistemicKind ride in metadata
+          // until promoted to typed columns (see docs/CSL-Reasoning-Companion-Architecture.md §4).
+          const csl: Record<string, unknown> = {};
+          if (item.relation) csl.relation = item.relation;
+          if (item.independence) csl.independence = item.independence;
+          if (item.sourceEpistemicKind) csl.sourceEpistemicKind = item.sourceEpistemicKind;
+          const metadata = Object.keys(csl).length > 0 ? { ...(item.metadata || {}), csl } : item.metadata || {};
+          return {
+            claim_id: claimId,
+            evidence_type: item.evidenceType,
+            evidence_ref: item.evidenceRef,
+            snippet: item.snippet || null,
+            reliability_score: typeof item.reliabilityScore === 'number' ? item.reliabilityScore : null,
+            metadata,
+          };
+        });
       if (rows.length > 0) {
         const { error } = await this.supabase.from('claim_evidence_links').insert(rows);
         if (error) throw new Error(`Failed to insert claim evidence links: ${error.message}`);
@@ -132,14 +181,41 @@ export class ClaimLedgerService {
       if (error) throw new Error(`Failed to insert claim counterfactual tests: ${error.message}`);
     }
 
-    if (Array.isArray(input.receipts) && input.receipts.length > 0) {
-      const rows = input.receipts.map((item) => ({
-        claim_id: claimId,
-        receipt_type: item.receiptType,
-        actor: item.actor,
-        receipt_json: item.receiptJson || {},
-      }));
-      const { error } = await this.supabase.from('claim_receipts').insert(rows);
+    // CSL Stage-1: epistemicKind/assessmentScope ride in the emission receipt's
+    // receipt_json until promoted to typed columns on `claims`. Merge into an
+    // existing emission receipt if the caller supplied one, else synthesize a
+    // minimal one — but only when a CSL field is actually set, so callers that
+    // never touch these fields get exactly the prior behavior.
+    const csl: Record<string, unknown> = {};
+    if (input.epistemicKind) csl.epistemicKind = input.epistemicKind;
+    if (input.assessmentScope) csl.assessmentScope = input.assessmentScope;
+    const hasClaimLevelCsl = Object.keys(csl).length > 0;
+
+    const receipts = input.receipts ?? [];
+    let receiptRows = receipts.map((item) => ({
+      claim_id: claimId,
+      receipt_type: item.receiptType,
+      actor: item.actor,
+      receipt_json: item.receiptJson || {},
+    }));
+
+    if (hasClaimLevelCsl) {
+      const emissionIndex = receiptRows.findIndex((r) => r.receipt_type === 'emission');
+      if (emissionIndex >= 0) {
+        receiptRows[emissionIndex] = {
+          ...receiptRows[emissionIndex],
+          receipt_json: { ...receiptRows[emissionIndex].receipt_json, csl },
+        };
+      } else {
+        receiptRows = [
+          ...receiptRows,
+          { claim_id: claimId, receipt_type: 'emission' as const, actor: 'system', receipt_json: { csl } },
+        ];
+      }
+    }
+
+    if (receiptRows.length > 0) {
+      const { error } = await this.supabase.from('claim_receipts').insert(receiptRows);
       if (error) throw new Error(`Failed to insert claim receipts: ${error.message}`);
     }
 

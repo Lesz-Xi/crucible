@@ -1,0 +1,31 @@
+{
+ "case_id": "E06",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error"
+  },
+  "B": {
+   "kind": "ordinary_error"
+  },
+  "C": {
+   "kind": "correct"
+  },
+  "D": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "Prior 0.01: posterior odds=(0.01/0.99)*20, posterior=0.1680672269. Prior 0.5: posterior=20/21=0.9523809524."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "bayes-factor-E06"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

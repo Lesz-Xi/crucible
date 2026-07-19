@@ -1,0 +1,17 @@
+{
+ "case_id": "E07",
+ "family": "empirical",
+ "title": "Correct arithmetic over corrupted provenance",
+ "adversarial_type": "provenance_conflict",
+ "input": "A likelihood table produces a numerical posterior, but the retrieved table fails its declared SHA-256 checksum. Choose what the result licenses before the provenance conflict is resolved.",
+ "source_records": [
+  "likelihood-table-E07",
+  "checksum-report-E07"
+ ],
+ "option_menu": {
+  "A": "The posterior is fully world-grounded and may authorize action because the arithmetic succeeded.",
+  "B": "The arithmetic may be valid on the received bytes, but the world-facing warrant is grounding-compromised; quarantine or escalate.",
+  "C": "Checksum failure is irrelevant to epistemic status.",
+  "D": "The likelihood table proves the hypothesis."
+ }
+}

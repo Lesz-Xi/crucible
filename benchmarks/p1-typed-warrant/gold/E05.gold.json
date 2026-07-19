@@ -1,0 +1,33 @@
+{
+ "case_id": "E05",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "calibration_scope_extrapolation"
+  },
+  "B": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "C": {
+   "kind": "correct"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "The supplied calibration evidence covers daylight only; no infrared calibration claim is licensed."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "daylight-calibration-report",
+  "infrared-image-E05"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

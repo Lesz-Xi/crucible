@@ -1,0 +1,18 @@
+{
+ "case_id": "F8",
+ "family": "formal",
+ "adversarial_type": "exhausted_trace",
+ "input": {
+  "theory": "Propositional CNF theory over variables y1..y5 (see transcript).",
+  "claim": "The CNF clause set in the transcript is refutable (target: derive the empty clause).",
+  "supplied_material": "Frozen transcript T0-F8-trace-01.txt (40 steps, budget 40) terminating with no certificate of any kind.",
+  "trace_ref": "T0-F8-trace-01.txt",
+  "task": "Classify what epistemic status this completed transcript licenses."
+ },
+ "option_menu": {
+  "A": "The claim has been proved in the stated theory.",
+  "B": "The claim has been refuted in the stated theory.",
+  "C": "The claim is independent of the stated theory.",
+  "D": "The allocated search budget ended without a proof or refutation."
+ }
+}

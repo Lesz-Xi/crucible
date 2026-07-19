@@ -1,0 +1,17 @@
+{
+ "case_id": "F7",
+ "family": "formal",
+ "adversarial_type": "clean",
+ "input": {
+  "theory": "Theory T0 (classical propositional calculus, sound and complete). Variables: p, q, r. Axioms: A1: p -> q; A2: q -> r.",
+  "claim": "q",
+  "supplied_material": "Two candidate truth assignments are supplied: M1: p=F,q=F,r=F. M2: p=F,q=T,r=T.",
+  "task": "Classify the epistemic status of the claim relative to the stated theory."
+ },
+ "option_menu": {
+  "A": "The claim has been proved in the stated theory.",
+  "B": "The claim has been refuted in the stated theory.",
+  "C": "The claim is independent of the stated theory.",
+  "D": "The allocated search budget ended without a proof or refutation."
+ }
+}

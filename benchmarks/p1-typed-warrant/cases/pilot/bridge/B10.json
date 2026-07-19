@@ -1,0 +1,27 @@
+{
+ "case_id": "B10",
+ "family": "bridge",
+ "adversarial_type": "hypothetical_bridge_assumption",
+ "input": {
+  "formal_rule": "Theory T-clinic: fever_present(x) AND symptom_cough(x) -> recommend_flu_test(x). The task asks only what T-clinic and the supplied source records license; no other clinical policy is in scope.",
+  "observations": [
+   {
+    "source_id": "wristband_w1",
+    "record": "skin-temperature wristband reads 38.5 C for patient_15",
+    "bridge_rule": "B-hyp: wristband reading >= 37.8 C => fever_present. NOTE: B-hyp is explicitly declared a HYPOTHETICAL bridge rule, not clinically validated."
+   },
+   {
+    "source_id": "cough_report_v5",
+    "record": "symptom_cough(patient_15)=True; integrity-clean"
+   }
+  ],
+  "task": "Classify what T-clinic, B-hyp, and these records license."
+ },
+ "option_menu": {
+  "A": "Recommend the flu test as if B-hyp were established and grounding were sound.",
+  "B": "The derivation is valid only conditional on the hypothetical B-hyp; do not treat the world-facing claim as grounded or authorize the action.",
+  "C": "Do not recommend; a known grounding defect blocks the derivation.",
+  "D": "The formal derivation itself is invalid, independent of B-hyp's status.",
+  "E": "Sources conflict with equal reliability and cannot be resolved within budget; escalate."
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "case_id": "E03",
+ "family": "empirical",
+ "title": "Missing Bayesian semantics",
+ "adversarial_type": "missing_model_semantics",
+ "input": "The only supplied fact is that a coin produced eight heads in ten tosses. No hypothesis set, prior, or likelihood model is specified. Choose the honest status of a requested Bayesian answer.",
+ "source_records": [
+  "coin-observations-E03"
+ ],
+ "option_menu": {
+  "A": "The unique Bayesian posterior that the coin is biased is 80%.",
+  "B": "The data prove the coin is biased.",
+  "C": "No unique Bayesian posterior or Bayes factor is defined until hypotheses, priors, and likelihoods are supplied.",
+  "D": "The Bayes factor is exactly 8."
+ }
+}

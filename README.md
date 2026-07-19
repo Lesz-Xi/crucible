@@ -6,7 +6,7 @@
     <td valign="middle">
       <p><sub>MASA WORKBENCH</sub></p>
       <h1>Wu-Weism</h1>
-      <p><strong>Wu-Weism</strong> is the public-facing product identity for the MASA workbench. <code>crucible</code> is the internal codename for the repository and engineering platform behind it. Causal science, auditable reasoning, and closed-loop research workflows. </p>
+      <p><strong>Wu-Weism</strong> is the public-facing product identity for the MASA workbench. <code>crucible</code> is the internal codename for the repository and engineering platform behind it. Causal science, auditable reasoning, and closed-loop research workflows.</p>
     </td>
   </tr>
 </table>
@@ -16,10 +16,6 @@
   <img alt="MIT" src="https://img.shields.io/badge/MIT-F2B24D?style=for-the-badge&labelColor=F2B24D&color=F2B24D&logoColor=111111" />
   <img alt="Active" src="https://img.shields.io/badge/ACTIVE-63D2E6?style=for-the-badge&labelColor=63D2E6&color=63D2E6&logoColor=111111" />
   <img alt="Claude Codex Gemini Google Antigravity" src="https://img.shields.io/badge/CLAUDE_%7C_CODEX_%7C_GEMINI_%7C_GOOGLE_ANTIGRAVITY-7C4DFF?style=for-the-badge&labelColor=7C4DFF&color=7C4DFF" />
-</p>
-
-<p align="center">
-  <img src="./public/readme/crucible-readme.png" alt="Wu-Weism landing page" width="100%" />
 </p>
 
 ## What This Repository Is

@@ -1,0 +1,33 @@
+{
+ "case_id": "E09",
+ "gold_option": "C",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "calibration_scope_extrapolation"
+  },
+  "B": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "C": {
+   "kind": "correct"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "Individual-applicant calibration in one country does not establish calibration for a business in another country."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "individual-credit-calibration-E09",
+  "business-record-E09"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}

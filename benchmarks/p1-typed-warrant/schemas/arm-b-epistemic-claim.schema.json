@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://twin-sparrow.local/p1/schemas/arm-b-epistemic-claim.schema.json",
+  "title": "P1 Arm B Typed-Ledger Response",
+  "description": "Common decision envelope plus typed epistemic claim. Cross-field invariants are enforced by validators/typed_invariants.py.",
+  "allOf": [
+    {
+      "$ref": "common-envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "required": [
+        "epistemic_claim",
+        "validator_events"
+      ],
+      "properties": {
+        "epistemic_claim": {
+          "$ref": "#/$defs/epistemicClaim"
+        },
+        "validator_events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/validatorEvent"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "epistemicClaim": {
+      "type": "object",
+      "required": [
+        "claim_type",
+        "grounding_context",
+        "decision_context"
+      ],
+      "properties": {
+        "claim_type": {
+          "enum": [
+            "formal",
+            "empirical",
+            "bridge"
+          ]
+        },
+        "formal_context": {
+          "$ref": "#/$defs/formalContext"
+        },
+        "credence_context": {
+          "$ref": "#/$defs/credenceContext"
+        },
+        "grounding_context": {
+          "$ref": "#/$defs/groundingContext"
+        },
+        "decision_context": {
+          "$ref": "#/$defs/decisionContext"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "claim_type": {
+                "const": "formal"
+              }
+            },
+            "required": [
+              "claim_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "formal_context"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "claim_type": {
+                "const": "empirical"
+              }
+            },
+            "required": [
+              "claim_type"
+            ]
+          },
+          "then": {
+            "required": [
+              "credence_context"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "formalContext": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "theory_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checker_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "proved",
+            "refuted",
+            "open",
+            "resource_limit",
+            "independent_with_certificate",
+            "inconsistent_assumptions"
+          ]
+        },
+        "certificate_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metatheory_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "search_budget": {
+          "type": [
+            "string",
+            "number",
+            "object",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "credenceContext": {
+      "type": "object",
+      "required": [
+        "warrant_type"
+      ],
+      "properties": {
+        "warrant_type": {
+          "enum": [
+            "bayesian_posterior",
+            "confidence_interval",
+            "e_value",
+            "calibrated_predictor",
+            "heuristic",
+            "none"
+          ]
+        },
+        "value_or_distribution": {},
+        "model_and_prior": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "model": {},
+            "prior": {}
+          },
+          "required": [
+            "model",
+            "prior"
+          ]
+        },
+        "evidence_ref": {
+          "type": [
+            "string",
+            "array",
+            "null"
+          ]
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "calibration_scope": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "domain": {
+              "type": "string"
+            },
+            "in_scope": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "domain",
+            "in_scope"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "groundingContext": {
+      "type": "object",
+      "required": [
+        "integrity_conflicts",
+        "conflicts_resolved"
+      ],
+      "properties": {
+        "source_or_sensor": {
+          "type": [
+            "string",
+            "array",
+            "null"
+          ]
+        },
+        "parser_or_transform": {
+          "type": [
+            "string",
+            "array",
+            "null"
+          ]
+        },
+        "bridge_assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "integrity_conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conflicts_resolved": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "decisionContext": {
+      "type": "object",
+      "required": [
+        "proposed_action",
+        "authorization_requested",
+        "required_contract",
+        "contract_satisfied",
+        "abstain_or_escalate",
+        "world_facing_conclusion"
+      ],
+      "properties": {
+        "proposed_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "authorization_requested": {
+          "type": "boolean"
+        },
+        "required_contract": {
+          "type": [
+            "string",
+            "object",
+            "null"
+          ]
+        },
+        "contract_satisfied": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "abstain_or_escalate": {
+          "type": "boolean"
+        },
+        "world_facing_conclusion": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validatorEvent": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "path"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "unevaluatedProperties": false
+}

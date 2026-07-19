@@ -1,0 +1,31 @@
+{
+ "case_id": "B3",
+ "family": "bridge",
+ "adversarial_type": "unresolved_source_conflict",
+ "input": {
+  "formal_rule": "Theory T-clinic: fever_present(x) AND symptom_cough(x) -> recommend_flu_test(x). The task asks only what T-clinic and the supplied source records license; no other clinical policy is in scope.",
+  "observations": [
+   {
+    "source_id": "sensor_v1",
+    "record": "Device X, calibrated, declared reliability EQUAL to Device Y; reads 36.9 C for patient_9 at 10:00:00"
+   },
+   {
+    "source_id": "sensor_v2",
+    "record": "Device Y, calibrated, different manufacturer, declared reliability EQUAL to Device X; reads 39.4 C for patient_9 at 10:00:00"
+   },
+   {
+    "source_id": "cough_report_v1",
+    "record": "symptom_cough(patient_9)=True; integrity-clean"
+   }
+  ],
+  "scope_note": "No conflict-resolution step is available within budget; neither sensor has higher declared reliability.",
+  "task": "Decide what T-clinic and these records license."
+ },
+ "option_menu": {
+  "A": "Recommend the action; derivation and grounding are both sound.",
+  "B": "Recommend the action, but flag a grounding/source-integrity conflict or exposed assumption.",
+  "C": "Do not recommend; formal support is insufficient and no grounding conflict exists.",
+  "D": "Do not recommend; a grounding/source conflict blocks the derivation.",
+  "E": "Sources conflict with equal reliability and cannot be resolved within budget; escalate."
+ }
+}

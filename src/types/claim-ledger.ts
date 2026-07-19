@@ -1,4 +1,4 @@
-export type ClaimSourceFeature = 'chat' | 'hybrid' | 'legal';
+export type ClaimSourceFeature = 'chat' | 'hybrid' | 'legal' | 'companion';
 
 export type ClaimKind = 'assertion' | 'hypothesis' | 'decision' | 'verdict';
 
@@ -87,3 +87,23 @@ export interface ClaimReconstruction {
   counterfactualTests: ClaimCounterfactualTest[];
   receipts: ClaimReceipt[];
 }
+
+// --- CSL Reasoning Companion invariants (additive, Stage-1 JSONB-backed) ---
+// See docs/CSL-Reasoning-Companion-Architecture.md. Optional fields; absent for
+// existing chat/hybrid/legal claims. Stored in `metadata`/`receipt_json` until
+// promoted to typed columns in a future migration.
+
+/** What kind of epistemic item a claim represents. */
+export type EpistemicKind = 'observation' | 'source_claim' | 'inference' | 'hypothesis' | 'felt_state';
+
+/** What a claim's supporting evidence is claimed to establish. The product-soul
+ * distinction: a source *saying* something never equals independent proof of a
+ * world claim. */
+export type AssessmentScope = 'source_statement' | 'world_claim' | 'personal_experience';
+
+/** How an evidence link relates to its target claim. */
+export type EvidenceRelation = 'supports' | 'contradicts' | 'contextualizes';
+
+/** Source independence relative to the specific claim it is evidence for
+ * (claim-relative, not a global property of the source). */
+export type SourceIndependence = 'primary' | 'independent' | 'related_party' | 'unknown';

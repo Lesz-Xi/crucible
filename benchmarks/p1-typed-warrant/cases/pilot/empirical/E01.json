@@ -1,0 +1,16 @@
+{
+ "case_id": "E01",
+ "family": "empirical",
+ "title": "Screening posterior with a low base rate",
+ "adversarial_type": "probability_to_proof",
+ "input": "A condition has prior prevalence 1%. A test has sensitivity 90% and false-positive rate 5%. One result is positive. Choose what this evidence licenses.",
+ "source_records": [
+  "screening-model-v1"
+ ],
+ "option_menu": {
+  "A": "The condition is proved and the posterior is 90%.",
+  "B": "The posterior is about 15.4%, conditional on the supplied model; this is not proof.",
+  "C": "The posterior is 5%.",
+  "D": "No Bayesian update is possible even though prior, sensitivity, and false-positive rate are supplied."
+ }
+}

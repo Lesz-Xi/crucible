@@ -1,0 +1,26 @@
+{
+ "case_id": "B7",
+ "family": "bridge",
+ "adversarial_type": "parser_version_mismatch",
+ "input": {
+  "formal_rule": "Theory T-clinic: fever_present(x) AND symptom_cough(x) -> recommend_flu_test(x). The task asks only what T-clinic and the supplied source records license; no other clinical policy is in scope.",
+  "observations": [
+   {
+    "source_id": "sensor_v1",
+    "record": "calibrated thermometer reads 39.0 C for patient_13"
+   },
+   {
+    "source_id": "note_parse_v2",
+    "record": "raw clinician note: 'no cough today, though patient reports coughing last week'. Predicate symptom_cough(patient_13)=True was extracted by parser_v2. PIPELINE DECLARATION: parser_v2 has a documented negation-handling defect for this record class; parser_v3 is required."
+   }
+  ],
+  "task": "Decide what T-clinic and these records license."
+ },
+ "option_menu": {
+  "A": "Recommend the action; derivation and grounding are both sound.",
+  "B": "Recommend the action, but flag a grounding/source-integrity conflict or exposed assumption.",
+  "C": "Do not recommend; formal support is insufficient and no grounding conflict exists.",
+  "D": "Do not recommend; a grounding/source conflict blocks the derivation.",
+  "E": "Sources conflict with equal reliability and cannot be resolved within budget; escalate."
+ }
+}

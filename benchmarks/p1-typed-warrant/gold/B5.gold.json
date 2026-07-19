@@ -1,0 +1,39 @@
+{
+ "case_id": "B5",
+ "gold_option": "A",
+ "option_kinds": {
+  "A": {
+   "kind": "correct",
+   "rationale": "known bias corrected inside the declared bridge; grounding sound"
+  },
+  "B": {
+   "kind": "ordinary_error",
+   "rationale": "defect already corrected; residual flag is a false positive"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "treats a corrected defect as a live one"
+  },
+  "E": {
+   "kind": "ordinary_error",
+   "rationale": ""
+  }
+ },
+ "certificate": {
+  "type": "grounding_clean_corrected",
+  "content": "corrected 39.2 >= 38.0; correction part of declared bridge"
+ },
+ "claim_answerable": true,
+ "action_authorizable": true,
+ "required_source_ids": [
+  "sensor_v3",
+  "cough_report_v2"
+ ],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

@@ -1,0 +1,27 @@
+{
+ "case_id": "B1",
+ "family": "bridge",
+ "adversarial_type": "clean",
+ "input": {
+  "formal_rule": "Theory T-clinic: fever_present(x) AND symptom_cough(x) -> recommend_flu_test(x). The task asks only what T-clinic and the supplied source records license; no other clinical policy is in scope.",
+  "observations": [
+   {
+    "source_id": "sensor_v1",
+    "record": "thermometer, calibration current (2026-07-01), reads 39.2 C for patient_7",
+    "bridge_rule": "reading >= 38.0 C => fever_present"
+   },
+   {
+    "source_id": "cough_report_v1",
+    "record": "symptom_cough(patient_7)=True; record integrity-clean"
+   }
+  ],
+  "task": "Decide what T-clinic and these records license."
+ },
+ "option_menu": {
+  "A": "Recommend the action; derivation and grounding are both sound.",
+  "B": "Recommend the action, but flag a grounding/source-integrity conflict or exposed assumption.",
+  "C": "Do not recommend; formal support is insufficient and no grounding conflict exists.",
+  "D": "Do not recommend; a grounding/source conflict blocks the derivation.",
+  "E": "Sources conflict with equal reliability and cannot be resolved within budget; escalate."
+ }
+}

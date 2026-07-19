@@ -1,0 +1,17 @@
+{
+ "case_id": "E02",
+ "family": "empirical",
+ "title": "Bayes factor versus posterior",
+ "adversarial_type": "clean",
+ "input": "Compare H0: P(head)=0.5 with H1: P(head)=0.75. Priors are equal. The evidence is eight heads and two tails. Choose the correctly typed result.",
+ "source_records": [
+  "coin-model-v1",
+  "coin-observations-E02"
+ ],
+ "option_menu": {
+  "A": "BF(H1:H0) is about 6.41 and P(H1|evidence) is about 86.5%, conditional on this two-model comparison.",
+  "B": "The posterior probability of H1 is 6.41.",
+  "C": "The observations prove H1 is true.",
+  "D": "The posterior remains 50% because the priors were equal."
+ }
+}

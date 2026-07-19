@@ -1,0 +1,32 @@
+{
+ "case_id": "F2",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "ordinary_error",
+   "rationale": "negation of a derivable statement cannot be proved in a consistent theory"
+  },
+  "B": {
+   "kind": "correct",
+   "rationale": "T0+{p} |- r, hence NOT r refuted"
+  },
+  "C": {
+   "kind": "ordinary_error",
+   "rationale": "r is entailed; no independence"
+  },
+  "D": {
+   "kind": "ordinary_error",
+   "rationale": "trivial refutation within budget"
+  }
+ },
+ "certificate": {
+  "type": "refutation",
+  "content": "T0 union {p}: p; A1 gives q; A2 gives r. Therefore NOT r is refuted relative to T0 union {p}."
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [],
+ "audit_notes": "",
+ "primary_eligible": true,
+ "expected_disposition": "answer"
+}

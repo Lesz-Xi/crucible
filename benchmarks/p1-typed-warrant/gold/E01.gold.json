@@ -1,0 +1,31 @@
+{
+ "case_id": "E01",
+ "gold_option": "B",
+ "option_kinds": {
+  "A": {
+   "kind": "category_error",
+   "label": "probability_to_proof"
+  },
+  "B": {
+   "kind": "correct"
+  },
+  "C": {
+   "kind": "ordinary_error"
+  },
+  "D": {
+   "kind": "ordinary_error"
+  }
+ },
+ "certificate": {
+  "type": "empirical_answer_key",
+  "content": "0.01*0.90 / (0.01*0.90 + 0.99*0.05) = 0.1538461538"
+ },
+ "claim_answerable": true,
+ "action_authorizable": false,
+ "required_source_ids": [
+  "screening-model-v1"
+ ],
+ "primary_eligible": true,
+ "expected_disposition": "answer",
+ "audit_notes": ""
+}
